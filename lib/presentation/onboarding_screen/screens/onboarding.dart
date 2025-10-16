@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
+import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
+
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -80,7 +81,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  print("Get Started pressed!");
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => SignInScreen()),
+                  );
                 }
               },
               child: Text(
