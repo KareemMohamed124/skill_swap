@@ -16,12 +16,13 @@ class SignInScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: mainColor,
+      backgroundColor: AppColor.mainColor,
       appBar: appBar,
       body: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height -
+            minHeight:
+                MediaQuery.of(context).size.height -
                 appBar.preferredSize.height -
                 MediaQuery.of(context).padding.top,
           ),
@@ -78,7 +79,7 @@ class SignInScreen extends StatelessWidget {
                     },
                     child: const Text(
                       "Forget Password?",
-                      style: TextStyle(color: mainColor),
+                      style: TextStyle(color: AppColor.mainColor),
                     ),
                   ),
                 ),
@@ -86,17 +87,17 @@ class SignInScreen extends StatelessWidget {
                 const Row(
                   children: [
                     Expanded(
-                      child: Divider(thickness: 2, color: mainColor),
+                      child: Divider(thickness: 2, color: AppColor.mainColor),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         "Or continue with",
-                        style: TextStyle(color: mainColor),
+                        style: TextStyle(color: AppColor.mainColor),
                       ),
                     ),
                     Expanded(
-                      child: Divider(thickness: 2, color: mainColor),
+                      child: Divider(thickness: 2, color: AppColor.mainColor),
                     ),
                   ],
                 ),
@@ -116,7 +117,7 @@ class SignInScreen extends StatelessWidget {
                     children: [
                       const Text(
                         "Don’t have an account? ",
-                        style: TextStyle(color: mainColor),
+                        style: TextStyle(color: AppColor.mainColor),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -129,7 +130,7 @@ class SignInScreen extends StatelessWidget {
                         },
                         child: const Text(
                           "Sign Up",
-                          style: TextStyle(color: mainColor),
+                          style: TextStyle(color: AppColor.mainColor),
                         ),
                       ),
                     ],

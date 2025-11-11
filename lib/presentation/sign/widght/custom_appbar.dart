@@ -15,9 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           height: 40,
-          decoration: const BoxDecoration(
-            color: mainColor,
-          ),
+          decoration: const BoxDecoration(color: AppColor.mainColor),
         ),
         AppBar(
           backgroundColor: Colors.transparent,
@@ -25,13 +23,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           title: Text(
             title,
             style: const TextStyle(
-              color: grayColor,
+              color: AppColor.grayColor,
               fontSize: 22,
               fontWeight: FontWeight.w600,
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: grayColor),
+            icon: const Icon(Icons.arrow_back, color: AppColor.grayColor),
             onPressed: () => Navigator.pop(context),
           ),
         ),

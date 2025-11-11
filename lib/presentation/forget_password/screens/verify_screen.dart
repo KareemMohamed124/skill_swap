@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -18,19 +17,16 @@ class _VerifyScreenState extends State<VerifyScreen> {
   late Timer timer;
 
   void startTimer() {
-    timer = Timer.periodic(
-        Duration(seconds: 1),
-        (t) {
-          setState(() {
-            if(secondsRemaining > 0) {
-              secondsRemaining-- ;
-            } else {
-              isResend = true;
-              t.cancel();
-            }
-          });
+    timer = Timer.periodic(Duration(seconds: 1), (t) {
+      setState(() {
+        if (secondsRemaining > 0) {
+          secondsRemaining--;
+        } else {
+          isResend = true;
+          t.cancel();
         }
-    );
+      });
+    });
   }
 
   @override
@@ -39,52 +35,50 @@ class _VerifyScreenState extends State<VerifyScreen> {
     startTimer();
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: AppColor.whiteColor,
       body: CustomAuth(
-          title: 'Verify Your Email',
-          subTitle: 'Enter the 6-digit code send to nada@gamil.com.',
-          childWidget: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-                6,
-                (index) => Container(
-                  width: 45,
-                  height: 50,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Color(0xFFE6E7FF),
-                    )
-                  ),
-                  child: const Text(
-                    '-',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Color(0xFFE6E7FF)
-                    ),
-                  ),
-                )
-            )
+        title: 'Verify Your Email',
+        subTitle: 'Enter the 6-digit code send to nada@gamil.com.',
+        childWidget: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(
+            6,
+            (index) => Container(
+              width: 45,
+              height: 50,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Color(0xFFE6E7FF)),
+              ),
+              child: const Text(
+                '-',
+                style: TextStyle(fontSize: 24, color: Color(0xFFE6E7FF)),
+              ),
+            ),
           ),
-          buttonText: 'Verify',
-          onPressed: (){},
-          bottomText: isResend ? "Didn't receive the code? " : "Resend code in 00:${secondsRemaining.toString().padLeft(2, '0')}" ,
-          bottomActionText: isResend ? 'Resend' : '',
-          onBottomTap: isResend ? (){
-            setState(() {
-              isResend = false;
-              secondsRemaining = 40;
-            });
-            startTimer();
-          } : (){}
+        ),
+        buttonText: 'Verify',
+        onPressed: () {},
+        bottomText:
+            isResend
+                ? "Didn't receive the code? "
+                : "Resend code in 00:${secondsRemaining.toString().padLeft(2, '0')}",
+        bottomActionText: isResend ? 'Resend' : '',
+        onBottomTap:
+            isResend
+                ? () {
+                  setState(() {
+                    isResend = false;
+                    secondsRemaining = 40;
+                  });
+                  startTimer();
+                }
+                : () {},
       ),
     );
   }

@@ -21,60 +21,55 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       body: CustomAuth(
-          title: 'Forgot Password?',
-          subTitle: "Enter your email and we'll send you a verification code.",
-          childWidget: Form(
-            key: formKey,
-              child: SizedBox(
-                width: 329,
-                height: 50,
-                child:  TextFormField(
-                   controller: emailController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please fill out this field.";
-                    }
-                    if (!value.contains("@")) {
-                      return "Please enter a valid email.";
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Enter Address",
-                    hintStyle: const TextStyle(
-                        color: Colors.black38, fontSize: 15),
-                    filled: true,
-                    fillColor: grayColor,
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+        title: 'Forgot Password?',
+        subTitle: "Enter your email and we'll send you a verification code.",
+        childWidget: Form(
+          key: formKey,
+          child: SizedBox(
+            width: 329,
+            height: 50,
+            child: TextFormField(
+              controller: emailController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please fill out this field.";
+                }
+                if (!value.contains("@")) {
+                  return "Please enter a valid email.";
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                hintText: "Enter Address",
+                hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
+                filled: true,
+                fillColor: AppColor.grayColor,
+                prefixIcon: const Icon(Icons.email_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
+            ),
           ),
-          buttonText: "Send Verification Code",
-          onPressed: () {
-            if(formKey.currentState!.validate()){
-              Navigator.push(
-                  context,
-                 MaterialPageRoute(
-                     builder: (context) => VerifyScreen()
-                 )
-              );
-            }
-          },
-          bottomText: "Remember your password? ",
-          bottomActionText: "Sign In",
+        ),
+        buttonText: "Send Verification Code",
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => VerifyScreen()),
+            );
+          }
+        },
+        bottomText: "Remember your password? ",
+        bottomActionText: "Sign In",
         onBottomTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SignInScreen()
-              )
+            context,
+            MaterialPageRoute(builder: (context) => SignInScreen()),
           );
         },
-      )
+      ),
     );
   }
 }

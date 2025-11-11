@@ -14,12 +14,13 @@ class SignUpScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: mainColor,
+      backgroundColor: AppColor.mainColor,
       appBar: appBar,
       body: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height -
+            minHeight:
+                MediaQuery.of(context).size.height -
                 appBar.preferredSize.height -
                 MediaQuery.of(context).padding.top,
           ),
@@ -86,7 +87,7 @@ class SignUpScreen extends StatelessWidget {
                     children: [
                       const Text(
                         "Already have an account? ",
-                        style: TextStyle(color: mainColor),
+                        style: TextStyle(color: AppColor.mainColor),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -99,7 +100,7 @@ class SignUpScreen extends StatelessWidget {
                         },
                         child: const Text(
                           "Sign In",
-                          style: TextStyle(color: mainColor),
+                          style: TextStyle(color: AppColor.mainColor),
                         ),
                       ),
                     ],

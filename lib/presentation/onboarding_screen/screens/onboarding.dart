@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
-
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../constants/colors.dart';
@@ -45,14 +44,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   ),
                   OnBoardingPage(
                     imagePath:
-                        "assets/images/onboarding_images/onboarding_one.json",
+                        "assets/images/onboarding_images/onboarding_two.json",
                     title: "Free Learning Hours.",
                     subtitle:
                         "Get 4 free learning hours every week to grow your skills.",
                   ),
                   OnBoardingPage(
                     imagePath:
-                        "assets/images/onboarding_images/onboarding_one.json",
+                        "assets/images/onboarding_images/onboarding_three.json",
                     title: "Skill Verification.",
                     subtitle:
                         "Take assessments to verify your skills and become a mentor.",
@@ -70,7 +69,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
-                backgroundColor: mainColor,
+                backgroundColor: AppColor.mainColor,
                 padding: const EdgeInsets.all(10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(80),
@@ -83,10 +82,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => SignInScreen()),
-                  );
+                  print("Get Started pressed!");
                 }
               },
               child: Text(
@@ -94,7 +90,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
-                  color: grayColor,
+                  color: Color(0xFFDCDCDC),
                 ),
               ),
             ),
@@ -109,7 +105,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       controller: controller,
       count: 3,
       effect: const ExpandingDotsEffect(
-        activeDotColor: mainColor,
+        activeDotColor: AppColor.mainColor,
         dotHeight: 6,
       ),
     );
@@ -125,7 +121,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          color: mainColor,
+          color: AppColor.mainColor,
         ),
       ),
     );
@@ -160,7 +156,7 @@ class OnBoardingPage extends StatelessWidget {
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: mainColor,
+            color: AppColor.mainColor,
           ),
         ),
         const SizedBox(height: 42),
