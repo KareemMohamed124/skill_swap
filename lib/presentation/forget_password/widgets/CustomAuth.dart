@@ -31,7 +31,7 @@ class CustomAuth extends StatelessWidget {
         width: 361,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: grayColor,
+          color: AppColor.grayColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -43,11 +43,14 @@ class CustomAuth extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: mainColor,
+                color: AppColor.mainColor,
               ),
             ),
             const SizedBox(height: 8),
-            Text(subTitle, style: TextStyle(fontSize: 16, color: mainColor)),
+            Text(
+              subTitle,
+              style: TextStyle(fontSize: 16, color: AppColor.mainColor),
+            ),
             const SizedBox(height: 32),
             childWidget,
 
@@ -57,7 +60,7 @@ class CustomAuth extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: mainColor,
+                  backgroundColor: AppColor.mainColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -65,7 +68,7 @@ class CustomAuth extends StatelessWidget {
                 onPressed: onPressed,
                 child: Text(
                   buttonText,
-                  style: TextStyle(fontSize: 16, color: grayColor),
+                  style: TextStyle(fontSize: 16, color: AppColor.grayColor),
                 ),
               ),
             ),
@@ -79,7 +82,7 @@ class CustomAuth extends StatelessWidget {
                   onTap: onBottomTap,
                   child: Text(
                     bottomActionText,
-                    style: TextStyle(color: mainColor),
+                    style: TextStyle(color: AppColor.mainColor),
                   ),
                 ),
               ],
