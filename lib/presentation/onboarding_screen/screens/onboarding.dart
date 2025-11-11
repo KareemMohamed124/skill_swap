@@ -4,6 +4,8 @@ import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../constants/colors.dart';
+
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
 
@@ -68,7 +70,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
-                backgroundColor: const Color(0xFF246BFE),
+                backgroundColor: mainColor,
                 padding: const EdgeInsets.all(10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(80),
@@ -92,7 +94,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
-                  color: Color(0xFFDCDCDC),
+                  color: grayColor,
                 ),
               ),
             ),
@@ -107,7 +109,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       controller: controller,
       count: 3,
       effect: const ExpandingDotsEffect(
-        activeDotColor: Color(0xFF246BFE),
+        activeDotColor: mainColor,
         dotHeight: 6,
       ),
     );
@@ -123,7 +125,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          color: Color(0xFF246BFE),
+          color: mainColor,
         ),
       ),
     );
@@ -158,7 +160,7 @@ class OnBoardingPage extends StatelessWidget {
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF246BFE),
+            color: mainColor,
           ),
         ),
         const SizedBox(height: 42),

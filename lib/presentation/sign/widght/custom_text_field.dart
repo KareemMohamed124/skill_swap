@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill_swap/presentation/constants/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
@@ -22,7 +23,7 @@ class CustomTextField extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E2A3A),
+            color: blackColor,
           ),
         ),
         const SizedBox(height: 8),
@@ -33,7 +34,7 @@ class CustomTextField extends StatelessWidget {
             hintText: hintText,
             hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
             filled: true,
-            fillColor: Color(0xFFBCD7FF),
+            fillColor: grayColor,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,

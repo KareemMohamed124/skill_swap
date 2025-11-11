@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill_swap/presentation/constants/colors.dart';
 
 class SocialButton extends StatelessWidget {
   final String text;
@@ -10,8 +11,8 @@ class SocialButton extends StatelessWidget {
       child: Container(
         height: 45,
         decoration: BoxDecoration(
-          color: Color(0xffBCD7FF),
-          borderRadius: BorderRadius.circular(12),
+          color: grayColor,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
           child: Text(

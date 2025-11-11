@@ -1,122 +1,142 @@
 import 'package:flutter/material.dart';
+import 'package:skill_swap/presentation/constants/colors.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
 import 'package:skill_swap/presentation/sign/widght/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widght/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widght/custom_text_field.dart';
 import 'package:skill_swap/presentation/sign/widght/social_button.dart';
+import '../../forget_password/screens/forget_password_screen.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final appBar = const CustomAppBar(title: "Sign In");
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      backgroundColor: Color(0xffEEF5FF),
-      appBar: const CustomAppBar(title: "Sign In"),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                "Welcome Back!",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+      backgroundColor: mainColor,
+      appBar: appBar,
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).padding.top,
+          ),
+          child: Container(
+            width: screenWidth,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(32),
+                topRight: Radius.circular(32),
               ),
-              const SizedBox(height: 5),
-              const Text(
-                "Sign in to continue your learning journey",
-                style: TextStyle(color: Colors.black54),
-              ),
-              const SizedBox(height: 30),
-
-              const CustomTextField(
-                labelText: "Email",
-                hintText: "Enter your email",
-              ),
-              const SizedBox(height: 15),
-
-              const CustomTextField(
-                labelText: "Password",
-                hintText: "Enter your password",
-                obscureText: true,
-              ),
-              const SizedBox(height: 10),
-
-              Center(
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Forget Password?",
-                    style: TextStyle(color: Color(0xff1C54F4)),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                const Text(
+                  "Welcome Back!",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-
-              const CustomButton(text: "Sign In"),
-              const SizedBox(height: 20),
-
-              const Row(
-                children: [
-                  Expanded(
-                    child: Divider(thickness: 2, color: Color(0xff142057)),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      "Or continue with",
-                      style: TextStyle(color: Color(0xff142057)),
+                const SizedBox(height: 4),
+                const Text(
+                  "Sign in to continue your learning journey",
+                  style: TextStyle(color: Colors.black54),
+                ),
+                const SizedBox(height: 32),
+                const CustomTextField(
+                  labelText: "Email",
+                  hintText: "Enter your email",
+                ),
+                const SizedBox(height: 16),
+                const CustomTextField(
+                  labelText: "Password",
+                  hintText: "Enter your password",
+                  obscureText: true,
+                ),
+                const SizedBox(height: 32),
+                const CustomButton(text: "Sign In"),
+                const SizedBox(height: 24),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ForgetPassword(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Forget Password?",
+                      style: TextStyle(color: mainColor),
                     ),
                   ),
-                  Expanded(
-                    child: Divider(thickness: 2, color: Color(0xff142057)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SocialButton(text: "Google"),
-                  SizedBox(width: 10),
-                  SocialButton(text: "GitHub"),
-                ],
-              ),
-              const SizedBox(height: 30),
-
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                const SizedBox(height: 24),
+                const Row(
                   children: [
-                    const Text(
-                      "Don’t have an account? ",
-                      style: TextStyle(color: Color(0xff142057)),
+                    Expanded(
+                      child: Divider(thickness: 2, color: mainColor),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const SignUpScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(color: Color(0xff1C54F4)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        "Or continue with",
+                        style: TextStyle(color: mainColor),
                       ),
+                    ),
+                    Expanded(
+                      child: Divider(thickness: 2, color: mainColor),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 32),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SocialButton(text: "Google"),
+                    SizedBox(width: 17),
+                    SocialButton(text: "GitHub"),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Don’t have an account? ",
+                        style: TextStyle(color: mainColor),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const SignUpScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(color: mainColor),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

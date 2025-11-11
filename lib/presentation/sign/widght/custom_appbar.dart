@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 
+import '../../constants/colors.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   const CustomAppBar({super.key, required this.title});
 
   @override
-  Size get preferredSize => const Size.fromHeight(120);
+  Size get preferredSize => const Size.fromHeight(80);
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
-          height: 120,
+          height: 40,
           decoration: const BoxDecoration(
-            color: Color(0xff1C54F4),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(40),
-              bottomRight: Radius.circular(40),
-            ),
+            color: mainColor,
           ),
         ),
         AppBar(
@@ -27,13 +25,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           title: Text(
             title,
             style: const TextStyle(
-              color: Color(0xffFFFFFF),
+              color: grayColor,
               fontSize: 22,
               fontWeight: FontWeight.w600,
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: grayColor),
             onPressed: () => Navigator.pop(context),
           ),
         ),
