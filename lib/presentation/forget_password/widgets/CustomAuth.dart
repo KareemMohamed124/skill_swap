@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/colors.dart';
+
 class CustomAuth extends StatelessWidget {
   final String title;
   final String subTitle;
@@ -20,7 +21,7 @@ class CustomAuth extends StatelessWidget {
     required this.onPressed,
     required this.bottomText,
     required this.bottomActionText,
-    required this.onBottomTap
+    required this.onBottomTap,
   });
 
   @override
@@ -33,7 +34,7 @@ class CustomAuth extends StatelessWidget {
           color: grayColor,
           borderRadius: BorderRadius.circular(16),
         ),
-        child:  Column(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,10 +47,7 @@ class CustomAuth extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              subTitle,
-              style: TextStyle(fontSize: 16, color: mainColor),
-            ),
+            Text(subTitle, style: TextStyle(fontSize: 16, color: mainColor)),
             const SizedBox(height: 32),
             childWidget,
 
@@ -57,7 +55,7 @@ class CustomAuth extends StatelessWidget {
             SizedBox(
               width: 329,
               height: 50,
-              child:  ElevatedButton(
+              child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: mainColor,
                   shape: RoundedRectangleBorder(
@@ -65,10 +63,9 @@ class CustomAuth extends StatelessWidget {
                   ),
                 ),
                 onPressed: onPressed,
-                child:  Text(
+                child: Text(
                   buttonText,
-                  style:
-                  TextStyle(fontSize: 16, color: grayColor),
+                  style: TextStyle(fontSize: 16, color: grayColor),
                 ),
               ),
             ),
@@ -77,13 +74,10 @@ class CustomAuth extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  bottomText,
-                  style: TextStyle(color: Color(0xff142057)),
-                ),
+                Text(bottomText, style: TextStyle(color: Color(0xff142057))),
                 GestureDetector(
                   onTap: onBottomTap,
-                  child:  Text(
+                  child: Text(
                     bottomActionText,
                     style: TextStyle(color: mainColor),
                   ),
