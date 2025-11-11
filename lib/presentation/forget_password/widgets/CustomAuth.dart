@@ -79,7 +79,7 @@ class CustomAuth extends StatelessWidget {
               children: [
                 Text(
                   bottomText,
-                  style: TextStyle(color: Color(0xff142057)),
+                  style: TextStyle(color: mainColor),
                 ),
                 GestureDetector(
                   onTap: onBottomTap,
