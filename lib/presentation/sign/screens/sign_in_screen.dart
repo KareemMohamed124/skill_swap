@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/presentation/constants/colors.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
-import 'package:skill_swap/presentation/sign/widght/custom_appbar.dart';
-import 'package:skill_swap/presentation/sign/widght/custom_button.dart';
-import 'package:skill_swap/presentation/sign/widght/custom_text_field.dart';
-import 'package:skill_swap/presentation/sign/widght/social_button.dart';
+import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
+import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
+import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
+import 'package:skill_swap/presentation/sign/widgets/social_button.dart';
+import '../../../constants/colors.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 
 class SignInScreen extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../constants/colors.dart';
+import '../../../constants/colors.dart';
+import '../../sign/screens/sign_in_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -60,11 +60,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               ),
             ),
 
-            const SizedBox(height: 42),
+            const SizedBox(height: 32),
 
             navagationalBar(),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -82,8 +82,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  print("Get Started pressed!");
-                }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SignInScreen(),
+                    ),
+                  );                }
               },
               child: Text(
                 currentPage == 2 ? "Get Started" : "Next",
@@ -114,8 +118,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Widget skipIntro(BuildContext context) {
     return TextButton(
       onPressed: () {
-        print("Skip pressed!");
-      },
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SignInScreen(),
+          ),
+        );      },
       child: const Text(
         "skip",
         style: TextStyle(

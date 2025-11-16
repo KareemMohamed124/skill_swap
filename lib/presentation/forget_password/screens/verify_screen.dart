@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:skill_swap/presentation/constants/colors.dart';
-import 'package:skill_swap/presentation/forget_password/widgets/CustomAuth.dart';
+import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
+
+import '../../../constants/colors.dart';
 
 class VerifyScreen extends StatefulWidget {
   const VerifyScreen({super.key});

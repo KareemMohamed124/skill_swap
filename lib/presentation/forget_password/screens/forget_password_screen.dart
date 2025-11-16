@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/presentation/constants/colors.dart';
 import 'package:skill_swap/presentation/forget_password/screens/verify_screen.dart';
-import 'package:skill_swap/presentation/forget_password/widgets/CustomAuth.dart';
+import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
+import '../../../constants/colors.dart';
 
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({super.key});
@@ -14,6 +14,8 @@ class ForgetPassword extends StatefulWidget {
 class _ForgetPasswordState extends State<ForgetPassword> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
+
+  String? errorMsg;
 
   @override
   Widget build(BuildContext context) {
@@ -27,40 +29,77 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           key: formKey,
           child: SizedBox(
             width: 329,
-            height: 50,
-            child: TextFormField(
-              controller: emailController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please fill out this field.";
-                }
-                if (!value.contains("@")) {
-                  return "Please enter a valid email.";
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                hintText: "Enter Address",
-                hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
-                filled: true,
-                fillColor: AppColor.grayColor,
-                prefixIcon: const Icon(Icons.email_outlined),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            height: errorMsg == null ? 50 : 66,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: "Enter Address",
+                      filled: true,
+                      fillColor: AppColor.grayColor,
+
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: errorMsg == null ? Colors.grey : Colors.red,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: errorMsg == null ? Colors.grey : Colors.red,
+                          width: 1.5,
+                        ),
+                      ),
+                      errorText: null,
+                    ),
+                    onChanged: (_) {
+                      setState(() {
+                        errorMsg = null;
+                      });
+                    },
+                  ),
                 ),
-              ),
+
+                SizedBox(
+                  height: errorMsg == null ? 0 : 16,
+                  child: errorMsg == null
+                      ? const SizedBox()
+                      : Text(
+                    errorMsg!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
+
         buttonText: "Send Verification Code",
         onPressed: () {
-          if (formKey.currentState!.validate()) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => VerifyScreen()),
-            );
-          }
+          String email = emailController.text;
+
+          setState(() {
+            if (email.isEmpty) {
+              errorMsg = "Please fill out this field.";
+            } else if (!email.contains("@")) {
+              errorMsg = "Please enter a valid email.";
+            } else {
+              errorMsg = null;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => VerifyScreen()),
+              );
+            }
+          });
         },
+
         bottomText: "Remember your password? ",
         bottomActionText: "Sign In",
         onBottomTap: () {
