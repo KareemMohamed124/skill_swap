@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../../data/models/register_response.dart';
+import '../../data/models/register/register_response.dart';
 import 'register_event.dart';
 import 'register_state.dart';
 

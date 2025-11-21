@@ -1,4 +1,4 @@
-import '../../data/models/register_request.dart';
+import '../../data/models/register/register_request.dart';
 
 sealed class RegisterEvent {}
 

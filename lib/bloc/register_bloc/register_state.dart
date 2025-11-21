@@ -1,5 +1,5 @@
-import '../../data/models/register_success_response.dart';
-import '../../data/models/register_error_response.dart';
+import '../../data/models/register/register_success_response.dart';
+import '../../data/models/register/register_error_response.dart';
 
 sealed class RegisterState {}
 

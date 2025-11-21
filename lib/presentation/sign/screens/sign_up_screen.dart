@@ -8,7 +8,7 @@ import '../../../bloc/register_bloc/register_event.dart';
 import '../../../bloc/register_bloc/register_state.dart';
 import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
-import '../../../data/models/register_request.dart';
+import '../../../data/models/register/register_request.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

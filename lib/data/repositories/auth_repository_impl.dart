@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import '../../data/models/register_request.dart';
-import '../../data/models/register_error_response.dart';
+import '../models/register/register_request.dart';
+import '../models/register/register_error_response.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../models/register_response.dart';
+import '../models/register/register_response.dart';
 import '../web_services/auth_api.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
