@@ -68,7 +68,7 @@ class SignInScreen extends StatelessWidget {
                   obscureText: true,
                 ),
                 const SizedBox(height: 32),
-                const CustomButton(text: "Sign In"),
+                 CustomButton(text: "Sign In",),
                 const SizedBox(height: 24),
                 Center(
                   child: TextButton(

@@ -4,17 +4,27 @@ import '../../../constants/colors.dart';
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
+  final Color colorButton;
+  final Color colorText;
+  final double widthButton;
 
-  const CustomButton({super.key, required this.text, this.onPressed});
+  const CustomButton({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.colorButton = AppColor.mainColor,
+    this.colorText = AppColor.whiteColor,
+    this.widthButton = double.infinity
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: widthButton,
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColor.mainColor,
+          backgroundColor: colorButton,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -22,8 +32,8 @@ class CustomButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           text,
-          style: const TextStyle(
-            color: Colors.white,
+          style:  TextStyle(
+            color: colorText,
             fontWeight: FontWeight.bold,
           ),
         ),
