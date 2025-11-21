@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/start_screen.dart';
-import 'package:skill_swap/presentation/select_skills/select_skills.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
