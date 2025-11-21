@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dart';
 
-void main() {
+import 'dependency_injection/injection.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initDependencies();
   runApp(const MyApp());
 }
 

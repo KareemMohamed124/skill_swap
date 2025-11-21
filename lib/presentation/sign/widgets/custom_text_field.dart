@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
-
 import '../../../constants/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
   final String hintText;
   final bool obscureText;
+  final TextEditingController controller;
+  final String? errorText;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
     required this.labelText,
     required this.hintText,
     this.obscureText = false,
+    required this.controller,
+    this.errorText,
+    this.validator,
   });
 
   @override
@@ -28,9 +33,10 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-
-        TextField(
+        TextFormField(
+          controller: controller,
           obscureText: obscureText,
+          validator: validator, // use validator for local validation
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
@@ -44,6 +50,7 @@ class CustomTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
+            errorText: errorText, // backend error
           ),
         ),
       ],

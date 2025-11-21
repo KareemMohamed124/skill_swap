@@ -14,16 +14,27 @@ dependencies:
   flutter_native_splash: ^2.3.2
   smooth_page_indicator: ^1.1.0
   carousel_slider_plus: ^7.1.1
+  flutter_bloc: ^9.1.1
   iconsax: 0.0.8
   cupertino_icons: ^1.0.8
   get: ^4.6.5
   lottie: ^3.1.0
   intl_phone_field: ^3.2.0
+  dio: ^5.4.0
+  retrofit: ^4.1.0
+  json_annotation: ^4.9.0
+  get_it: ^8.1.0
+  injectable: ^2.2.0
+  bloc: ^9.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  build_runner: ^2.4.0
+  json_serializable: ^6.8.0
+  retrofit_generator: ^8.0.0
+  injectable_generator: ^2.2.0
 
 flutter:
   uses-material-design: true

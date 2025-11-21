@@ -14,7 +14,8 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appBar = const CustomAppBar(title: "Sign In");
     final screenWidth = MediaQuery.of(context).size.width;
-
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
     return Scaffold(
       backgroundColor: AppColor.mainColor,
       appBar: appBar,
@@ -54,12 +55,14 @@ class SignInScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.black54),
                 ),
                 const SizedBox(height: 32),
-                const CustomTextField(
+                CustomTextField(
+                  controller: emailController,
                   labelText: "Email",
                   hintText: "Enter your email",
                 ),
                 const SizedBox(height: 16),
-                const CustomTextField(
+                CustomTextField(
+                  controller: passwordController,
                   labelText: "Password",
                   hintText: "Enter your password",
                   obscureText: true,

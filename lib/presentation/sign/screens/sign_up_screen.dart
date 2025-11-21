@@ -1,114 +1,208 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
-
+import '../../../bloc/register_bloc/register_bloc.dart';
+import '../../../bloc/register_bloc/register_event.dart';
+import '../../../bloc/register_bloc/register_state.dart';
 import '../../../constants/colors.dart';
+import '../../../dependency_injection/injection.dart';
+import '../../../data/models/register_request.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  String? nameError;
+  String? emailError;
+  String? passwordError;
+  String? confirmPasswordError;
 
   @override
   Widget build(BuildContext context) {
     final appBar = const CustomAppBar(title: "Sign Up");
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: AppColor.mainColor,
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight:
-                MediaQuery.of(context).size.height -
-                appBar.preferredSize.height -
-                MediaQuery.of(context).padding.top,
-          ),
-          child: Container(
-            width: screenWidth,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32),
-                topRight: Radius.circular(32),
-              ),
+    return BlocProvider(
+      create: (_) => sl<RegisterBloc>(),
+      child: Scaffold(
+        backgroundColor: AppColor.mainColor,
+        appBar: appBar,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight:
+                  MediaQuery.of(context).size.height -
+                  appBar.preferredSize.height -
+                  MediaQuery.of(context).padding.top,
             ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Create Account",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+            child: Container(
+              width: screenWidth,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  "Join us and start your learning journey today!",
-                  style: TextStyle(color: Colors.black54),
-                ),
-                const SizedBox(height: 32),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: BlocConsumer<RegisterBloc, RegisterState>(
+                listener: (context, state) {
+                  if (state is RegisterFailureState) {
+                    setState(() {
+                      nameError = null;
+                      emailError = null;
+                      passwordError = null;
+                      confirmPasswordError = null;
 
-                const CustomTextField(
-                  labelText: "Full Name",
-                  hintText: "Enter your full name",
-                ),
-                const SizedBox(height: 16),
-
-                const CustomTextField(
-                  labelText: "Email",
-                  hintText: "Enter your email",
-                ),
-                const SizedBox(height: 16),
-
-                const CustomTextField(
-                  labelText: "Password",
-                  hintText: "Create a password",
-                  obscureText: true,
-                ),
-                const SizedBox(height: 15),
-
-                const CustomTextField(
-                  labelText: "Confirm Password",
-                  hintText: "Confirm your password",
-                  obscureText: true,
-                ),
-                const SizedBox(height: 32),
-
-                const CustomButton(text: "Sign Up"),
-                const SizedBox(height: 32),
-
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Already have an account? ",
-                        style: TextStyle(color: AppColor.mainColor),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const SignInScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Sign In",
-                          style: TextStyle(color: AppColor.mainColor),
+                      final validationErrors = state.error.validationErrors;
+                      if (validationErrors != null) {
+                        for (var err in validationErrors) {
+                          switch (err.field) {
+                            case "name":
+                              nameError = err.message;
+                              break;
+                            case "email":
+                              emailError = err.message;
+                              break;
+                            case "password":
+                              passwordError = err.message;
+                              break;
+                            case "confirmPassword":
+                              confirmPasswordError = err.message;
+                              break;
+                          }
+                        }
+                      }
+                    });
+                  } else if (state is RegisterSuccessState) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.data.message)));
+                  }
+                },
+                builder: (context, state) {
+                  return Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Create Account",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Join us and start your learning journey today!",
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        const SizedBox(height: 32),
+
+                        CustomTextField(
+                          controller: nameController,
+                          labelText: "Full Name",
+                          hintText: "Enter your full name",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Name is required";
+                            }
+                            return nameError;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: emailController,
+                          labelText: "Email",
+                          hintText: "Enter your email",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Email is required";
+                            }
+                            if (!RegExp(
+                              r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                            ).hasMatch(value)) {
+                              return "Enter a valid email";
+                            }
+                            return emailError;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: passwordController,
+                          labelText: "Password",
+                          hintText: "Create a password",
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Password is required";
+                            }
+                            if (value.length < 8) {
+                              return "Password must be at least 8 characters";
+                            }
+                            return passwordError;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          controller: confirmPasswordController,
+                          labelText: "Confirm Password",
+                          hintText: "Confirm your password",
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Confirm password is required";
+                            }
+                            if (value != passwordController.text) {
+                              return "Passwords do not match";
+                            }
+                            return confirmPasswordError;
+                          },
+                        ),
+                        const SizedBox(height: 32),
+
+                        CustomButton(
+                          text:
+                              state is RegisterLoading
+                                  ? "Registering..."
+                                  : "Sign Up",
+                          onPressed:
+                              state is RegisterLoading
+                                  ? null
+                                  : () {
+                                    if (formKey.currentState!.validate()) {
+                                      final request = RegisterRequest(
+                                        name: nameController.text,
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                        confirmPassword:
+                                            confirmPasswordController.text,
+                                      );
+                                      context.read<RegisterBloc>().add(
+                                        RegisterSubmit(request),
+                                      );
+                                    }
+                                  },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
