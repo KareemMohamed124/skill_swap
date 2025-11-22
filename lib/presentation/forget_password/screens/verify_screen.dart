@@ -23,12 +23,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
   late Timer timer;
   String? codeError;
 
-  // -----------------------------
-  // 🔥 إضافة الخانات و الـ FocusNodes
-  // -----------------------------
+
   List<String> codeDigits = List.filled(6, "");
   List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
-  // -----------------------------
 
   void startTimer() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
@@ -112,11 +109,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
                             border: InputBorder.none,
                           ),
                           onChanged: (value) {
-                            // حفظ الرقم
                             if (value.isNotEmpty) {
                               codeDigits[index] = value;
 
-                              // فوكس للخانة اللي بعدها
                               if (index < 5) {
                                 FocusScope.of(context)
                                     .requestFocus(focusNodes[index + 1]);
@@ -126,7 +121,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
                             } else {
                               codeDigits[index] = "";
 
-                              // رجوع للخانة اللي قبلها لو مسح
                               if (index > 0) {
                                 FocusScope.of(context)
                                     .requestFocus(focusNodes[index - 1]);
@@ -138,7 +132,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     ),
                   ),
 
-                  // لو فيه Error - اظهره
                   if (codeError != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 6),

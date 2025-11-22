@@ -5,7 +5,7 @@ import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import '../../../bloc/send_code_bloc/send_code_bloc.dart';
 import '../../../constants/colors.dart';
-import '../../../data/models/send_code/sendcode_request.dart';
+import '../../../data/models/send_code/send_code_request.dart';
 import '../../../dependency_injection/injection.dart';
 
 class ForgetPassword extends StatefulWidget {

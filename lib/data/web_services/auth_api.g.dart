@@ -51,7 +51,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = RegisterSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-     // errorLogger?.logError(e, s, _options);
+      //errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
@@ -119,7 +119,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = VerifyCodeSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options);
+     // errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;

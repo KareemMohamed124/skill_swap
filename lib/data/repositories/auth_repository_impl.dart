@@ -5,9 +5,9 @@ import '../models/register/register_request.dart';
 import '../models/register/register_error_response.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../models/register/register_response.dart';
-import '../models/send_code/sendcode_error_response.dart';
-import '../models/send_code/sendcode_request.dart';
-import '../models/send_code/sendcode_response.dart';
+import '../models/send_code/send_code_error_response.dart';
+import '../models/send_code/send_code_request.dart';
+import '../models/send_code/send_code_response.dart';
 import '../models/verify_code/verify_code_error_response.dart';
 import '../web_services/auth_api.dart';
 

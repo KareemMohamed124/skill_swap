@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../data/models/send_code/sendcode_error_response.dart';
-import '../../data/models/send_code/sendcode_request.dart';
-import '../../data/models/send_code/sendcode_response.dart';
-import '../../data/models/send_code/sendcode_success_response.dart';
+import '../../data/models/send_code/send_code_error_response.dart';
+import '../../data/models/send_code/send_code_request.dart';
+import '../../data/models/send_code/send_code_response.dart';
+import '../../data/models/send_code/send_code_success_response.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 part 'send_code_event.dart';
