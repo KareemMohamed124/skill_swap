@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../constants/colors.dart';
 
 class CustomAuth extends StatelessWidget {
@@ -26,6 +25,8 @@ class CustomAuth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isChildSizedBox = childWidget is SizedBox;
+
     return Center(
       child: Container(
         width: 361,
@@ -53,8 +54,8 @@ class CustomAuth extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             childWidget,
+            if (!isChildSizedBox) const SizedBox(height: 16),
 
-            const SizedBox(height: 16),
             SizedBox(
               width: 329,
               height: 50,

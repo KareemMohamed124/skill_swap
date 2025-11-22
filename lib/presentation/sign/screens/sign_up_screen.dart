@@ -9,6 +9,7 @@ import '../../../bloc/register_bloc/register_state.dart';
 import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
 import '../../../data/models/register/register_request.dart';
+import '../../forget_password/screens/email_verification_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -194,6 +195,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       );
                                       context.read<RegisterBloc>().add(
                                         RegisterSubmit(request),
+                                      );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) =>  EmailVerificationScreen(email: emailController.text,)),
                                       );
                                     }
                                   },
