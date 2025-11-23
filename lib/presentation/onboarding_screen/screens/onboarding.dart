@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/start_screen.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../../constants/colors.dart';
-import '../../sign/screens/sign_in_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -86,14 +83,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 } else {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const StartScreen(),
-                    ),
-                  );                }
+                    MaterialPageRoute(builder: (_) => const StartScreen()),
+                  );
+                }
               },
               child: Text(
-               // currentPage == 2 ?
-                 "Next",
+                // currentPage == 2 ?
+                "Next",
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
@@ -123,10 +119,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const StartScreen(),
-          ),
-        );      },
+          MaterialPageRoute(builder: (_) => const StartScreen()),
+        );
+      },
       child: const Text(
         "skip",
         style: TextStyle(
