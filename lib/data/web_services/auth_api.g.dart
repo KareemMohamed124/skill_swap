@@ -12,9 +12,9 @@ class _AuthApi implements AuthApi {
   _AuthApi(
     this._dio, {
     this.baseUrl,
-   // this.errorLogger,
+    //this.errorLogger,
   }) {
-    baseUrl ??= 'https://skill-swaapp.vercel.app/api/auth/';
+    baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
   }
 
   final Dio _dio;
@@ -51,7 +51,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = RegisterSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options);
+    //  errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
@@ -65,13 +65,13 @@ class _AuthApi implements AuthApi {
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
     final _options = _setStreamType<SendCodeSuccessResponse>(Options(
-      method: 'PATCH',
+      method: 'POST',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'sendCode/',
+          'password/forgot/',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -99,13 +99,13 @@ class _AuthApi implements AuthApi {
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
     final _options = _setStreamType<VerifyCodeSuccessResponse>(Options(
-      method: 'PATCH',
+      method: 'POST',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          'forgetPassword/',
+          'password/verify-code/',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -119,7 +119,42 @@ class _AuthApi implements AuthApi {
     try {
       _value = VerifyCodeSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-     // errorLogger?.logError(e, s, _options);
+      //errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<ResetPasswordSuccessResponse> resetPassword(
+      ResetPasswordRequest body) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
+    final _options = _setStreamType<ResetPasswordSuccessResponse>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'password/reset/',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ResetPasswordSuccessResponse _value;
+    try {
+      _value = ResetPasswordSuccessResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      //errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;

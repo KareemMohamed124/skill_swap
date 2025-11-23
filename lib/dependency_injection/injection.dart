@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:skill_swap/bloc/reset_password_bloc/reset_password_bloc.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
@@ -28,4 +29,6 @@ Future<void> initDependencies() async {
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
 
   sl.registerFactory<VerifyCodeBloc>(() => VerifyCodeBloc(sl<AuthRepository>()));
+  
+  sl.registerFactory<ResetPasswordBloc>(() => ResetPasswordBloc(sl<AuthRepository>()));
 }

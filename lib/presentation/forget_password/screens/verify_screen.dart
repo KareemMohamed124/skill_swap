@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
+import 'package:skill_swap/presentation/forget_password/screens/reset_password_screen.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 
@@ -22,7 +23,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
   int secondsRemaining = 40;
   late Timer timer;
   String? codeError;
-
 
   List<String> codeDigits = List.filled(6, "");
   List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
@@ -56,26 +56,23 @@ class _VerifyScreenState extends State<VerifyScreen> {
           listener: (context, state) {
             if (state is VerifyCodeFailureState) {
               setState(() {
-                codeError = null;
-                final validationErrors = state.error.validationErrors;
-                if (validationErrors != null) {
-                  for (var err in validationErrors) {
-                    if (err.field.toLowerCase() == "forgetCode") {
-                      codeError = err.message;
-                    }
-                  }
-                } else {
-                  codeError = state.error.message;
-                }
+                codeError = state.error.message;
               });
             } else if (state is VerifyCodeSuccessState) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.response.message)),
               );
 
+              final code = codeDigits.join();
+
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SignInScreen()),
+                MaterialPageRoute(
+                  builder: (context) => ResetPasswordScreen(
+                    email: widget.email,
+                    code: code,
+                  ),
+                ),
               );
             }
           },
@@ -142,25 +139,27 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     ),
                 ],
               ),
-              buttonText: 'Verify',
-              onPressed: () {
-                final code = codeDigits.join();
-
-                if (code.length != 6 || code.contains("")) {
+              buttonText:
+              state is VerifyCodeLoading ? 'Verification' : 'Verify',
+              onPressed: state is VerifyCodeLoading
+                  ? null
+                  : () {
+                // ↓↓↓ إصلاح التحقق من الـ 6 أرقام ↓↓↓
+                if (codeDigits.any((digit) => digit.isEmpty)) {
                   setState(() {
                     codeError = "Please enter all 6 digits";
                   });
                   return;
                 }
 
-                // context.read<VerifyCodeBloc>().add(
-                //   SubmitVerify(
-                //     email: widget.email,
-                //     code: code,
-                //     password: "",
-                //     confirmPassword: ""
-                //   ),
-                // );
+                final code = codeDigits.join();
+
+                context.read<VerifyCodeBloc>().add(
+                  SubmitVerify(
+                    widget.email,
+                    code,
+                  ),
+                );
               },
               bottomText: isResend
                   ? "Didn't receive the code? "

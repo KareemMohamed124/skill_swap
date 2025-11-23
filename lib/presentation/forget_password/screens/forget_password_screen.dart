@@ -32,18 +32,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           listener: (context, state) {
             if (state is SendCodeFailureState) {
               setState(() {
-                emailError = null;
-                final validationErrors = state.error.validationErrors;
-                if (validationErrors != null) {
-                  for (var err in validationErrors) {
-                    if (err.field.toLowerCase() == "email") {
-                      emailError = err.message;
-                    }
-                  }
-                } else {
                   emailError = state.error.message;
-                }
-
               });
             }
 
@@ -51,10 +40,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.response.message)),
               );
-
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => VerifyScreen(email: emailController.toString(),)),
+                MaterialPageRoute(builder: (context) => VerifyScreen(email: emailController.text.trim(),)),
               );
             }
           },
@@ -114,16 +102,20 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 ),
               ),
 
-              buttonText: "Send Verification Code",
-              onPressed: () {
+              buttonText:  state is SendCodeLoading
+              ? "Verification..." : "Send Verification Code",
+              onPressed:     state is SendCodeLoading
+              ? null : () {
                 String email = emailController.text.trim();
 
-                if (email.isEmpty) {
+                if (email.isEmpty || email == null) {
                   setState(() {
                     emailError = "Please fill out this field.";
                   });
                   return;
-                } else if (!email.contains("@")) {
+                } else if (!RegExp(
+                  r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                ).hasMatch(email)) {
                   setState(() {
                     emailError = "Please enter a valid email.";
                   });

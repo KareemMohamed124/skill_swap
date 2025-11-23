@@ -1,4 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:skill_swap/data/models/reset_password/reset_password_error_response.dart';
+import 'package:skill_swap/data/models/reset_password/reset_password_request.dart';
+import 'package:skill_swap/data/models/reset_password/reset_password_response.dart';
+import 'package:skill_swap/data/models/reset_password/reset_password_success_response.dart';
 import 'package:skill_swap/data/models/verify_code/verify_code_request.dart';
 import 'package:skill_swap/data/models/verify_code/verify_code_response.dart';
 import '../models/register/register_request.dart';
@@ -40,7 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
    try{
      final response = await api.sendCode(request);
 
-     if(response.message == "Resend Verification Code") {
+     if(response.message == "Verification Code Sent Successfully") {
        return SendCodeSuccess(response);
      }
      return SendCodeFailure(SendCodeErrorResponse(message: response.message));
@@ -59,7 +63,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try{
       final response = await api.verifyCode(request);
 
-      if(response.message == "Resend Verification Code") {
+      if(response.message == "Code Verified Successfully") {
         return VerifyCodeSuccess(response);
       }
       return VerifyCodeFailure(VerifyCodeErrorResponse(message: response.message));
@@ -70,6 +74,23 @@ class AuthRepositoryImpl implements AuthRepository {
     catch(e){
       return  VerifyCodeFailure(VerifyCodeErrorResponse(message: e.toString()));
     }
+  }
+
+  @override
+  Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request) async{
+   try {
+     final response = await api.resetPassword(request);
+
+     if(response.message == 'Password Changed Successfully') {
+       return ResetPasswordSuccess(response);
+     }
+     return ResetPasswordFailure(ResetPasswordErrorResponse(message: response.message));
+   }  on DioException catch (e){
+     return ResetPasswordFailure(ResetPasswordErrorResponse(message: e.message ?? "Network Error"));
+   }
+   catch(e){
+     return  ResetPasswordFailure(ResetPasswordErrorResponse(message: e.toString()));
+   }
   }
 
 }

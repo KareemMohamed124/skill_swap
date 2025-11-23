@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/data/models/reset_password/reset_password_request.dart';
+import '../../../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../../../constants/colors.dart';
+import '../../../dependency_injection/injection.dart';
 import '../../sign/widgets/custom_appbar.dart';
 import '../../sign/widgets/custom_button.dart';
 import '../../sign/widgets/custom_text_field.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  final String email;
+  final String code;
+  const ResetPasswordScreen({super.key, required this.email, required this.code});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -15,8 +21,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  String? passwordError;
+  String? confirmPasswordError;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -25,10 +31,40 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final appBar = const CustomAppBar(title: "Reset Password");
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
+    return BlocProvider(
+  create: (context) => sl<ResetPasswordBloc>(),
+  child: Scaffold(
       backgroundColor: AppColor.mainColor,
       appBar: appBar,
-      body: SingleChildScrollView(
+      body: BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
+  listener: (context, state) {
+    if (state is ResetPasswordFailureState) {
+      setState(() {
+        passwordError = null;
+        confirmPasswordError = null;
+
+        final validationErrors = state.error.validationErrors;
+        if (validationErrors != null) {
+          for (var err in validationErrors) {
+            switch (err.field) {
+              case "password":
+                passwordError = err.message;
+                break;
+              case "confirmPassword":
+                confirmPasswordError = err.message;
+                break;
+            }
+          }
+        }
+      });
+    } else if (state is ResetPasswordSuccessState) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(state.data.message)));
+    }
+  },
+  builder: (context, state) {
+    return SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: MediaQuery.of(context).size.height -
@@ -71,17 +107,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     controller: newPasswordController,
                     labelText: "New Password",
                     hintText: "Enter new password",
-                    obscureText: !_isPasswordVisible,
-                    // suffixIcon: IconButton(
-                    //   icon: Icon(_isPasswordVisible
-                    //       ? Icons.visibility
-                    //       : Icons.visibility_off),
-                    //   onPressed: () {
-                    //     setState(() {
-                    //       _isPasswordVisible = !_isPasswordVisible;
-                    //     });
-                    //   },
-                    // ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Password is required";
+                      }
+                      if (value.length < 8) {
+                        return "Password must be at least 8 characters";
+                      }
+                      return passwordError;
+                    },
+
                   ),
                   const SizedBox(height: 16),
 
@@ -90,41 +125,39 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     controller: confirmPasswordController,
                     labelText: "Confirm Password",
                     hintText: "Re-enter password",
-                    obscureText: !_isConfirmPasswordVisible,
-                    // suffixIcon: IconButton(
-                    //   icon: Icon(_isConfirmPasswordVisible
-                    //       ? Icons.visibility
-                    //       : Icons.visibility_off),
-                    //   onPressed: () {
-                    //     setState(() {
-                    //       _isConfirmPasswordVisible =
-                    //       !_isConfirmPasswordVisible;
-                    //     });
-                    //   },
-                    // ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Confirm password is required";
+                      }
+                      if (value != newPasswordController.text) {
+                        return "Passwords do not match";
+                      }
+                      return confirmPasswordError;
+                    },
+
                   ),
                   const SizedBox(height: 32),
 
                   /// Confirm Button
                   CustomButton(
-                    text: "Confirm",
-                    onPressed: () {
+                    text: state is ResetPasswordLoading ? "updating" : "Confirm",
+                    onPressed: state is ResetPasswordLoading ? null : () {
                       if (_formKey.currentState!.validate()) {
-                        if (newPasswordController.text !=
-                            confirmPasswordController.text) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Passwords do not match"),
-                            ),
-                          );
-                          return;
-                        }
-                        // هنا هتنادي API لتحديث الباسورد
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Password updated successfully"),
-                          ),
+                        final request = ResetPasswordRequest(
+                            email: widget.email,
+                            forgetCode: widget.code,
+                            password: newPasswordController.text,
+                            confirmPassword: confirmPasswordController.text
                         );
+                        context.read<ResetPasswordBloc>().add(
+                          ConfirmSubmit(request),
+                        );
+
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   const SnackBar(
+                        //     content: Text("Password updated successfully"),
+                        //   ),
+                        // );
                       }
                     },
                   ),
@@ -133,7 +166,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
+  },
+),
+    ),
+);
   }
 }

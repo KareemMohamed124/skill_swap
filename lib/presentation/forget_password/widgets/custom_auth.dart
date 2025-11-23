@@ -6,10 +6,10 @@ class CustomAuth extends StatelessWidget {
   final String subTitle;
   final Widget childWidget;
   final String buttonText;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String bottomText;
   final String bottomActionText;
-  final VoidCallback onBottomTap;
+  final VoidCallback? onBottomTap;
 
   const CustomAuth({
     super.key,
