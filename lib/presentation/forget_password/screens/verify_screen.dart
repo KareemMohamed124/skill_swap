@@ -144,12 +144,11 @@ class _VerifyScreenState extends State<VerifyScreen> {
               onPressed: state is VerifyCodeLoading
                   ? null
                   : () {
-                // ↓↓↓ إصلاح التحقق من الـ 6 أرقام ↓↓↓
                 if (codeDigits.any((digit) => digit.isEmpty)) {
                   setState(() {
                     codeError = "Please enter all 6 digits";
                   });
-                  return;
+                  return ;
                 }
 
                 final code = codeDigits.join();
