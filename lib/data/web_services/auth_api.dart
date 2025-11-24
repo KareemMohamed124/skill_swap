@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
+import '../models/login/login_request.dart';
+import '../models/login/login_success_response_new.dart';
 import '../models/register/register_request.dart';
 import '../models/register/register_success_response.dart';
 import '../models/reset_password/reset_password_request.dart';

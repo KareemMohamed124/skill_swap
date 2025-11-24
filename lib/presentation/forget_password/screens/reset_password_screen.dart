@@ -110,8 +110,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Password is required";
-                      }
-                      if (value.length < 8) {
+                      } else if (!RegExp(
+                        r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+                      ).hasMatch(value)) {
+                        return "Password must contain uppercase, lowercase, and a number";
+                      } else if (value.length < 8) {
                         return "Password must be at least 8 characters";
                       }
                       return passwordError;

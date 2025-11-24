@@ -12,7 +12,7 @@ class _AuthApi implements AuthApi {
   _AuthApi(
     this._dio, {
     this.baseUrl,
-    //this.errorLogger,
+  //  this.errorLogger,
   }) {
     baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
   }
@@ -21,7 +21,7 @@ class _AuthApi implements AuthApi {
 
   String? baseUrl;
 
- // final ParseErrorLogger? errorLogger;
+  //final ParseErrorLogger? errorLogger;
 
   @override
   Future<RegisterSuccessResponse> register(RegisterRequest body) async {
@@ -52,6 +52,40 @@ class _AuthApi implements AuthApi {
       _value = RegisterSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
     //  errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<LoginSuccessResponseNew> login(LoginRequest body) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
+    final _options = _setStreamType<LoginSuccessResponseNew>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'login/',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late LoginSuccessResponseNew _value;
+    try {
+      _value = LoginSuccessResponseNew.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      //errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;

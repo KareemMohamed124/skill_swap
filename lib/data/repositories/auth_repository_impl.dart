@@ -5,6 +5,9 @@ import 'package:skill_swap/data/models/reset_password/reset_password_response.da
 import 'package:skill_swap/data/models/reset_password/reset_password_success_response.dart';
 import 'package:skill_swap/data/models/verify_code/verify_code_request.dart';
 import 'package:skill_swap/data/models/verify_code/verify_code_response.dart';
+import '../models/login/login_error_response.dart';
+import '../models/login/login_request.dart';
+import '../models/login/login_response.dart';
 import '../models/register/register_request.dart';
 import '../models/register/register_error_response.dart';
 import '../../domain/repositories/auth_repository.dart';

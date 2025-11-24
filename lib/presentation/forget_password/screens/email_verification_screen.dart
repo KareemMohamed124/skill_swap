@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import '../../../constants/colors.dart';
+import '../../select_skills/select_track.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
@@ -37,7 +38,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   void goNextPage() {
-   print('Go to home');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SelectTrack()),
+    );
   }
 
   @override
@@ -56,10 +60,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         childWidget: const SizedBox(),
         buttonText: "Skip",
         onPressed: goNextPage,
-        bottomText: isResend
-            ? "Didn't receive the email? "
-            : "Resend email in 00:${secondsRemaining.toString().padLeft(2, '0')}",
-        bottomActionText: isResend ? 'Resend' : '',
+        bottomText: "00:${secondsRemaining.toString().padLeft(2, '0')}",
+        bottomActionText:  '',
         onBottomTap: isResend
             ? () {
           setState(() {
@@ -67,9 +69,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             isResend = false;
           });
           startTimer();
-          // هنا نعمل استدعاء API لإعادة إرسال البريد
         }
-            : () {},
+            : () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SelectTrack()),
+          );
+        },
       ),
     );
   }

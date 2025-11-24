@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/presentation/forget_password/screens/email_verification_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
@@ -7,9 +8,8 @@ import '../../../bloc/register_bloc/register_bloc.dart';
 import '../../../bloc/register_bloc/register_event.dart';
 import '../../../bloc/register_bloc/register_state.dart';
 import '../../../constants/colors.dart';
-import '../../../dependency_injection/injection.dart';
 import '../../../data/models/register/register_request.dart';
-import '../../forget_password/screens/email_verification_screen.dart';
+import '../../../dependency_injection/injection.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -44,7 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight:
-                  MediaQuery.of(context).size.height -
+              MediaQuery.of(context).size.height -
                   appBar.preferredSize.height -
                   MediaQuery.of(context).padding.top,
             ),
@@ -91,6 +91,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(state.data.message)));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => EmailVerificationScreen(email: emailController.text,)
+                      ),
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -191,30 +198,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                         CustomButton(
                           text:
-                              state is RegisterLoading
-                                  ? "Registering..."
-                                  : "Sign Up",
+                          state is RegisterLoading
+                              ? "Registering..."
+                              : "Sign Up",
                           onPressed:
-                              state is RegisterLoading
-                                  ? null
-                                  : () {
-                                    if (formKey.currentState!.validate()) {
-                                      final request = RegisterRequest(
-                                        name: nameController.text,
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                        confirmPassword:
-                                            confirmPasswordController.text,
-                                      );
-                                      context.read<RegisterBloc>().add(
-                                        RegisterSubmit(request),
-                                      );
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) =>  EmailVerificationScreen(email: emailController.text,)),
-                                      );
-                                    }
-                                  },
+                          state is RegisterLoading
+                              ? null
+                              : () {
+                            if (formKey.currentState!.validate()) {
+                              final request = RegisterRequest(
+                                name: nameController.text,
+                                email: emailController.text,
+                                password: passwordController.text,
+                                confirmPassword:
+                                confirmPasswordController.text,
+                              );
+                              context.read<RegisterBloc>().add(
+                                RegisterSubmit(request),
+                              );
+                            }
+                          },
                         ),
                       ],
                     ),

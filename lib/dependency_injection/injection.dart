@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:skill_swap/bloc/reset_password_bloc/reset_password_bloc.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
+import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
 import '../data/repositories/auth_repository_impl.dart';
