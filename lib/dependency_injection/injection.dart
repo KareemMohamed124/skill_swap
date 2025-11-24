@@ -26,6 +26,8 @@ Future<void> initDependencies() async {
   // Bloc
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
 
+  sl.registerFactory<LoginBloc>(() => LoginBloc(sl<AuthRepository>()));
+
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
 
   sl.registerFactory<VerifyCodeBloc>(() => VerifyCodeBloc(sl<AuthRepository>()));

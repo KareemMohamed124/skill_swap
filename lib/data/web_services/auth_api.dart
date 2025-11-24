@@ -17,6 +17,8 @@ abstract class AuthApi {
 
   @POST("register/")
   Future<RegisterSuccessResponse> register(@Body() RegisterRequest body);
+  @POST("login/")
+  Future<LoginSuccessResponseNew> login(@Body() LoginRequest body);
    @POST("password/forgot/")
   Future<SendCodeSuccessResponse> sendCode(@Body() SendCodeRequest body);
   @POST("password/verify-code/")

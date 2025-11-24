@@ -13,6 +13,7 @@ import '../../data/models/verify_code/verify_code_response.dart';
 
 abstract class AuthRepository {
   Future<RegisterResponse> register(RegisterRequest request);
+  Future<LoginResponse> login(LoginRequest request);
   Future<SendCodeResponse> sendCode(SendCodeRequest request);
   Future<VerifyCodeResponse> verifyCode(VerifyCodeRequest request);
   Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request);

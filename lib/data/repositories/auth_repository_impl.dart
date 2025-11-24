@@ -38,6 +38,19 @@ class AuthRepositoryImpl implements AuthRepository {
       return RegisterFailure(RegisterErrorResponse(message: e.toString()));
     }
   }
+  @override
+  Future<LoginResponse> login(LoginRequest request) async {
+    try {
+      final response = await api.login(request);
+      return LoginSuccess(response);
+    } on DioException catch (e) {
+      return LoginFailure(
+        LoginErrorResponse(message: e.message ?? "Network Error"),
+      );
+    } catch (e) {
+      return LoginFailure(LoginErrorResponse(message: e.toString()));
+    }
+  }
 
   @override
   Future<SendCodeResponse> sendCode(SendCodeRequest request) async{
