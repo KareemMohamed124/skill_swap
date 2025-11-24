@@ -34,79 +34,144 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return RegisterFailure(RegisterErrorResponse(message: response.message));
     } on DioException catch (e) {
-      return RegisterFailure(
-        RegisterErrorResponse(message: e.message ?? "Network Error"),
-      );
+      String msg = "Network Error";
+      try {
+        final data = e.response?.data;
+        if (data != null) {
+          if (data is Map && data['message'] != null) {
+            msg = data['message'].toString();
+          } else if (data is String) {
+            msg = data;
+          }
+        } else if (e.message != null) {
+          msg = e.message!;
+        }
+      } catch (_) {
+        msg = e.message ?? "Network Error";
+      }
+      return RegisterFailure(RegisterErrorResponse(message: msg));
     } catch (e) {
       return RegisterFailure(RegisterErrorResponse(message: e.toString()));
     }
   }
+
   @override
   Future<LoginResponse> login(LoginRequest request) async {
     try {
       final response = await api.login(request);
       return LoginSuccess(response);
     } on DioException catch (e) {
-      return LoginFailure(
-        LoginErrorResponse(message: e.message ?? "Network Error"),
-      );
+      String msg = "Network Error";
+      try {
+        final data = e.response?.data;
+        if (data != null) {
+          if (data is Map && data['message'] != null) {
+            msg = data['message'].toString();
+          } else if (data is String) {
+            msg = data;
+          }
+        } else if (e.message != null) {
+          msg = e.message!;
+        }
+      } catch (_) {
+        msg = e.message ?? "Network Error";
+      }
+      return LoginFailure(LoginErrorResponse(message: msg));
     } catch (e) {
       return LoginFailure(LoginErrorResponse(message: e.toString()));
     }
   }
 
   @override
-  Future<SendCodeResponse> sendCode(SendCodeRequest request) async{
-   try{
-     final response = await api.sendCode(request);
+  Future<SendCodeResponse> sendCode(SendCodeRequest request) async {
+    try {
+      final response = await api.sendCode(request);
 
-     if(response.message == "Verification Code Sent Successfully") {
-       return SendCodeSuccess(response);
-     }
-     return SendCodeFailure(SendCodeErrorResponse(message: response.message));
-   }
-   on DioException catch (e){
-     return SendCodeFailure(SendCodeErrorResponse(message: e.message ?? "Network Error"));
-   }
-    catch(e){
-     return  SendCodeFailure(SendCodeErrorResponse(message: e.toString()));
+      if (response.message == "Verification Code Sent Successfully") {
+        return SendCodeSuccess(response);
+      }
+      return SendCodeFailure(SendCodeErrorResponse(message: response.message));
+    } on DioException catch (e) {
+      String msg = "Network Error";
+      try {
+        final data = e.response?.data;
+        if (data != null) {
+          if (data is Map && data['message'] != null) {
+            msg = data['message'].toString();
+          } else if (data is String) {
+            msg = data;
+          }
+        } else if (e.message != null) {
+          msg = e.message!;
+        }
+      } catch (_) {
+        msg = e.message ?? "Network Error";
+      }
+      return SendCodeFailure(SendCodeErrorResponse(message: msg));
+    } catch (e) {
+      return SendCodeFailure(SendCodeErrorResponse(message: e.toString()));
     }
   }
 
-
   @override
-  Future<VerifyCodeResponse> verifyCode(VerifyCodeRequest request) async{
-    try{
+  Future<VerifyCodeResponse> verifyCode(VerifyCodeRequest request) async {
+    try {
       final response = await api.verifyCode(request);
 
-      if(response.message == "Code Verified Successfully") {
+      if (response.message == "Code Verified Successfully") {
         return VerifyCodeSuccess(response);
       }
       return VerifyCodeFailure(VerifyCodeErrorResponse(message: response.message));
-    }
-    on DioException catch (e){
-      return VerifyCodeFailure(VerifyCodeErrorResponse(message: e.message ?? "Network Error"));
-    }
-    catch(e){
-      return  VerifyCodeFailure(VerifyCodeErrorResponse(message: e.toString()));
+    } on DioException catch (e) {
+      String msg = "Network Error";
+      try {
+        final data = e.response?.data;
+        if (data != null) {
+          if (data is Map && data['message'] != null) {
+            msg = data['message'].toString();
+          } else if (data is String) {
+            msg = data;
+          }
+        } else if (e.message != null) {
+          msg = e.message!;
+        }
+      } catch (_) {
+        msg = e.message ?? "Network Error";
+      }
+      return VerifyCodeFailure(VerifyCodeErrorResponse(message: msg));
+    } catch (e) {
+      return VerifyCodeFailure(VerifyCodeErrorResponse(message: e.toString()));
     }
   }
 
   @override
-  Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request) async{
-   try {
-     final response = await api.resetPassword(request);
+  Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request) async {
+    try {
+      final response = await api.resetPassword(request);
 
-     if(response.message == 'Password Changed Successfully') {
-       return ResetPasswordSuccess(response);
-     }
-     return ResetPasswordFailure(ResetPasswordErrorResponse(message: response.message));
-   }  on DioException catch (e){
-     return ResetPasswordFailure(ResetPasswordErrorResponse(message: e.message ?? "Network Error"));
-   }
-   catch(e){
-     return  ResetPasswordFailure(ResetPasswordErrorResponse(message: e.toString()));
-   }
+      if (response.message == 'Password Changed Successfully') {
+        return ResetPasswordSuccess(response);
+      }
+      return ResetPasswordFailure(ResetPasswordErrorResponse(message: response.message));
+    } on DioException catch (e) {
+      String msg = "Network Error";
+      try {
+        final data = e.response?.data;
+        if (data != null) {
+          if (data is Map && data['message'] != null) {
+            msg = data['message'].toString();
+          } else if (data is String) {
+            msg = data;
+          }
+        } else if (e.message != null) {
+          msg = e.message!;
+        }
+      } catch (_) {
+        msg = e.message ?? "Network Error";
+      }
+      return ResetPasswordFailure(ResetPasswordErrorResponse(message: msg));
+    } catch (e) {
+      return ResetPasswordFailure(ResetPasswordErrorResponse(message: e.toString()));
+    }
   }
-
 }
