@@ -21,11 +21,12 @@ abstract class AuthApi {
   Future<RegisterSuccessResponse> register(@Body() RegisterRequest body);
   @POST("login/")
   Future<LoginSuccessResponseNew> login(@Body() LoginRequest body);
-   @POST("password/forgot/")
+  @POST("password/forgot/")
   Future<SendCodeSuccessResponse> sendCode(@Body() SendCodeRequest body);
   @POST("password/verify-code/")
   Future<VerifyCodeSuccessResponse> verifyCode(@Body() VerifyCodeRequest body);
   @PATCH("password/reset/")
-  Future<ResetPasswordSuccessResponse> resetPassword(@Body() ResetPasswordRequest body);
-
+  Future<ResetPasswordSuccessResponse> resetPassword(
+    @Body() ResetPasswordRequest body,
+  );
 }

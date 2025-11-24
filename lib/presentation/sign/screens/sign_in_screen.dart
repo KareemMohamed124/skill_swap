@@ -27,6 +27,35 @@ class _SignInScreenState extends State<SignInScreen> {
   String? emailError;
   String? passwordError;
 
+  void _clearErrors() {
+    emailError = null;
+    passwordError = null;
+  }
+
+  void _handleServerError(LoginFailureState state) {
+    _clearErrors();
+
+    if (state.error.message == "Invalid Login Data") {
+      passwordError = "Password is not correct";
+    } else if (state.error.message == "Not Register Account") {
+      emailError = "Email is not registered";
+    }
+
+    final validationErrors = state.error.validationErrors;
+    if (validationErrors != null) {
+      for (var err in validationErrors) {
+        switch (err.field) {
+          case "email":
+            emailError = err.message;
+            break;
+          case "password":
+            passwordError = err.message;
+            break;
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final appBar = const CustomAppBar(title: "Sign In");
@@ -59,22 +88,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 listener: (context, state) {
                   if (state is LoginFailureState) {
                     setState(() {
-                      emailError = null;
-                      passwordError = null;
-
-                      final validationErrors = state.error.validationErrors;
-                      if (validationErrors != null) {
-                        for (var err in validationErrors) {
-                          switch (err.field) {
-                            case "email":
-                              emailError = err.message;
-                              break;
-                            case "password":
-                              passwordError = err.message;
-                              break;
-                          }
-                        }
-                      }
+                      _handleServerError(state);
                     });
                   } else if (state is LoginSuccessState) {
                     ScaffoldMessenger.of(
@@ -108,6 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           controller: emailController,
                           labelText: "Email",
                           hintText: "Enter your email",
+                          errorText: emailError,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Email is required";
@@ -117,7 +132,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ).hasMatch(value)) {
                               return "Enter a valid email";
                             }
-                            return emailError;
+                            return null;
                           },
                         ),
                         const SizedBox(height: 16),
@@ -127,6 +142,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           labelText: "Password",
                           hintText: "Enter your password",
                           obscureText: true,
+                          errorText: passwordError,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Password is required";
@@ -136,7 +152,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ).hasMatch(value)) {
                               return "Password must contain uppercase, lowercase, and a number";
                             }
-                            return passwordError;
+                            return null;
                           },
                         ),
 
