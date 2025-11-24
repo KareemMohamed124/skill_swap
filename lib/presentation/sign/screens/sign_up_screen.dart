@@ -122,10 +122,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             if (value == null || value.isEmpty) {
                               return "Name is required";
                             }
+                            if (value.length < 2 || value.length > 20) {
+                              return "Name must be between 2 and 20 characters";
+                            }
+                            if (!RegExp(
+                              r'^[a-zA-Z][a-zA-Z0-9]*$',
+                            ).hasMatch(value)) {
+                              return "Must start with a letter and contain only letters and numbers";
+                            }
                             return nameError;
                           },
                         ),
                         const SizedBox(height: 16),
+
                         CustomTextField(
                           controller: emailController,
                           labelText: "Email",
@@ -143,6 +152,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
+
                         CustomTextField(
                           controller: passwordController,
                           labelText: "Password",
@@ -152,13 +162,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             if (value == null || value.isEmpty) {
                               return "Password is required";
                             }
-                            if (value.length < 8) {
-                              return "Password must be at least 8 characters";
+                            if (!RegExp(
+                              r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$',
+                            ).hasMatch(value)) {
+                              return "At least 8 chars, 1 uppercase, 1 lowercase, 1 number";
                             }
                             return passwordError;
                           },
                         ),
                         const SizedBox(height: 16),
+
                         CustomTextField(
                           controller: confirmPasswordController,
                           labelText: "Confirm Password",
@@ -169,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               return "Confirm password is required";
                             }
                             if (value != passwordController.text) {
-                              return "Passwords do not match";
+                              return "Must match password";
                             }
                             return confirmPasswordError;
                           },

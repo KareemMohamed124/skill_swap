@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dart';
-
+import 'package:device_preview/device_preview.dart';
 import 'dependency_injection/injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
-  runApp(const MyApp());
+  runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +20,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      home: OnBoardingScreen(),
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
+      home: const OnBoardingScreen(),
     );
   }
 }

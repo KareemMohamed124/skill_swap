@@ -1,145 +1,218 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
-import 'package:skill_swap/presentation/sign/widgets/social_button.dart';
+import '../../../bloc/login_bloc/login_bloc.dart';
+import '../../../bloc/login_bloc/login_event.dart';
+import '../../../bloc/login_bloc/login_state.dart';
 import '../../../constants/colors.dart';
+import '../../../dependency_injection/injection.dart';
+import '../../../data/models/login/login_request.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
+import 'sign_up_screen.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  final formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  String? emailError;
+  String? passwordError;
 
   @override
   Widget build(BuildContext context) {
     final appBar = const CustomAppBar(title: "Sign In");
     final screenWidth = MediaQuery.of(context).size.width;
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    return Scaffold(
-      backgroundColor: AppColor.mainColor,
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight:
-                MediaQuery.of(context).size.height -
-                appBar.preferredSize.height -
-                MediaQuery.of(context).padding.top,
-          ),
-          child: Container(
-            width: screenWidth,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32),
-                topRight: Radius.circular(32),
-              ),
+
+    return BlocProvider(
+      create: (_) => sl<LoginBloc>(),
+      child: Scaffold(
+        backgroundColor: AppColor.mainColor,
+        appBar: appBar,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight:
+                  MediaQuery.of(context).size.height -
+                  appBar.preferredSize.height -
+                  MediaQuery.of(context).padding.top,
             ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                const Text(
-                  "Welcome Back!",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+            child: Container(
+              width: screenWidth,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  "Sign in to continue your learning journey",
-                  style: TextStyle(color: Colors.black54),
-                ),
-                const SizedBox(height: 32),
-                CustomTextField(
-                  controller: emailController,
-                  labelText: "Email",
-                  hintText: "Enter your email",
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  controller: passwordController,
-                  labelText: "Password",
-                  hintText: "Enter your password",
-                  obscureText: true,
-                ),
-                const SizedBox(height: 32),
-                 CustomButton(text: "Sign In",),
-                const SizedBox(height: 24),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ForgetPassword(),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: BlocConsumer<LoginBloc, LoginState>(
+                listener: (context, state) {
+                  if (state is LoginFailureState) {
+                    setState(() {
+                      emailError = null;
+                      passwordError = null;
+
+                      final validationErrors = state.error.validationErrors;
+                      if (validationErrors != null) {
+                        for (var err in validationErrors) {
+                          switch (err.field) {
+                            case "email":
+                              emailError = err.message;
+                              break;
+                            case "password":
+                              passwordError = err.message;
+                              break;
+                          }
+                        }
+                      }
+                    });
+                  } else if (state is LoginSuccessState) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.data.message)));
+                  }
+                },
+                builder: (context, state) {
+                  return Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Welcome Back!",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
-                      );
-                    },
-                    child: const Text(
-                      "Forget Password?",
-                      style: TextStyle(color: AppColor.mainColor),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Divider(thickness: 2, color: AppColor.mainColor),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        "Or continue with",
-                        style: TextStyle(color: AppColor.mainColor),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(thickness: 2, color: AppColor.mainColor),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SocialButton(text: "Google"),
-                    SizedBox(width: 17),
-                    SocialButton(text: "GitHub"),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Don’t have an account? ",
-                        style: TextStyle(color: AppColor.mainColor),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const SignUpScreen(),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Sign in to continue your learning journey",
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        const SizedBox(height: 32),
+
+                        CustomTextField(
+                          controller: emailController,
+                          labelText: "Email",
+                          hintText: "Enter your email",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Email is required";
+                            }
+                            if (!RegExp(
+                              r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                            ).hasMatch(value)) {
+                              return "Enter a valid email";
+                            }
+                            return emailError;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        CustomTextField(
+                          controller: passwordController,
+                          labelText: "Password",
+                          hintText: "Enter your password",
+                          obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Password is required";
+                            }
+                            if (!RegExp(
+                              r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+                            ).hasMatch(value)) {
+                              return "Password must contain uppercase, lowercase, and a number";
+                            }
+                            return passwordError;
+                          },
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        CustomButton(
+                          text:
+                              state is LoginLoading
+                                  ? "Logging in..."
+                                  : "Sign In",
+                          onPressed:
+                              state is LoginLoading
+                                  ? null
+                                  : () {
+                                    if (formKey.currentState!.validate()) {
+                                      final request = LoginRequest(
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                      );
+
+                                      context.read<LoginBloc>().add(
+                                        LoginSubmit(request),
+                                      );
+                                    }
+                                  },
+                        ),
+
+                        const SizedBox(height: 24),
+                        Center(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgetPassword(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              "Forget Password?",
+                              style: TextStyle(color: AppColor.mainColor),
                             ),
-                          );
-                        },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(color: AppColor.mainColor),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+
+                        const SizedBox(height: 32),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Don’t have an account? ",
+                                style: TextStyle(color: AppColor.mainColor),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const SignUpScreen(),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Sign Up",
+                                  style: TextStyle(color: AppColor.mainColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
