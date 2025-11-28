@@ -27,6 +27,7 @@ dependencies:
   injectable: ^2.2.0
   bloc: ^9.1.0
   device_preview: ^1.1.0
+  table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -44,6 +45,7 @@ flutter:
     - assets/logo/
     - assets/images/
     - assets/images/onboarding_images/
+    - assets/images/people_images/
 
 flutter_native_splash:
   color: "#FFFFFF"

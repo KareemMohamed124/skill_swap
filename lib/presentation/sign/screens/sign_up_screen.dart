@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/forget_password/screens/email_verification_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
@@ -91,13 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => EmailVerificationScreen(email: emailController.text,)
-                      ),
-                    );
+                   Get.to(EmailVerificationScreen(email: emailController.text,));
                   }
                 },
                 builder: (context, state) {

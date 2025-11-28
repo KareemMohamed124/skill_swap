@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
@@ -10,6 +12,7 @@ import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
 import '../../../data/models/login/login_request.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
+import '../../home/screens/home_screen.dart';
 import 'sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -94,6 +97,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(state.data.message)));
+                     Get.to(HomeScreen());
                   }
                 },
                 builder: (context, state) {
@@ -176,6 +180,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       context.read<LoginBloc>().add(
                                         LoginSubmit(request),
                                       );
+                                      Get.to(HomeScreen());
                                     }
                                   },
                         ),
@@ -184,12 +189,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Center(
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ForgetPassword(),
-                                ),
-                              );
+                             Get.to(ForgetPassword());
                             },
                             child: const Text(
                               "Forget Password?",
@@ -209,12 +209,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const SignUpScreen(),
-                                    ),
-                                  );
+                                 Get.to(SignUpScreen());
                                 },
                                 child: const Text(
                                   "Sign Up",

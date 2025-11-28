@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import '../../../constants/colors.dart';
@@ -38,10 +41,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   void goNextPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SelectTrack()),
-    );
+    Get.to(SelectTrack());
   }
 
   @override
@@ -71,10 +71,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           startTimer();
         }
             : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SelectTrack()),
-          );
+         Get.to(SelectTrack());
         },
       ),
     );

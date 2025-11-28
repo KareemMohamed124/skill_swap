@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:skill_swap/presentation/home/screens/home_screen.dart';
 import 'package:skill_swap/presentation/select_skills/select_track.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import '../../constants/colors.dart';
@@ -40,7 +44,7 @@ class SelectSkills extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Unity, Python, Unreal Engine...',
                   hintStyle: TextStyle(
-                    color: const Color(0xFF0D035F).withOpacity(0.25),
+                    color: const Color(0xFF0D035F).withValues(alpha: 0.25),
                     fontSize: 16,
                   ),
                   border: OutlineInputBorder(
@@ -58,19 +62,16 @@ class SelectSkills extends StatelessWidget {
                   text: 'Skip',
                   widthButton: 172,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SelectTrack(),
-                      ),
-                    );
+                   Get.to(SelectTrack());
                   },
                 ),
                 const SizedBox(height: 16),
                 CustomButton(
                   text: 'Continue',
                   widthButton: 172,
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.to(HomeScreen());
+                  },
                 ),
               ],
             ),

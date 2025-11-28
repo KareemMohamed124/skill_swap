@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/forget_password/screens/verify_screen.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
@@ -40,10 +42,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.response.message)),
               );
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => VerifyScreen(email: emailController.text.trim(),)),
-              );
+            Get.to(VerifyScreen(email: emailController.text.trim(),));
             }
           },
 

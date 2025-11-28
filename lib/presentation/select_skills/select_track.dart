@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/select_skills/select_skills.dart';
 
@@ -104,19 +107,11 @@ class _SelectTrackState extends State<SelectTrack> {
             Center(
               child: ElevatedButton(
                 onPressed:
-                    selectedTrack == null
-                        ? null
-                        : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => SelectSkills(
-                                    selectedTrack: selectedTrack,
-                                  ),
-                            ),
-                          );
-                        },
+                    selectedTrack != null
+                        ? () {
+                          Get.to(SelectSkills(selectedTrack: selectedTrack,));
+                        }
+                        : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.mainColor,
                   minimumSize: const Size(200, 48),
