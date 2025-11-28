@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
 import 'package:skill_swap/presentation/forget_password/screens/reset_password_screen.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
@@ -64,16 +66,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
               );
 
               final code = codeDigits.join();
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResetPasswordScreen(
-                    email: widget.email,
-                    code: code,
-                  ),
-                ),
-              );
+              Get.to(ResetPasswordScreen(
+                email: widget.email,
+                code: code,
+              ));
             }
           },
           builder: (context, state) {

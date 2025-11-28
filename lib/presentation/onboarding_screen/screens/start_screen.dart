@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
 
@@ -47,10 +50,7 @@ class StartScreen extends StatelessWidget {
 
            Spacer(),
             CustomButton(text: 'Get Start', onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignUpScreen()),
-              );
+             Get.to(SignUpScreen());
             },),
 
             const SizedBox(height: 16),

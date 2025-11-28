@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/data/models/reset_password/reset_password_request.dart';
+import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import '../../../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
@@ -61,6 +64,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(state.data.message)));
+      Get.to(SignInScreen());
     }
   },
   builder: (context, state) {

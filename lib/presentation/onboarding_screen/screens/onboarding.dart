@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/start_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -81,10 +83,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const StartScreen()),
-                  );
+                 Get.to(() =>  StartScreen());
                 }
               },
               child: Text(
@@ -117,10 +116,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Widget skipIntro(BuildContext context) {
     return TextButton(
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const StartScreen()),
-        );
+        Get.to(() =>  StartScreen());
       },
       child: const Text(
         "skip",
