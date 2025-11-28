@@ -64,8 +64,8 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                           });
                         },
                         child: TopUserCard(
-                          widthCard: double.infinity,   // شيل الأبعاد الثابتة
-                         // heightCard: null,             // شيل الارتفاع الثابت
+                          widthCard: double.infinity,
+                         // heightCard: null,
                           image: AppStrings.imagesTopUsers[index],
                           name: AppStrings.namesTopUsers[index],
                           track: AppStrings.tracksTopUsers[index],
