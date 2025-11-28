@@ -1,0 +1,81 @@
+import 'package:flutter/material.dart';
+
+import '../../../constants/colors.dart';
+
+class RecommendedCard extends StatelessWidget {
+  final String image;
+  final String name;
+  final String track;
+  final String rating;
+  final double width;
+  final double imageHeight;
+
+  const RecommendedCard({
+    super.key,
+    required this.image,
+    required this.name,
+    required this.track,
+    required this.rating,
+    this.width = 216,
+    this.imageHeight = 140,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () {},
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColor.mainColor),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                image,
+                width: double.infinity,
+                height: imageHeight,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                const Icon(Icons.star, size: 12, color: Color(0xFFFFCE31)),
+                const SizedBox(width: 4),
+                Text(
+                  rating,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              track,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColor.mainColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
