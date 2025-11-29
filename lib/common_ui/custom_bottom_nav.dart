@@ -21,10 +21,10 @@ class CustomBottomNav extends StatelessWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.only(top: 12, bottom: 18, left: 12, right: 12),
+      padding: const EdgeInsets.only(top: 4, bottom: 4, left: 12, right: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -76,7 +76,7 @@ class CustomBottomNav extends StatelessWidget {
                         size: 20,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4), // ↓ كانت 8
                     Text(
                       item.label,
                       style: const TextStyle(
@@ -99,7 +99,7 @@ class CustomBottomNav extends StatelessWidget {
                     size: 22,
                     color: Colors.indigo[900]!.withValues(alpha: 0.7),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4), // ↓ كانت 8
                   Text(
                     item.label,
                     style: TextStyle(

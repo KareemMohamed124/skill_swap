@@ -50,7 +50,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 0.73,
+                    childAspectRatio: 0.85,
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     physics: NeverScrollableScrollPhysics(),

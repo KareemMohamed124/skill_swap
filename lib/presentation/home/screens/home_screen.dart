@@ -52,23 +52,22 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
                 ),
               ),
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 16),
 
                       // Top Users Section
                       SectionHeader(sectionTitle: 'Top Users', onTop: () { Get.to(TopUsersViewAll()); },),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       SizedBox(
-                        height: 143,
+                        height: 124,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppStrings.imagesTopUsers.length,
@@ -85,17 +84,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
 
                       // Your Next Session Section
                        SectionHeader(sectionTitle: 'Your Next Session', onTop: () { Get.to(NextSessionViewAll()); },),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: AppStrings.imagesNextSessions.length,
                         padding: EdgeInsets.zero,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           return NextSessionCard(
                             image: AppStrings.imagesNextSessions[index],
@@ -106,13 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 32),
-
-                      // Recommended Section (reusable)
-                      SectionHeader(sectionTitle: 'Recommended for You', onTop: () {Get.to(RecommendedViewAll());  },),
                       const SizedBox(height: 16),
+
+                      // Recommended Section
+                      SectionHeader(sectionTitle: 'Recommended for You', onTop: () {Get.to(RecommendedViewAll());  },),
+                      const SizedBox(height: 8),
                       SizedBox(
-                        height: 233,
+                        height: 188,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppStrings.imagesRecommended.length,
@@ -129,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 32),
+                     // const SizedBox(height: 8),
                     ],
                   ),
                 ),

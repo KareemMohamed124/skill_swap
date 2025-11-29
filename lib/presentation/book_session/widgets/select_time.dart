@@ -23,9 +23,9 @@ class _SelectTimeState extends State<SelectTime> {
   Widget build(BuildContext context) {
     return GridView.count(
       crossAxisCount: 4,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 1.4,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childAspectRatio: 2.4,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),

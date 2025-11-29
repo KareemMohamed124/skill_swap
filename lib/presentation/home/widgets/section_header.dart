@@ -18,7 +18,7 @@ class SectionHeader extends StatelessWidget {
         Text(
           sectionTitle,
           style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: AppColor.blackColor
           ),
@@ -30,7 +30,7 @@ class SectionHeader extends StatelessWidget {
               Text(
                 "View All",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: AppColor.blackColor,
                   fontWeight: FontWeight.w600,
                 ),

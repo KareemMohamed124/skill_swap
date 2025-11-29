@@ -39,7 +39,6 @@ class SessionType extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // ---------- ICON ----------
             Container(
               width: 40,
               height: 40,
@@ -60,7 +59,6 @@ class SessionType extends StatelessWidget {
 
             const SizedBox(width: 16),
 
-            // ---------- TEXT ----------
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +83,6 @@ class SessionType extends StatelessWidget {
               ),
             ),
 
-            // ---------- DOT ----------
             if (isSelected)
               Container(
                 width: 8,

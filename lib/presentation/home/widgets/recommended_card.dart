@@ -16,8 +16,8 @@ class RecommendedCard extends StatelessWidget {
     required this.name,
     required this.track,
     required this.rating,
-    this.width = 216,
-    this.imageHeight = 140,
+    this.width = 200,
+    this.imageHeight = 116,
   });
 
   @override
@@ -31,7 +31,7 @@ class RecommendedCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColor.mainColor),
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -44,7 +44,7 @@ class RecommendedCard extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -63,7 +63,7 @@ class RecommendedCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            //const SizedBox(height: 4),
             Text(
               track,
               maxLines: 1,

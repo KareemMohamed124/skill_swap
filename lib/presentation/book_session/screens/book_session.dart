@@ -67,13 +67,13 @@ class _BookSessionState extends State<BookSession> {
                             color: AppColor.blackColor
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       ListView.separated(
                         shrinkWrap: true,
                         padding: EdgeInsets.zero,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: AppStrings.sessionType.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           return SessionType(
                             sessionType: AppStrings.sessionType[index],
@@ -90,7 +90,7 @@ class _BookSessionState extends State<BookSession> {
                         },
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
 
                       // Duration Section
                       const Text(
@@ -101,7 +101,7 @@ class _BookSessionState extends State<BookSession> {
                             color: AppColor.blackColor
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       DurationSelector(
                         onSelect: (value) {
                           setState(() {
@@ -110,7 +110,7 @@ class _BookSessionState extends State<BookSession> {
                         },
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
 
                       // Date Section
                       const Text(
@@ -121,7 +121,7 @@ class _BookSessionState extends State<BookSession> {
                             color: AppColor.blackColor
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       SelectDate(
                         onSelect: (value) {
                           setState(() {
@@ -130,7 +130,7 @@ class _BookSessionState extends State<BookSession> {
                         },
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
 
                       // Time Section
                       const Text(
@@ -141,7 +141,7 @@ class _BookSessionState extends State<BookSession> {
                             color: AppColor.blackColor
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                       SelectTime(
                         onSelect: (value) {
                           setState(() {
@@ -150,20 +150,20 @@ class _BookSessionState extends State<BookSession> {
                         },
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
 
                       // Session Details Container
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(32),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: AppColor.mainColor,
                             width: 1,
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,43 +172,43 @@ class _BookSessionState extends State<BookSession> {
                                 "Session Details",
                                 style: TextStyle(fontSize: 16),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 8),
 
                               sessionDetails(data: "Mentor:", input: "Dr. Joumana Johnson"),
-                              const SizedBox(height: 8,),
+                              const SizedBox(height: 4,),
                               sessionDetails(
                                 data: "Session Type:",
                                 input: sessionType ,
                               ),
-                              const SizedBox(height: 8,),
+                              const SizedBox(height: 4,),
                               sessionDetails(
                                 data: "Duration:",
                                 input: "$selectedDuration min",
                               ),
-                              const SizedBox(height: 8,),
+                              const SizedBox(height: 4,),
                               sessionDetails(
                                 data: "Day:",
                                 input: "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
                               ),
-                              const SizedBox(height: 8,),
+                              const SizedBox(height: 4,),
                               sessionDetails(
                                 data: "Time:",
                                 input: selectedTime ,
                               ),
-                              const SizedBox(height: 8,),
+                              const SizedBox(height: 4,),
                               sessionDetails(
                                 data: "Cost:",
                                 input: "35\$",
                               ),
-                              const SizedBox(height: 16,),
+                             // const SizedBox(height: 8,),
                             ],
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
                       CustomButton(text: 'Book Now!', onPressed: () {  },),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),

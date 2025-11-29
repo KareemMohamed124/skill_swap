@@ -30,7 +30,7 @@ class _DurationSelectorState extends State<DurationSelector> {
           },
           child: Container(
             width: 59,
-            height: 68,
+            height: 60,
             decoration: BoxDecoration(
               color: isSelected ? AppColor.mainColor : Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -49,7 +49,7 @@ class _DurationSelectorState extends State<DurationSelector> {
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 12,
                     ),
                   ),
                   Text(

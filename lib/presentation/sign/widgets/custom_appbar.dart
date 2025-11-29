@@ -16,7 +16,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Stack(
       children: [
         Container(
-          height: 40,
+          height: 124,
           decoration:  BoxDecoration(color: AppColor.mainColor),
         ),
         AppBar(

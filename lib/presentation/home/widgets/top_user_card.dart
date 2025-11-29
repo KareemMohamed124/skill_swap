@@ -36,7 +36,7 @@ class TopUserCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             ClipOval(
               child: Image.asset(
                 image,
@@ -52,7 +52,7 @@ class TopUserCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12),
             ),
-            const SizedBox(height: 4),
+          //  const SizedBox(height: 4),
             Text(
               track,
               maxLines: 1,
@@ -62,7 +62,7 @@ class TopUserCard extends StatelessWidget {
                 color: AppColor.mainColor,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Container(
               width: 54,
               height: 16,
@@ -80,7 +80,7 @@ class TopUserCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
         ),
       ),
