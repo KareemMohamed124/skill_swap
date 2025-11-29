@@ -24,32 +24,32 @@ class _SelectDateState extends State<SelectDate> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 288, // ↓ أقل من الأول
+      height: 288,
       decoration: BoxDecoration(
         color: AppColor.grayColor,
-        borderRadius: BorderRadius.circular(16), // ↓ تقليل بسيط
+        borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.all(8), // ↓ بدل 16
+      padding: const EdgeInsets.all(8),
       child: TableCalendar(
         locale: "en_US",
-        rowHeight: 32, // ↓ بدل 40
-        daysOfWeekHeight: 16, // ↓ بدل 24
+        rowHeight: 32,
+        daysOfWeekHeight: 16,
 
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
           titleTextStyle: const TextStyle(
-            fontSize: 16, // ↓ بدل 18
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
-          leftChevronIcon: Icon(Icons.chevron_left, size: 20), // ↓
-          rightChevronIcon: Icon(Icons.chevron_right, size: 20), // ↓
+          leftChevronIcon: Icon(Icons.chevron_left, size: 20),
+          rightChevronIcon: Icon(Icons.chevron_right, size: 20),
         ),
 
         daysOfWeekStyle: const DaysOfWeekStyle(
           weekdayStyle: TextStyle(
-            fontSize: 12, // ↓ بدل 14
+            fontSize: 12,
             fontWeight: FontWeight.w600,
             color: Colors.black87,
           ),
@@ -70,7 +70,7 @@ class _SelectDateState extends State<SelectDate> {
           selectedTextStyle: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 14, // ↓
+            fontSize: 14,
           ),
 
           todayDecoration: BoxDecoration(
@@ -80,7 +80,7 @@ class _SelectDateState extends State<SelectDate> {
           todayTextStyle: TextStyle(
             color: AppColor.mainColor,
             fontWeight: FontWeight.bold,
-            fontSize: 14, // ↓
+            fontSize: 14,
           ),
 
           defaultDecoration: const BoxDecoration(shape: BoxShape.circle),
@@ -88,7 +88,7 @@ class _SelectDateState extends State<SelectDate> {
 
           defaultTextStyle: const TextStyle(
             color: Colors.black,
-            fontSize: 14, // ↓ بدل 16
+            fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
           weekendTextStyle: const TextStyle(
@@ -103,7 +103,7 @@ class _SelectDateState extends State<SelectDate> {
           ),
 
           cellAlignment: Alignment.center,
-          tablePadding: const EdgeInsets.only(top: 4), // ↓ بدل 8
+          tablePadding: const EdgeInsets.only(top: 4),
         ),
 
         availableGestures: AvailableGestures.all,

@@ -54,9 +54,9 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     physics: NeverScrollableScrollPhysics(),
-                    children: List.generate(AppStrings.imagesTopUsers.length, (index) {
+                    children: List.generate(AppData.topUsers.length, (index) {
                       final isSelected = selectedIndex == index;
-
+                      final user = AppData.topUsers[index];
                       return GestureDetector(
                         onTap: () {
                           setState(() {
@@ -64,13 +64,11 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                           });
                         },
                         child: TopUserCard(
-                          widthCard: double.infinity,
-                         // heightCard: null,
-                          image: AppStrings.imagesTopUsers[index],
-                          name: AppStrings.namesTopUsers[index],
-                          track: AppStrings.tracksTopUsers[index],
-                          hours: AppStrings.hoursTopUsers[index],
-                        ),
+                        image: user.image,
+                        name: user.name,
+                        track: user.track,
+                        hours: user.hours,
+                      )
                       );
                     }),
                   ),

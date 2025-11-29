@@ -1,92 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:skill_swap/constants/recommended_mentor.dart';
+import 'package:skill_swap/constants/session_type_model.dart';
+import 'package:skill_swap/constants/top_user.dart';
 
-class AppStrings {
+import 'package:skill_swap/constants/top_user.dart';
 
-  static const List<String> imagesTopUsers = [
-        "assets/images/people_images/Joumana Johnson.png",
-        "assets/images/people_images/Youstina Hazem.png",
-       "assets/images/people_images/Max Turner.png",
-       "assets/images/people_images/Liyan Alex.png"
+import 'next_session.dart';
+
+class AppData {
+  static final List<TopUser> topUsers = [
+    TopUser(
+      image: "assets/images/people_images/Joumana Johnson.png",
+      name: "Joumana Johnson",
+      track: "Mobile Developer",
+      hours: "48 shared",
+    ),
+   TopUser(
+      image: "assets/images/people_images/Youstina Hazem.png",
+      name: "Youstina Hazem",
+      track: "Ui/Ux Developer",
+      hours: "45 shared",
+    ),
+     TopUser(
+      image: "assets/images/people_images/Max Turner.png",
+      name: "Max Turner",
+      track: "Backend Developer",
+      hours: "43 shared",
+    ),
+     TopUser(
+      image: "assets/images/people_images/Liyan Alex.png",
+      name: "Liyan Alex",
+      track: "Fronted Developer",
+      hours: "40 shared",
+    ),
   ];
 
-  static const List<String> namesTopUsers = [
-      "Joumana Johnson",
-      "Youstina Hazem",
-      "Max Turner",
-      "Liyan Alex"
+  static  List<NextSession> nextSessions = [
+    NextSession(
+      image: "assets/images/people_images/Lisa Wang.png",
+      name: "Lisa Wang",
+      time: "Today, 2:00 PM . 1h . Video Call",
+      duration: "• Starts in 10m",
+    ),
+    NextSession(
+      image: "assets/images/people_images/Liyan Alex.png",
+      name: "Liyan Alex",
+      time: "Today, 6:00 PM . 30m . Chat Session",
+      duration: "• Starts in 4h",
+    ),
   ];
 
-  static const List<String> tracksTopUsers = [
-    "Mobile Developer",
-    "Ui/Ux Developer",
-    "Backend Developer",
-    "Fronted Developer"
+  static  List<RecommendedMentor> recommendedMentors = [
+    RecommendedMentor(
+      image: "assets/images/people_images/Maria Garcia.png",
+      name: "Maria Garcia",
+      stars: "4.9",
+      track: "React Development",
+    ),
+    RecommendedMentor(
+      image: "assets/images/people_images/Alex Johson.png",
+      name: "Alex Johson",
+      stars: "4.8",
+      track: "mobile Development",
+    ),
+    RecommendedMentor(
+      image: "assets/images/people_images/Marcus Johnson.png",
+      name: "Marcus Johnson",
+      stars: "4.7",
+      track: "Ui/Ux Development",
+    ),
   ];
 
-  static const List<String> hoursTopUsers = [
-    "48 shared",
-    "45 shared",
-    "43 shared",
-    "40 shared",
+  static  List<SessionTypeModel> sessionTypes = [
+    SessionTypeModel(
+      icon: Icons.chat_bubble_outline,
+      title: "Text Chat",
+      description: "Simple text-based conversation. Great for quick questions.",
+    ),
+    SessionTypeModel(
+      icon: Icons.videocam_outlined,
+      title: "Video Call",
+      description:
+      "Face-to-face conversation with screen sharing capabilities.",
+    ),
   ];
-
-  static const List<String> imagesNextSessions = [
-    "assets/images/people_images/Lisa Wang.png",
-    "assets/images/people_images/Liyan Alex.png"
-  ];
-
-  static const List<String> namesNextSessions = [
-    "Lisa Wang",
-    "Liyan Alex"
-  ];
-
-  static const List<String> timeNextSessions = [
-    "Today, 2:00 PM . 1h . Video Call",
-    "Today, 6:00 PM . 30m . Chat Session"
-  ];
-
-  static const List<String> durationNextSessions = [
-    "• Starts in 10m",
-    "• Starts in 4h"
-  ];
-
-  static const List<String> imagesRecommended = [
-    "assets/images/people_images/Maria Garcia.png",
-    "assets/images/people_images/Alex Johson.png",
-    "assets/images/people_images/Marcus Johnson.png"
-  ];
-
-  static const List<String> namesRecommended = [
-    "Maria Garcia",
-    "Alex Johson",
-    "Marcus Johnson"
-  ];
-
-  static const List<String> starsRecommended = [
-    "4.9",
-    "4.8",
-    "4.7"
-  ];
-
-  static const List<String> trackRecommended = [
-    "React Development",
-    "mobile Development",
-    "Ui/Ux Development"
-  ];
-
-  static const List<String> sessionType = [
-    "Text Chat",
-    "Video Call"
-  ];
-
-  static const List<String> sessionTypeTitle = [
-    "Simple text-based conversation. Great for quick questions.",
-    "Face-to-face conversation with screen sharing capabilities."
-  ];
-
-  static const List<IconData> sessionIcons = [
-    Icons.chat_bubble_outline,
-    Icons.videocam_outlined
-  ];
-
 }

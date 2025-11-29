@@ -54,9 +54,9 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     physics: NeverScrollableScrollPhysics(),
-                    children: List.generate(AppStrings.imagesRecommended.length, (index) {
+                    children: List.generate(AppData.recommendedMentors.length, (index) {
                       final isSelected = selectedIndex == index;
-
+                      final mentor = AppData.recommendedMentors[index];
                       return GestureDetector(
                         onTap: () {
                           setState(() {
@@ -64,11 +64,11 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                           });
                         },
                         child: RecommendedCard(
-                          image: AppStrings.imagesRecommended[index],
-                          name: AppStrings.namesRecommended[index],
-                          track: AppStrings.trackRecommended[index],
-                          rating: AppStrings.starsRecommended[index],
-                        )
+                        image: mentor.image,
+                        name: mentor.name,
+                        track: mentor.track,
+                        rating: mentor.stars,
+                      )
                       );
                     }),
                   ),

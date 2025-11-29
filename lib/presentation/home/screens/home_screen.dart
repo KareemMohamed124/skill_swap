@@ -70,15 +70,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 124,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: AppStrings.imagesTopUsers.length,
+                          itemCount: AppData.topUsers.length,
                           padding: EdgeInsets.zero,
                           separatorBuilder: (_, __) => const SizedBox(width: 16),
                           itemBuilder: (context, index) {
+                            final user = AppData.topUsers[index];
                             return TopUserCard(
-                              image: AppStrings.imagesTopUsers[index],
-                              name: AppStrings.namesTopUsers[index],
-                              track: AppStrings.tracksTopUsers[index],
-                              hours: AppStrings.hoursTopUsers[index],
+                              image: user.image,
+                              name: user.name,
+                              track: user.track,
+                              hours: user.hours,
                             );
                           },
                         ),
@@ -92,15 +93,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: AppStrings.imagesNextSessions.length,
+                        itemCount: AppData.nextSessions.length,
                         padding: EdgeInsets.zero,
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
+                          final session = AppData.nextSessions[index];
                           return NextSessionCard(
-                            image: AppStrings.imagesNextSessions[index],
-                            name: AppStrings.namesTopUsers[index],
-                            duration: AppStrings.durationNextSessions[index],
-                            time: AppStrings.timeNextSessions[index],
+                            image: session.image,
+                            name: session.name,
+                            duration: session.duration,
+                            time: session.time,
                           );
                         },
                       ),
@@ -114,15 +116,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 188,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: AppStrings.imagesRecommended.length,
+                          itemCount: AppData.recommendedMentors.length,
                           padding: EdgeInsets.zero,
                           separatorBuilder: (_, __) => const SizedBox(width: 16),
                           itemBuilder: (context, index) {
+                            final mentor = AppData.recommendedMentors[index];
                             return RecommendedCard(
-                              image: AppStrings.imagesRecommended[index],
-                              name: AppStrings.namesRecommended[index],
-                              track: AppStrings.trackRecommended[index],
-                              rating: AppStrings.starsRecommended[index],
+                              image: mentor.image,
+                              name: mentor.name,
+                              track: mentor.track,
+                              rating: mentor.stars,
                             );
                           },
                         ),
