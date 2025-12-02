@@ -3,14 +3,15 @@ import 'package:get/get.dart';
 import 'package:skill_swap/common_ui/custom_bottom_nav.dart';
 import 'package:skill_swap/constants/strings.dart';
 import 'package:skill_swap/presentation/home/widgets/custom_header.dart';
+import 'package:skill_swap/presentation/notification/screens/notification_screen.dart';
 import '../../../constants/colors.dart';
+import '../pages/next_session_view_all.dart';
+import '../pages/recommended_view_all.dart';
+import '../pages/top_users_view_all.dart';
 import '../widgets/next_session_card.dart';
-import '../widgets/next_session_view_all.dart';
 import '../widgets/recommended_card.dart';
-import '../widgets/recommended_view_all.dart';
 import '../widgets/section_header.dart';
 import '../widgets/top_user_card.dart';
-import '../widgets/top_users_view_all.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle: 'Keep learning and earning hours today!',
                 avatar: 'assets/images/people_images/nada.jpg',
                 onIcon1: () {},
-                onIcon2: () {},
+                onIcon2: () {Get.to(NotificationsScreen());},
               ),
             ],
           ),
@@ -70,15 +71,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 124,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: AppStrings.imagesTopUsers.length,
+                          itemCount: AppData.topUsers.length,
                           padding: EdgeInsets.zero,
                           separatorBuilder: (_, __) => const SizedBox(width: 16),
                           itemBuilder: (context, index) {
+                            final user = AppData.topUsers[index];
                             return TopUserCard(
-                              image: AppStrings.imagesTopUsers[index],
-                              name: AppStrings.namesTopUsers[index],
-                              track: AppStrings.tracksTopUsers[index],
-                              hours: AppStrings.hoursTopUsers[index],
+                              image: user.image,
+                              name: user.name,
+                              track: user.track,
+                              hours: user.hours,
                             );
                           },
                         ),
@@ -87,20 +89,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16),
 
                       // Your Next Session Section
-                       SectionHeader(sectionTitle: 'Your Next Session', onTop: () { Get.to(NextSessionViewAll()); },),
+                      SectionHeader(sectionTitle: 'Your Next Session', onTop: () { Get.to(NextSessionViewAll()); },),
                       const SizedBox(height: 8),
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: AppStrings.imagesNextSessions.length,
+                        itemCount: AppData.nextSessions.length,
                         padding: EdgeInsets.zero,
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
+                          final session = AppData.nextSessions[index];
                           return NextSessionCard(
-                            image: AppStrings.imagesNextSessions[index],
-                            name: AppStrings.namesTopUsers[index],
-                            duration: AppStrings.durationNextSessions[index],
-                            time: AppStrings.timeNextSessions[index],
+                            image: session.image,
+                            name: session.name,
+                            duration: session.duration,
+                            time: session.time,
                           );
                         },
                       ),
@@ -114,21 +117,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 188,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: AppStrings.imagesRecommended.length,
+                          itemCount: AppData.recommendedMentors.length,
                           padding: EdgeInsets.zero,
                           separatorBuilder: (_, __) => const SizedBox(width: 16),
                           itemBuilder: (context, index) {
+                            final mentor = AppData.recommendedMentors[index];
                             return RecommendedCard(
-                              image: AppStrings.imagesRecommended[index],
-                              name: AppStrings.namesRecommended[index],
-                              track: AppStrings.trackRecommended[index],
-                              rating: AppStrings.starsRecommended[index],
+                              image: mentor.image,
+                              name: mentor.name,
+                              track: mentor.track,
+                              rating: mentor.stars,
                             );
                           },
                         ),
                       ),
 
-                     // const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                     ],
                   ),
                 ),
@@ -137,13 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNav(
-        selectedIndex: currentIndex,
-        onItemSelected: (index) {
-          setState(() => currentIndex = index);
-        },
-      ),
+
     );
   }
 }
-

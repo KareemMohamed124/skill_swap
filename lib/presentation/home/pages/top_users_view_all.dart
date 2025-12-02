@@ -34,15 +34,15 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
             right: 0,
             bottom: 0,
             child: Container(
-    width: double.infinity,
-    constraints: BoxConstraints(minHeight: screenHeight),
-    decoration: const BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.only(
-    topLeft: Radius.circular(32),
-    topRight: Radius.circular(32),
-    ),
-    ),
+              width: double.infinity,
+              constraints: BoxConstraints(minHeight: screenHeight),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
+                ),
+              ),
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -54,23 +54,21 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     physics: NeverScrollableScrollPhysics(),
-                    children: List.generate(AppStrings.imagesTopUsers.length, (index) {
+                    children: List.generate(AppData.topUsers.length, (index) {
                       final isSelected = selectedIndex == index;
-
+                      final user = AppData.topUsers[index];
                       return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        child: TopUserCard(
-                          widthCard: double.infinity,
-                         // heightCard: null,
-                          image: AppStrings.imagesTopUsers[index],
-                          name: AppStrings.namesTopUsers[index],
-                          track: AppStrings.tracksTopUsers[index],
-                          hours: AppStrings.hoursTopUsers[index],
-                        ),
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          child: TopUserCard(
+                            image: user.image,
+                            name: user.name,
+                            track: user.track,
+                            hours: user.hours,
+                          )
                       );
                     }),
                   ),

@@ -17,7 +17,7 @@ class BookSession extends StatefulWidget {
 
 class _BookSessionState extends State<BookSession> {
   int selectedSessionIndex = 0;
-  String sessionType = AppStrings.sessionType[0];
+  String sessionType = AppData.sessionTypes[0].title;
   String selectedTime = "10:00 AM";
   int selectedDuration = 60;
   DateTime selectedDate = DateTime.now();
@@ -72,20 +72,21 @@ class _BookSessionState extends State<BookSession> {
                         shrinkWrap: true,
                         padding: EdgeInsets.zero,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: AppStrings.sessionType.length,
+                        itemCount: AppData.sessionTypes.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
+                          final type = AppData.sessionTypes[index];
                           return SessionType(
-                            sessionType: AppStrings.sessionType[index],
-                            title: AppStrings.sessionTypeTitle[index],
+                            sessionType: type.title,
+                            title: type.description,
                             isSelected: selectedSessionIndex == index,
                             onTap: () {
                               setState(() {
                                 selectedSessionIndex = index;
-                                sessionType = AppStrings.sessionType[index];
+                                sessionType = type.title;
                               });
                             },
-                            icon: AppStrings.sessionIcons[index],
+                            icon: type.icon,
                           );
                         },
                       ),
@@ -200,7 +201,7 @@ class _BookSessionState extends State<BookSession> {
                                 data: "Cost:",
                                 input: "35\$",
                               ),
-                             // const SizedBox(height: 8,),
+                              // const SizedBox(height: 8,),
                             ],
                           ),
                         ),

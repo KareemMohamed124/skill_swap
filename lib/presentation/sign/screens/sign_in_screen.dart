@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:skill_swap/common_ui/screen_manager/screen_manager.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
@@ -97,7 +98,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                     Get.to(HomeScreen());
+                     Get.to(ScreenManager());
                   }
                 },
                 builder: (context, state) {
@@ -180,7 +181,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       context.read<LoginBloc>().add(
                                         LoginSubmit(request),
                                       );
-                                      Get.to(HomeScreen());
+                                    // Get.to(ScreenManager());
                                     }
                                   },
                         ),

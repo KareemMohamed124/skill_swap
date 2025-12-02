@@ -76,7 +76,7 @@ class CustomBottomNav extends StatelessWidget {
                         size: 20,
                       ),
                     ),
-                    const SizedBox(height: 4), // ↓ كانت 8
+                    const SizedBox(height: 4),
                     Text(
                       item.label,
                       style: const TextStyle(
@@ -99,7 +99,7 @@ class CustomBottomNav extends StatelessWidget {
                     size: 22,
                     color: Colors.indigo[900]!.withValues(alpha: 0.7),
                   ),
-                  const SizedBox(height: 4), // ↓ كانت 8
+                  const SizedBox(height: 4),
                   Text(
                     item.label,
                     style: TextStyle(

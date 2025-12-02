@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import '../../../common_ui/custom_bottom_nav.dart';
+import '../widgets/profile_header.dart';
+import '../widgets/profile_tabs.dart';
+import '../pages/overview_page.dart';
+import '../pages/skills_page.dart';
+import '../pages/reviews_page.dart';
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              const ProfileHeader(),
+            ],
+          ),
+         Positioned(
+             top: 184,
+             left: 0,
+             right: 0,
+             bottom: 0,
+             child: Container(
+               width: double.infinity,
+               constraints: BoxConstraints(minHeight: screenHeight),
+               decoration: const BoxDecoration(
+                 color: Colors.white,
+                 borderRadius: BorderRadius.only(
+                   topLeft: Radius.circular(24),
+                   topRight: Radius.circular(24),
+                 ),
+               ),
+               child: Column(
+                 children: [
+                   Expanded(
+                     child: ClipRRect(
+                       borderRadius: const BorderRadius.only(
+                         topLeft: Radius.circular(40),
+                         topRight: Radius.circular(40),
+                       ),
+                       child: Container(
+                         color: Color(0XFFFFFFFF),
+                         child: Column(
+                           children: [
+                             ProfileTabs(tabController: _tabController),
+                             Expanded(
+                               child: TabBarView(
+                                 controller: _tabController,
+                                 children: const [
+                                   OverviewPage(),
+                                   SkillsPage(),
+                                   Padding(
+                                     padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                     child: ReviewsPage(),
+                                   ),
+                                 ],
+                               ),
+                             ),
+                           ],
+                         ),
+                       ),
+                     ),
+                   ),
+                 ],
+               ),
+             )
+         )
+        ],
+      ),
+
+    );
+  }
+}
+
+
+
+

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../constants/colors.dart';
+import '../../book_session/screens/profile_mentor.dart';
 
 class RecommendedCard extends StatelessWidget {
   final String image;
@@ -24,7 +26,9 @@ class RecommendedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: () {},
+      onTap: () {
+        Get.to(ProfileMentor(name: name, track: track, rate: rating, image: image,));
+      },
       child: Container(
         width: width,
         decoration: BoxDecoration(

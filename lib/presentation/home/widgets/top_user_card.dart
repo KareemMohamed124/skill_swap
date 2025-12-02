@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:retrofit/retrofit.dart';
+import 'package:skill_swap/presentation/book_session/screens/profile_mentor.dart';
 
 import '../../../constants/colors.dart';
 
@@ -25,7 +28,9 @@ class TopUserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: () {},
+      onTap: () {
+        Get.to(ProfileMentor(name: name, track: track, rate: "4.8", image: image,));
+      },
       child: Container(
         width: widthCard,
         //height: heightCard,

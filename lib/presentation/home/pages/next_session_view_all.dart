@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/colors.dart';
 import '../../../constants/strings.dart';
 import '../../sign/widgets/custom_appbar.dart';
-import 'next_session_card.dart';
+import '../widgets/next_session_card.dart';
 
 class NextSessionViewAll extends StatefulWidget {
   const NextSessionViewAll({super.key});
@@ -48,15 +48,16 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: AppStrings.imagesNextSessions.length,
+                  itemCount: AppData.nextSessions.length,
                   padding: EdgeInsets.zero,
                   separatorBuilder: (_, __) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
+                    final session = AppData.nextSessions[index];
                     return NextSessionCard(
-                      image: AppStrings.imagesNextSessions[index],
-                      name: AppStrings.namesTopUsers[index],
-                      duration: AppStrings.durationNextSessions[index],
-                      time: AppStrings.timeNextSessions[index],
+                      image: session.image,
+                      name: session.name,
+                      duration: session.duration,
+                      time: session.time,
                     );
                   },
                 ),

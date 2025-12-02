@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:skill_swap/presentation/book_session/screens/book_session.dart';
 import 'package:skill_swap/presentation/home/screens/home_screen.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dart';
+import 'common_ui/screen_manager/screen_manager.dart';
 import 'dependency_injection/injection.dart';
 
 void main() async {
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
       /////////////////////////OnBoardingScreen
-      home: const HomeScreen(),
+      home: const OnBoardingScreen(),
     );
   }
 }
