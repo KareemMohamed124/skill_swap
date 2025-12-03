@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:skill_swap/presentation/book_session/screens/book_session.dart';
-import 'package:skill_swap/presentation/home/screens/home_screen.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dart';
-import 'common_ui/screen_manager/screen_manager.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:get/get.dart';
+import 'package:skill_swap/presentation/profile/screens/profile_screen.dart';
 import 'dependency_injection/injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependencies();
-  runApp(const MyApp());
+  runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,8 +22,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      /////////////////////////OnBoardingScreen
-      home: const OnBoardingScreen(),
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
+      home: const ProfileScreen(),
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:skill_swap/presentation/skill_verification/quiz_details_screen.dart';
 
 class SkillsPage extends StatelessWidget {
   const SkillsPage({super.key});
@@ -12,6 +14,8 @@ class SkillsPage extends StatelessWidget {
           skillCard(title: "JavaScript", proficiency: 0.95, verified: true),
           const SizedBox(height: 20),
           skillCard(title: "React", proficiency: 0.80, verified: false),
+          const SizedBox(height: 20),
+          skillCard(title: "Flutter", proficiency: 0.70, verified: false),
         ],
       ),
     );
@@ -28,7 +32,7 @@ class SkillsPage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        border: Border.all(color: Color(0XFF0D035F)),
+        border: Border.all(color: const Color(0XFF0D035F)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +79,6 @@ class SkillsPage extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,32 +91,31 @@ class SkillsPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-
           SizedBox(
             height: 10,
             child: LinearProgressIndicator(
               value: proficiency,
-              color: Color(0XFF0D035F),
-              backgroundColor: Color(0XFFD0D2FF),
+              color: const Color(0XFF0D035F),
+              backgroundColor: const Color(0XFFD0D2FF),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-
           const SizedBox(height: 16),
-
           if (!verified)
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  backgroundColor: Color(0xFFF2F5F8),
+                  backgroundColor: const Color(0xFFF2F5F8),
                   padding: const EdgeInsets.all(14),
-                  side: BorderSide(color: Color(0xFF1B1464), width: 2),
+                  side: const BorderSide(color: Color(0xFF1B1464), width: 2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(() => QuizDetailsScreen(skillName: title));
+                },
                 child: const Text(
                   "Take Assessment",
                   style: TextStyle(
