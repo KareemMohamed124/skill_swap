@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 class QuizQuestion {
   String question;
@@ -23,8 +23,8 @@ class QuizQuestion {
 }
 
 class QuizController extends GetxController {
-  static const apiKey = "AIzaSyDQO5UkDKiBKMdXXub5c19xIiWvzbu3p3E";
-  final model = GenerativeModel(model: "gemini-1.5-flash", apiKey: apiKey);
+  static const apiKey = "AIzaSyAwQBoLjnMtLqdBcw9tngTgpfgcdv5WY-Y";
+  final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;
   var index = 0.obs;
@@ -38,7 +38,7 @@ class QuizController extends GetxController {
     currentSkill.value = skill;
 
     final prompt = """
-Generate exactly 3 multiple-choice questions about $skill.
+Generate exactly 10 multiple-choice questions about $skill.
 Return ONLY a valid JSON array like:
 
 [
@@ -53,24 +53,44 @@ No explanation, no text outside the JSON.
 """;
 
     try {
-      final response = await model.generateContent([Content.text(prompt)]);
-      String text = response.text ?? "";
-
+      final response = await gemini.prompt(parts: [Part.text(prompt)]);
+      String text = response?.output ?? "";
       print("🔵 RAW GEMINI RESPONSE:");
       print(text);
 
-      // استخراج JSON Array من النص باستخدام Regex
-      final regex = RegExp(r'\[(.|\s)*?\]');
-      final match = regex.firstMatch(text);
+      String jsonString = "";
+      int startIndex = text.indexOf('[');
 
-      if (match == null) {
-        print("❌ No JSON array found");
+      if (startIndex == -1) {
+        print("❌ No JSON array found (no opening bracket)");
         questions.clear();
         loading.value = false;
         return;
       }
 
-      final jsonString = match.group(0)!;
+      int bracketCount = 0;
+      int endIndex = startIndex;
+
+      for (int i = startIndex; i < text.length; i++) {
+        if (text[i] == '[') {
+          bracketCount++;
+        } else if (text[i] == ']') {
+          bracketCount--;
+          if (bracketCount == 0) {
+            endIndex = i + 1;
+            break;
+          }
+        }
+      }
+
+      if (bracketCount != 0) {
+        print("❌ Incomplete JSON array (brackets don't match)");
+        questions.clear();
+        loading.value = false;
+        return;
+      }
+
+      jsonString = text.substring(startIndex, endIndex).trim();
       print("🟢 Extracted JSON:");
       print(jsonString);
 
@@ -78,7 +98,6 @@ No explanation, no text outside the JSON.
 
       questions.value = data.map((e) => QuizQuestion.fromJson(e)).toList();
 
-      // لو Gemini عمل options أقل من 4 نكملها
       for (var q in questions) {
         while (q.options.length < 4) {
           q.options.add("Option ${q.options.length + 1}");

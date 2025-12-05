@@ -21,7 +21,7 @@ class ReviewsPage extends StatelessWidget {
           reviewCard(
             name: "Sarah Johnson",
             review:
-            "Great session on JavaScript fundamentals. Highly recommend!",
+                "Great session on JavaScript fundamentals. Highly recommend!",
             skill: "JavaScript",
             time: "1 week ago",
             rating: 5,
@@ -70,7 +70,7 @@ class ReviewsPage extends StatelessWidget {
                     Row(
                       children: List.generate(
                         rating,
-                            (i) => const Icon(
+                        (i) => const Icon(
                           Icons.star,
                           color: Colors.amber,
                           size: 18,
@@ -97,7 +97,7 @@ class ReviewsPage extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
+                  color: Color(0XFFF2F5F8),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(skill),

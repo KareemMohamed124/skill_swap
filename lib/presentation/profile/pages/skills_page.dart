@@ -96,7 +96,7 @@ class SkillsPage extends StatelessWidget {
             child: LinearProgressIndicator(
               value: proficiency,
               color: const Color(0XFF0D035F),
-              backgroundColor: const Color(0XFFD0D2FF),
+              backgroundColor: const Color(0XFFF2F5F8),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
@@ -106,7 +106,7 @@ class SkillsPage extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF2F5F8),
+                  backgroundColor: const Color(0XFFF2F5F8),
                   padding: const EdgeInsets.all(14),
                   side: const BorderSide(color: Color(0xFF1B1464), width: 2),
                   shape: RoundedRectangleBorder(

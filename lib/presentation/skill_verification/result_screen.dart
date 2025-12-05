@@ -14,6 +14,7 @@ class ResultScreen extends StatelessWidget {
     final passed = percent >= 85;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -29,47 +30,110 @@ class ResultScreen extends StatelessWidget {
               Text(
                 passed ? "Congratulations!" : "Keep Learning!",
                 style: const TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 8),
               Text(
                 "${percent.toInt()}%",
                 style: const TextStyle(
-                  fontSize: 40,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text("You got $score out of $total"),
-              const SizedBox(height: 30),
+              const SizedBox(height: 8),
+              Text(
+                "You got $score out of $total questions correct",
+                style: const TextStyle(fontSize: 16, color: Color(0xFF0D035F)),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: percent / 100,
+                  minHeight: 10,
+                  backgroundColor: Color(0XFFF2F5F8),
+                  valueColor: AlwaysStoppedAnimation(const Color(0xFF0D035F)),
+                ),
+              ),
+              const SizedBox(height: 20),
               if (passed)
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    "✔ Skill Verified",
-                    style: TextStyle(color: Colors.green),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.check, color: Colors.green, size: 20),
+                      SizedBox(width: 6),
+                      Text(
+                        "Skill Verified",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               if (!passed)
                 const Text(
                   "Need 85% to pass. Try again!",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               const SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0XFF0D035F),
+                  backgroundColor: const Color(0xFF0D035F),
                   minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 onPressed: () {
-                  Get.find<QuizController>().resetQuiz();
+                  if (Get.isRegistered<QuizController>()) {
+                    Get.find<QuizController>().resetQuiz();
+                  }
                   Get.offAllNamed('/skills');
                 },
-                child: const Text("Continue"),
+                child: const Text(
+                  "Continue",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  side: const BorderSide(color: Color(0xFF0D035F)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  Get.back();
+                },
+                child: const Text(
+                  "Back to Profile",
+                  style: TextStyle(
+                    color: Color(0xFF0D035F),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),

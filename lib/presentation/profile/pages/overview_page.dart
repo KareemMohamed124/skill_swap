@@ -64,7 +64,7 @@ class OverviewPage extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: 0.15,
                     color: Color(0xFF1B1464),
-                    backgroundColor: Color(0XFFD0D2FF),
+                    backgroundColor: Color(0XFFF2F5F8),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -96,7 +96,7 @@ class OverviewPage extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: 0.67,
                     color: Color(0xFF1B1464),
-                    backgroundColor: Color(0XFFD0D2FF),
+                    backgroundColor: Color(0XFFF2F5F8),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -129,7 +129,7 @@ class OverviewPage extends StatelessWidget {
                   width: double.infinity,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Color(0xFFF2F5F8),
+                      backgroundColor: Color(0XFFF2F5F8),
                       padding: const EdgeInsets.all(14),
                       side: BorderSide(color: Color(0xFF1B1464), width: 2),
                       shape: RoundedRectangleBorder(
