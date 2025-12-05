@@ -1,0 +1,112 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/constants/colors.dart';
+import '../../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../../../bloc/mentor_filter_bloc/mentor_filter_event.dart';
+
+class SortButton extends StatefulWidget {
+  const SortButton({super.key});
+
+  @override
+  State<SortButton> createState() => _SortButtonState();
+}
+
+class _SortButtonState extends State<SortButton> {
+  String? selected;
+
+  final items = [
+    'Price: high to low',
+    'Price: low to high',
+    'Name: A to Z',
+    'Name: Z to A',
+    'Rate: high to low'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColor.mainColor),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton2<String>(
+          buttonStyleData: ButtonStyleData(
+            padding: EdgeInsets.only(right: 16)
+          ),
+          value: selected,
+          hint: const Text(
+            'Sort',
+            style: TextStyle(fontSize: 14, color: AppColor.blackColor, fontWeight: FontWeight.w500),
+          ),
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColor.blackColor,
+              fontWeight: FontWeight.w500
+          ),
+          isExpanded: true,
+          items: items
+              .map((option) => DropdownMenuItem(
+            value: option,
+            child: Text(option,
+              style: const TextStyle(
+                  fontSize: 14,
+                color: AppColor.blackColor,
+                  fontWeight: FontWeight.w500
+              ),
+            ),
+          ))
+              .toList(),
+
+          // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+          // القائمة تنزل تحت دايمًا
+          dropdownStyleData: DropdownStyleData(
+            offset: const Offset(0, -5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            maxHeight: 250,
+          ),
+          // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
+          // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+          // السهم يظهر فقط لو selected == null
+          iconStyleData: IconStyleData(
+            icon: selected == null
+                ? const Icon(Icons.keyboard_arrow_down_outlined)
+                : const SizedBox(),
+          ),
+          // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
+          onChanged: (value) {
+            if (value == null) return;
+
+            setState(() => selected = value);
+
+            final bloc = context.read<MentorFilterBloc>();
+
+            switch (value) {
+              case 'Price: high to low':
+                bloc.add(SortMentorEvent(SortType.priceHighToLow));
+                break;
+              case 'Price: low to high':
+                bloc.add(SortMentorEvent(SortType.priceLowToHigh));
+                break;
+              case 'Name: A to Z':
+                bloc.add(SortMentorEvent(SortType.nameAZ));
+                break;
+              case 'Name: Z to A':
+                bloc.add(SortMentorEvent(SortType.nameZA));
+                break;
+              case 'Rate: high to low':
+                bloc.add(SortMentorEvent(SortType.rateHigh));
+                break;
+            }
+          },
+        ),
+      ),
+    );
+  }
+}

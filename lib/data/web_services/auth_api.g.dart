@@ -12,7 +12,7 @@ class _AuthApi implements AuthApi {
   _AuthApi(
     this._dio, {
     this.baseUrl,
-  //  this.errorLogger,
+   // this.errorLogger,
   }) {
     baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
   }
@@ -21,7 +21,7 @@ class _AuthApi implements AuthApi {
 
   String? baseUrl;
 
-  //final ParseErrorLogger? errorLogger;
+ // final ParseErrorLogger? errorLogger;
 
   @override
   Future<RegisterSuccessResponse> register(RegisterRequest body) async {
@@ -51,7 +51,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = RegisterSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-    //  errorLogger?.logError(e, s, _options);
+     // errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;

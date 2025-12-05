@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:skill_swap/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import 'package:skill_swap/bloc/reset_password_bloc/reset_password_bloc.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
+import '../constants/strings.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../data/web_services/auth_api.dart';
 import '../domain/repositories/auth_repository.dart';
@@ -34,4 +36,6 @@ Future<void> initDependencies() async {
   sl.registerFactory<VerifyCodeBloc>(() => VerifyCodeBloc(sl<AuthRepository>()));
   
   sl.registerFactory<ResetPasswordBloc>(() => ResetPasswordBloc(sl<AuthRepository>()));
+
+  sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
 }

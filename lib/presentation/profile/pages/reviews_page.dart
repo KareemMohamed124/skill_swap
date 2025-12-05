@@ -97,7 +97,7 @@ class ReviewsPage extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
+                  color: Color(0XFFF2F5F8),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(skill),

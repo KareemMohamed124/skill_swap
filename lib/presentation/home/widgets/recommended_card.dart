@@ -56,7 +56,7 @@ class RecommendedCard extends StatelessWidget {
                     name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                   ),
                 ),
                 const Icon(Icons.star, size: 12, color: Color(0xFFFFCE31)),

@@ -10,12 +10,16 @@ LoginSuccessResponseNew _$LoginSuccessResponseNewFromJson(
         Map<String, dynamic> json) =>
     LoginSuccessResponseNew(
       message: json['message'] as String,
-      id: json['_id'] as String,
+      flag: json['flag'] as bool,
+      accessToken: json['access_token'] as String,
+      refreshToken: json['refresh_token'] as String,
     );
 
 Map<String, dynamic> _$LoginSuccessResponseNewToJson(
         LoginSuccessResponseNew instance) =>
     <String, dynamic>{
       'message': instance.message,
-      '_id': instance.id,
+      'flag': instance.flag,
+      'access_token': instance.accessToken,
+      'refresh_token': instance.refreshToken,
     };

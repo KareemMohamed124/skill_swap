@@ -31,9 +31,9 @@ class NotificationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 18),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: Color(0xFFD6D6D6).withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: 1.2),
+        border: Border.all(color: Color(0xFFD6D6D6), width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,8 +75,8 @@ class NotificationCard extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
@@ -86,7 +86,7 @@ class NotificationCard extends StatelessWidget {
             "Mentor: $mentorName",
             style: TextStyle(
               color: AppColor.mainColor,
-              fontSize: 16,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),

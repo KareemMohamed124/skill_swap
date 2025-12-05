@@ -70,6 +70,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  bottom_inset_observer:
+    dependency: transitive
+    description:
+      name: bottom_inset_observer
+      sha256: cbfb01e0e07cc4922052701786d5e607765a6f54e1844f41061abf8744519a7d
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
+  bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: bottom_sheet
+      sha256: efd28f52357d23e1c01eaeb45466b407f1e29318305bd6d10baf814fda18bd7e
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.4"
   build:
     dependency: transitive
     description:
@@ -254,6 +270,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  dropdown_button2:
+    dependency: "direct main"
+    description:
+      name: dropdown_button2
+      sha256: b0fe8d49a030315e9eef6c7ac84ca964250155a6224d491c1365061bc974a9e1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.9"
+  equatable:
+    dependency: "direct main"
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -299,6 +331,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.1"
+  flutter_gemini:
+    dependency: "direct main"
+    description:
+      name: flutter_gemini
+      sha256: b7264b1d19acc4b1a5628a0e26c0976aa1fb948f0d3243bc3510ff51e09476b7
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -410,14 +450,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  iconsax:
+  iconsax_flutter:
     dependency: "direct main"
     description:
-      name: iconsax
-      sha256: fb0144c61f41f3f8a385fadc27783ea9f5359670be885ed7f35cef32565d5228
+      name: iconsax_flutter
+      sha256: d14b4cec8586025ac15276bdd40f6eea308cb85748135965bb6255f14beb2564
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.8"
+    version: "1.0.1"
   image:
     dependency: transitive
     description:
@@ -430,10 +470,10 @@ packages:
     dependency: "direct main"
     description:
       name: injectable
-      sha256: "32e9bac6fe9c84339c5add60478d27a01e363ce1ad5c22ca7e525c6b28a7559c"
+      sha256: c5dfd2a171dc807780b23d9740d186d83f5430fd9735ce581a413b3310ae44be
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.0"
+    version: "2.7.1"
   injectable_generator:
     dependency: "direct dev"
     description:
@@ -578,6 +618,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  modal_side_sheet:
+    dependency: "direct main"
+    description:
+      name: modal_side_sheet
+      sha256: "10773fa7d6c5582056e5c9ff1e92e430872dac4f33c79a0f7ecf4ce19d4f7d68"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   nested:
     dependency: transitive
     description:
@@ -698,6 +746,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  range_slider_flutter:
+    dependency: "direct main"
+    description:
+      name: range_slider_flutter
+      sha256: ba7efe69101a100ac7d88db0d09610aea69c01d91cb853a5d423affb547607c3
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   recase:
     dependency: transitive
     description:

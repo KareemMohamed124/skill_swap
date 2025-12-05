@@ -1,18 +1,27 @@
 import 'package:json_annotation/json_annotation.dart';
 
 part 'login_success_response_new.g.dart';
-
 @JsonSerializable()
 class LoginSuccessResponseNew {
   final String message;
+  final bool flag;
 
-  @JsonKey(name: "_id")
-  final String id;
+  @JsonKey(name: "access_token")
+  final String accessToken;
 
-  LoginSuccessResponseNew({required this.message, required this.id});
+  @JsonKey(name: "refresh_token")
+  final String refreshToken;
+
+  LoginSuccessResponseNew({
+    required this.message,
+    required this.flag,
+    required this.accessToken,
+    required this.refreshToken,
+  });
 
   factory LoginSuccessResponseNew.fromJson(Map<String, dynamic> json) =>
       _$LoginSuccessResponseNewFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LoginSuccessResponseNewToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$LoginSuccessResponseNewToJson(this);
 }

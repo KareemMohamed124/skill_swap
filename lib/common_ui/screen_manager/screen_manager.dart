@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../../dependency_injection/injection.dart';
 import '../../presentation/chat_screen.dart';
 import '../../presentation/home/screens/home_screen.dart';
 import '../../presentation/profile/screens/profile_screen.dart';
-import '../../presentation/search_screen.dart';
-import '../../presentation/session_screen.dart';
+import '../../presentation/search/screens/search_screen.dart';
+import '../../presentation/sessions/screens/sessions_screen.dart';
 import '../custom_bottom_nav.dart';
 
 class ScreenManager extends StatefulWidget {
@@ -17,12 +20,16 @@ class ScreenManager extends StatefulWidget {
 class _ScreenManagerState extends State<ScreenManager> {
   int currentIndex = 0;
 
-  final screens = const [
-    HomeScreen(),
-    ChatScreen(),
-    SearchScreen(),
-    SessionScreen(),
-    ProfileScreen(),
+  final screens = [
+    const HomeScreen(),
+    const ChatScreen(),
+    BlocProvider(
+        create: (_) => sl<MentorFilterBloc>(),
+        child: const SearchScreen(),
+    ),
+
+    const SessionsScreen(),
+    const ProfileScreen(),
   ];
 
   @override

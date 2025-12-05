@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
                       // Your Next Session Section
                       SectionHeader(sectionTitle: 'Your Next Session', onTop: () { Get.to(NextSessionViewAll()); },),
@@ -108,13 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
                       // Recommended Section
                       SectionHeader(sectionTitle: 'Recommended for You', onTop: () {Get.to(RecommendedViewAll());  },),
                       const SizedBox(height: 8),
                       SizedBox(
-                        height: 188,
+                        height: 178,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppData.recommendedMentors.length,

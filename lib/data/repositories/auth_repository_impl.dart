@@ -58,7 +58,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<LoginResponse> login(LoginRequest request) async {
     try {
       final response = await api.login(request);
+      if (response.message == "User Login Successfully") {
       return LoginSuccess(response);
+      }
+      return LoginFailure(LoginErrorResponse(message: response.message));
+
     } on DioException catch (e) {
       final msg = _getServerErrorMessage(e);
       return LoginFailure(LoginErrorResponse(message: msg));

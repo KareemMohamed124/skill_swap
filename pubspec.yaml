@@ -15,7 +15,7 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   carousel_slider_plus: ^7.1.1
   flutter_bloc: ^9.1.1
-  iconsax: 0.0.8
+  iconsax_flutter: ^1.0.1
   cupertino_icons: ^1.0.8
   get: ^4.6.5
   lottie: ^3.1.0
@@ -28,7 +28,12 @@ dependencies:
   bloc: ^9.1.0
   device_preview: ^1.1.0
   table_calendar: ^3.2.0
-
+  equatable: ^2.0.7
+  bottom_sheet: ^4.0.4
+  dropdown_button2: ^2.3.9
+  modal_side_sheet: ^0.0.1
+  range_slider_flutter: ^0.0.2
+  flutter_gemini: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
