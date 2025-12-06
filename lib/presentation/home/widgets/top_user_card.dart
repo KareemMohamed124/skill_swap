@@ -29,7 +29,7 @@ class TopUserCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        Get.to(ProfileMentor(name: name, track: track, rate: "4.8", image: image,));
+        Get.to(ProfileMentor(name: name, track: track, rate: 4.8, image: image,));
       },
       child: Container(
         width: widthCard,
@@ -59,7 +59,7 @@ class TopUserCard extends StatelessWidget {
             ),
           //  const SizedBox(height: 4),
             Text(
-              track,
+              "$track Developer",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

@@ -5,7 +5,7 @@ class ProfileMentorHeader extends StatelessWidget {
   final String image;
   final String name;
   final String track;
-  final String rate;
+  final double rate;
 
   const ProfileMentorHeader({
     super.key,
@@ -39,7 +39,7 @@ class ProfileMentorHeader extends StatelessWidget {
             style: const TextStyle(fontSize: 18, color: Colors.white),
           ),
           Text(
-            track,
+            "$track Developer",
             style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
           Row(
@@ -48,7 +48,7 @@ class ProfileMentorHeader extends StatelessWidget {
               const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
               const SizedBox(width: 4),
               Text(
-                rate,
+                "$rate",
                 style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
             ],

@@ -8,7 +8,7 @@ class RecommendedCard extends StatelessWidget {
   final String image;
   final String name;
   final String track;
-  final String rating;
+  final double rating;
   final double width;
   final double imageHeight;
 
@@ -62,14 +62,14 @@ class RecommendedCard extends StatelessWidget {
                 const Icon(Icons.star, size: 12, color: Color(0xFFFFCE31)),
                 const SizedBox(width: 4),
                 Text(
-                  rating,
+                  "$rating",
                   style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
             //const SizedBox(height: 4),
             Text(
-              track,
+              "$track Development",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

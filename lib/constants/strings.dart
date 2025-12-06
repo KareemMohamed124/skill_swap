@@ -15,25 +15,25 @@ class AppData {
     TopUser(
       image: "assets/images/people_images/Joumana Johnson.png",
       name: "Joumana Johnson",
-      track: "Mobile Developer",
+      track: "Mobile",
       hours: "48 shared",
     ),
     TopUser(
       image: "assets/images/people_images/Youstina Hazem.png",
       name: "Youstina Hazem",
-      track: "Ui/Ux Developer",
+      track: "Ui/Ux",
       hours: "45 shared",
     ),
     TopUser(
       image: "assets/images/people_images/Max Turner.png",
       name: "Max Turner",
-      track: "Backend Developer",
+      track: "Backend",
       hours: "43 shared",
     ),
     TopUser(
       image: "assets/images/people_images/Liyan Alex.png",
       name: "Liyan Alex",
-      track: "Fronted Developer",
+      track: "Fronted",
       hours: "40 shared",
     ),
   ];
@@ -57,20 +57,20 @@ class AppData {
     RecommendedMentor(
       image: "assets/images/people_images/Maria Garcia.png",
       name: "Maria Garcia",
-      stars: "4.9",
-      track: "React Development",
+      stars: 4.9,
+      track: "React",
     ),
     RecommendedMentor(
       image: "assets/images/people_images/Alex Johnson.png",
       name: "Alex Johnson",
-      stars: "4.8",
-      track: "mobile Development",
+      stars: 4.8,
+      track: "mobile",
     ),
     RecommendedMentor(
       image: "assets/images/people_images/Marcus Johnson.png",
       name: "Marcus Johnson",
-      stars: "4.7",
-      track: "Ui/Ux Development",
+      stars: 4.7,
+      track: "Ui/Ux",
     ),
   ];
 

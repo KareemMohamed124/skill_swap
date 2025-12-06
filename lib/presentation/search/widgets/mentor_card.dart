@@ -8,6 +8,7 @@ class MentorCard extends StatelessWidget {
   final double rate;
   final int hours;
   final double price;
+  final String track;
   final List<String> skills;
   final String responseTime;
 
@@ -19,6 +20,7 @@ class MentorCard extends StatelessWidget {
     required this.rate,
     required this.hours,
     required this.price,
+    required this.track,
     required this.skills,
     required this.responseTime,
   });

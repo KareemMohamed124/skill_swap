@@ -1,7 +1,7 @@
 class RecommendedMentor {
   final String image;
   final String name;
-  final String stars;
+  final double stars;
   final String track;
 
   RecommendedMentor({

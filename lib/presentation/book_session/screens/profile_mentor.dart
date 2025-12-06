@@ -10,7 +10,7 @@ class ProfileMentor extends StatefulWidget {
   final String image;
   final String name;
   final String track;
-  final String rate;
+  final double rate;
 
   const ProfileMentor({
     super.key,

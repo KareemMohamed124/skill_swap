@@ -7,6 +7,7 @@ import 'package:skill_swap/bloc/mentor_filter_bloc/mentor_filter_event.dart';
 import 'package:skill_swap/constants/colors.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_state.dart';
+import '../../book_session/screens/profile_mentor.dart';
 import '../widgets/filterSheet.dart';
 import '../widgets/filter_button.dart';
 import '../widgets/mentor_card.dart';
@@ -143,15 +144,21 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemCount: state.filteredList.length,
                     itemBuilder: (context, index) {
                       final mentor = state.filteredList[index];
-                      return MentorCard(
-                        image: mentor.image,
-                        name: mentor.name,
-                        status: mentor.status,
-                        rate: mentor.rate,
-                        hours: mentor.hours,
-                        price: mentor.price,
-                        skills: mentor.skills,
-                        responseTime: mentor.responseTime,
+                      return InkWell(
+                        onTap: () {
+                           Get.to(ProfileMentor(name:  mentor.name, track: mentor.track, rate:  mentor.rate, image: mentor.image,));
+                        },
+                        child: MentorCard(
+                          image: mentor.image,
+                          name: mentor.name,
+                          status: mentor.status,
+                          rate: mentor.rate,
+                          hours: mentor.hours,
+                          price: mentor.price,
+                          track: mentor.track,
+                          skills: mentor.skills,
+                          responseTime: mentor.responseTime,
+                        ),
                       );
                     },
                   );
