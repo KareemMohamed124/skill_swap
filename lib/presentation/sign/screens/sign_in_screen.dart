@@ -13,7 +13,6 @@ import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
 import '../../../data/models/login/login_request.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
-import '../../home/screens/home_screen.dart';
 import 'sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -98,7 +97,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                     Get.to(ScreenManager());
+                    Get.to(ScreenManager());
                   }
                 },
                 builder: (context, state) {
@@ -181,7 +180,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       context.read<LoginBloc>().add(
                                         LoginSubmit(request),
                                       );
-                                    // Get.to(ScreenManager());
+                                      // Get.to(ScreenManager());
                                     }
                                   },
                         ),
@@ -190,7 +189,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Center(
                           child: TextButton(
                             onPressed: () {
-                             Get.to(ForgetPassword());
+                              Get.to(ForgetPassword());
                             },
                             child: const Text(
                               "Forget Password?",
@@ -210,7 +209,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                 Get.to(SignUpScreen());
+                                  Get.to(SignUpScreen());
                                 },
                                 child: const Text(
                                   "Sign Up",

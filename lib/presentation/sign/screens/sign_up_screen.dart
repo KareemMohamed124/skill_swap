@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/forget_password/screens/email_verification_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
@@ -47,7 +46,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight:
-              MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).size.height -
                   appBar.preferredSize.height -
                   MediaQuery.of(context).padding.top,
             ),
@@ -94,7 +93,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                   Get.to(EmailVerificationScreen(email: emailController.text,));
+                    Get.to(
+                      EmailVerificationScreen(email: emailController.text),
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -195,26 +196,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                         CustomButton(
                           text:
-                          state is RegisterLoading
-                              ? "Registering..."
-                              : "Sign Up",
+                              state is RegisterLoading
+                                  ? "Registering..."
+                                  : "Sign Up",
                           onPressed:
-                          state is RegisterLoading
-                              ? null
-                              : () {
-                            if (formKey.currentState!.validate()) {
-                              final request = RegisterRequest(
-                                name: nameController.text,
-                                email: emailController.text,
-                                password: passwordController.text,
-                                confirmPassword:
-                                confirmPasswordController.text,
-                              );
-                              context.read<RegisterBloc>().add(
-                                RegisterSubmit(request),
-                              );
-                            }
-                          },
+                              state is RegisterLoading
+                                  ? null
+                                  : () {
+                                    if (formKey.currentState!.validate()) {
+                                      final request = RegisterRequest(
+                                        name: nameController.text,
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                        confirmPassword:
+                                            confirmPasswordController.text,
+                                      );
+                                      context.read<RegisterBloc>().add(
+                                        RegisterSubmit(request),
+                                      );
+                                    }
+                                  },
                         ),
                       ],
                     ),

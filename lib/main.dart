@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/presentation/book_session/screens/book_session.dart';
-import 'package:skill_swap/presentation/home/screens/home_screen.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dart';
-import 'package:skill_swap/presentation/profile/screens/profile_screen.dart';
-import 'package:skill_swap/presentation/search/screens/search_screen.dart';
-import 'package:skill_swap/presentation/sessions/screens/sessions_screen.dart';
-import 'package:skill_swap/presentation/skill_verification/result_screen.dart';
-import 'common_ui/screen_manager/screen_manager.dart';
 import 'data/quiz/quiz_controller.dart';
 import 'dependency_injection/injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
     Gemini.init(apiKey: QuizController.apiKey);
     print("✅ Gemini initialized with API key");
@@ -25,7 +20,8 @@ void main() async {
   }
 
   await initDependencies();
-  runApp(const MyApp());
+
+  runApp(DevicePreview(enabled: true, builder: (context) => const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,13 +32,16 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'SkillSwap',
       debugShowCheckedModeBanner: false,
+
+      /// ✅ مهم لـ Device Preview
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
+
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      useInheritedMediaQuery: true,
-      /////////////////////////OnBoardingScreen
       home: OnBoardingScreen(),
-
     );
   }
 }

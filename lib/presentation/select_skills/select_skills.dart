@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/common_ui/screen_manager/screen_manager.dart';
-import 'package:skill_swap/presentation/home/screens/home_screen.dart';
 import 'package:skill_swap/presentation/select_skills/select_track.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import '../../constants/colors.dart';
@@ -63,7 +61,7 @@ class SelectSkills extends StatelessWidget {
                   text: 'Skip',
                   widthButton: 172,
                   onPressed: () {
-                   Get.to(SelectTrack());
+                    Get.to(SelectTrack());
                   },
                 ),
                 const SizedBox(height: 16),

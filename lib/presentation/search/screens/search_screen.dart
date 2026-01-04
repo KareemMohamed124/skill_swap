@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 import 'package:skill_swap/bloc/mentor_filter_bloc/mentor_filter_event.dart';
 import 'package:skill_swap/constants/colors.dart';
@@ -39,7 +38,6 @@ class _SearchScreenState extends State<SearchScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-
             Row(
               children: [
                 Expanded(
@@ -50,9 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       cursorColor: AppColor.mainColor,
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: AppColor.mainColor,
-                          ),
+                          borderSide: BorderSide(color: AppColor.mainColor),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         focusedBorder: OutlineInputBorder(
@@ -65,9 +61,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         hintText: "Search by skill or mentor name...",
                       ),
                       onChanged: (searchValue) {
-                        context
-                            .read<MentorFilterBloc>()
-                            .add(SearchMentorEvent(searchValue));
+                        context.read<MentorFilterBloc>().add(
+                          SearchMentorEvent(searchValue),
+                        );
                         setState(() {
                           isSearched = searchValue.isNotEmpty;
                         });
@@ -78,28 +74,19 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(width: 8),
 
                 Container(
-
                   height: 50,
 
                   width: 50,
 
                   decoration: BoxDecoration(
-
                     // color: AppColor.grayColor,
-
                     borderRadius: BorderRadius.circular(16),
 
-                    border: Border.all(
-
-                      color: AppColor.mainColor, ),
-
-
-
+                    border: Border.all(color: AppColor.mainColor),
                   ),
 
-
                   child: IconButton(
-                    icon: Icon(Icons.tune_outlined, color: AppColor.mainColor,),
+                    icon: Icon(Icons.tune_outlined, color: AppColor.mainColor),
                     onPressed: () async {
                       final bloc = context.read<MentorFilterBloc>();
                       final activeFilters = await showModalSideSheet<int>(
@@ -131,7 +118,9 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 const Expanded(child: SortButton()),
                 const SizedBox(width: 8),
-                Expanded(child: FilterButton(activeFilters: activeFiltersCount,)),
+                Expanded(
+                  child: FilterButton(activeFilters: activeFiltersCount),
+                ),
               ],
             ),
 
@@ -146,7 +135,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       final mentor = state.filteredList[index];
                       return InkWell(
                         onTap: () {
-                           Get.to(ProfileMentor(name:  mentor.name, track: mentor.track, rate:  mentor.rate, image: mentor.image,));
+                          Get.to(
+                            ProfileMentor(
+                              name: mentor.name,
+                              track: mentor.track,
+                              rate: mentor.rate,
+                              image: mentor.image,
+                            ),
+                          );
                         },
                         child: MentorCard(
                           image: mentor.image,

@@ -1,7 +1,7 @@
+// quiz_controller.dart
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
-
 import '../../presentation/skill_verification/result_screen.dart';
 
 class QuizQuestion {
@@ -25,7 +25,8 @@ class QuizQuestion {
 }
 
 class QuizController extends GetxController {
-  static const apiKey = "AIzaSyDz01eafVGuj78DhTt1V7YWSMFiIbkpRC8";
+  static const int totalTimeInSeconds = 15 * 60;
+  static const apiKey = "AIzaSyCork2cg_yYvuqwjbRv0yIRCJ4k0OmZ-U4";
   final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;
@@ -40,7 +41,8 @@ class QuizController extends GetxController {
     currentSkill.value = skill;
 
     final prompt = """
-Generate exactly 10 multiple-choice questions about $skill.
+Generate exactly 15 multiple-choice questions about $skill.
+The questions should gradually increase in difficulty, from easy to very hard.
 Return ONLY a valid JSON array like:
 
 [
@@ -60,11 +62,9 @@ No explanation, no text outside the JSON.
       print("🔵 RAW GEMINI RESPONSE:");
       print(text);
 
-      String jsonString = "";
       int startIndex = text.indexOf('[');
-
       if (startIndex == -1) {
-        print("❌ No JSON array found (no opening bracket)");
+        print("❌ No JSON array found");
         questions.clear();
         loading.value = false;
         return;
@@ -72,44 +72,34 @@ No explanation, no text outside the JSON.
 
       int bracketCount = 0;
       int endIndex = startIndex;
-
       for (int i = startIndex; i < text.length; i++) {
-        if (text[i] == '[') {
+        if (text[i] == '[')
           bracketCount++;
-        } else if (text[i] == ']') {
+        else if (text[i] == ']')
           bracketCount--;
-          if (bracketCount == 0) {
-            endIndex = i + 1;
-            break;
-          }
+        if (bracketCount == 0) {
+          endIndex = i + 1;
+          break;
         }
       }
 
       if (bracketCount != 0) {
-        print("❌ Incomplete JSON array (brackets don't match)");
+        print("❌ Incomplete JSON array");
         questions.clear();
         loading.value = false;
         return;
       }
 
-      jsonString = text.substring(startIndex, endIndex).trim();
-      print("🟢 Extracted JSON:");
-      print(jsonString);
-
+      String jsonString = text.substring(startIndex, endIndex).trim();
       final List data = jsonDecode(jsonString);
-
       questions.value = data.map((e) => QuizQuestion.fromJson(e)).toList();
 
       for (var q in questions) {
         while (q.options.length < 4) {
           q.options.add("Option ${q.options.length + 1}");
         }
-        if (q.options.length > 4) {
-          q.options = q.options.sublist(0, 4);
-        }
+        if (q.options.length > 4) q.options = q.options.sublist(0, 4);
       }
-
-      print("🟢 Final parsed questions = ${questions.length}");
     } catch (e) {
       print("❌ ERROR: $e");
       questions.clear();
@@ -121,8 +111,8 @@ No explanation, no text outside the JSON.
   void nextQuestion() {
     if (selectedOption.value != null) {
       if (questions[index.value].options[selectedOption.value!]
-          .trim()
-          .toLowerCase() ==
+              .trim()
+              .toLowerCase() ==
           questions[index.value].correctAnswer.trim().toLowerCase()) {
         correct.value++;
       }
@@ -132,10 +122,7 @@ No explanation, no text outside the JSON.
       index.value++;
       selectedOption.value = null;
     } else {
-      Get.to(
-        () => ResultScreen(),
-        arguments: {'score': correct.value, 'total': questions.length},
-      );
+      goToResult();
     }
   }
 
@@ -152,5 +139,12 @@ No explanation, no text outside the JSON.
     selectedOption.value = null;
     questions.clear();
     currentSkill.value = '';
+  }
+
+  void goToResult() {
+    Get.to(
+      () => ResultScreen(),
+      arguments: {'score': correct.value, 'total': questions.length},
+    );
   }
 }

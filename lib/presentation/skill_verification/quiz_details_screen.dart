@@ -80,7 +80,7 @@ class QuizDetailsScreen extends StatelessWidget {
                       SizedBox(width: 8),
                       Chip(
                         label: Text(
-                          "10 Q",
+                          "15 Q",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class QuizDetailsScreen extends StatelessWidget {
                       SizedBox(width: 8),
                       Chip(
                         label: Text(
-                          "30m",
+                          "15m",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -106,7 +106,7 @@ class QuizDetailsScreen extends StatelessWidget {
 
                   const Text(
                     "Test your knowledge of basics including variables, "
-                        "functions and control structures.",
+                    "functions and control structures.",
                     style: TextStyle(fontSize: 12, color: Color(0XFF0D035F)),
                   ),
 
@@ -116,7 +116,7 @@ class QuizDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       Text("Questions:", style: TextStyle(fontSize: 12)),
-                      Text("10", style: TextStyle(fontSize: 12)),
+                      Text("15", style: TextStyle(fontSize: 12)),
                     ],
                   ),
                   SizedBox(height: 8),
@@ -125,7 +125,7 @@ class QuizDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       Text("Time Limit:", style: TextStyle(fontSize: 12)),
-                      Text("30 minutes", style: TextStyle(fontSize: 12)),
+                      Text("15 minutes", style: TextStyle(fontSize: 12)),
                     ],
                   ),
 
@@ -212,7 +212,7 @@ class QuizDetailsScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             Obx(
-                  () => SizedBox(
+              () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -223,50 +223,50 @@ class QuizDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed:
-                  controller.loading.value
-                      ? null
-                      : () async {
-                    controller.loading.value = true;
+                      controller.loading.value
+                          ? null
+                          : () async {
+                            controller.loading.value = true;
 
-                    await controller.generateQuiz(skillName);
+                            await controller.generateQuiz(skillName);
 
-                    controller.loading.value = false;
+                            controller.loading.value = false;
 
-                    if (controller.questions.isNotEmpty) {
-                      Get.to(() => QuizScreen());
-                    } else {
-                      Get.snackbar(
-                        'Error',
-                        'Failed to generate quiz.',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    }
-                  },
+                            if (controller.questions.isNotEmpty) {
+                              Get.to(() => QuizScreen());
+                            } else {
+                              Get.snackbar(
+                                'Error',
+                                'Failed to generate quiz.',
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            }
+                          },
                   child:
-                  controller.loading.value
-                      ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                      : const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.timer, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        "Start Quiz",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                      controller.loading.value
+                          ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.timer, color: Colors.white, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                "Start Quiz",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                 ),
               ),
             ),
