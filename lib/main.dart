@@ -16,6 +16,7 @@ import 'dependency_injection/injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   try {
     Gemini.init(apiKey: QuizController.apiKey);
     print("✅ Gemini initialized with API key");

@@ -51,7 +51,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
           ),
 
           Positioned(
-            top: 200,
+            top: 132,
             left: 0,
             right: 0,
             bottom: 0,
@@ -169,7 +169,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       const SizedBox(height: 8),
                       ReviewsPage(),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
 
                       // CustomButton(
                       //   text: "Session details",
@@ -202,7 +202,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
               ),
               child: IconButton(
                 icon: Icon(Iconsax.message, color: AppColor.mainColor,),
-                onPressed: () {Get.to(PrivateChatScreen(currentUserId: '', otherUserId: '', otherUserName: '',));},
+                onPressed: () {Get.to(PrivateChatScreen(currentUserId: '1', otherUserId: '2', otherUserName: 'Nada',));},
               ),
             ),
             const SizedBox(width: 8),

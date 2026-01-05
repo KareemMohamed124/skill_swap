@@ -34,8 +34,8 @@ class ProfileMentorHeader extends StatelessWidget {
             ClipOval(
               child: Image.asset(
                 image,
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
                 fit: BoxFit.cover,
               ),
             ),
@@ -50,20 +50,26 @@ class ProfileMentorHeader extends StatelessWidget {
                     style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   const SizedBox(height: 4),
-              Text(
-                "$track Developer",
-                style: const TextStyle(fontSize: 16, color: Colors.white70),
-              ),
-                  const SizedBox(height: 4),
+
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
-                      const SizedBox(width: 4),
                       Text(
-                        "$rate",
-                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                        "$track Developer • ",
+                        style: const TextStyle(fontSize: 16, color: Colors.white70),
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
+                          const SizedBox(width: 4),
+                          Text(
+                            "$rate",
+                            style: const TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ],
