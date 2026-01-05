@@ -6,6 +6,7 @@ import 'package:skill_swap/presentation/home/models/top_user.dart';
 
 import 'package:skill_swap/presentation/home/models/top_user.dart';
 
+import '../presentation/history/models/history_model.dart';
 import '../presentation/sessions/models/session.dart';
 import '../presentation/search/models/mentor_model.dart';
 import '../presentation/home/models/next_session.dart';
@@ -48,7 +49,7 @@ class AppData {
     NextSession(
       image: "assets/images/people_images/Liyan Alex.png",
       name: "Liyan Alex",
-      time: "Today, 6:00 PM . 30m . Chat Session",
+      time: "Today, 6:00 PM . 30m . Video Call",
       duration: "• Starts in 4h",
     ),
   ];
@@ -311,7 +312,7 @@ class AppData {
       image: "assets/images/people_images/Joumana Johnson.png",
       name: "Joumana Johnson",
       role: "Mentor",
-      type: "Chat Session",
+      type: "Video Session",
       dateTime: DateTime(2025, 1, 12, 10, 30),
       price: "35",
       status: "Confirmed",
@@ -332,7 +333,7 @@ class AppData {
       id: "3",
       image: "assets/images/people_images/Marcus Johnson.png",
       name: "Marcus Johnson",
-      role: "Mentor",
+      role: "Student",
       type: "1:1 Session",
       dateTime: DateTime(2025, 1, 13, 11, 00),
       price: "Free",
@@ -344,7 +345,7 @@ class AppData {
       image: "assets/images/people_images/Sarah Smith.png",
       name: "Sarah Smith",
       role: "UI/UX Designer",
-      type: "Chat Session",
+      type: "Video Session",
       dateTime: DateTime(2025, 1, 13, 16, 30),
       price: "Free",
       status: "Live Now",
@@ -380,7 +381,7 @@ class AppData {
       image: "assets/images/people_images/Alex Johnson.png",
       name: "Alex Johnson",
       role: "React Development",
-      type: "Chat Session",
+      type: "Video Session",
       dateTime: DateTime(2025, 1, 10, 11, 00),
       price: "Free",
       status: "NewRequest",
@@ -427,7 +428,7 @@ class AppData {
       image: "assets/images/people_images/Sarah Smith.png",
       name: "Sarah Smith",
       role: "Mentor",
-      type: "Chat Session",
+      type: "Video Session",
       dateTime: DateTime.now().add(const Duration(days: 1)),
       price: "30",
       status: "PendingApproval",
@@ -437,12 +438,125 @@ class AppData {
       id: "3",
       image: "assets/images/people_images/Marcus Johnson.png",
       name: "Marcus Johnson",
-      role: "Mentor",
-      type: "Chat Session",
+      role: "Student",
+      type: "Video Session",
       dateTime: DateTime(2025, 1, 13, 11, 00),
       price: "Free",
       status: "Live Now",
       timeAgo: ""
     ),
   ];
+
+ static List<HistoryModel> completedSessions = [
+   HistoryModel(
+      name: "Joumana Johnson",
+      role: "Web Developer",
+      date: "Oct 3, 2025",
+      time: "4:00 PM",
+      duration: "60 min",
+      status: "Finished",
+      rating: 5,
+      imageUrl: "assets/images/people_images/Joumana Johnson.png",
+    ),
+   HistoryModel(
+      name: "Lisa Wang",
+      role: "UI/UX Developer",
+      date: "Sep 26, 2025",
+      time: "1:00 PM",
+      duration: "45 min",
+      status: "Finished",
+      rating: 4,
+      imageUrl: "assets/images/people_images/Lisa Wang.png",
+    ),
+   HistoryModel(
+      name: "Marcus Johnson",
+      role: "Mobile Developer",
+      date: "Sep 15, 2025",
+      time: "5:30 PM",
+      duration: "90 min",
+      status: "Finished",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Marcus Johnson.png",
+    ),
+   HistoryModel(
+     name: "Mark Anthony",
+     role: "Backend Developer",
+     date: "Sep 15, 2025",
+     time: "5:30 PM",
+     duration: "90 min",
+     status: "Finished",
+     rating: 0,
+     imageUrl:  "assets/images/people_images/Mark Anthony.jpg",
+   ),
+
+ ];
+
+ static List<HistoryModel> cancelledSessions = [
+   HistoryModel(
+     name: "Sarah Adams",
+     role: "Mobile Developer",
+     date: "Oct 1, 2025",
+     time: "3:00 PM",
+     duration: "60 min",
+     status: "Cancelled",
+     rating: 0,
+     imageUrl: "assets/images/people_images/Sarah Adams.jpg",
+   ),
+   HistoryModel(
+     name: "Daniel Lee",
+     role: "Data Science",
+     date: "Sep 28, 2025",
+     time: "11:00 AM",
+     duration: "30 min",
+     status: "Cancelled",
+     rating: 0,
+     imageUrl: "assets/images/people_images/Daniel Lee.jpg",
+   ),
+   HistoryModel(
+     name: "Mia Fernandez",
+     role: "Web Developer",
+     date: "Sep 20, 2025",
+     time: "6:00 PM",
+     duration: "45 min",
+     status: "Cancelled",
+     rating: 0,
+     imageUrl: "assets/images/people_images/Mia Fernandez.jpg",
+   ),
+ ];
+
+ static List<HistoryModel> issueSessions = [
+   HistoryModel(
+     name: "Alex Johnson",
+     role: "Flutter Developer",
+     date: "Oct 2, 2025",
+     time: "2:00 PM",
+     duration: "60 min",
+     status: "Rejected",
+     rating: 0,
+     errorMessage: "Schedule conflict",
+     imageUrl: "assets/images/people_images/Alex Johnson.png",
+   ),
+   HistoryModel(
+     name: "Kevin Smith",
+     role: "AI Basics",
+     date: "Sep 30, 2025",
+     time: "5:00 PM",
+     duration: "60 min",
+     status: "Rejected",
+     rating: 0,
+     errorMessage: "User unavailable",
+     imageUrl: "assets/images/people_images/Kevin Smith.jpg",
+   ),
+   HistoryModel(
+     name: "Emily Carter",
+     role: "Business Strategy",
+     date: "Sep 22, 2025",
+     time: "7:00 PM",
+     duration: "45 min",
+     status: "Rejected",
+     rating: 0,
+     errorMessage: "Technical issue",
+     imageUrl: "assets/images/people_images/Emily Carter.jpg",
+   ),
+ ];
   }

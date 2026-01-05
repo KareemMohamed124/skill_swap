@@ -26,6 +26,7 @@ class NextSessionCard extends StatelessWidget {
       child: Container(
         height: 78,
         decoration: BoxDecoration(
+          color: AppColor.grayColor.withValues(alpha: 0.20),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColor.mainColor),
         ),

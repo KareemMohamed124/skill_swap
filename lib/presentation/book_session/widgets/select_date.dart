@@ -26,7 +26,7 @@ class _SelectDateState extends State<SelectDate> {
     return Container(
       height: 288,
       decoration: BoxDecoration(
-        color: AppColor.grayColor,
+        color: AppColor.grayColor.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(8),

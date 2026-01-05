@@ -7,6 +7,8 @@ import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dar
 import 'package:skill_swap/presentation/profile/screens/profile_screen.dart';
 import 'package:skill_swap/presentation/search/screens/search_screen.dart';
 import 'package:skill_swap/presentation/sessions/screens/sessions_screen.dart';
+import 'package:skill_swap/presentation/setting/widgets/profile.dart';
+import 'package:skill_swap/presentation/setting/screens/setting.dart';
 import 'package:skill_swap/presentation/skill_verification/result_screen.dart';
 import 'common_ui/screen_manager/screen_manager.dart';
 import 'data/quiz/quiz_controller.dart';

@@ -35,6 +35,7 @@ class TopUserCard extends StatelessWidget {
         width: widthCard,
         //height: heightCard,
         decoration: BoxDecoration(
+          color: AppColor.grayColor.withValues(alpha: 0.20),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColor.mainColor),
         ),

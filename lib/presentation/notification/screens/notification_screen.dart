@@ -28,7 +28,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
 
           Positioned(
-            top: 96,
+            top: 80,
             left: 0,
             right: 0,
             bottom: 0,

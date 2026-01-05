@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:retrofit/retrofit.dart';
+import 'package:skill_swap/common_ui/circle_button_icon.dart';
+
+import '../../setting/screens/setting.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({Key? key}) : super(key: key);
@@ -41,19 +46,21 @@ class ProfileHeader extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(
-                    'https://i.pravatar.cc/150?img=3',
-                  ),
-                ),
+                  ClipOval(
+            child: Image.asset(
+              'assets/images/people_images/nada.jpg',
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+            ),
+    ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Liyan Alex',
+                        'Nada Sayed',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -71,7 +78,10 @@ class ProfileHeader extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.settings, color: Colors.white),
+              //  const Icon(Icons.settings, color: Colors.white),
+                CircleButtonIcon(icon: Icons.settings, onTap: (){
+                  Get.to(SettingScreen());
+                })
               ],
             ),
           ),

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:skill_swap/common_ui/circle_button_icon.dart';
 
 import '../../../constants/colors.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../history/screens/history_screen.dart';
 
 class SessionsHeader extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelect;
   final String title;
   final String subtitle;
-  final VoidCallback? onBack;
-  final VoidCallback? onHistory;
 
   const SessionsHeader({
     super.key,
@@ -18,8 +20,6 @@ class SessionsHeader extends StatelessWidget {
     required this.onSelect,
     required this.title,
     required this.subtitle,
-    this.onBack,
-    this.onHistory,
   });
 
   @override
@@ -70,14 +70,14 @@ class SessionsHeader extends StatelessWidget {
                   ],
                 ),
               ),
-
-              IconButton(
-                onPressed: onHistory,
-                icon: const Icon(
-                  Icons.history,
-                  color: AppColor.whiteColor,
-                ),
-              ),
+             CircleButtonIcon(icon: Icons.history, onTap: (){Get.to(HistoryScreen());},),
+              // IconButton(
+              //   onPressed: onHistory,
+              //   icon: const Icon(
+              //     Icons.history,
+              //     color: AppColor.whiteColor,
+              //   ),
+              // ),
             ],
           ),
 
@@ -114,9 +114,9 @@ Widget SelectStatus({
       return GestureDetector(
         onTap: () => onSelect(index),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // padding حوالي الكلمة
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: isSelected ? AppColor.grayColor : AppColor.selectedButtonColor,
+            color: isSelected ? AppColor.whiteColor : AppColor.selectedButtonColor,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(

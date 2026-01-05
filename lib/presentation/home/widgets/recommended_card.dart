@@ -32,6 +32,7 @@ class RecommendedCard extends StatelessWidget {
       child: Container(
         width: width,
         decoration: BoxDecoration(
+          color: AppColor.grayColor.withValues(alpha: 0.20),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColor.mainColor),
         ),

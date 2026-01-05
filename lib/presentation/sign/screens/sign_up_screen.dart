@@ -40,191 +40,201 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return BlocProvider(
       create: (_) => sl<RegisterBloc>(),
-      child: Scaffold(
-        backgroundColor: AppColor.mainColor,
-        appBar: appBar,
-        body: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight:
-              MediaQuery.of(context).size.height -
-                  appBar.preferredSize.height -
-                  MediaQuery.of(context).padding.top,
+      child:  Scaffold(
+        backgroundColor: AppColor.whiteColor,
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                 const CustomAppBar(title: "Sign Up")
+              ],
             ),
-            child: Container(
-              width: screenWidth,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+            Positioned(
+              top: 80,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: BlocConsumer<RegisterBloc, RegisterState>(
+                      listener: (context, state) {
+                        if (state is RegisterFailureState) {
+                          setState(() {
+                            nameError = null;
+                            emailError = null;
+                            passwordError = null;
+                            confirmPasswordError = null;
+
+                            final validationErrors = state.error.validationErrors;
+                            if (validationErrors != null) {
+                              for (var err in validationErrors) {
+                                switch (err.field) {
+                                  case "name":
+                                    nameError = err.message;
+                                    break;
+                                  case "email":
+                                    emailError = err.message;
+                                    break;
+                                  case "password":
+                                    passwordError = err.message;
+                                    break;
+                                  case "confirmPassword":
+                                    confirmPasswordError = err.message;
+                                    break;
+                                }
+                              }
+                            }
+                          });
+                        } else if (state is RegisterSuccessState) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(state.data.message)));
+                          Get.to(EmailVerificationScreen(email: emailController.text,));
+                        }
+                      },
+                      builder: (context, state) {
+                        return Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Create Account",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Join us and start your learning journey today!",
+                                style: TextStyle(color: Colors.black54),
+                              ),
+                              const SizedBox(height: 32),
+
+                              CustomTextField(
+                                controller: nameController,
+                                labelText: "Full Name",
+                                hintText: "Enter your full name",
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Name is required";
+                                  }
+                                  if (value.length < 2 || value.length > 20) {
+                                    return "Name must be between 2 and 20 characters";
+                                  }
+                                  if (!RegExp(
+                                    r'^[a-zA-Z][a-zA-Z0-9]*$',
+                                  ).hasMatch(value)) {
+                                    return "Must start with a letter and contain only letters and numbers";
+                                  }
+                                  return nameError;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+
+                              CustomTextField(
+                                controller: emailController,
+                                labelText: "Email",
+                                hintText: "Enter your email",
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Email is required";
+                                  }
+                                  if (!RegExp(
+                                    r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                                  ).hasMatch(value)) {
+                                    return "Enter a valid email";
+                                  }
+                                  return emailError;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+
+                              CustomTextField(
+                                controller: passwordController,
+                                labelText: "Password",
+                                hintText: "Create a password",
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Password is required";
+                                  }
+                                  if (!RegExp(
+                                    r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$',
+                                  ).hasMatch(value)) {
+                                    return "At least 8 chars, 1 uppercase, 1 lowercase, 1 number";
+                                  }
+                                  return passwordError;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+
+                              CustomTextField(
+                                controller: confirmPasswordController,
+                                labelText: "Confirm Password",
+                                hintText: "Confirm your password",
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Confirm password is required";
+                                  }
+                                  if (value != passwordController.text) {
+                                    return "Must match password";
+                                  }
+                                  return confirmPasswordError;
+                                },
+                              ),
+                              const SizedBox(height: 32),
+
+                              CustomButton(
+                                text:
+                                state is RegisterLoading
+                                    ? "Registering..."
+                                    : "Sign Up",
+                                onPressed:
+                                state is RegisterLoading
+                                    ? null
+                                    : () {
+                                  if (formKey.currentState!.validate()) {
+                                    final request = RegisterRequest(
+                                      name: nameController.text,
+                                      email: emailController.text,
+                                      password: passwordController.text,
+                                      confirmPassword:
+                                      confirmPasswordController.text,
+                                    );
+                                    context.read<RegisterBloc>().add(
+                                      RegisterSubmit(request),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+                  ),
                 ),
               ),
-              padding: const EdgeInsets.all(16),
-              child: BlocConsumer<RegisterBloc, RegisterState>(
-                listener: (context, state) {
-                  if (state is RegisterFailureState) {
-                    setState(() {
-                      nameError = null;
-                      emailError = null;
-                      passwordError = null;
-                      confirmPasswordError = null;
-
-                      final validationErrors = state.error.validationErrors;
-                      if (validationErrors != null) {
-                        for (var err in validationErrors) {
-                          switch (err.field) {
-                            case "name":
-                              nameError = err.message;
-                              break;
-                            case "email":
-                              emailError = err.message;
-                              break;
-                            case "password":
-                              passwordError = err.message;
-                              break;
-                            case "confirmPassword":
-                              confirmPasswordError = err.message;
-                              break;
-                          }
-                        }
-                      }
-                    });
-                  } else if (state is RegisterSuccessState) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                   Get.to(EmailVerificationScreen(email: emailController.text,));
-                  }
-                },
-                builder: (context, state) {
-                  return Form(
-                    key: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Create Account",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          "Join us and start your learning journey today!",
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                        const SizedBox(height: 32),
-
-                        CustomTextField(
-                          controller: nameController,
-                          labelText: "Full Name",
-                          hintText: "Enter your full name",
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Name is required";
-                            }
-                            if (value.length < 2 || value.length > 20) {
-                              return "Name must be between 2 and 20 characters";
-                            }
-                            if (!RegExp(
-                              r'^[a-zA-Z][a-zA-Z0-9]*$',
-                            ).hasMatch(value)) {
-                              return "Must start with a letter and contain only letters and numbers";
-                            }
-                            return nameError;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          controller: emailController,
-                          labelText: "Email",
-                          hintText: "Enter your email",
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Email is required";
-                            }
-                            if (!RegExp(
-                              r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
-                            ).hasMatch(value)) {
-                              return "Enter a valid email";
-                            }
-                            return emailError;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          controller: passwordController,
-                          labelText: "Password",
-                          hintText: "Create a password",
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Password is required";
-                            }
-                            if (!RegExp(
-                              r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$',
-                            ).hasMatch(value)) {
-                              return "At least 8 chars, 1 uppercase, 1 lowercase, 1 number";
-                            }
-                            return passwordError;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          controller: confirmPasswordController,
-                          labelText: "Confirm Password",
-                          hintText: "Confirm your password",
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Confirm password is required";
-                            }
-                            if (value != passwordController.text) {
-                              return "Must match password";
-                            }
-                            return confirmPasswordError;
-                          },
-                        ),
-                        const SizedBox(height: 32),
-
-                        CustomButton(
-                          text:
-                          state is RegisterLoading
-                              ? "Registering..."
-                              : "Sign Up",
-                          onPressed:
-                          state is RegisterLoading
-                              ? null
-                              : () {
-                            if (formKey.currentState!.validate()) {
-                              final request = RegisterRequest(
-                                name: nameController.text,
-                                email: emailController.text,
-                                password: passwordController.text,
-                                confirmPassword:
-                                confirmPasswordController.text,
-                              );
-                              context.read<RegisterBloc>().add(
-                                RegisterSubmit(request),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
             ),
-          ),
+          ],
         ),
-      ),
+
+      )
     );
   }
 }

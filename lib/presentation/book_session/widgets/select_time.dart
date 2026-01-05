@@ -41,7 +41,7 @@ class _SelectTimeState extends State<SelectTime> {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: isSelected ? AppColor.mainColor: AppColor.grayColor,
+              color: isSelected ? AppColor.mainColor: AppColor.grayColor.withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(

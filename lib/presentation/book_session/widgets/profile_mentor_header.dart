@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:skill_swap/constants/colors.dart';
+
+import '../../../common_ui/circle_button_icon.dart';
 
 class ProfileMentorHeader extends StatelessWidget {
   final String image;
@@ -18,43 +21,99 @@ class ProfileMentorHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 160,
       width: double.infinity,
-      color: AppColor.mainColor,
-      height: 216,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 16,),
-          ClipOval(
-            child: Image.asset(
-              image,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            name,
-            style: const TextStyle(fontSize: 18, color: Colors.white),
-          ),
-          Text(
-            "$track Developer",
-            style: const TextStyle(fontSize: 16, color: Colors.white70),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
-              const SizedBox(width: 4),
-              Text(
-                "$rate",
-                style: const TextStyle(fontSize: 14, color: Colors.white),
-              ),
-            ],
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: AppColor.mainColor,
       ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipOval(
+              child: Image.asset(
+                image,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  const SizedBox(height: 4),
+              Text(
+                "$track Developer",
+                style: const TextStyle(fontSize: 16, color: Colors.white70),
+              ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
+                      const SizedBox(width: 4),
+                      Text(
+                        "$rate",
+                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+      ///////////////////////////////
+      Container(
+        width: double.infinity,
+        color: AppColor.mainColor,
+        height: 216,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 16,),
+            ClipOval(
+              child: Image.asset(
+                image,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              name,
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            Text(
+              "$track Developer",
+              style: const TextStyle(fontSize: 16, color: Colors.white70),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
+                const SizedBox(width: 4),
+                Text(
+                  "$rate",
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                ),
+              ],
+            ),
+          ],
+        ),
     );
   }
 }
+
+

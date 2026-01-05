@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../dependency_injection/injection.dart';
-import '../../presentation/chat_screen.dart';
+import '../../presentation/chat_channel/chat_screen.dart';
+import '../../presentation/chat_channel/chat_screen.dart';
 import '../../presentation/home/screens/home_screen.dart';
 import '../../presentation/profile/screens/profile_screen.dart';
 import '../../presentation/search/screens/search_screen.dart';
@@ -22,7 +23,7 @@ class _ScreenManagerState extends State<ScreenManager> {
 
   final screens = [
     const HomeScreen(),
-    const ChatScreen(),
+    const ChatScreen(channelName: '',),
     BlocProvider(
         create: (_) => sl<MentorFilterBloc>(),
         child: const SearchScreen(),

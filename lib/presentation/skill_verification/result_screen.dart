@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:skill_swap/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/presentation/profile/screens/profile_screen.dart';
 
+import '../../common_ui/screen_manager/screen_manager.dart';
+
 class ResultScreen extends StatelessWidget {
   final int score = Get.arguments['score'];
   final int total = Get.arguments['total'];
@@ -106,33 +108,13 @@ class ResultScreen extends StatelessWidget {
                   if (Get.isRegistered<QuizController>()) {
                     Get.find<QuizController>().resetQuiz();
                   }
-                  Get.to(ProfileScreen());
+                  Get.to(ScreenManager());
                 },
                 child: const Text(
                   "Continue",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  side: const BorderSide(color: Color(0xFF0D035F)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: () {
-                  Get.back();
-                },
-                child: const Text(
-                  "Back to Profile",
-                  style: TextStyle(
-                    color: Color(0xFF0D035F),
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

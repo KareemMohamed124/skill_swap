@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../common_ui/custom_bottom_nav.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_tabs.dart';
 import '../pages/overview_page.dart';
@@ -35,68 +34,64 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Scaffold(
       body: Stack(
         children: [
-          Column(
-            children: [
-              const ProfileHeader(),
-            ],
+          Column(children: [const ProfileHeader()]),
+          Positioned(
+            top: 184,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: double.infinity,
+              constraints: BoxConstraints(minHeight: screenHeight),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40),
+                      ),
+                      child: Container(
+                        color: Color(0XFFFFFFFF),
+                        child: Column(
+                          children: [
+                            ProfileTabs(
+                                tabController: _tabController,
+                                tabs: const ['Overview', 'Skills', 'Reviews']
+                            ),
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: const [
+                                  OverviewPage(),
+                                  SkillsPage(),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                    ),
+                                    child: ReviewsPage(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-         Positioned(
-             top: 184,
-             left: 0,
-             right: 0,
-             bottom: 0,
-             child: Container(
-               width: double.infinity,
-               constraints: BoxConstraints(minHeight: screenHeight),
-               decoration: const BoxDecoration(
-                 color: Colors.white,
-                 borderRadius: BorderRadius.only(
-                   topLeft: Radius.circular(24),
-                   topRight: Radius.circular(24),
-                 ),
-               ),
-               child: Column(
-                 children: [
-                   Expanded(
-                     child: ClipRRect(
-                       borderRadius: const BorderRadius.only(
-                         topLeft: Radius.circular(40),
-                         topRight: Radius.circular(40),
-                       ),
-                       child: Container(
-                         color: Color(0XFFFFFFFF),
-                         child: Column(
-                           children: [
-                             ProfileTabs(tabController: _tabController),
-                             Expanded(
-                               child: TabBarView(
-                                 controller: _tabController,
-                                 children: const [
-                                   OverviewPage(),
-                                   SkillsPage(),
-                                   Padding(
-                                     padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                     child: ReviewsPage(),
-                                   ),
-                                 ],
-                               ),
-                             ),
-                           ],
-                         ),
-                       ),
-                     ),
-                   ),
-                 ],
-               ),
-             )
-         )
         ],
       ),
-
     );
   }
 }
-
-
-
-

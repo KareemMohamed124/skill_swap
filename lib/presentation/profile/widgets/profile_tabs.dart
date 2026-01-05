@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class ProfileTabs extends StatelessWidget {
   final TabController tabController;
+  final List<String> tabs;
 
-  const ProfileTabs({Key? key, required this.tabController}) : super(key: key);
+  const ProfileTabs({
+    Key? key,
+    required this.tabController,
+    required this.tabs,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,6 @@ class ProfileTabs extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadiusValue - 2),
           ),
           indicatorSize: TabBarIndicatorSize.tab,
-          indicatorPadding: EdgeInsets.zero,
           dividerColor: Colors.transparent,
 
           labelColor: Colors.white,
@@ -40,11 +44,9 @@ class ProfileTabs extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 15,
           ),
-          tabs: const [
-            Tab(text: 'Overview'),
-            Tab(text: 'Skills'),
-            Tab(text: 'Reviews'),
-          ],
+
+          /// 🔥 Tabs ديناميك
+          tabs: tabs.map((title) => Tab(text: title)).toList(),
         ),
       ),
     );

@@ -80,7 +80,7 @@ class QuizDetailsScreen extends StatelessWidget {
                       SizedBox(width: 8),
                       Chip(
                         label: Text(
-                          "10 Q",
+                          "15 Q",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class QuizDetailsScreen extends StatelessWidget {
                       SizedBox(width: 8),
                       Chip(
                         label: Text(
-                          "30m",
+                          "15m",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -116,7 +116,7 @@ class QuizDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       Text("Questions:", style: TextStyle(fontSize: 12)),
-                      Text("10", style: TextStyle(fontSize: 12)),
+                      Text("15", style: TextStyle(fontSize: 12)),
                     ],
                   ),
                   SizedBox(height: 8),
@@ -125,7 +125,7 @@ class QuizDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
                       Text("Time Limit:", style: TextStyle(fontSize: 12)),
-                      Text("30 minutes", style: TextStyle(fontSize: 12)),
+                      Text("15 minutes", style: TextStyle(fontSize: 12)),
                     ],
                   ),
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/book_session/screens/book_session.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import '../../profile/pages/reviews_page.dart';
+import '../../prv_chat/private_chat_screen.dart';
 import '../widgets/profile_mentor_header.dart';
 
 class ProfileMentor extends StatefulWidget {
@@ -49,7 +51,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
           ),
 
           Positioned(
-            top: 188,
+            top: 200,
             left: 0,
             right: 0,
             bottom: 0,
@@ -139,7 +141,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColor.grayColor,
+                              color: AppColor.grayColor.withValues(alpha: 0.25),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -169,12 +171,12 @@ class _ProfileMentorState extends State<ProfileMentor> {
 
                       const SizedBox(height: 16),
 
-                      CustomButton(
-                        text: "Session details",
-                        onPressed: () {
-                          Get.to(const BookSession());
-                        },
-                      ),
+                      // CustomButton(
+                      //   text: "Session details",
+                      //   onPressed: () {
+                      //     Get.to(const BookSession());
+                      //   },
+                      // ),
                     ],
                   ),
                 ),
@@ -183,6 +185,39 @@ class _ProfileMentorState extends State<ProfileMentor> {
           ),
         ],
       ),
+      bottomNavigationBar: Container(
+       padding: EdgeInsets.all(16),
+       decoration: BoxDecoration(
+         color: Colors.white
+       ),
+        child:  Row(
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColor.mainColor, ),
+              ),
+              child: IconButton(
+                icon: Icon(Iconsax.message, color: AppColor.mainColor,),
+                onPressed: () {Get.to(PrivateChatScreen(currentUserId: '', otherUserId: '', otherUserName: '',));},
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child:  CustomButton(
+                text: "Session details",
+                onPressed: () {
+                  Get.to(const BookSession());
+                },
+              ),
+            ),
+
+          ],
+        ),
+      )
     );
   }
 }

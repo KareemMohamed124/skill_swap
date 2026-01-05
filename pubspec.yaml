@@ -33,7 +33,9 @@ dependencies:
   dropdown_button2: ^2.3.9
   modal_side_sheet: ^0.0.1
   range_slider_flutter: ^0.0.2
+  google_generative_ai: ^0.4.7
   flutter_gemini: ^3.0.0
+  image_picker: ^1.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

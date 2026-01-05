@@ -111,7 +111,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             child: TextField(
               decoration: InputDecoration(
                 filled: true,
-                fillColor: AppColor.grayColor,
+                fillColor: AppColor.grayColor.withValues(alpha: 0.2),
                 hintText: "Enter skill name...",
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -169,7 +169,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.grayColor,
+                  backgroundColor: AppColor.grayColor.withValues(alpha: 0.25),
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -241,7 +241,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               Text(
                 "  $item",
                 style: TextStyle(
-                  color: active ? AppColor.grayColor : activeColor,
+                  color: active ? AppColor.grayColor.withValues(alpha: 0.25) : activeColor,
                 ),
               ),
             ],
@@ -249,13 +249,13 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               : Text(
             "$item",
             style: TextStyle(
-              color: active ? AppColor.grayColor : activeColor,
+              color: active ? AppColor.grayColor.withValues(alpha: 0.25) : activeColor,
             ),
           ),
           selected: active,
-          backgroundColor: inactiveColor,
+          backgroundColor: inactiveColor.withValues(alpha: 0.25),
           selectedColor: activeColor,
-          checkmarkColor: inactiveColor,
+          checkmarkColor: inactiveColor.withValues(alpha: 0.25),
           onSelected: (_) {
             onSelected(active ? null : item);
           },

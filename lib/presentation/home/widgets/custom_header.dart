@@ -65,19 +65,9 @@ class CustomHeader extends StatelessWidget {
               ),
             ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                circleButton(
-                  icon: Icons.credit_card,
-                  onTap: onIcon1,
-                ),
-                const SizedBox(width: 8),
-                circleButton(
-                  icon: Icons.notifications_none,
-                  onTap: onIcon2,
-                ),
-              ],
+            circleButton(
+              icon: Icons.notifications_none,
+              onTap: onIcon2,
             ),
           ],
         ),
