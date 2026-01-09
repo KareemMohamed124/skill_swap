@@ -8,7 +8,7 @@ class PriceFilterSection extends StatefulWidget {
 
   const PriceFilterSection({
     super.key,
-    this.min = 10,
+    this.min = 0,
     this.max = 100,
     required this.onChanged,
   });

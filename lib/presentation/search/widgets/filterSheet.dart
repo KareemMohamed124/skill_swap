@@ -49,7 +49,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
           const SizedBox(height: 8),
 
           PriceFilterSection(
-            min: 10,
+            min: 0,
             max: 100,
             onChanged: (start, end) {
               setState(() {
@@ -169,7 +169,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.grayColor.withValues(alpha: 0.20),
+                  backgroundColor: AppColor.grayColor.withValues(alpha: 0.25),
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

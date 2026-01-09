@@ -136,6 +136,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               controller: newPasswordController,
                               labelText: "New Password",
                               hintText: "Enter new password",
+                              obscureText: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Password is required";
@@ -157,6 +158,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               controller: confirmPasswordController,
                               labelText: "Confirm Password",
                               hintText: "Re-enter password",
+                              obscureText: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Confirm password is required";

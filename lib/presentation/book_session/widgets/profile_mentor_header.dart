@@ -31,6 +31,14 @@ class ProfileMentorHeader extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            IconButton(
+                icon: const Icon(Icons.arrow_back),
+                color: Colors.white,
+                onPressed: (){
+                  Get.back();
+                }
+            ),
+            const SizedBox(width: 4),
             ClipOval(
               child: Image.asset(
                 image,

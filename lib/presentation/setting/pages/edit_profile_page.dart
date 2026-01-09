@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:skill_swap/constants/colors.dart';
+import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -179,7 +181,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 8),
                   actionButton(
-                      onPressedAction: (){},
+                      onPressedAction: (){Get.to(SignInScreen());},
                       colorButton: AppColor.redColor,
                       icon: Icons.logout,
                       colorIcon: AppColor.whiteColor,
@@ -200,8 +202,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   sectionTitle("Account Status"),
                   statusRow("Account Type", "Learner"),
-                  statusRow("Current Plan", "Free"),
-                  statusRow("Hours Available", "2 / Week"),
+                 // statusRow("Current Plan", "Free"),
+                  //statusRow("Hours Available", "2 / Week"),
                   statusRow("Member Since", "January 2024"),
                 ],
               ),

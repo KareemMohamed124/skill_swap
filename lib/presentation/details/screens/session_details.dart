@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/presentation/book_session/screens/profile_mentor.dart';
+import '../../book_session/screens/book_session.dart';
 import '../models/details_model.dart';
 
 class SessionDetailsPage extends StatelessWidget {
@@ -31,9 +32,13 @@ class SessionDetailsPage extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(session.mentorImage),
+                ClipOval(
+                  child: Image.asset(
+                    session.mentorImage,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -178,8 +183,8 @@ class SessionDetailsPage extends StatelessWidget {
             const SizedBox(height: 12),
 
             _actionTile(Icons.calendar_today, 'Rebook Session'),
-            _actionTile(Icons.attach_file, 'View Attachments'),
-            _actionTile(Icons.history, 'Session History'),
+            //_actionTile(Icons.attach_file, 'View Attachments'),
+            //_actionTile(Icons.history, 'Session History'),
 
 
 
@@ -218,7 +223,7 @@ class SessionDetailsPage extends StatelessWidget {
         leading: Icon(icon),
         title: Text(title),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {},
+        onTap: () {Get.to(BookSession());},
       ),
     );
   }

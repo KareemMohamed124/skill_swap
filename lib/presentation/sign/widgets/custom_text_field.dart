@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../constants/colors.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String labelText;
   final String hintText;
   final bool obscureText;
@@ -9,7 +9,7 @@ class CustomTextField extends StatelessWidget {
   final String? errorText;
   final String? Function(String?)? validator;
 
-   CustomTextField({
+  const CustomTextField({
     super.key,
     required this.labelText,
     required this.hintText,
@@ -20,12 +20,25 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  late bool _isObscure;
+
+  @override
+  void initState() {
+    super.initState();
+    _isObscure = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          labelText,
+          widget.labelText,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -34,11 +47,11 @@ class CustomTextField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          validator: validator, // use validator for local validation
+          controller: widget.controller,
+          obscureText: _isObscure,
+          validator: widget.validator,
           decoration: InputDecoration(
-            hintText: hintText,
+            hintText: widget.hintText,
             hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
             filled: true,
             fillColor: AppColor.grayColor.withValues(alpha: 0.25),
@@ -50,8 +63,24 @@ class CustomTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            errorText: errorText, // backend error
-            errorMaxLines: 3
+            errorText: widget.errorText,
+            errorMaxLines: 3,
+
+            suffixIcon: widget.obscureText
+                ? IconButton(
+              icon: Icon(
+                _isObscure
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isObscure = !_isObscure;
+                });
+              },
+            )
+                : null,
           ),
         ),
       ],

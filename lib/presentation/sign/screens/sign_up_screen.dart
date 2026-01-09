@@ -40,11 +40,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: AppColor.whiteColor,
         body: Stack(
           children: [
-           Column(
-             children: [
-               const CustomAppBar(title: "Sign Up"),
-             ]
-           ),
+            Column(
+              children: const [
+                CustomAppBar(title: "Sign Up"),
+              ],
+            ),
             Positioned(
               top: 80,
               left: 0,
@@ -135,9 +135,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 if (value == null || value.isEmpty) {
                                   return "Name is required";
                                 }
+
+                                // ❌ الاسم يبدأ برقم (Front validation)
+                                if (RegExp(r'^\d').hasMatch(value)) {
+                                  return "Name cannot start with a number";
+                                }
+
                                 if (value.length < 2 || value.length > 20) {
                                   return "Name must be between 2 and 20 characters";
                                 }
+
                                 return nameError;
                               },
                             ),
@@ -173,7 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   return "Password is required";
                                 }
                                 if (!RegExp(
-                                  r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+                                  r"^(?=.[A-Z])(?=.[a-z])(?=.*\d).{8,}$",
                                 ).hasMatch(value)) {
                                   return "Password must contain uppercase, lowercase, and a number";
                                 }
@@ -189,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               hintText: "Confirm your password",
                               obscureText: true,
                               validator: (value) {
-                                if (value == null || value.isEmpty) {
+                                if (value == null || value.isNotEmpty == false) {
                                   return "Confirm password is required";
                                 }
                                 if (value != passwordController.text) {
