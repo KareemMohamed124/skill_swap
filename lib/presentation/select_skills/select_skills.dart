@@ -64,7 +64,7 @@ class SelectSkills extends StatelessWidget {
                   text: 'Skip',
                   widthButton: 172,
                   onPressed: () {
-                   Get.to(ScreenManager());
+                   Get.to(ScreenManager(initialIndex: 0,));
                   },
                 ),
                 const SizedBox(height: 16),
@@ -72,7 +72,7 @@ class SelectSkills extends StatelessWidget {
                   text: 'Continue',
                   widthButton: 172,
                   onPressed: () {
-                    Get.to(ScreenManager());
+                    Get.to(ScreenManager(initialIndex: 0,));
                   },
                 ),
               ],

@@ -108,7 +108,7 @@ class ResultScreen extends StatelessWidget {
                   if (Get.isRegistered<QuizController>()) {
                     Get.find<QuizController>().resetQuiz();
                   }
-                  Get.to(ScreenManager());
+                  Get.to(ScreenManager(initialIndex: 4,));
                 },
                 child: const Text(
                   "Continue",

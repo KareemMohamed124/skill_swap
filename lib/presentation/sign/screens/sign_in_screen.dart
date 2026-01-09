@@ -103,7 +103,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ScaffoldMessenger.of(
                           context,
                         ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                        Get.to(ScreenManager());
+                        Get.to(ScreenManager(initialIndex: 0,));
                       }
                     },
                     builder: (context, state) {
