@@ -16,6 +16,7 @@ class SelectSkills extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.whiteColor,
       resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -63,7 +64,7 @@ class SelectSkills extends StatelessWidget {
                   text: 'Skip',
                   widthButton: 172,
                   onPressed: () {
-                   Get.to(SelectTrack());
+                   Get.to(ScreenManager());
                   },
                 ),
                 const SizedBox(height: 16),

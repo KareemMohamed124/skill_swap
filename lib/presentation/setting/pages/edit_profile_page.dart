@@ -203,11 +203,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   statusRow("Current Plan", "Free"),
                   statusRow("Hours Available", "2 / Week"),
                   statusRow("Member Since", "January 2024"),
-                  statusRow(
-                    "Verification Status",
-                    "not Verified",
-                    valueColor: Colors.red,
-                  ),
                 ],
               ),
             ),

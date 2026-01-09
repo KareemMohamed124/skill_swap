@@ -29,5 +29,22 @@ class SendCodeBloc extends Bloc<SendCodeEvent, SendCodeState> {
       }
 
     });
+
+    on<ResendCode>((event, emit) async {
+      emit(SendCodeLoading());
+
+      final request = SendCodeRequest(email: event.email);
+
+      final result = await repository.sendCode(request);
+
+      switch(result) {
+        case SendCodeSuccess s:
+          emit(SendCodeSuccessState(s.data));
+          break;
+        case SendCodeFailure f:
+          emit(SendCodeFailureState(f.error));
+          break;
+      }
+    });
   }
 }

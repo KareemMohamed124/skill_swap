@@ -38,11 +38,11 @@ class ProfileTabs extends StatelessWidget {
 
           labelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 14,
+            fontSize: 10,
           ),
           unselectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 15,
+            fontSize: 14,
           ),
 
           /// 🔥 Tabs ديناميك

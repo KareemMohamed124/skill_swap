@@ -100,8 +100,8 @@ Widget SelectStatus({
 }) {
   final List<String> statusList = [
     "All",
-    "Pending",
     "Accepted",
+    "Pending",
     "Request",
   ];
 

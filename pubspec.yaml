@@ -54,6 +54,7 @@ flutter:
     - assets/images/
     - assets/images/onboarding_images/
     - assets/images/people_images/
+    - assets/icons/
 
 flutter_native_splash:
   color: "#FFFFFF"

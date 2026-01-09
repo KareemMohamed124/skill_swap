@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../constants/colors.dart';
 
 class NextSessionCard extends StatelessWidget {
-  final String image;
   final String name;
+  final String startsIn;
+  final String dateTime;
   final String duration;
-  final String time;
-  final double heightCard;
+  final bool isMentor;
 
   const NextSessionCard({
     super.key,
-    this.heightCard = 78,
-    required this.image,
     required this.name,
+    required this.startsIn,
+    required this.dateTime,
     required this.duration,
-    required this.time,
+    this.isMentor = true,
   });
 
   @override
@@ -24,29 +24,70 @@ class NextSessionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       onTap: () {},
       child: Container(
-        height: 78,
+        height: 86,
         decoration: BoxDecoration(
-          color: AppColor.grayColor.withValues(alpha: 0.20),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColor.mainColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            ClipOval(
-              child: Image.asset(
-                image,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
+            /// Left Gradient Line
+            Container(
+              width: 4,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(16),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    isMentor
+                        ? AppColor.mainColor
+                        : Colors.purple,
+                    (isMentor
+                        ? AppColor.mainColor
+                        : Colors.purple)
+                        .withOpacity(0.3),
+                  ],
+                ),
               ),
             ),
+
+            const SizedBox(width: 12),
+
+            /// Icon
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColor.mainColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+               isMentor ? Icons.school : Icons.book,
+                  size: 22,
+                  color: AppColor.mainColor
+              )
+            ),
+
             const SizedBox(width: 16),
+
+            /// Content
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// Name + Starts in
                   Row(
                     children: [
                       Expanded(
@@ -54,36 +95,48 @@ class NextSessionCard extends StatelessWidget {
                           name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Text(
-                        duration,
-                        style: TextStyle(
+                        startsIn,
+                        style: const TextStyle(
                           fontSize: 12,
-                          color: AppColor.redColor,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
+                      SizedBox(width: 16,)
                     ],
                   ),
-                  const SizedBox(height: 4),
+
+                  const SizedBox(height: 6),
+
+                  /// Date & Call type
                   Row(
                     children: [
-                      const Icon(
-                        Icons.date_range_outlined,
-                        size: 16,
-                        color: AppColor.mainColor,
+                      Text(
+                        "$dateTime • $duration",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          time,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColor.mainColor,
-                          ),
+                      const Icon(
+                        Icons.videocam_outlined,
+                        size: 14,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Video Call",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
                         ),
                       ),
                     ],

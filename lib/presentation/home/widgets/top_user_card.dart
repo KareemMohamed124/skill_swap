@@ -6,6 +6,7 @@ import 'package:skill_swap/presentation/book_session/screens/profile_mentor.dart
 import '../../../constants/colors.dart';
 
 class TopUserCard extends StatelessWidget {
+  final int id;
   final String image;
   final String name;
   final String track;
@@ -18,6 +19,7 @@ class TopUserCard extends StatelessWidget {
     super.key,
     this.widthCard = 149,
    // this.heightCard = 143,
+    required this.id,
     required this.image,
     required this.name,
     required this.track,
@@ -29,7 +31,7 @@ class TopUserCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        Get.to(ProfileMentor(name: name, track: track, rate: 4.8, image: image,));
+        Get.to(ProfileMentor(id: id, name: name, track: track, rate: 4.8, image: image,));
       },
       child: Container(
         width: widthCard,

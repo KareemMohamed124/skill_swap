@@ -169,7 +169,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.grayColor.withValues(alpha: 0.25),
+                  backgroundColor: AppColor.grayColor.withValues(alpha: 0.20),
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -241,7 +241,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               Text(
                 "  $item",
                 style: TextStyle(
-                  color: active ? AppColor.grayColor.withValues(alpha: 0.25) : activeColor,
+                  color: active ? AppColor.whiteColor : activeColor,
                 ),
               ),
             ],
@@ -249,7 +249,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               : Text(
             "$item",
             style: TextStyle(
-              color: active ? AppColor.grayColor.withValues(alpha: 0.25) : activeColor,
+              color: active ? AppColor.whiteColor: activeColor,
             ),
           ),
           selected: active,

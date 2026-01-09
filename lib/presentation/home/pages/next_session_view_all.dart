@@ -29,7 +29,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
             ],
           ),
           Positioned(
-            top: 96,
+            top: 80,
             left: 0,
             right: 0,
             bottom: 0,
@@ -54,10 +54,11 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                   itemBuilder: (context, index) {
                     final session = AppData.nextSessions[index];
                     return NextSessionCard(
-                      image: session.image,
                       name: session.name,
                       duration: session.duration,
-                      time: session.time,
+                      dateTime: session.dateTime,
+                      startsIn: session.startsIn,
+                      isMentor: session.isMentor,
                     );
                   },
                 ),

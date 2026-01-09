@@ -1,4 +1,5 @@
 class MentorModel {
+  final int id;
   final String image;
   final String name;
   final String status;
@@ -10,6 +11,7 @@ class MentorModel {
   final String track;
 
   MentorModel({
+    required this.id,
     required this.image,
     required this.name,
     required this.status,
@@ -23,6 +25,7 @@ class MentorModel {
 
   factory MentorModel.fromJson(Map<String, dynamic> json) {
     return MentorModel(
+      id: json['id'],
       image: json['image'],
       name: json['name'],
       status: json['status'],

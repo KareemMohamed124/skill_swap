@@ -29,7 +29,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
             ],
           ),
           Positioned(
-            top: 96,
+            top: 80,
             left: 0,
             right: 0,
             bottom: 0,
@@ -64,6 +64,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                             });
                           },
                           child: RecommendedCard(
+                            id: mentor.id,
                             image: mentor.image,
                             name: mentor.name,
                             track: mentor.track,

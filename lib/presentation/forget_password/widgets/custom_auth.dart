@@ -32,7 +32,7 @@ class CustomAuth extends StatelessWidget {
         width: 361,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColor.grayColor,
+          color: AppColor.grayColor.withValues(alpha: 0.25),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -69,7 +69,7 @@ class CustomAuth extends StatelessWidget {
                 onPressed: onPressed,
                 child: Text(
                   buttonText,
-                  style: TextStyle(fontSize: 16, color: AppColor.grayColor),
+                  style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
                 ),
               ),
             ),

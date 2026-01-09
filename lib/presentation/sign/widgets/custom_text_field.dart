@@ -9,7 +9,7 @@ class CustomTextField extends StatelessWidget {
   final String? errorText;
   final String? Function(String?)? validator;
 
-  const CustomTextField({
+   CustomTextField({
     super.key,
     required this.labelText,
     required this.hintText,
@@ -51,6 +51,7 @@ class CustomTextField extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             errorText: errorText, // backend error
+            errorMaxLines: 3
           ),
         ),
       ],

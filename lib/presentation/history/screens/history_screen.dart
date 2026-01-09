@@ -7,6 +7,7 @@ import '../../profile/widgets/profile_tabs.dart';
 import '../pages/cancel_page.dart';
 import '../pages/completed_page.dart';
 import '../pages/issue_page.dart';
+import '../pages/review_page.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -21,7 +22,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -62,7 +63,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
                 children: [
                   ProfileTabs(
                     tabController: _tabController,
-                    tabs: const ['Completed', 'Cancelled', 'Issue'],
+                    tabs: const ['Completed', 'Cancelled', 'Issue', 'Reviews'],
                   ),
                   Expanded(
                     child: TabBarView(
@@ -70,7 +71,8 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
                       children: const [
                         CompletedSessionsPage(),
                         CancelSessionsPage(),
-                        IssueSessionsPage()
+                        IssueSessionsPage(),
+                        ReviewSessionsPage()
                       ],
                     ),
                   ),

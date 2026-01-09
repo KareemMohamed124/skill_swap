@@ -46,11 +46,15 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return RegisterFailure(RegisterErrorResponse(message: response.message));
     } on DioException catch (e) {
+      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+        final error =
+        RegisterErrorResponse.fromJson(e.response!.data);
+        return RegisterFailure(error);
+      }
+
       return RegisterFailure(
         RegisterErrorResponse(message: _getServerErrorMessage(e)),
       );
-    } catch (e) {
-      return RegisterFailure(RegisterErrorResponse(message: e.toString()));
     }
   }
 
@@ -118,6 +122,12 @@ class AuthRepositoryImpl implements AuthRepository {
         ResetPasswordErrorResponse(message: response.message),
       );
     } on DioException catch (e) {
+      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
+        final error =
+        ResetPasswordErrorResponse.fromJson(e.response!.data);
+        return ResetPasswordFailure(error);
+      }
+
       return ResetPasswordFailure(
         ResetPasswordErrorResponse(message: _getServerErrorMessage(e)),
       );

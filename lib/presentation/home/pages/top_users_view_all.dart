@@ -29,7 +29,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
             ],
           ),
           Positioned(
-            top: 96,
+            top: 80,
             left: 0,
             right: 0,
             bottom: 0,
@@ -64,6 +64,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                             });
                           },
                           child: TopUserCard(
+                            id: user.id,
                             image: user.image,
                             name: user.name,
                             track: user.track,

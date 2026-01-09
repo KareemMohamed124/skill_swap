@@ -77,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             final user = AppData.topUsers[index];
                             return TopUserCard(
+                              id: user.id,
                               image: user.image,
                               name: user.name,
                               track: user.track,
@@ -100,10 +101,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           final session = AppData.nextSessions[index];
                           return NextSessionCard(
-                            image: session.image,
                             name: session.name,
                             duration: session.duration,
-                            time: session.time,
+                            dateTime: session.dateTime,
+                            startsIn: session.startsIn,
+                            isMentor: session.isMentor,
                           );
                         },
                       ),
@@ -123,6 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             final mentor = AppData.recommendedMentors[index];
                             return RecommendedCard(
+                              id: mentor.id,
                               image: mentor.image,
                               name: mentor.name,
                               track: mentor.track,

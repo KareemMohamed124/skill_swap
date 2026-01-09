@@ -7,3 +7,8 @@ class SendVerificationCode extends SendCodeEvent {
 
   SendVerificationCode(this.request);
 }
+
+class ResendCode extends SendCodeEvent{
+  final String email;
+  ResendCode(this.email);
+}

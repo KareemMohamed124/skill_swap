@@ -59,39 +59,39 @@ class _BookSessionState extends State<BookSession> {
                       const SizedBox(height: 16),
 
                       // Session Type Section
-                      const Text(
-                        "Session Type",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.blackColor
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: AppData.sessionTypes.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final type = AppData.sessionTypes[index];
-                          return SessionType(
-                            sessionType: type.title,
-                            title: type.description,
-                            isSelected: selectedSessionIndex == index,
-                            onTap: () {
-                              setState(() {
-                                selectedSessionIndex = index;
-                                sessionType = type.title;
-                              });
-                            },
-                            icon: type.icon,
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
+                      // const Text(
+                      //   "Session Type",
+                      //   style: TextStyle(
+                      //       fontSize: 16,
+                      //       fontWeight: FontWeight.bold,
+                      //       color: AppColor.blackColor
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 8),
+                      // ListView.separated(
+                      //   shrinkWrap: true,
+                      //   padding: EdgeInsets.zero,
+                      //   physics: const NeverScrollableScrollPhysics(),
+                      //   itemCount: AppData.sessionTypes.length,
+                      //   separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      //   itemBuilder: (context, index) {
+                      //     final type = AppData.sessionTypes[index];
+                      //     return SessionType(
+                      //       sessionType: type.title,
+                      //       title: type.description,
+                      //       isSelected: selectedSessionIndex == index,
+                      //       onTap: () {
+                      //         setState(() {
+                      //           selectedSessionIndex = index;
+                      //           sessionType = type.title;
+                      //         });
+                      //       },
+                      //       icon: type.icon,
+                      //     );
+                      //   },
+                      // ),
+                      //
+                      // const SizedBox(height: 16),
 
                       // Duration Section
                       const Text(
@@ -177,11 +177,11 @@ class _BookSessionState extends State<BookSession> {
 
                               sessionDetails(data: "Mentor:", input: "Dr. Joumana Johnson"),
                               const SizedBox(height: 4,),
-                              sessionDetails(
-                                data: "Session Type:",
-                                input: sessionType ,
-                              ),
-                              const SizedBox(height: 4,),
+                              // sessionDetails(
+                              //   data: "Session Type:",
+                              //   input: sessionType ,
+                              // ),
+                              // const SizedBox(height: 4,),
                               sessionDetails(
                                 data: "Duration:",
                                 input: "$selectedDuration min",

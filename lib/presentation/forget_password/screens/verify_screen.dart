@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:skill_swap/bloc/send_code_bloc/send_code_bloc.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
 import 'package:skill_swap/presentation/forget_password/screens/reset_password_screen.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
@@ -50,8 +51,15 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<VerifyCodeBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<VerifyCodeBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<SendCodeBloc>(),
+        )
+      ],
       child: Scaffold(
         backgroundColor: AppColor.whiteColor,
         body: BlocConsumer<VerifyCodeBloc, VerifyCodeState>(
@@ -167,6 +175,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                   secondsRemaining = 40;
                 });
                 startTimer();
+                context.read<SendCodeBloc>().add(ResendCode(widget.email));
               }
                   : () {},
             );

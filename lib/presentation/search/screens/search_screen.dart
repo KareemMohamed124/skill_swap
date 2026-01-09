@@ -30,16 +30,35 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
-      appBar: AppBar(
-        backgroundColor: AppColor.whiteColor,
-        title: const Text('Search'),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: AppColor.whiteColor,
+      //   title: const Text('Search'),
+      //   centerTitle: true,
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            SizedBox(height: 16),
+           Row(
+             //mainAxisAlignment:  MainAxisAlignment.spaceBetween,
+             children: [
+               IconButton(
+                 icon: const Icon(Icons.arrow_back),
+                 onPressed: (){
+                   Get.back();
+                 }
+               ),
+        Spacer(),
 
+               Text('Search',
+                   textAlign: TextAlign.center,
+                   style: Theme.of(context).textTheme.titleLarge
+               ),
+               Spacer(),
+             ]
+           ),
+            SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -135,18 +154,19 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
             Expanded(
               child: BlocBuilder<MentorFilterBloc, MentorFilterState>(
                 builder: (context, state) {
                   return ListView.builder(
+                    padding: EdgeInsets.zero,
                     itemCount: state.filteredList.length,
                     itemBuilder: (context, index) {
                       final mentor = state.filteredList[index];
                       return InkWell(
                         onTap: () {
-                           Get.to(ProfileMentor(name:  mentor.name, track: mentor.track, rate:  mentor.rate, image: mentor.image,));
+                           Get.to(ProfileMentor(id: mentor.id,name:  mentor.name, track: mentor.track, rate:  mentor.rate, image: mentor.image,));
                         },
                         child: MentorCard(
                           image: mentor.image,

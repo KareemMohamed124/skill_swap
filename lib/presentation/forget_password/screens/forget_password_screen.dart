@@ -65,7 +65,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         decoration: InputDecoration(
                           hintText: "Enter Email Address",
                           filled: true,
-                          fillColor: AppColor.grayColor,
+                          fillColor: AppColor.grayColor.withValues(alpha: 0.20),
                           prefixIcon: const Icon(Icons.email_outlined),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),

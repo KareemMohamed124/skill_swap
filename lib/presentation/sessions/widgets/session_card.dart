@@ -99,19 +99,23 @@ class SessionCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          Row(
-            children: [
-              iconText(
-                  icon: Icons.access_time,
-                  data: "1h session"
-              ),
-              const SizedBox(width: 32),
-              iconText(
-                  icon: Icons.chat_bubble_outline,
-                  data: session.type
-              ),
-            ],
+          iconText(
+              icon: Icons.access_time,
+              data: "1h session"
           ),
+          // Row(
+          //   children: [
+          //     iconText(
+          //         icon: Icons.access_time,
+          //         data: "1h session"
+          //     ),
+          //     const SizedBox(width: 32),
+          //     iconText(
+          //         icon: Icons.chat_bubble_outline,
+          //         data: session.type
+          //     ),
+          //   ],
+          // ),
           const SizedBox(height: 8),
           iconText(
               icon: Icons.calendar_today_outlined,

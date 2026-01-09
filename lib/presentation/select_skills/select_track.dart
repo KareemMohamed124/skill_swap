@@ -37,6 +37,7 @@ class _SelectTrackState extends State<SelectTrack> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor.whiteColor,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

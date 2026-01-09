@@ -20,8 +20,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
   int selected = 0;
   final pages = [
     AllSessionsPage(),
-    PendingSessionsPage(),
     UpcomingSessionsPage(),
+    PendingSessionsPage(),
     RequestsSessionsPage()
   ];
   @override

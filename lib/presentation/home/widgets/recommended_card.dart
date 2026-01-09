@@ -5,6 +5,7 @@ import '../../../constants/colors.dart';
 import '../../book_session/screens/profile_mentor.dart';
 
 class RecommendedCard extends StatelessWidget {
+  final int id;
   final String image;
   final String name;
   final String track;
@@ -14,6 +15,7 @@ class RecommendedCard extends StatelessWidget {
 
   const RecommendedCard({
     super.key,
+    required this.id,
     required this.image,
     required this.name,
     required this.track,
@@ -27,7 +29,7 @@ class RecommendedCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        Get.to(ProfileMentor(name: name, track: track, rate: rating, image: image,));
+        Get.to(ProfileMentor(id: id, name: name, track: track, rate: rating, image: image,));
       },
       child: Container(
         width: width,

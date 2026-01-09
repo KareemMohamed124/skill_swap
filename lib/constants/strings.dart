@@ -14,24 +14,28 @@ import '../presentation/home/models/next_session.dart';
 class AppData {
   static final List<TopUser> topUsers = [
     TopUser(
+      id: 1,
       image: "assets/images/people_images/Joumana Johnson.png",
       name: "Joumana Johnson",
       track: "Mobile",
       hours: "48 shared",
     ),
     TopUser(
+      id: 3,
       image: "assets/images/people_images/Youstina Hazem.png",
       name: "Youstina Hazem",
       track: "Ui/Ux",
       hours: "45 shared",
     ),
     TopUser(
+      id: 2,
       image: "assets/images/people_images/Max Turner.png",
       name: "Max Turner",
       track: "Backend",
       hours: "43 shared",
     ),
     TopUser(
+      id: 11,
       image: "assets/images/people_images/Liyan Alex.png",
       name: "Liyan Alex",
       track: "Fronted",
@@ -43,35 +47,42 @@ class AppData {
     NextSession(
       image: "assets/images/people_images/Lisa Wang.png",
       name: "Lisa Wang",
-      time: "Today, 2:00 PM . 1h . Video Call",
-      duration: "• Starts in 10m",
+      dateTime: "Today, 2:00 PM",
+      duration: "1h",
+      startsIn: "Starts in 10m",
+      isMentor: false
     ),
     NextSession(
       image: "assets/images/people_images/Liyan Alex.png",
       name: "Liyan Alex",
-      time: "Today, 6:00 PM . 30m . Video Call",
-      duration: "• Starts in 4h",
+      dateTime: "Today, 6:00 PM",
+      duration: "30m",
+      startsIn: "Starts in 4h",
+      isMentor: true
     ),
   ];
 
   static  List<RecommendedMentor> recommendedMentors = [
     RecommendedMentor(
+      id: 12,
       image: "assets/images/people_images/Maria Garcia.png",
       name: "Maria Garcia",
       stars: 4.9,
-      track: "React",
+      track: "Mobile",
     ),
     RecommendedMentor(
+      id: 13,
       image: "assets/images/people_images/Alex Johnson.png",
       name: "Alex Johnson",
       stars: 4.8,
-      track: "mobile",
+      track: "Mobile",
     ),
     RecommendedMentor(
+      id: 14,
       image: "assets/images/people_images/Marcus Johnson.png",
       name: "Marcus Johnson",
       stars: 4.7,
-      track: "Ui/Ux",
+      track: "Mobile",
     ),
   ];
 
@@ -150,6 +161,7 @@ class AppData {
 
   static List<MentorModel> mentors = [
     MentorModel(
+      id: 1,
       image: "assets/images/people_images/Joumana Johnson.png",
       name: "Joumana Johnson",
       status: "Busy",
@@ -162,6 +174,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 2,
       image: "assets/images/people_images/Max Turner.png",
       name: "Max Turner",
       status: "Available",
@@ -174,6 +187,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 3,
       image: "assets/images/people_images/Youstina Hazem.png",
       name: "Youstina Hazem",
       status: "Busy",
@@ -186,6 +200,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 4,
       image: "assets/images/people_images/Amir Zahir.png",
       name: "Amir Zahir",
       status: "Available",
@@ -198,6 +213,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 5,
       image: "assets/images/people_images/Sarah Ali.png",
       name: "Sarah Ali",
       status: "Available",
@@ -210,6 +226,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 6,
       image: "assets/images/people_images/Mohamed Salah.png",
       name: "Mohamed Salah",
       status: "Busy",
@@ -222,6 +239,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 7,
       image: "assets/images/people_images/Lara Smith.png",
       name: "Lara Smith",
       status: "Available",
@@ -234,6 +252,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 8,
       image: "assets/images/people_images/Hazem Tarek.png",
       name: "Hazem Tarek",
       status: "Available",
@@ -246,6 +265,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 9,
       image: "assets/images/people_images/Emma Jones.png",
       name: "Emma Jones",
       status: "Busy",
@@ -258,6 +278,7 @@ class AppData {
     ),
 
     MentorModel(
+      id: 10,
       image: "assets/images/people_images/Youssef Samir.png",
       name: "Youssef Samir",
       status: "Available",
@@ -449,6 +470,7 @@ class AppData {
 
  static List<HistoryModel> completedSessions = [
    HistoryModel(
+     id: 1,
       name: "Joumana Johnson",
       role: "Web Developer",
       date: "Oct 3, 2025",
@@ -459,6 +481,7 @@ class AppData {
       imageUrl: "assets/images/people_images/Joumana Johnson.png",
     ),
    HistoryModel(
+     id: 2,
       name: "Lisa Wang",
       role: "UI/UX Developer",
       date: "Sep 26, 2025",
@@ -469,6 +492,7 @@ class AppData {
       imageUrl: "assets/images/people_images/Lisa Wang.png",
     ),
    HistoryModel(
+     id: 3,
       name: "Marcus Johnson",
       role: "Mobile Developer",
       date: "Sep 15, 2025",
@@ -479,6 +503,7 @@ class AppData {
       imageUrl: "assets/images/people_images/Marcus Johnson.png",
     ),
    HistoryModel(
+     id: 4,
      name: "Mark Anthony",
      role: "Backend Developer",
      date: "Sep 15, 2025",
@@ -493,6 +518,7 @@ class AppData {
 
  static List<HistoryModel> cancelledSessions = [
    HistoryModel(
+     id: 5,
      name: "Sarah Adams",
      role: "Mobile Developer",
      date: "Oct 1, 2025",
@@ -503,6 +529,7 @@ class AppData {
      imageUrl: "assets/images/people_images/Sarah Adams.jpg",
    ),
    HistoryModel(
+     id: 6,
      name: "Daniel Lee",
      role: "Data Science",
      date: "Sep 28, 2025",
@@ -513,6 +540,7 @@ class AppData {
      imageUrl: "assets/images/people_images/Daniel Lee.jpg",
    ),
    HistoryModel(
+     id: 7,
      name: "Mia Fernandez",
      role: "Web Developer",
      date: "Sep 20, 2025",
@@ -526,6 +554,7 @@ class AppData {
 
  static List<HistoryModel> issueSessions = [
    HistoryModel(
+     id: 8,
      name: "Alex Johnson",
      role: "Flutter Developer",
      date: "Oct 2, 2025",
@@ -537,6 +566,7 @@ class AppData {
      imageUrl: "assets/images/people_images/Alex Johnson.png",
    ),
    HistoryModel(
+     id: 9,
      name: "Kevin Smith",
      role: "AI Basics",
      date: "Sep 30, 2025",
@@ -548,6 +578,7 @@ class AppData {
      imageUrl: "assets/images/people_images/Kevin Smith.jpg",
    ),
    HistoryModel(
+     id: 10,
      name: "Emily Carter",
      role: "Business Strategy",
      date: "Sep 22, 2025",
@@ -559,4 +590,61 @@ class AppData {
      imageUrl: "assets/images/people_images/Emily Carter.jpg",
    ),
  ];
+
+  static List<HistoryModel> receivedReviews = [
+
+    HistoryModel(
+      id: 1,
+      name: "Joumana Johnson",
+      role: "Web Developer",
+      date: "Oct 5, 2025",
+      time: "6:00 PM",
+      duration: "60 min",
+      status: "Review",
+      rating: 5,
+      imageUrl: "assets/images/people_images/Joumana Johnson.png",
+      reviewComment: "Great mentor! Very clear and helpful.",
+      isReviewReceived: true,
+    ),
+
+    HistoryModel(
+      id: 2,
+      name: "Lisa Wang",
+      role: "UI/UX Developer",
+      date: "Sep 29, 2025",
+      time: "2:00 PM",
+      duration: "45 min",
+      status: "Review",
+      rating: 4,
+      imageUrl: "assets/images/people_images/Lisa Wang.png",
+      reviewComment: "Explained concepts very well.",
+      isReviewReceived: true,
+    ),
+
+    HistoryModel(
+      id: 3,
+      name: "Marcus Johnson",
+      role: "Mobile Developer",
+      date: "Sep 15, 2025",
+      time: "5:30 PM",
+      duration: "90 min",
+      status: "Finished",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Marcus Johnson.png",
+      isReviewReceived: false,
+    ),
+
+    HistoryModel(
+      id: 4,
+      name: "Sarah Adams",
+      role: "Mobile Developer",
+      date: "Oct 1, 2025",
+      time: "3:00 PM",
+      duration: "60 min",
+      status: "Cancelled",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Sarah Adams.jpg",
+      isReviewReceived: false,
+    ),
+  ];
   }

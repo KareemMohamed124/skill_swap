@@ -9,6 +9,7 @@ import '../../prv_chat/private_chat_screen.dart';
 import '../widgets/profile_mentor_header.dart';
 
 class ProfileMentor extends StatefulWidget {
+  final int id;
   final String image;
   final String name;
   final String track;
@@ -16,6 +17,7 @@ class ProfileMentor extends StatefulWidget {
 
   const ProfileMentor({
     super.key,
+    required this.id,
     required this.image,
     required this.name,
     required this.track,
@@ -169,7 +171,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       const SizedBox(height: 8),
                       ReviewsPage(),
 
-                      const SizedBox(height: 8),
+                     // const SizedBox(height: 8),
 
                       // CustomButton(
                       //   text: "Session details",
@@ -202,7 +204,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
               ),
               child: IconButton(
                 icon: Icon(Iconsax.message, color: AppColor.mainColor,),
-                onPressed: () {Get.to(PrivateChatScreen(currentUserId: '1', otherUserId: '2', otherUserName: 'Nada',));},
+                onPressed: () {Get.to(PrivateChatScreen(currentUserId: '01', otherUserId: '${widget.id}', otherUserName: widget.name,));},
               ),
             ),
             const SizedBox(width: 8),

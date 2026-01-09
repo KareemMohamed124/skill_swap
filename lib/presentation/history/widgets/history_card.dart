@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:skill_swap/presentation/details/models/details_model.dart';
 
+import '../../details/screens/session_details.dart';
 import '../models/history_model.dart';
 
 class HistoryCard extends StatelessWidget {
@@ -26,43 +29,54 @@ class HistoryCard extends StatelessWidget {
   bool get isFinishedNotRated =>
       data.status == "Finished" && data.rating == 0;
 
+  // 🔥 NEW
+  bool get isReviewReceived => data.isReviewReceived == true;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xFFD6D6D6).withValues(alpha: 0.25),
+        color: const Color(0xFFD6D6D6).withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFD6D6D6), width: 1.2),
+        border: Border.all(color: const Color(0xFFD6D6D6), width: 1.2),
       ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ClipOval(
-                  child: Image.asset(
-                    data.imageUrl,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              ClipOval(
+                child: Image.asset(
+                  data.imageUrl,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(width: 8),
+              ),
+              const SizedBox(width: 8),
 
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(data.name,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text(data.role, style: const TextStyle(fontSize: 14)),
-                    ],
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      data.role,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
                 ),
+              ),
 
+              if (!isReviewReceived)
                 Container(
                   padding:
                   const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -78,93 +92,142 @@ class HistoryCard extends StatelessWidget {
                     ),
                   ),
                 )
-              ],
-            ),
+            ],
+          ),
 
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-            Row(
-              children: [
-                const Icon(Icons.calendar_month, size: 20),
-                const SizedBox(width: 8),
-                Text(data.date),
-              ],
-            ),
+          Row(
+            children: [
+              const Icon(Icons.calendar_month, size: 20),
+              const SizedBox(width: 8),
+              Text(data.date),
+            ],
+          ),
 
-            const SizedBox(height: 4),
+          const SizedBox(height: 4),
 
-            Row(
-              children: [
-                const Icon(Icons.access_time, size: 20),
-                const SizedBox(width: 8),
-                Text("${data.time} – ${data.duration}"),
-              ],
-            ),
+          Row(
+            children: [
+              const Icon(Icons.access_time, size: 20),
+              const SizedBox(width: 8),
+              Text("${data.time} – ${data.duration}"),
+            ],
+          ),
 
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-            buildBottomSection(context),
-          ],
-        ),
+          buildBottomSection(context),
+        ],
+      ),
     );
   }
 
-
-
-
   Widget buildBottomSection(BuildContext context) {
-    if (isIssue) {
+
+    // REVIEW RECEIVED
+    if (isReviewReceived) {
       return Container(
-//padding: const EdgeInsets.all(8),
-      height: 44,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Color(0xFFF9DADA),
+          color: const Color(0xFFE7BA2A).withValues(alpha: 0.16),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(width: 16,),
-            const Text("Error: ",
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(data.errorMessage!, style: const TextStyle(color: Colors.red)),
+            Row(
+              children: [
+                const Text(
+                  "Their rating:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 8),
+                Row(
+                  children: List.generate(
+                    5,
+                        (i) => Icon(
+                      i < data.rating ? Icons.star : Icons.star_border,
+                      size: 18,
+                      color: Colors.amber,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (data.reviewComment != null &&
+                data.reviewComment!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                "“${data.reviewComment}”",
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
           ],
         ),
       );
     }
 
+    //  ISSUE
+    if (isIssue) {
+      return Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9DADA),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 16),
+            const Text(
+              "Error: ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              data.errorMessage!,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ],
+        ),
+      );
+    }
+
+    //  CANCELLED
     if (isCancelled) {
       return Container(
         width: double.infinity,
         height: 44,
-      //  padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          border: Border.all(
-            color:  Color(0xFFD6D6D6)
-          ),
+          border: Border.all(color: const Color(0xFFD6D6D6)),
           borderRadius: BorderRadius.circular(14),
         ),
-        child:Center(child: const Text(
+        child: const Center(
+          child: Text(
             "View Details",
-          style: TextStyle(
-            fontWeight: FontWeight.bold
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-        )),
+        ),
       );
     }
 
+    //  FINISHED & RATED
     if (isFinishedRated) {
       return Container(
         height: 44,
-        //padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Color(0xFFE7BA2A).withValues(alpha: 0.16),
+          color: const Color(0xFFE7BA2A).withValues(alpha: 0.16),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           children: [
-            const SizedBox(width: 16,),
-            const Text("Your rating: ",
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(width: 16),
+            const Text(
+              "Your rating: ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Row(
               children: List.generate(
                 5,
@@ -174,147 +237,77 @@ class HistoryCard extends StatelessWidget {
                   color: Colors.amber,
                 ),
               ),
-            )
+            ),
           ],
         ),
       );
     }
 
+    //  FINISHED NOT RATED
     if (isFinishedNotRated) {
       return Row(
         children: [
           Expanded(
             child: InkWell(
-              onTap: (){},
+              onTap: () {},
               child: Container(
-                // width: double.infinity,
-                  height: 44,
-                  //  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color:  Color(0xFFD6D6D6)
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star_border_outlined),
-                      SizedBox(width: 4,),
-                      Text("Rate Session")
-                    ],
-                  )
+                height: 44,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFFD6D6D6)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.star_border_outlined),
+                    SizedBox(width: 4),
+                    Text("Rate Session"),
+                  ],
+                ),
               ),
             ),
           ),
-          SizedBox(width: 8,),
+          const SizedBox(width: 8),
           Expanded(
-              child: InkWell(
-                onTap: (){},
-                child: Container(
-                 // width: double.infinity,
-                  height: 44,
-                  //  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color:  Color(0xFFD6D6D6)
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.description_outlined),
-                      SizedBox(width: 4,),
-                      Text("View Details")
-                    ],
-                  )
-                          ),
+            child: InkWell(
+              onTap: () {
+                Get.to(SessionDetailsPage(
+                  session: SessionModel(
+                    mentorId: data.id,
+                    mentorImage: data.imageUrl,
+                    mentorName: data.name,
+                    mentorTrack: data.role,
+                    status: data.status,
+                    date: DateTime(2025,10,6),
+                    time: data.time,
+                    duration: data.duration,
+                    rating: data.rating,
+                    review: 'Great session, learned a lot!',
+                    notes: 'Covered Flutter BLoC basics'
+
+                  ),));
+              },
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFFD6D6D6)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.description_outlined),
+                    SizedBox(width: 4),
+                    Text("View Details"),
+                  ],
+                ),
               ),
-          )
+            ),
+          ),
         ],
       );
-
-      //   Container(
-      //   height: 44,
-      //  // padding: const EdgeInsets.all(12),
-      //   decoration: BoxDecoration(
-      //    // color: Colors.blue.shade50,
-      //     borderRadius: BorderRadius.circular(14),
-      //   ),
-      //   child: Row(
-      //     children: [
-      //       Expanded(
-      //
-      //         child: ElevatedButton(
-      //           onPressed: () {
-      //             // Rate Session Page
-      //           },
-      //           style: ElevatedButton.styleFrom(
-      //             padding: const EdgeInsets.all(12),
-      //            // backgroundColor: Colors.blue,
-      //             shape: RoundedRectangleBorder(
-      //               borderRadius: BorderRadius.circular(16),
-      //
-      //             ),
-      //             side: const BorderSide(color:Color(0xFFD6D6D6)),
-      //
-      //           ),
-      //           child: const Text("Rate Session"),
-      //         ),
-      //       ),
-      //       const SizedBox(width: 8),
-      //       Expanded(
-      //         child: OutlinedButton(
-      //           onPressed: () {
-      //             // View Details Page
-      //           },
-      //           style: OutlinedButton.styleFrom(
-      //             padding: const EdgeInsets.all(12),
-      //             shape: RoundedRectangleBorder(
-      //               borderRadius: BorderRadius.circular(16)
-      //             ),
-      //             side: const BorderSide(color:Color(0xFFD6D6D6)),
-      //           ),
-      //           child: const Text("View Details"),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // );
     }
 
     return const SizedBox();
   }
-
-  Widget secondaryActionButton({
-    required IconData icon,
-    required String text,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        height: 44,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFD6D6D6)),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18),
-            const SizedBox(width: 4),
-            Text(
-              text,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
 }
-
