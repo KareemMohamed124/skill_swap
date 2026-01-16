@@ -77,14 +77,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   borderRadius: BorderRadius.circular(80),
                 ),
               ),
-              onPressed: () async{
+              onPressed: () {
                 if (currentPage < 2) {
                   controller.nextPage(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                   );
                 } else {
-                  await LocalStorage.setOnboardingSeen();
+                   LocalStorage.setOnboardingSeen();
                   Get.to(() =>  StartScreen());
                 }
               },
@@ -117,8 +117,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   Widget skipIntro(BuildContext context) {
     return TextButton(
-      onPressed: () async{
-        await LocalStorage.setOnboardingSeen();
+      onPressed: () {
+         LocalStorage.setOnboardingSeen();
         Get.to(() =>  StartScreen());
       },
       child: const Text(

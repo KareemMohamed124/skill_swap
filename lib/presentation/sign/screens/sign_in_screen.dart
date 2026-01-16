@@ -115,7 +115,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             _handleServerError(state);
                           });
                         } else if (state is LoginSuccessState) {
-                          await LocalStorage.setLoggedIn(true);
+                           LocalStorage.setLoggedIn(true);
                           ScaffoldMessenger.of(
                             context,
                           ).showSnackBar(SnackBar(content: Text(state.data.message)));

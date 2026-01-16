@@ -31,13 +31,34 @@ void main() async {
       "⚠️ Please check your API key at: https://aistudio.google.com/app/apikey",
     );
   }
+
   await Hive.initFlutter();
+
+  // 🔹 افتح الـ box هنا قبل أي استدعاء لـ LocalStorage
+  await Hive.openBox('appBox');
+
   await initDependencies();
-  runApp(MyApp());
+
+  // جلب حالة Onboarding و Login بعد ما box مفتوح
+  final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
+  final isLogged = await LocalStorage.isLoggedIn();
+
+  Widget startScreen;
+
+  if (!isOnboardingSeen) {
+    startScreen = OnBoardingScreen();
+  } else if (isLogged) {
+    startScreen = ScreenManager();
+  } else {
+    startScreen = const SignInScreen();
+  }
+
+  runApp(MyApp(startScreen: startScreen));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget startScreen;
+  const MyApp({super.key, required this.startScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -47,26 +68,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      home: FutureBuilder(
-        future: _getStartScreen(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          return snapshot.data!;
-        },
-      ),
+      home: startScreen, // مباشرة تعرض الصفحة المناسبة
     );
-  }
-
-  Future<Widget> _getStartScreen() async {
-    final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
-    final isLogged = await LocalStorage.isLoggedIn();
-
-    if (!isOnboardingSeen) return OnBoardingScreen();
-    if (isLogged) return ScreenManager();
-    return const SignInScreen();
   }
 }
