@@ -6,10 +6,20 @@ class UserModel {
   final String id;
   final String name;
   final String email;
+  String? imagePath;
 
-  UserModel({required this.id, required this.name, required this.email});
+  UserModel({required this.id, required this.name, required this.email, this.imagePath});
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
+
+  UserModel copyWith({String? imagePath, String? name, String? email}) {
+    return UserModel(
+      id: id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      imagePath: imagePath ?? this.imagePath
+    );
+  }
 }

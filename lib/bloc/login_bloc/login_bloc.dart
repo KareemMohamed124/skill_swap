@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/data/models/login/login_response.dart';
+import 'package:skill_swap/helper/local_storage.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'login_event.dart';
 import 'login_state.dart';
@@ -15,6 +16,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       switch (result) {
         case LoginSuccess s:
+         // await LocalStorage.saveToken(s.data.accessToken);
           emit(LoginSuccessState(s.data));
           break;
 

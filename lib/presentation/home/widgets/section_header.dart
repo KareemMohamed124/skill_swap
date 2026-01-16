@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../../constants/colors.dart';
 
 class SectionHeader extends StatelessWidget {
@@ -48,4 +47,3 @@ class SectionHeader extends StatelessWidget {
     );
   }
 }
-

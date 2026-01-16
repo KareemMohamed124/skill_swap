@@ -25,7 +25,9 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
         children: [
           Column(
             children: const [
-              CustomAppBar(title: 'Recommended for You',)
+              CustomAppBar(
+                title: 'Recommended for You',
+              )
             ],
           ),
           Positioned(
@@ -46,32 +48,45 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.95,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: List.generate(AppData.recommendedMentors.length, (index) {
-                      final isSelected = selectedIndex == index;
-                      final mentor = AppData.recommendedMentors[index];
-                      return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                            });
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // حساب العرض لكل عنصر
+                      final itemWidth = (constraints.maxWidth - 16) / 2;
+                      // تحديد ارتفاع مناسب (تقدر تغيره حسب التصميم)
+                      final itemHeight = itemWidth * 1.2;
+                      final aspectRatio = itemWidth / itemHeight;
+
+                      return GridView.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: aspectRatio,
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: List.generate(
+                          AppData.recommendedMentors.length,
+                              (index) {
+                            final isSelected = selectedIndex == index;
+                            final mentor = AppData.recommendedMentors[index];
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedIndex = index;
+                                });
+                              },
+                              child: RecommendedCard(
+                                id: mentor.id,
+                                image: mentor.image,
+                                name: mentor.name,
+                                track: mentor.track,
+                                rating: mentor.stars,
+                              ),
+                            );
                           },
-                          child: RecommendedCard(
-                            id: mentor.id,
-                            image: mentor.image,
-                            name: mentor.name,
-                            track: mentor.track,
-                            rating: mentor.stars,
-                          )
+                        ),
                       );
-                    }),
+                    },
                   ),
                 ),
               ),

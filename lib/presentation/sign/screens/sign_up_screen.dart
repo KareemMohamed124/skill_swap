@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:skill_swap/helper/local_storage.dart';
 import 'package:skill_swap/presentation/forget_password/screens/email_verification_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
@@ -95,7 +96,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         formKey.currentState?.validate();
                       }
 
-                      if (state is RegisterSuccessState) {
+                      if (state is RegisterSuccessState){
+                        LocalStorage.createUser(
+                            id: state.data.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                            name: nameController.text,
+                            email: emailController.text
+                        );
+                         LocalStorage.setLoggedIn(true);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(state.data.message)),
                         );
@@ -180,9 +187,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   return "Password is required";
                                 }
                                 if (!RegExp(
-                                  r"^(?=.[A-Z])(?=.[a-z])(?=.*\d).{8,}$",
+                                  r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
                                 ).hasMatch(value)) {
-                                  return "Password must contain uppercase, lowercase, and a number";
+                                  return "Password must contain at least 8 character, uppercase, lowercase, and a number";
                                 }
                                 return passwordError;
                               },

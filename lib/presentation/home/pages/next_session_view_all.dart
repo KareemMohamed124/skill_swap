@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../constants/colors.dart';
 import '../../../constants/strings.dart';
 import '../../sign/widgets/custom_appbar.dart';

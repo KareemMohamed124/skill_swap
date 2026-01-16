@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:skill_swap/constants/colors.dart';
 
 class CustomHeader extends StatelessWidget {
   final String name;
   final String subtitle;
-  final String avatar;
+  final String? avatarPath; // ده path الصورة لو موجودة
   final VoidCallback? onIcon1;
   final VoidCallback? onIcon2;
 
@@ -12,7 +13,7 @@ class CustomHeader extends StatelessWidget {
     super.key,
     required this.name,
     required this.subtitle,
-    required this.avatar,
+    this.avatarPath,
     this.onIcon1,
     this.onIcon2,
   });
@@ -30,13 +31,17 @@ class CustomHeader extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipOval(
-              child: Image.asset(
-                avatar,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
+            // ========= CircleAvatar =========
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.white,
+              backgroundImage:
+              avatarPath != null && avatarPath!.isNotEmpty
+                  ? FileImage(File(avatarPath!))
+                  : null,
+              child: avatarPath == null || avatarPath!.isEmpty
+                  ? const Icon(Icons.person, size: 30, color: AppColor.mainColor)
+                  : null,
             ),
 
             const SizedBox(width: 8),
@@ -56,7 +61,7 @@ class CustomHeader extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColor.whiteColor,
                       fontSize: 12,
                     ),

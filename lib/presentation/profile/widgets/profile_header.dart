@@ -1,12 +1,36 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:retrofit/retrofit.dart';
 import 'package:skill_swap/common_ui/circle_button_icon.dart';
-
+import 'package:skill_swap/constants/colors.dart';
+import '../../../data/models/user/user_model.dart';
+import '../../../helper/local_storage.dart';
 import '../../setting/screens/setting.dart';
 
-class ProfileHeader extends StatelessWidget {
+class ProfileHeader extends StatefulWidget {
   const ProfileHeader({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<ProfileHeader> {
+  UserModel? user;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final fetchedUser = await LocalStorage.getUser();
+    setState(() {
+      user = fetchedUser;
+      loading = false;
+    });
+  }
 
   Widget _buildMetricItem(String value, String label) {
     return Column(
@@ -32,6 +56,17 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xff0D035F);
 
+    if (loading || user == null) {
+      // لو لسه محملش يوزر
+      return Container(
+        height: 208,
+        color: primaryColor,
+        child: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
     return Container(
       height: 208,
       decoration: const BoxDecoration(color: primaryColor),
@@ -46,22 +81,25 @@ class ProfileHeader extends StatelessWidget {
             ),
             child: Row(
               children: [
-                  ClipOval(
-            child: Image.asset(
-              'assets/images/people_images/nada.jpg',
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-            ),
-    ),
+                // ===== CircleAvatar بدلاً من Image.asset ثابتة =====
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white,
+                  backgroundImage: user!.imagePath != null && user!.imagePath!.isNotEmpty
+                      ? FileImage(File(user!.imagePath!))
+                      : null,
+                  child: user!.imagePath == null || user!.imagePath!.isEmpty
+                      ? const Icon(Icons.person, size: 30, color: AppColor.mainColor)
+                      : null,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Nada Sayed',
-                        style: TextStyle(
+                      Text(
+                        user!.name ?? "",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -78,10 +116,12 @@ class ProfileHeader extends StatelessWidget {
                     ],
                   ),
                 ),
-              //  const Icon(Icons.settings, color: Colors.white),
-                CircleButtonIcon(icon: Icons.settings, onTap: (){
-                  Get.to(SettingScreen());
-                })
+                CircleButtonIcon(
+                  icon: Icons.settings,
+                  onTap: () {
+                    Get.to(SettingScreen());
+                  },
+                )
               ],
             ),
           ),

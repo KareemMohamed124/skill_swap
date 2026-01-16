@@ -4,6 +4,7 @@ import 'package:skill_swap/data/models/reset_password/reset_password_request.dar
 import 'package:skill_swap/data/models/reset_password/reset_password_response.dart';
 import 'package:skill_swap/data/models/verify_code/verify_code_request.dart';
 import 'package:skill_swap/data/models/verify_code/verify_code_response.dart';
+import '../../helper/local_storage.dart';
 import '../models/login/login_error_response.dart';
 import '../models/login/login_request.dart';
 import '../models/login/login_response.dart';
@@ -14,6 +15,7 @@ import '../models/register/register_response.dart';
 import '../models/send_code/send_code_error_response.dart';
 import '../models/send_code/send_code_request.dart';
 import '../models/send_code/send_code_response.dart';
+import '../models/user/user_model.dart';
 import '../models/verify_code/verify_code_error_response.dart';
 import '../web_services/auth_api.dart';
 
@@ -63,7 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final response = await api.login(request);
       if (response.message == "User Login Successfully") {
-      return LoginSuccess(response);
+        return LoginSuccess(response);
       }
       return LoginFailure(LoginErrorResponse(message: response.message));
 
@@ -111,8 +113,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<ResetPasswordResponse> resetPassword(
-    ResetPasswordRequest request,
-  ) async {
+      ResetPasswordRequest request,
+      ) async {
     try {
       final response = await api.resetPassword(request);
       if (response.message == 'Password Changed Successfully') {
@@ -137,4 +139,23 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
+  //
+  // @override
+  // Future<UserModel> getProfile() async {
+  //   final token = await LocalStorage.getToken();
+  //   if (token == null) {
+  //     throw Exception("User not logged in");
+  //   }
+  //
+  //   final response = await dio.get(
+  //     "https://skill-swaapp.vercel.app/auth/profile",
+  //     options: Options(
+  //       headers: {
+  //         "Authorization": "Bearer $token",
+  //       },
+  //     ),
+  //   );
+  //
+  //   return UserModel.fromJson(response.data);
+  // }
 }

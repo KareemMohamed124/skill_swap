@@ -27,6 +27,6 @@ abstract class AuthApi {
   Future<VerifyCodeSuccessResponse> verifyCode(@Body() VerifyCodeRequest body);
   @PATCH("password/reset/")
   Future<ResetPasswordSuccessResponse> resetPassword(
-    @Body() ResetPasswordRequest body,
-  );
+      @Body() ResetPasswordRequest body,
+      );
 }

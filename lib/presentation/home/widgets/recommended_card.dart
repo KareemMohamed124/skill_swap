@@ -10,6 +10,8 @@ class RecommendedCard extends StatelessWidget {
   final String name;
   final String track;
   final double rating;
+  final double width;
+  final double imageHeight;
 
   const RecommendedCard({
     super.key,
@@ -18,27 +20,19 @@ class RecommendedCard extends StatelessWidget {
     required this.name,
     required this.track,
     required this.rating,
+    this.width = 200,
+    this.imageHeight = 116,
   });
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        Get.to(
-          ProfileMentor(
-            id: id,
-            name: name,
-            track: track,
-            rate: rating,
-            image: image,
-          ),
-        );
+        Get.to(ProfileMentor(id: id, name: name, track: track, rate: rating, image: image,));
       },
       child: Container(
-        width: screenWidth * 0.55, // 👈 نسبة من الشاشة
+        width: width,
         decoration: BoxDecoration(
           color: AppColor.grayColor.withValues(alpha: 0.20),
           borderRadius: BorderRadius.circular(16),
@@ -50,15 +44,14 @@ class RecommendedCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: AspectRatio(
-                aspectRatio: 16 / 9, // 👈 يحافظ على شكل الصورة
-                child: Image.asset(
-                  image,
-                  fit: BoxFit.cover,
-                ),
+              child: Image.asset(
+                image,
+                width: double.infinity,
+                height: imageHeight,
+                fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -66,25 +59,18 @@ class RecommendedCard extends StatelessWidget {
                     name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                   ),
                 ),
-                const Icon(
-                  Icons.star,
-                  size: 12,
-                  color: Color(0xFFFFCE31),
-                ),
+                const Icon(Icons.star, size: 12, color: Color(0xFFFFCE31)),
                 const SizedBox(width: 4),
                 Text(
-                  rating.toString(),
+                  "$rating",
                   style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
+            //const SizedBox(height: 4),
             Text(
               "$track Development",
               maxLines: 1,

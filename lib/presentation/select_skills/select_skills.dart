@@ -58,22 +58,23 @@ class SelectSkills extends StatelessWidget {
             ),
             const Spacer(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomButton(
-                  text: 'Skip',
-                  widthButton: 172,
-                  onPressed: () {
-                   Get.to(ScreenManager(initialIndex: 0,));
-                  },
+                Expanded(
+                  child: CustomButton(
+                    text: 'Skip',
+                    onPressed: () {
+                      Get.to(ScreenManager(initialIndex: 0));
+                    },
+                  ),
                 ),
-                const SizedBox(height: 16),
-                CustomButton(
-                  text: 'Continue',
-                  widthButton: 172,
-                  onPressed: () {
-                    Get.to(ScreenManager(initialIndex: 0,));
-                  },
+                const SizedBox(width: 16),
+                Expanded(
+                  child: CustomButton(
+                    text: 'Continue',
+                    onPressed: () {
+                      Get.to(ScreenManager(initialIndex: 0));
+                    },
+                  ),
                 ),
               ],
             ),

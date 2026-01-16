@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:retrofit/retrofit.dart';
-import 'package:skill_swap/presentation/book_session/screens/profile_mentor.dart';
-
 import '../../../constants/colors.dart';
+import 'package:skill_swap/presentation/book_session/screens/profile_mentor.dart';
 
 class TopUserCard extends StatelessWidget {
   final int id;
@@ -12,13 +10,10 @@ class TopUserCard extends StatelessWidget {
   final String track;
   final String hours;
   final double widthCard;
-  //final double heightCard;
-
 
   const TopUserCard({
     super.key,
     this.widthCard = 149,
-   // this.heightCard = 143,
     required this.id,
     required this.image,
     required this.name,
@@ -35,7 +30,6 @@ class TopUserCard extends StatelessWidget {
       },
       child: Container(
         width: widthCard,
-        //height: heightCard,
         decoration: BoxDecoration(
           color: AppColor.grayColor.withValues(alpha: 0.20),
           borderRadius: BorderRadius.circular(16),
@@ -60,7 +54,6 @@ class TopUserCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12),
             ),
-          //  const SizedBox(height: 4),
             Text(
               "$track Developer",
               maxLines: 1,

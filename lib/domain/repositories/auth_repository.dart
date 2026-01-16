@@ -2,6 +2,7 @@ import 'dart:io';
 
 
 import 'package:skill_swap/data/models/register/register_response.dart';
+import 'package:skill_swap/data/models/user/user_model.dart';
 import '../../data/models/login/login_request.dart';
 import '../../data/models/login/login_response.dart';
 import '../../data/models/register/register_request.dart';
@@ -19,5 +20,5 @@ abstract class AuthRepository {
   Future<SendCodeResponse> sendCode(SendCodeRequest request);
   Future<VerifyCodeResponse> verifyCode(VerifyCodeRequest request);
   Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request);
-
+ // Future<UserModel> getProfile();
 }

@@ -6,6 +6,11 @@ import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 
+import '../../../data/models/user/user_model.dart';
+import '../../../dependency_injection/injection.dart';
+import '../../../domain/repositories/auth_repository.dart';
+import '../../../helper/local_storage.dart';
+
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
 
@@ -14,9 +19,33 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  late TextEditingController nameController;
+  late TextEditingController emailController;
+
+  UserModel? user;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    emailController = TextEditingController();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final fetchedUser = await LocalStorage.getUser();
+    setState(() {
+      user = fetchedUser;
+      nameController = TextEditingController(text: user!.name ?? "");
+      emailController = TextEditingController(text: user!.email ?? "");
+      if(user?.imagePath != null) {
+        selectedImage = File(user!.imagePath!);
+      }
+      loading = false;
+    });
+  }
   // Controllers
-  final nameController = TextEditingController(text: "Nada Sayed");
-  final emailController = TextEditingController(text: "0nada2005@gmail.com");
   final bioController = TextEditingController(text: "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
   final skillsController = TextEditingController(text: "Flutter, Dart");
 
@@ -27,6 +56,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final image = await picker.pickImage(source: source);
 
     if (image != null) {
+      await LocalStorage.saveUserImage(image.path);
       setState(() {
         selectedImage = File(image.path);
       });
@@ -82,10 +112,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundImage:
-                        selectedImage != null ? FileImage(selectedImage!) : null,
-                        child: selectedImage == null
-                            ? const Icon(Icons.person, size: 30)
+                        backgroundColor: AppColor.mainColor.withValues(alpha: 0.25),
+                        backgroundImage: selectedImage != null
+                            ? FileImage(selectedImage!)
+                            : (user?.imagePath != null && user!.imagePath!.isNotEmpty
+                            ? FileImage(File(user!.imagePath!))
+                            : null),
+                        child: (selectedImage == null && (user?.imagePath == null || user!.imagePath!.isEmpty))
+                            ? const Icon(Icons.person, size: 30, color: AppColor.whiteColor,)
                             : null,
                       ),
                       const SizedBox(width: 8),
@@ -181,7 +215,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 8),
                   actionButton(
-                      onPressedAction: (){Get.to(SignInScreen());},
+                      onPressedAction: (){
+                        LocalStorage.signOut();
+                        Get.to(SignInScreen());
+                        },
                       colorButton: AppColor.redColor,
                       icon: Icons.logout,
                       colorIcon: AppColor.whiteColor,

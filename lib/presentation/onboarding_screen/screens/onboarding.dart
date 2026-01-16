@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:lottie/lottie.dart';
+import 'package:skill_swap/helper/local_storage.dart';
 import 'package:skill_swap/presentation/onboarding_screen/screens/start_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../constants/colors.dart';
@@ -76,14 +77,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   borderRadius: BorderRadius.circular(80),
                 ),
               ),
-              onPressed: () {
+              onPressed: () async{
                 if (currentPage < 2) {
                   controller.nextPage(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                   );
                 } else {
-                 Get.to(() =>  StartScreen());
+                  await LocalStorage.setOnboardingSeen();
+                  Get.to(() =>  StartScreen());
                 }
               },
               child: Text(
@@ -115,7 +117,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   Widget skipIntro(BuildContext context) {
     return TextButton(
-      onPressed: () {
+      onPressed: () async{
+        await LocalStorage.setOnboardingSeen();
         Get.to(() =>  StartScreen());
       },
       child: const Text(

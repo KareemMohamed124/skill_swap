@@ -66,17 +66,17 @@ class NextSessionCard extends StatelessWidget {
 
             /// Icon
             Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColor.mainColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-               isMentor ? Icons.school : Icons.book,
-                  size: 22,
-                  color: AppColor.mainColor
-              )
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColor.mainColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                    isMentor ? Icons.school : Icons.book,
+                    size: 22,
+                    color: AppColor.mainColor
+                )
             ),
 
             const SizedBox(width: 16),

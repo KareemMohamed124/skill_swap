@@ -62,7 +62,6 @@ class _SelectDateState extends State<SelectDate> {
 
         calendarStyle: CalendarStyle(
           isTodayHighlighted: true,
-
           selectedDecoration: BoxDecoration(
             color: AppColor.mainColor,
             shape: BoxShape.circle,
@@ -72,7 +71,6 @@ class _SelectDateState extends State<SelectDate> {
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
-
           todayDecoration: BoxDecoration(
             color: AppColor.mainColor.withValues(alpha: 0.3),
             shape: BoxShape.circle,
@@ -82,10 +80,8 @@ class _SelectDateState extends State<SelectDate> {
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
-
           defaultDecoration: const BoxDecoration(shape: BoxShape.circle),
           weekendDecoration: const BoxDecoration(shape: BoxShape.circle),
-
           defaultTextStyle: const TextStyle(
             color: Colors.black,
             fontSize: 14,
@@ -101,7 +97,6 @@ class _SelectDateState extends State<SelectDate> {
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
-
           cellAlignment: Alignment.center,
           tablePadding: const EdgeInsets.only(top: 4),
         ),
@@ -110,7 +105,9 @@ class _SelectDateState extends State<SelectDate> {
         onDaySelected: onDaySelected,
         selectedDayPredicate: (day) => isSameDay(day, today),
         focusedDay: today,
-        firstDay: DateTime.utc(2010, 10, 16),
+
+        // 🔥 تعديل هنا: يمنع اختيار أي يوم قبل اليوم الحالي
+        firstDay: DateTime.now(),
         lastDay: DateTime.utc(2030, 3, 14),
       ),
     );

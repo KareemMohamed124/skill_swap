@@ -6,26 +6,69 @@ import '../../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_event.dart';
 
 class MentorFilterSheet extends StatefulWidget {
-  const MentorFilterSheet({super.key});
+  final double initialMinPrice;
+  final double initialMaxPrice;
+  final int? initialRate;
+  final String? initialStatus;
+  final String? initialTrack;
+  final String? initialSkill;
+
+  const MentorFilterSheet({
+    super.key,
+    this.initialMinPrice = 20,
+    this.initialMaxPrice = 60,
+    this.initialRate,
+    this.initialStatus,
+    this.initialTrack,
+    this.initialSkill,
+  });
 
   @override
   State<MentorFilterSheet> createState() => _MentorFilterSheetState();
 }
 
 class _MentorFilterSheetState extends State<MentorFilterSheet> {
-  double startPrice = 20;
-  double endPrice = 60;
+  late double startPrice;
+  late double endPrice;
 
   int? selectedRate;
   String? selectedStatus;
   String? selectedTrack;
   String? enteredSkill;
 
+  late TextEditingController skillController;
+
   int activeFiltersCount = 0;
 
   final List<String> statuses = ["Available"];
   final List<String> tracks = ["Frontend", "Mobile", "AI", "Ui/Ux", "Backend"];
   final List<int> rates = [1, 2, 3, 4, 5];
+
+  @override
+  void initState() {
+    super.initState();
+    startPrice = widget.initialMinPrice;
+    endPrice = widget.initialMaxPrice;
+    selectedRate = widget.initialRate;
+    selectedStatus = widget.initialStatus;
+    selectedTrack = widget.initialTrack;
+    enteredSkill = widget.initialSkill;
+
+    skillController = TextEditingController(text: enteredSkill ?? "");
+
+    // حساب عدد الفلاتر النشطة
+    if (startPrice != 20 || endPrice != 60) activeFiltersCount++;
+    if (selectedRate != null) activeFiltersCount++;
+    if (selectedStatus != null) activeFiltersCount++;
+    if (selectedTrack != null) activeFiltersCount++;
+    if (enteredSkill != null && enteredSkill!.isNotEmpty) activeFiltersCount++;
+  }
+
+  @override
+  void dispose() {
+    skillController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +91,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
           const Divider(),
           const SizedBox(height: 8),
 
+          // Price
           PriceFilterSection(
             min: 0,
             max: 100,
@@ -64,6 +108,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
           const SizedBox(height: 16),
 
+          // Status
           const Text("Status", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           buildChoiceChips<String>(
@@ -71,12 +116,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             selectedItem: selectedStatus,
             onSelected: (value) {
               setState(() {
-                if (selectedStatus == null && value != null) {
-                  activeFiltersCount++;
-                }
-                else if (selectedStatus != null && value == null) {
-                  activeFiltersCount--;
-                }
+                if (selectedStatus == null && value != null) activeFiltersCount++;
+                else if (selectedStatus != null && value == null) activeFiltersCount--;
                 selectedStatus = value;
               });
             },
@@ -84,6 +125,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
           const SizedBox(height: 16),
 
+          // Track
           const Text("Track", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           buildChoiceChips<String>(
@@ -91,12 +133,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             selectedItem: selectedTrack,
             onSelected: (value) {
               setState(() {
-                if (selectedTrack == null && value != null) {
-                  activeFiltersCount++;
-                }
-                else if (selectedTrack != null && value == null) {
-                  activeFiltersCount--;
-                }
+                if (selectedTrack == null && value != null) activeFiltersCount++;
+                else if (selectedTrack != null && value == null) activeFiltersCount--;
                 selectedTrack = value;
               });
             },
@@ -104,11 +142,13 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
           const SizedBox(height: 16),
 
+          // Skill
           const Text("Skill", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           SizedBox(
             height: 50,
             child: TextField(
+              controller: skillController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: AppColor.grayColor.withValues(alpha: 0.2),
@@ -126,11 +166,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               onChanged: (value) {
                 setState(() {
                   final trimmed = value.trim();
-                  if (enteredSkill == null && trimmed.isNotEmpty) {
-                    activeFiltersCount++;
-                  } else if (enteredSkill != null && trimmed.isEmpty) {
-                    activeFiltersCount--;
-                  }
+                  if (enteredSkill == null && trimmed.isNotEmpty) activeFiltersCount++;
+                  else if (enteredSkill != null && trimmed.isEmpty) activeFiltersCount--;
                   enteredSkill = trimmed.isEmpty ? null : trimmed;
                 });
               },
@@ -139,6 +176,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
           const SizedBox(height: 16),
 
+          // Rating
           const Text("Rating", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           buildChoiceChips<int>(
@@ -146,11 +184,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             selectedItem: selectedRate,
             onSelected: (value) {
               setState(() {
-                if (selectedRate == null && value != null) {
-                  activeFiltersCount++;
-                } else if (selectedRate != null && value == null) {
-                  activeFiltersCount--;
-                }
+                if (selectedRate == null && value != null) activeFiltersCount++;
+                else if (selectedRate != null && value == null) activeFiltersCount--;
                 selectedRate = value;
               });
             },
@@ -165,9 +200,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.grayColor.withValues(alpha: 0.25),
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
@@ -214,7 +247,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     );
   }
 
-
+  // Generic ChoiceChips builder
   Widget buildChoiceChips<T>({
     required List<T> items,
     required T? selectedItem,
@@ -249,16 +282,14 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               : Text(
             "$item",
             style: TextStyle(
-              color: active ? AppColor.whiteColor: activeColor,
+              color: active ? AppColor.whiteColor : activeColor,
             ),
           ),
           selected: active,
           backgroundColor: inactiveColor.withValues(alpha: 0.25),
           selectedColor: activeColor,
           checkmarkColor: inactiveColor.withValues(alpha: 0.25),
-          onSelected: (_) {
-            onSelected(active ? null : item);
-          },
+          onSelected: (_) => onSelected(active ? null : item),
         );
       }).toList(),
     );

@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/common_ui/custom_bottom_nav.dart';
 import 'package:skill_swap/constants/strings.dart';
+import 'package:skill_swap/data/models/user/user_model.dart';
 import 'package:skill_swap/presentation/home/widgets/custom_header.dart';
 import 'package:skill_swap/presentation/notification/screens/notification_screen.dart';
 import '../../../constants/colors.dart';
+import '../../../dependency_injection/injection.dart';
+import '../../../domain/repositories/auth_repository.dart';
+import '../../../helper/local_storage.dart';
 import '../pages/next_session_view_all.dart';
 import '../pages/recommended_view_all.dart';
 import '../pages/top_users_view_all.dart';
@@ -22,11 +28,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
+  UserModel? user;
+  bool loading = true;
 
   @override
+  void initState() {
+    super.initState();
+    loadUser();
+  }
+
+  Future<void> loadUser() async {
+    final fetchedUser = await LocalStorage.getUser();
+    setState(() {
+      user = fetchedUser;
+      loading = false;
+    });
+  }
+
+      @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
+     if(loading || user == null) {
+       return const Scaffold(
+         body: Center(child: CircularProgressIndicator(),),
+       );
+     }
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
       body: Stack(
@@ -34,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             children: [
               CustomHeader(
-                name: 'Hi, Nada',
+                name: 'Hi, ${user!.name ?? ""}',
                 subtitle: 'Keep learning and earning hours today!',
-                avatar: 'assets/images/people_images/nada.jpg',
+                avatarPath: user!.imagePath,
                 onIcon1: () {},
                 onIcon2: () {Get.to(NotificationsScreen());},
               ),
@@ -144,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-
     );
   }
 }

@@ -118,9 +118,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
 
                   child: IconButton(
-                    icon: Icon(Icons.tune_outlined, color: AppColor.mainColor,),
+                    icon: Icon(Icons.tune_outlined, color: AppColor.mainColor),
                     onPressed: () async {
                       final bloc = context.read<MentorFilterBloc>();
+                      final state = bloc.state;
+
                       final activeFilters = await showModalSideSheet<int>(
                         context: context,
                         withCloseControll: false,
@@ -128,7 +130,14 @@ class _SearchScreenState extends State<SearchScreen> {
                         width: MediaQuery.of(context).size.width * 0.8,
                         body: BlocProvider.value(
                           value: bloc,
-                          child: const MentorFilterSheet(),
+                          child: MentorFilterSheet(
+                            initialMinPrice: state.minPrice,
+                            initialMaxPrice: state.maxPrice,
+                            initialRate: state.selectedRate,
+                            initialStatus: state.selectedStatus,
+                            initialTrack: state.selectedTrack,
+                            initialSkill: state.enteredSkill,
+                          ),
                         ),
                       );
 
@@ -150,7 +159,39 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 const Expanded(child: SortButton()),
                 const SizedBox(width: 8),
-                Expanded(child: FilterButton(activeFilters: activeFiltersCount,)),
+                Expanded(
+                  child: FilterButton(
+                    activeFilters: activeFiltersCount,
+                    onPressed: () async {
+                      final bloc = context.read<MentorFilterBloc>();
+                      final state = bloc.state;
+
+                      final activeFilters = await showModalSideSheet<int>(
+                        context: context,
+                        withCloseControll: false,
+                        barrierColor: AppColor.grayColor.withValues(alpha: 0.3),
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        body: BlocProvider.value(
+                          value: bloc,
+                          child: MentorFilterSheet(
+                            initialMinPrice: state.minPrice,
+                            initialMaxPrice: state.maxPrice,
+                            initialRate: state.selectedRate,
+                            initialStatus: state.selectedStatus,
+                            initialTrack: state.selectedTrack,
+                            initialSkill: state.enteredSkill,
+                          ),
+                        ),
+                      );
+
+                      if (activeFilters != null) {
+                        setState(() {
+                          activeFiltersCount = activeFilters;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
 

@@ -10,10 +10,10 @@ part of 'auth_api.dart';
 
 class _AuthApi implements AuthApi {
   _AuthApi(
-    this._dio, {
-    this.baseUrl,
-   // this.errorLogger,
-  }) {
+      this._dio, {
+        this.baseUrl,
+        // this.errorLogger,
+      }) {
     baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
   }
 
@@ -21,7 +21,7 @@ class _AuthApi implements AuthApi {
 
   String? baseUrl;
 
- // final ParseErrorLogger? errorLogger;
+  // final ParseErrorLogger? errorLogger;
 
   @override
   Future<RegisterSuccessResponse> register(RegisterRequest body) async {
@@ -36,13 +36,13 @@ class _AuthApi implements AuthApi {
       extra: _extra,
     )
         .compose(
-          _dio.options,
-          'register/',
-          queryParameters: queryParameters,
-          data: _data,
-        )
+      _dio.options,
+      'register/',
+      queryParameters: queryParameters,
+      data: _data,
+    )
         .copyWith(
-            baseUrl: _combineBaseUrls(
+        baseUrl: _combineBaseUrls(
           _dio.options.baseUrl,
           baseUrl,
         )));
@@ -51,7 +51,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = RegisterSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-     // errorLogger?.logError(e, s, _options);
+      // errorLogger?.logError(e, s, _options);
       rethrow;
     }
     return _value;
@@ -70,13 +70,13 @@ class _AuthApi implements AuthApi {
       extra: _extra,
     )
         .compose(
-          _dio.options,
-          'login/',
-          queryParameters: queryParameters,
-          data: _data,
-        )
+      _dio.options,
+      'login/',
+      queryParameters: queryParameters,
+      data: _data,
+    )
         .copyWith(
-            baseUrl: _combineBaseUrls(
+        baseUrl: _combineBaseUrls(
           _dio.options.baseUrl,
           baseUrl,
         )));
@@ -104,13 +104,13 @@ class _AuthApi implements AuthApi {
       extra: _extra,
     )
         .compose(
-          _dio.options,
-          'password/forgot/',
-          queryParameters: queryParameters,
-          data: _data,
-        )
+      _dio.options,
+      'password/forgot/',
+      queryParameters: queryParameters,
+      data: _data,
+    )
         .copyWith(
-            baseUrl: _combineBaseUrls(
+        baseUrl: _combineBaseUrls(
           _dio.options.baseUrl,
           baseUrl,
         )));
@@ -138,13 +138,13 @@ class _AuthApi implements AuthApi {
       extra: _extra,
     )
         .compose(
-          _dio.options,
-          'password/verify-code/',
-          queryParameters: queryParameters,
-          data: _data,
-        )
+      _dio.options,
+      'password/verify-code/',
+      queryParameters: queryParameters,
+      data: _data,
+    )
         .copyWith(
-            baseUrl: _combineBaseUrls(
+        baseUrl: _combineBaseUrls(
           _dio.options.baseUrl,
           baseUrl,
         )));
@@ -173,13 +173,13 @@ class _AuthApi implements AuthApi {
       extra: _extra,
     )
         .compose(
-          _dio.options,
-          'password/reset/',
-          queryParameters: queryParameters,
-          data: _data,
-        )
+      _dio.options,
+      'password/reset/',
+      queryParameters: queryParameters,
+      data: _data,
+    )
         .copyWith(
-            baseUrl: _combineBaseUrls(
+        baseUrl: _combineBaseUrls(
           _dio.options.baseUrl,
           baseUrl,
         )));
@@ -208,9 +208,9 @@ class _AuthApi implements AuthApi {
   }
 
   String _combineBaseUrls(
-    String dioBaseUrl,
-    String? baseUrl,
-  ) {
+      String dioBaseUrl,
+      String? baseUrl,
+      ) {
     if (baseUrl == null || baseUrl.trim().isEmpty) {
       return dioBaseUrl;
     }

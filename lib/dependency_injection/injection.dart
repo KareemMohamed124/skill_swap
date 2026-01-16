@@ -10,6 +10,7 @@ import '../constants/strings.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../data/web_services/auth_api.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../helper/local_storage.dart';
 
 final sl = GetIt.instance;
 
@@ -34,8 +35,21 @@ Future<void> initDependencies() async {
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
 
   sl.registerFactory<VerifyCodeBloc>(() => VerifyCodeBloc(sl<AuthRepository>()));
-  
+
   sl.registerFactory<ResetPasswordBloc>(() => ResetPasswordBloc(sl<AuthRepository>()));
 
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
+  //
+  // dio.interceptors.add(
+  //   InterceptorsWrapper(
+  //     onRequest: (options, handler) async {
+  //       final token = await LocalStorage.getToken();
+  //       if (token != null) {
+  //         options.headers['Authorization'] = 'Bearer $token';
+  //       }
+  //       return handler.next(options);
+  //     },
+  //   ),
+  // );
+
 }
