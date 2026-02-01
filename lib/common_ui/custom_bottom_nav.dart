@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../core/theme/app_palette.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -12,22 +14,24 @@ class CustomBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final items = <NavItem>[
-      NavItem(icon: Icons.home_outlined, label: 'Home'),
-      NavItem(icon: Icons.chat_bubble_outline, label: 'Chat'),
-      NavItem(icon: Icons.search, label: 'Search'),
-      NavItem(icon: Icons.calendar_today_outlined, label: 'Session'),
-      NavItem(icon: Icons.person_outline, label: 'Profile'),
+      NavItem(icon: Icons.home_outlined, label: 'home'.tr),
+      NavItem(icon: Icons.chat_bubble_outline, label: 'chat'.tr),
+      NavItem(icon: Icons.search, label: 'search'.tr),
+      NavItem(icon: Icons.calendar_today_outlined, label: 'session'.tr),
+      NavItem(icon: Icons.person_outline, label: 'profile'.tr),
     ];
 
     return Container(
-      padding: const EdgeInsets.only(top: 4, bottom: 4, left: 12, right: 12),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppPalette.darkSurface : AppPalette.lightSurface, // أو AppPalette.lightSurface / darkSurface
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -41,6 +45,11 @@ class CustomBottomNav extends StatelessWidget {
             final item = items[index];
             final isSelected = index == selectedIndex;
 
+            // Gradient colors based on theme
+            final gradientColors = isDark
+                ? [Color(0xFF3B3B70), Color(0xFF0B0A3F)] // أغمق للدارك مود
+                : [Color(0xFF2D8CFF), Color(0xFF0D035F)]; // Light
+
             if (isSelected) {
               return GestureDetector(
                 onTap: () => onItemSelected(index),
@@ -53,18 +62,14 @@ class CustomBottomNav extends StatelessWidget {
                       height: 48,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: const RadialGradient(
-                          center: Alignment(-0.4, -0.3),
+                        gradient: RadialGradient(
+                          center: const Alignment(-0.4, -0.3),
                           radius: 1.0,
-                          colors: [
-                            Color(0xFF2D8CFF),
-                            Color(0xFF0D035F),
-                          ],
-                          stops: [0.0, 1.0],
+                          colors: gradientColors,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF0D035F).withValues(alpha: 0.25),
+                            color: gradientColors.last.withOpacity(0.25),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -79,15 +84,21 @@ class CustomBottomNav extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       item.label,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                   ],
                 ),
               );
             }
+
+            // Unselected items
+            final iconColor = isDark
+                ? AppPalette.darkTextSecondary.withOpacity(0.7)
+                : AppPalette.lightTextSecondary.withOpacity(0.7);
 
             return GestureDetector(
               onTap: () => onItemSelected(index),
@@ -97,14 +108,15 @@ class CustomBottomNav extends StatelessWidget {
                   Icon(
                     item.icon,
                     size: 22,
-                    color: Colors.indigo[900]!.withValues(alpha: 0.7),
+                    color: iconColor,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     item.label,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.indigo[900]!.withValues(alpha: 0.7),
+                      color: iconColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],

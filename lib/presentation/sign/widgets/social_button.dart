@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../constants/colors.dart';
 
 class SocialButton extends StatelessWidget {
   final String text;
@@ -12,7 +11,7 @@ class SocialButton extends StatelessWidget {
       child: Container(
         height: 45,
         decoration: BoxDecoration(
-          color: AppColor.grayColor,
+          color: Color(0xFFD6D6D6),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(

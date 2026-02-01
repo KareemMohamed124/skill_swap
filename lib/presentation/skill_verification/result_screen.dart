@@ -4,6 +4,7 @@ import 'package:skill_swap/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/presentation/profile/screens/profile_screen.dart';
 
 import '../../common_ui/screen_manager/screen_manager.dart';
+import '../../core/theme/app_palette.dart';
 
 class ResultScreen extends StatelessWidget {
   final int score = Get.arguments['score'];
@@ -15,9 +16,10 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final percent = (score / total) * 100;
     final passed = percent >= 85;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
@@ -32,23 +34,25 @@ class ResultScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 passed ? "Congratulations!" : "Keep Learning!",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge!.color
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "${percent.toInt()}%",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyLarge!.color
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "You got $score out of $total questions correct",
-                style: const TextStyle(fontSize: 16, color: Color(0xFF0D035F)),
+                style: TextStyle(fontSize: 16, color: isDark ? AppPalette.darkTextPrimary : const Color(0xFF0D035F)),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),

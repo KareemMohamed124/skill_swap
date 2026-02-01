@@ -3,14 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/bloc/send_code_bloc/send_code_bloc.dart';
 import 'package:skill_swap/bloc/verify_code_bloc/verify_code_bloc.dart';
 import 'package:skill_swap/presentation/forget_password/screens/reset_password_screen.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
-
-import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
 
 class VerifyScreen extends StatefulWidget {
@@ -61,7 +57,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
         )
       ],
       child: Scaffold(
-        backgroundColor: AppColor.whiteColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocConsumer<VerifyCodeBloc, VerifyCodeState>(
           listener: (context, state) {
             if (state is VerifyCodeFailureState) {

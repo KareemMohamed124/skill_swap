@@ -1,7 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:get/get.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_event.dart';
 
@@ -28,7 +28,8 @@ class _SortButtonState extends State<SortButton> {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColor.mainColor),
+        color: Theme.of(context).cardColor,
+        border: Border.all(color: Theme.of(context).dividerColor),
         borderRadius: BorderRadius.circular(16),
       ),
       child: DropdownButtonHideUnderline(
@@ -37,31 +38,21 @@ class _SortButtonState extends State<SortButton> {
             padding: EdgeInsets.only(right: 16)
           ),
           value: selected,
-          hint: const Text(
-            'Sort',
-            style: TextStyle(fontSize: 14, color: AppColor.blackColor, fontWeight: FontWeight.w500),
+          hint: Text(
+            'sort'.tr,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColor.blackColor,
-              fontWeight: FontWeight.w500
-          ),
+          style: Theme.of(context).textTheme.bodyMedium,
           isExpanded: true,
           items: items
               .map((option) => DropdownMenuItem(
             value: option,
             child: Text(option,
-              style: const TextStyle(
-                  fontSize: 14,
-                color: AppColor.blackColor,
-                  fontWeight: FontWeight.w500
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ))
               .toList(),
 
-          // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-          // القائمة تنزل تحت دايمًا
           dropdownStyleData: DropdownStyleData(
             offset: const Offset(0, -5),
             decoration: BoxDecoration(
@@ -69,16 +60,11 @@ class _SortButtonState extends State<SortButton> {
             ),
             maxHeight: 250,
           ),
-          // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
-          // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-          // السهم يظهر فقط لو selected == null
           iconStyleData: IconStyleData(
             icon: selected == null
                 ? const Icon(Icons.keyboard_arrow_down_outlined)
                 : const SizedBox(),
           ),
-          // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
           onChanged: (value) {
             if (value == null) return;

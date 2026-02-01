@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 
@@ -35,7 +35,7 @@ class StartScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: AppColor.mainColor,
+                      color: AppPalette.primary,
                     ),
                   ),
 
@@ -44,10 +44,10 @@ class StartScreen extends StatelessWidget {
                   Text(
                     'Learn new skills, teach others, and grow together in our collaborative learning community',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       fontSize: 18,
                       height: 1.4,
-                      color: AppColor.blackColor,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
 
@@ -64,8 +64,8 @@ class StartScreen extends StatelessWidget {
 
                   CustomButton(
                     text: 'I already have an account',
-                    colorButton: AppColor.whiteColor,
-                    colorText: AppColor.mainColor,
+                    colorButton: Colors.white,
+                    colorText: AppPalette.primary,
                     onPressed: () {
                       Navigator.push(
                         context,

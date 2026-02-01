@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 import 'package:skill_swap/data/quiz/quiz_controller.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -59,6 +60,7 @@ class _QuizScreenState extends State<QuizScreen> {
       }
 
       final q = controller.questions[controller.index.value];
+      final isDark = Theme.of(context).brightness == Brightness.dark;
 
       return Scaffold(
         backgroundColor: const Color(0xFF0D035F),
@@ -85,8 +87,8 @@ class _QuizScreenState extends State<QuizScreen> {
             child: Container(
               width: screenWidth,
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
@@ -98,13 +100,13 @@ class _QuizScreenState extends State<QuizScreen> {
                   /// Timer + question count
                   Row(
                     children: [
-                      const Icon(Icons.timer, color: Color(0xFF0D035F)),
+                       Icon(Icons.timer, color: isDark ? AppPalette.darkTextPrimary : Color(0xFF0D035F)),
                       const SizedBox(width: 8),
                       Obx(
                             () => Text(
                           formattedTime,
-                          style: const TextStyle(
-                            color: Color(0xFF0D035F),
+                          style: TextStyle(
+                            color: isDark ? AppPalette.darkTextPrimary : Color(0xFF0D035F),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -116,13 +118,13 @@ class _QuizScreenState extends State<QuizScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xFF0D035F)),
+                          border: Border.all(color: Theme.of(context).dividerColor),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Obx(
                               () => Text(
                             "${controller.index.value + 1} of ${controller.questions.length}",
-                            style: const TextStyle(color: Color(0xFF0D035F)),
+                            style: TextStyle(color: isDark ? AppPalette.darkTextPrimary : Color(0xFF0D035F)),
                           ),
                         ),
                       ),
@@ -148,7 +150,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
                   Text(
                     "Question ${controller.index.value + 1} of ${controller.questions.length}",
-                    style: const TextStyle(color: Color(0xFF0D035F)),
+                    style: TextStyle(color: isDark ? AppPalette.darkTextPrimary : Color(0xFF0D035F)),
                   ),
 
                   const SizedBox(height: 16),
@@ -158,15 +160,17 @@ class _QuizScreenState extends State<QuizScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF0D035F)),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: Text(
                       q.question,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         height: 1.4,
+                        color: Theme.of(context).textTheme.bodyLarge!.color
                       ),
                     ),
                   ),
@@ -186,13 +190,13 @@ class _QuizScreenState extends State<QuizScreen> {
                           color:
                           isSelected
                               ? const Color(0XFFF2F5F8)
-                              : Colors.white,
+                              : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color:
                             isSelected
                                 ? const Color(0xFF0D035F)
-                                : const Color(0XFFF2F5F8),
+                                : Theme.of(context).dividerColor,
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -210,9 +214,11 @@ class _QuizScreenState extends State<QuizScreen> {
                             Expanded(
                               child: Text(
                                 q.options[i],
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                ),
+                                   color: Theme.of(context).textTheme.bodyLarge!.color
+
+                    ),
                               ),
                             ),
                           ],
@@ -233,16 +239,17 @@ class _QuizScreenState extends State<QuizScreen> {
                               ? null
                               : controller.previousQuestion,
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFF0D035F)),
+                            side: BorderSide(color: isDark ? Theme.of(context).dividerColor : Color(0xFF0D035F)),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
+
+                          child: Text(
                             "Previous",
                             style: TextStyle(
-                              color: Color(0xFF0D035F),
+                              color: isDark ? AppPalette.darkTextPrimary : Color(0xFF0D035F),
                               fontWeight: FontWeight.bold,
                             ),
                           ),

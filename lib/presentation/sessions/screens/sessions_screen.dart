@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/sessions/pages/pending_sessions_page.dart';
 import 'package:skill_swap/presentation/sessions/pages/requests_sessions_page.dart';
 import 'package:skill_swap/presentation/sessions/pages/upcoming_sessions_page.dart';
 import 'package:skill_swap/presentation/sessions/widgets/session_header.dart';
-
-import '../../history/screens/history_screen.dart';
 import '../pages/all_sessions_page.dart';
 
 class SessionsScreen extends StatefulWidget {
@@ -29,7 +26,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+     // backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
@@ -41,22 +38,22 @@ class _SessionsScreenState extends State<SessionsScreen> {
                     selected = index;
                   });
                 },
-                title: "Sessions",
-                subtitle: "Track your upcoming sessions",
+                title: "sessions".tr,
+                subtitle: "track_upcoming".tr,
 
             )
           ],
           ),
           Positioned(
-              top: 156,
+              top: 164,
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
                 width: double.infinity,
                 constraints: BoxConstraints(minHeight: screenHeight),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),

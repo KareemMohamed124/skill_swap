@@ -68,7 +68,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       // appBar: AppBar(
       //   backgroundColor: Colors.white,
       //   elevation: 1,
@@ -134,10 +134,10 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             Expanded(
               child:
               messages.isEmpty
-                  ? const Center(
+                  ? Center(
                 child: Text(
                   "No messages yet",
-                  style: TextStyle(color: Color(0xFF0D035F)),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color,),
                 ),
               )
                   : ListView.builder(
@@ -187,9 +187,10 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             child: TextField(
               controller: _controller,
               decoration: InputDecoration(
+                fillColor: Theme.of(context).cardColor,
                 hintText: "Message...",
-                hintStyle: const TextStyle(
-                  color: Color(0xFF0D035F),
+                hintStyle:  TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                   fontWeight: FontWeight.bold,
                 ),
                 border: OutlineInputBorder(
@@ -200,7 +201,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
           ),
           const SizedBox(width: 10),
           IconButton(
-            icon: const Icon(Icons.send, color: Color(0xFF0D035F)),
+            icon: Icon(Icons.send, color: Theme.of(context).textTheme.bodyLarge!.color,),
             onPressed: _sendMessage,
           ),
         ],

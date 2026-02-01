@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:get/get.dart';
 import 'package:skill_swap/constants/strings.dart';
 import 'package:skill_swap/presentation/book_session/widgets/duration_selector.dart';
-import 'package:skill_swap/presentation/book_session/widgets/session_type.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import '../widgets/select_date.dart';
@@ -27,12 +26,12 @@ class _BookSessionState extends State<BookSession> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Column(
-            children: const [
-              CustomAppBar(title: 'Session Details',)
+            children:  [
+              CustomAppBar(title: 'session_details'.tr,)
             ],
           ),
           Positioned(
@@ -43,8 +42,8 @@ class _BookSessionState extends State<BookSession> {
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
@@ -94,13 +93,9 @@ class _BookSessionState extends State<BookSession> {
                       // const SizedBox(height: 16),
 
                       // Duration Section
-                      const Text(
-                        "Select Duration",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.blackColor
-                        ),
+                      Text(
+                        "select_duration".tr,
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
                       const SizedBox(height: 8),
                       DurationSelector(
@@ -114,13 +109,9 @@ class _BookSessionState extends State<BookSession> {
                       const SizedBox(height: 16),
 
                       // Date Section
-                      const Text(
-                        "Select Date",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.blackColor
-                        ),
+                      Text(
+                        "select_date".tr,
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
                       const SizedBox(height: 8),
                       SelectDate(
@@ -134,13 +125,9 @@ class _BookSessionState extends State<BookSession> {
                       const SizedBox(height: 16),
 
                       // Time Section
-                      const Text(
-                        "Select Time",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.blackColor
-                        ),
+                       Text(
+                        "select_time".tr,
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
                       const SizedBox(height: 8),
                       SelectTime(
@@ -157,9 +144,10 @@ class _BookSessionState extends State<BookSession> {
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: AppColor.mainColor,
+                            color: Theme.of(context).dividerColor,
                             width: 1,
                           ),
                         ),
@@ -169,13 +157,13 @@ class _BookSessionState extends State<BookSession> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Session Details",
-                                style: TextStyle(fontSize: 16),
+                               Text(
+                                "session_details".tr,
+                                style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyLarge!.color),
                               ),
                               const SizedBox(height: 8),
 
-                              sessionDetails(data: "Mentor:", input: "Dr. Joumana Johnson"),
+                              sessionDetails(context: context, data: "mentor:".tr, input: "Dr. Joumana Johnson"),
                               const SizedBox(height: 4,),
                               // sessionDetails(
                               //   data: "Session Type:",
@@ -183,22 +171,26 @@ class _BookSessionState extends State<BookSession> {
                               // ),
                               // const SizedBox(height: 4,),
                               sessionDetails(
-                                data: "Duration:",
+                                context: context,
+                                data: "duration:".tr,
                                 input: "$selectedDuration min",
                               ),
                               const SizedBox(height: 4,),
                               sessionDetails(
-                                data: "Day:",
+                                context: context,
+                                data: "day:".tr,
                                 input: "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
                               ),
                               const SizedBox(height: 4,),
                               sessionDetails(
-                                data: "Time:",
+                                context: context,
+                                data: "time:".tr,
                                 input: selectedTime ,
                               ),
                               const SizedBox(height: 4,),
                               sessionDetails(
-                                data: "Cost:",
+                                context: context,
+                                data: "cost:".tr,
                                 input: "35\$",
                               ),
                               // const SizedBox(height: 8,),
@@ -208,7 +200,7 @@ class _BookSessionState extends State<BookSession> {
                       ),
 
                       const SizedBox(height: 16),
-                      CustomButton(text: 'Book Now!', onPressed: () {  },),
+                      CustomButton(text: 'book_now!', onPressed: () {  },),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -223,22 +215,22 @@ class _BookSessionState extends State<BookSession> {
 }
 
 // Reusable sessionDetails widget
-Widget sessionDetails({required String data, required String input}) {
+Widget sessionDetails({required BuildContext context, required String data, required String input}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text(
         data,
-        style: const TextStyle(
+        style:  TextStyle(
           fontSize: 12,
-          color: AppColor.mainColor,
+          color: Theme.of(context).textTheme.bodyMedium!.color,
         ),
       ),
       Text(
         input,
-        style: const TextStyle(
+        style:  TextStyle(
           fontSize: 12,
-          color: AppColor.mainColor,
+          color: Theme.of(context).textTheme.bodyMedium!.color,
         ),
       ),
     ],

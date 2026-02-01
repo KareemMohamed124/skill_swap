@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class CustomHeader extends StatelessWidget {
   final String name;
   final String subtitle;
-  final String? avatarPath; // ده path الصورة لو موجودة
+  final String? avatarPath;
   final VoidCallback? onIcon1;
   final VoidCallback? onIcon2;
 
@@ -23,8 +23,8 @@ class CustomHeader extends StatelessWidget {
     return Container(
       height: 160,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppColor.mainColor,
+      decoration: BoxDecoration(
+        color: AppPalette.primary,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -34,13 +34,13 @@ class CustomHeader extends StatelessWidget {
             // ========= CircleAvatar =========
             CircleAvatar(
               radius: 30,
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).cardColor,
               backgroundImage:
               avatarPath != null && avatarPath!.isNotEmpty
                   ? FileImage(File(avatarPath!))
                   : null,
               child: avatarPath == null || avatarPath!.isEmpty
-                  ? const Icon(Icons.person, size: 30, color: AppColor.mainColor)
+                  ? Icon(Icons.person, size: 30, color: Theme.of(context).textTheme.bodyLarge!.color)
                   : null,
             ),
 
@@ -54,7 +54,7 @@ class CustomHeader extends StatelessWidget {
                   Text(
                     name,
                     style: const TextStyle(
-                      color: AppColor.whiteColor,
+                      color: Colors.white,
                       fontSize: 16,
                     ),
                   ),
@@ -62,7 +62,7 @@ class CustomHeader extends StatelessWidget {
                   Text(
                     subtitle,
                     style: const TextStyle(
-                      color: AppColor.whiteColor,
+                      color: Colors.white,
                       fontSize: 12,
                     ),
                   ),
@@ -71,6 +71,7 @@ class CustomHeader extends StatelessWidget {
             ),
 
             circleButton(
+              context: context,
               icon: Icons.notifications_none,
               onTap: onIcon2,
             ),
@@ -80,9 +81,9 @@ class CustomHeader extends StatelessWidget {
     );
   }
 
-  Widget circleButton({required IconData icon, VoidCallback? onTap}) {
+  Widget circleButton({required BuildContext context ,required IconData icon, VoidCallback? onTap}) {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       shape: const CircleBorder(),
       elevation: 3,
       child: InkWell(
@@ -93,7 +94,7 @@ class CustomHeader extends StatelessWidget {
           child: Icon(
             icon,
             size: 16,
-            color: AppColor.mainColor,
+            color: Theme.of(context).textTheme.bodyLarge!.color
           ),
         ),
       ),

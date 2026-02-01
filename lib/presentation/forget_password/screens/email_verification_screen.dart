@@ -1,11 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
-import '../../../constants/colors.dart';
 import '../../select_skills/select_track.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -53,7 +49,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomAuth(
         title: "Verify Your Email",
         subTitle: "We have sent a verification link to ${widget.email}, Please check your email to continue.",

@@ -20,5 +20,5 @@ abstract class AuthRepository {
   Future<SendCodeResponse> sendCode(SendCodeRequest request);
   Future<VerifyCodeResponse> verifyCode(VerifyCodeRequest request);
   Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request);
- // Future<UserModel> getProfile();
+  Future<UserModel> getProfile();
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 
 class CustomAuth extends StatelessWidget {
   final String title;
@@ -32,7 +32,7 @@ class CustomAuth extends StatelessWidget {
         width: 361,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColor.grayColor.withValues(alpha: 0.25),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -44,13 +44,13 @@ class CustomAuth extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColor.mainColor,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               subTitle,
-              style: TextStyle(fontSize: 16, color: AppColor.mainColor),
+              style: TextStyle(fontSize: 16, color:  Theme.of(context).textTheme.bodyMedium!.color,),
             ),
             const SizedBox(height: 32),
             childWidget,
@@ -61,7 +61,7 @@ class CustomAuth extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.mainColor,
+                  backgroundColor: AppPalette.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -69,7 +69,7 @@ class CustomAuth extends StatelessWidget {
                 onPressed: onPressed,
                 child: Text(
                   buttonText,
-                  style: TextStyle(fontSize: 16, color: AppColor.whiteColor),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
@@ -83,7 +83,7 @@ class CustomAuth extends StatelessWidget {
                   onTap: onBottomTap,
                   child: Text(
                     bottomActionText,
-                    style: TextStyle(color: AppColor.mainColor),
+                    style: TextStyle(color: AppPalette.primary),
                   ),
                 ),
               ],

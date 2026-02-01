@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/common_ui/circle_button_icon.dart';
-
-import '../../../constants/colors.dart';
-
-import 'package:flutter/material.dart';
-
+import 'package:skill_swap/presentation/sessions/widgets/state_filter.dart';
 import '../../history/screens/history_screen.dart';
 
 class SessionsHeader extends StatelessWidget {
@@ -25,11 +21,11 @@ class SessionsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180,
+      height: 188,
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: AppColor.mainColor,
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,24 +49,24 @@ class SessionsHeader extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style:TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.whiteColor,
-                      ),
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                      )
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: AppColor.whiteColor,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
               ),
-             CircleButtonIcon(icon: Icons.history, onTap: (){Get.to(HistoryScreen());},),
+              CircleButtonIcon(icon: Icons.history, onTap: (){Get.to(HistoryScreen());},),
               // IconButton(
               //   onPressed: onHistory,
               //   icon: const Icon(
@@ -83,7 +79,7 @@ class SessionsHeader extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          SelectStatus(
+          StatusFilter(
             selectedIndex: selectedIndex,
             onSelect: onSelect,
           ),
@@ -94,7 +90,8 @@ class SessionsHeader extends StatelessWidget {
 }
 
 
-Widget SelectStatus({
+Widget selectStatus({
+  required BuildContext context,
   required int selectedIndex,
   required Function(int) onSelect,
 }) {
@@ -116,14 +113,18 @@ Widget SelectStatus({
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: isSelected ? AppColor.whiteColor : AppColor.selectedButtonColor,
+            color: isSelected
+                ? Theme.of(context).colorScheme.surface
+                : Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             statusList[index],
             style: TextStyle(
               fontSize: 12,
-              color: isSelected ? AppColor.mainColor : AppColor.whiteColor,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onPrimaryContainer,
               fontWeight: FontWeight.w600,
             ),
           ),

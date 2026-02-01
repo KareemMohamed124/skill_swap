@@ -11,17 +11,18 @@ class SkillsPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          skillCard(title: "JavaScript", proficiency: 0.95, verified: true),
+          skillCard(context: context, title: "JavaScript", proficiency: 0.95, verified: true),
           const SizedBox(height: 20),
-          skillCard(title: "React", proficiency: 0.80, verified: false),
+          skillCard(context: context, title: "React", proficiency: 0.80, verified: false),
           const SizedBox(height: 20),
-          skillCard(title: "Flutter", proficiency: 0.70, verified: false),
+          skillCard(context: context, title: "Flutter", proficiency: 0.70, verified: false),
         ],
       ),
     );
   }
 
   Widget skillCard({
+    required BuildContext context,
     required String title,
     required double proficiency,
     required bool verified,
@@ -29,10 +30,10 @@ class SkillsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        border: Border.all(color: const Color(0XFF0D035F)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,9 +45,10 @@ class SkillsPage extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
                   if (verified)
@@ -83,10 +85,10 @@ class SkillsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Proficiency"),
+               Text("Proficiency", style: TextStyle( color: Theme.of(context).textTheme.bodyMedium!.color,),),
               Text(
                 "${(proficiency * 100).round()}%",
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold,  color: Theme.of(context).textTheme.bodyMedium!.color,),
               ),
             ],
           ),

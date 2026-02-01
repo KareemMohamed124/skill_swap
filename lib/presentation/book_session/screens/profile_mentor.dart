@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 import 'package:skill_swap/presentation/book_session/screens/book_session.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import '../../profile/pages/reviews_page.dart';
@@ -37,6 +37,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Stack(
@@ -60,8 +61,8 @@ class _ProfileMentorState extends State<ProfileMentor> {
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
@@ -76,23 +77,26 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF5F6FA),
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(32),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             mentorInfo(
+                              context: context,
                               rate: "200",
-                              info: "Hours Available",
+                              info: "hours_available".tr,
                             ),
                             mentorInfo(
+                              context: context,
                               rate: "150",
-                              info: "People Helped",
+                              info: "people_helped".tr,
                             ),
                             mentorInfo(
+                              context: context,
                               rate: "35\$",
-                              info: "Hourly Rate",
+                              info: "hourly_rate".tr,
                             ),
                           ],
                         ),
@@ -101,12 +105,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       const SizedBox(height: 16),
 
                       /// About Title
-                      const Text(
-                        "About",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                       Text(
+                        "about".tr,
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
 
                       const SizedBox(height: 8),
@@ -117,18 +118,15 @@ class _ProfileMentorState extends State<ProfileMentor> {
                         style: TextStyle(
                           fontSize: 16,
                           height: 1.75,
-                          color: AppColor.mainColor,
+                          color: isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary,
                         ),
                       ),
 
                       const SizedBox(height: 16),
 
-                      const Text(
-                        "Skills",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                       Text(
+                        "skills".tr,
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
 
                       const SizedBox(height: 8),
@@ -143,14 +141,14 @@ class _ProfileMentorState extends State<ProfileMentor> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColor.grayColor.withValues(alpha: 0.25),
+                              color: Color(0xFFD6D6D6).withValues(alpha: 0.25),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               skill,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColor.blackColor,
+                                color: Theme.of(context).textTheme.bodyMedium!.color,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -160,12 +158,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
 
                       const SizedBox(height: 16),
 
-                      const Text(
-                        "Reviews",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Text(
+                        "reviews".tr,
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
 
                       const SizedBox(height: 8),
@@ -190,7 +185,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
       bottomNavigationBar: Container(
        padding: EdgeInsets.all(16),
        decoration: BoxDecoration(
-         color: Colors.white
+         color: Theme.of(context).scaffoldBackgroundColor
        ),
         child:  Row(
           children: [
@@ -198,19 +193,20 @@ class _ProfileMentorState extends State<ProfileMentor> {
               height: 50,
               width: 50,
               decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColor.mainColor, ),
+                  color: AppPalette.primary, ),
               ),
               child: IconButton(
-                icon: Icon(Iconsax.message, color: AppColor.mainColor,),
+                icon: Icon(Iconsax.message, color: AppPalette.primary),
                 onPressed: () {Get.to(PrivateChatScreen(currentUserId: '01', otherUserId: '${widget.id}', otherUserName: widget.name,));},
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child:  CustomButton(
-                text: "Session details",
+                text: "session_details".tr,
                 onPressed: () {
                   Get.to(const BookSession());
                 },
@@ -225,17 +221,18 @@ class _ProfileMentorState extends State<ProfileMentor> {
 }
 
 
-Widget mentorInfo({required String rate, required String info}) {
+Widget mentorInfo({required BuildContext context, required String rate, required String info}) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
   return  Column(
     children: [
       Text(
         rate,
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColor.mainColor),
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppPalette.primary),
       ),
       SizedBox(height: 4),
       Text(
         info,
-        style: TextStyle(fontSize: 12, color: AppColor.mainColor),
+        style: TextStyle(fontSize: 12, color:  isDark ? Colors.white : AppPalette.primary),
       ),
     ],
   );

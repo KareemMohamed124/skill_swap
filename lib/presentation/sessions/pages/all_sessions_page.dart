@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
-
-import '../../../constants/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 import '../../../constants/strings.dart';
 import '../widgets/session_card.dart';
 
@@ -25,7 +24,8 @@ class _AllSessionsPageState extends State<AllSessionsPage> {
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColor.blackColor
+                color: Theme.of(context).brightness == Brightness.dark ?
+                    AppPalette.darkTextPrimary : AppPalette.lightTextPrimary
             ),
           ),
           const SizedBox(height: 8,),
@@ -45,7 +45,8 @@ class _AllSessionsPageState extends State<AllSessionsPage> {
             style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: AppColor.blackColor
+                color: Theme.of(context).brightness == Brightness.dark ?
+                AppPalette.darkTextPrimary : AppPalette.lightTextPrimary
             ),
           ),
           const SizedBox(height: 8,),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:get/get.dart';
 import '../models/session.dart';
 
 class SessionCard extends StatelessWidget {
@@ -31,9 +31,9 @@ class SessionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,18 +56,12 @@ class SessionCard extends StatelessWidget {
                   children: [
                     Text(
                       session.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
                     ),
 
                     Text(
                       session.role,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
                     ),
                   ],
                 ),
@@ -75,7 +69,7 @@ class SessionCard extends StatelessWidget {
                 if(isRequest)
                   Text(
                     session.timeAgo,
-                    style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall
                   ),
               if (!isRequest)
                 Container(
@@ -86,6 +80,7 @@ class SessionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: badgeColor),
                   ),
+                  ///////////////////////////////////
                   child: Text(
                     badgeText,
                     style: TextStyle(
@@ -100,6 +95,7 @@ class SessionCard extends StatelessWidget {
 
           const SizedBox(height: 16),
           iconText(
+            context: context,
               icon: Icons.access_time,
               data: "1h session"
           ),
@@ -118,12 +114,14 @@ class SessionCard extends StatelessWidget {
           // ),
           const SizedBox(height: 8),
           iconText(
+            context: context,
               icon: Icons.calendar_today_outlined,
               data:  "${session.dateTime.day}/${session.dateTime.month}/${session.dateTime.year} "
                   "at ${session.dateTime.hour}:${session.dateTime.minute.toString().padLeft(2, '0')} PM"
           ),
           const SizedBox(height: 8),
         iconText(
+          context: context,
             icon: Icons.attach_money,
             data: session.price
         ),
@@ -141,8 +139,8 @@ class SessionCard extends StatelessWidget {
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      "Accept",
+                    child: Text(
+                      "accept".tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -159,8 +157,8 @@ class SessionCard extends StatelessWidget {
                       border: Border.all(color: Colors.red),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      "Decline",
+                    child: Text(
+                      "decline".tr,
                       style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w600,
@@ -176,13 +174,13 @@ class SessionCard extends StatelessWidget {
               width: double.infinity,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                 color: isPending ? Colors.grey.shade300 : (isConfirmed ? AppColor.mainColor : Colors.green),
+                 color: isPending ? Colors.grey.shade300 : (isConfirmed ? Theme.of(context).primaryColor : Colors.green),
                 //color: isConfirmed ? Colors.green : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                isPending ? "Pending Approval" : (
-                    isConfirmed ?  "Pay Now" : "Join Now"
+                isPending ? "pending_approval".tr : (
+                    isConfirmed ?  "pay_now".tr : "join_now".tr
                 ),
                 //isConfirmed ? "Join Now" : "Pending Approval",
                 style: TextStyle(
@@ -198,17 +196,18 @@ class SessionCard extends StatelessWidget {
 }
 
 
-Widget iconText({required IconData icon, required String data}) {
+Widget iconText({required BuildContext context, required IconData icon, required String data}) {
+     final textColor = Theme.of(context).textTheme.bodyMedium!.color;
   return  Row(
     children: [
-       Icon(icon, size: 18, color: data == "Free" ? Colors.green : Colors.black
+       Icon(icon, size: 18, color: data == "Free" ? Colors.green : textColor
        ),
       const SizedBox(width: 6),
       Text(
           data,
-        style: TextStyle(
-          color: data == "Free" ? Colors.green : Colors.black
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: data == "Free" ? Colors.green : null
+        )
       ),
     ],
   );

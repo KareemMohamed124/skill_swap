@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/constants/colors.dart';
-
-import '../../../common_ui/circle_button_icon.dart';
+import '../../../core/theme/app_palette.dart';
 
 class ProfileMentorHeader extends StatelessWidget {
   final String image;
@@ -24,7 +22,7 @@ class ProfileMentorHeader extends StatelessWidget {
       height: 160,
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: AppColor.mainColor,
+        color: AppPalette.primary,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -90,7 +88,7 @@ class ProfileMentorHeader extends StatelessWidget {
       ///////////////////////////////
       Container(
         width: double.infinity,
-        color: AppColor.mainColor,
+        color: AppPalette.primary,
         height: 216,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

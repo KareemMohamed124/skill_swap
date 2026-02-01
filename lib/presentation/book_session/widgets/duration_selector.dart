@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 
 class DurationSelector extends StatefulWidget {
   final Function(int) onSelect;
@@ -16,6 +16,7 @@ class _DurationSelectorState extends State<DurationSelector> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: durations.map((duration) {
@@ -32,10 +33,10 @@ class _DurationSelectorState extends State<DurationSelector> {
             width: 59,
             height: 60,
             decoration: BoxDecoration(
-              color: isSelected ? AppColor.mainColor : Colors.white,
+              color: isSelected ? AppPalette.primary : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: AppColor.mainColor,
+                color: isSelected ? AppPalette.primary : Theme.of(context).dividerColor,
                 width: 2,
               ),
             ),
@@ -47,7 +48,7 @@ class _DurationSelectorState extends State<DurationSelector> {
                   Text(
                     duration.toString(),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected ? Colors.white : (isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -55,7 +56,7 @@ class _DurationSelectorState extends State<DurationSelector> {
                   Text(
                     "min",
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected ? Colors.white : (isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary),
                       fontSize: 12,
                     ),
                   ),

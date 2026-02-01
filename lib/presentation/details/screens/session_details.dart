@@ -12,15 +12,16 @@ class SessionDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Session Details',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).textTheme.bodyLarge!.color
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -47,15 +48,19 @@ class SessionDetailsPage extends StatelessWidget {
                     children: [
                       Text(
                         session.mentorName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
+                            color: Theme.of(context).textTheme.bodyLarge!.color
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         session.mentorTrack,
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                         color: Theme.of(context).textTheme.bodyMedium!.color
+
+                      ),
                       ),
                       const SizedBox(height: 4),
                       OutlinedButton.icon(
@@ -75,7 +80,6 @@ class SessionDetailsPage extends StatelessWidget {
                   ),
                 ),
 
-                /// Status + Reason (ثابت)
                 Text(
                   'Finished',
                   style: TextStyle(
@@ -90,19 +94,25 @@ class SessionDetailsPage extends StatelessWidget {
 
 
             /// Session Summary
-            const Text(
+             Text(
               'Session Summary',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge!.color
+              ),
             ),
             const SizedBox(height: 16),
 
-            _infoRow(
+            infoRow(
+              context,
               Icons.calendar_today,
               'Date',
               '${session.date.day}-${session.date.month}-${session.date.year}',
             ),
-            _infoRow(Icons.access_time, 'Time', session.time),
-            _infoRow(
+            infoRow(context, Icons.access_time, 'Time', session.time),
+            infoRow(
+              context,
               Icons.timer_outlined,
               'Duration',
               '${session.duration} min',
@@ -111,28 +121,36 @@ class SessionDetailsPage extends StatelessWidget {
             const Divider(height: 32),
 
             /// Session Notes
-            const Text(
+            Text(
               'Session Notes',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge!.color
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               session.notes,
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color),
             ),
 
 
             const Divider(height: 32),
 
-            /// Session Notes
-            const Text(
+            /// Session Conclusion
+             Text(
               'Session Conclusion',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge!.color
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'The session ended earlier than expected!',
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color),
             ),
 
 
@@ -142,9 +160,13 @@ class SessionDetailsPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                 Text(
                   'Your Rating',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyLarge!.color
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () {},
@@ -176,13 +198,17 @@ class SessionDetailsPage extends StatelessWidget {
             const Divider(height: 32),
 
             /// Quick Actions
-            const Text(
+             Text(
               'Quick Actions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge!.color
+              ),
             ),
             const SizedBox(height: 12),
 
-            _actionTile(Icons.calendar_today, 'Rebook Session'),
+            actionTile(context, Icons.calendar_today, 'Rebook Session'),
             //_actionTile(Icons.attach_file, 'View Attachments'),
             //_actionTile(Icons.history, 'Session History'),
 
@@ -195,34 +221,41 @@ class SessionDetailsPage extends StatelessWidget {
   }
 
   /// Helpers
-  Widget _infoRow(IconData icon, String title, String value) {
+  Widget infoRow(
+      BuildContext context,
+      IconData icon,
+      String title,
+      String value
+      ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey),
+          Icon(icon, color: Theme.of(context).textTheme.bodyMedium!.color
+    ),
           const SizedBox(width: 12),
-          Expanded(child: Text(title)),
+          Expanded(child: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color),)),
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.w500),
+            style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).textTheme.bodyMedium!.color),
           ),
         ],
       ),
     );
   }
 
-  Widget _actionTile(IconData icon, String title) {
+  Widget actionTile(BuildContext context, IconData icon, String title) {
     return Card(
+      color: Theme.of(context).cardColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: const BorderSide(color: Color(0xffEEEEEE)),
       ),
       child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        leading: Icon(icon, color: Theme.of(context).textTheme.bodyMedium!.color),
+        title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color),),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).textTheme.bodyMedium!.color),
         onTap: () {Get.to(BookSession());},
       ),
     );

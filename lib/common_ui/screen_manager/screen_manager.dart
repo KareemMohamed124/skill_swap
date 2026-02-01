@@ -23,7 +23,7 @@ class _ScreenManagerState extends State<ScreenManager> {
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex; // استخدم القيمة اللي اتبعتت
+    currentIndex = widget.initialIndex;
   }
 
   late final List<Widget> screens = [

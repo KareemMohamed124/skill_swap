@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -12,8 +12,8 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    this.colorButton = AppColor.mainColor,
-    this.colorText = AppColor.whiteColor,
+    this.colorButton = AppPalette.primary,
+    this.colorText = Colors.white,
     this.widthButton = double.infinity
   });
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../constants/colors.dart';
 import 'package:skill_swap/presentation/book_session/screens/profile_mentor.dart';
 
 class TopUserCard extends StatelessWidget {
@@ -13,7 +12,7 @@ class TopUserCard extends StatelessWidget {
 
   const TopUserCard({
     super.key,
-    this.widthCard = 149,
+    this.widthCard = 154,
     required this.id,
     required this.image,
     required this.name,
@@ -30,10 +29,11 @@ class TopUserCard extends StatelessWidget {
       },
       child: Container(
         width: widthCard,
+
         decoration: BoxDecoration(
-          color: AppColor.grayColor.withValues(alpha: 0.20),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColor.mainColor),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -52,16 +52,13 @@ class TopUserCard extends StatelessWidget {
               name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             Text(
               "$track Developer",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 8,
-                color: AppColor.mainColor,
-              ),
+              style: Theme.of(context).textTheme.titleSmall
             ),
             const SizedBox(height: 4),
             Container(
@@ -69,14 +66,14 @@ class TopUserCard extends StatelessWidget {
               height: 16,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColor.mainColor),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Center(
                 child: Text(
                   hours,
                   style: TextStyle(
                     fontSize: 8,
-                    color: AppColor.mainColor,
+                    color: Theme.of(context).textTheme.titleSmall!.color,
                   ),
                 ),
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
 import '../../../constants/strings.dart';
 import '../../sign/widgets/custom_appbar.dart';
 import '../widgets/next_session_card.dart';
@@ -19,7 +18,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+    //  backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
@@ -35,8 +34,8 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration:  BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),

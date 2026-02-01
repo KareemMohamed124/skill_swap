@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final String labelText;
@@ -39,10 +38,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.labelText,
-          style: const TextStyle(
+          style:  TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColor.blackColor,
+              color: Theme.of(context).textTheme.bodyLarge!.color
           ),
         ),
         const SizedBox(height: 8),
@@ -52,9 +51,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           validator: widget.validator,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
+            hintStyle: Theme.of(context).textTheme.bodyMedium,
             filled: true,
-            fillColor: AppColor.grayColor.withValues(alpha: 0.25),
+            fillColor: Theme.of(context).cardColor,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,

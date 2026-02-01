@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../constants/colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class SessionType extends StatelessWidget {
   final String sessionType;
@@ -33,7 +32,7 @@ class SessionType extends StatelessWidget {
               : Colors.white,
           border: Border.all(
             color: isSelected
-                ? AppColor.mainColor
+                ? AppPalette.primary
                 : Colors.grey.shade300,
           ),
         ),
@@ -45,14 +44,14 @@ class SessionType extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isSelected
-                    ? AppColor.mainColor
+                    ? AppPalette.primary
                     : const Color(0xFFE6E7FF),
               ),
               child: Icon(
                 icon,
                 color: isSelected
                     ? Colors.white
-                    : AppColor.mainColor,
+                    : AppPalette.primary,
                 size: 18,
               ),
             ),
@@ -89,7 +88,7 @@ class SessionType extends StatelessWidget {
                 height: 8,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColor.mainColor,
+                  color: AppPalette.primary,
                 ),
               ),
           ],

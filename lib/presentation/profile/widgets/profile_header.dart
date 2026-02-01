@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/common_ui/circle_button_icon.dart';
-import 'package:skill_swap/constants/colors.dart';
 import '../../../data/models/user/user_model.dart';
+import '../../../dependency_injection/injection.dart';
+import '../../../domain/repositories/auth_repository.dart';
 import '../../../helper/local_storage.dart';
 import '../../setting/screens/setting.dart';
-
 class ProfileHeader extends StatefulWidget {
   const ProfileHeader({Key? key}) : super(key: key);
 
@@ -16,7 +16,6 @@ class ProfileHeader extends StatefulWidget {
 
 class _ProfileHeaderState extends State<ProfileHeader> {
   UserModel? user;
-  bool loading = true;
 
   @override
   void initState() {
@@ -25,11 +24,25 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   }
 
   Future<void> loadUser() async {
-    final fetchedUser = await LocalStorage.getUser();
-    setState(() {
-      user = fetchedUser;
-      loading = false;
-    });
+    final localUser = await LocalStorage.getUser();
+
+    if (mounted && localUser != null) {
+      setState(() {
+        user = localUser;
+      });
+    }
+
+    try {
+      final repo = sl<AuthRepository>();
+      final freshUser = await repo.getProfile();
+      await LocalStorage.saveUser(freshUser);
+
+      if (mounted) {
+        setState(() {
+          user = freshUser;
+        });
+      }
+    } catch (_) {}
   }
 
   Widget _buildMetricItem(String value, String label) {
@@ -56,16 +69,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   Widget build(BuildContext context) {
     const Color primaryColor = Color(0xff0D035F);
 
-    if (loading || user == null) {
-      // لو لسه محملش يوزر
-      return Container(
-        height: 208,
-        color: primaryColor,
-        child: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
-      );
-    }
+    final imagePath = user?.imagePath;
+    final hasImage = imagePath != null && imagePath.isNotEmpty;
 
     return Container(
       height: 208,
@@ -81,24 +86,32 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             ),
             child: Row(
               children: [
-                // ===== CircleAvatar بدلاً من Image.asset ثابتة =====
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: Colors.white,
-                  backgroundImage: user!.imagePath != null && user!.imagePath!.isNotEmpty
-                      ? FileImage(File(user!.imagePath!))
-                      : null,
-                  child: user!.imagePath == null || user!.imagePath!.isEmpty
-                      ? const Icon(Icons.person, size: 30, color: AppColor.mainColor)
+                  backgroundColor: Theme.of(context).cardColor,
+                  backgroundImage:
+                  hasImage ? FileImage(File(imagePath)) : null,
+
+                  child: !hasImage
+                      ? Icon(
+                    Icons.person,
+                    size: 30,
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.color,
+                  )
                       : null,
                 ),
+
                 const SizedBox(width: 12),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user!.name ?? "",
+                        user?.name ?? 'Kemo',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -116,6 +129,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                     ],
                   ),
                 ),
+
                 CircleButtonIcon(
                   icon: Icons.settings,
                   onTap: () {
@@ -131,9 +145,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMetricItem('3', 'Hours Available'),
-                _buildMetricItem('15', 'People Helped'),
-                _buildMetricItem('3', 'Achievements'),
+                _buildMetricItem('3', 'hours_available'.tr),
+                _buildMetricItem('15', 'people_helped'.tr),
+                _buildMetricItem('3', 'achievements'.tr),
               ],
             ),
           ),

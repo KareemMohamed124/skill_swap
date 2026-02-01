@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import '../../../constants/colors.dart';
 
 class SelectDate extends StatefulWidget {
   final Function(DateTime) onSelect;
@@ -26,7 +25,7 @@ class _SelectDateState extends State<SelectDate> {
     return Container(
       height: 288,
       decoration: BoxDecoration(
-        color: AppColor.grayColor.withValues(alpha: 0.25),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(8),
@@ -38,45 +37,45 @@ class _SelectDateState extends State<SelectDate> {
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: const TextStyle(
+          titleTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
           leftChevronIcon: Icon(Icons.chevron_left, size: 20),
           rightChevronIcon: Icon(Icons.chevron_right, size: 20),
         ),
 
-        daysOfWeekStyle: const DaysOfWeekStyle(
+        daysOfWeekStyle:  DaysOfWeekStyle(
           weekdayStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Theme.of(context).textTheme.bodyMedium!.color,
           ),
           weekendStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Theme.of(context).textTheme.bodyMedium!.color,
           ),
         ),
 
         calendarStyle: CalendarStyle(
           isTodayHighlighted: true,
           selectedDecoration: BoxDecoration(
-            color: AppColor.mainColor,
+            color: AppPalette.primary,
             shape: BoxShape.circle,
           ),
           selectedTextStyle: const TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+           // fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
           todayDecoration: BoxDecoration(
-            color: AppColor.mainColor.withValues(alpha: 0.3),
+            color: AppPalette.primary.withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           todayTextStyle: TextStyle(
-            color: AppColor.mainColor,
+            color: AppPalette.primary,
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
@@ -106,7 +105,6 @@ class _SelectDateState extends State<SelectDate> {
         selectedDayPredicate: (day) => isSameDay(day, today),
         focusedDay: today,
 
-        // 🔥 تعديل هنا: يمنع اختيار أي يوم قبل اليوم الحالي
         firstDay: DateTime.now(),
         lastDay: DateTime.utc(2030, 3, 14),
       ),

@@ -10,6 +10,7 @@ class ReviewsPage extends StatelessWidget {
       child: Column(
         children: [
           reviewCard(
+            context: context,
             name: "Mike Chen",
             review: "Amazing help with React! Very patient and knowledgeable.",
             skill: "React",
@@ -19,6 +20,7 @@ class ReviewsPage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           reviewCard(
+            context: context,
             name: "Sarah Johnson",
             review:
             "Great session on JavaScript fundamentals. Highly recommend!",
@@ -33,6 +35,7 @@ class ReviewsPage extends StatelessWidget {
   }
 
   Widget reviewCard({
+    required BuildContext context,
     required String name,
     required String review,
     required String skill,
@@ -43,10 +46,10 @@ class ReviewsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        border: Border.all(color: Color(0XFF0D035F)),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,10 +65,7 @@ class ReviewsPage extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge
                     ),
                     Row(
                       children: List.generate(
@@ -85,7 +85,7 @@ class ReviewsPage extends StatelessWidget {
 
           const SizedBox(height: 8),
 
-          Text(review),
+          Text(review, style: TextStyle(color: Theme.of(context).textTheme.titleSmall!.color),),
 
           const SizedBox(height: 12),
 
@@ -103,7 +103,7 @@ class ReviewsPage extends StatelessWidget {
                 child: Text(skill),
               ),
               const Spacer(),
-              Text(time, style: const TextStyle(color: Colors.black54)),
+              Text(time, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color)),
             ],
           ),
         ],

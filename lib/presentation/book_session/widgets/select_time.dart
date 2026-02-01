@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class SelectTime extends StatefulWidget {
   final Function(String) onSelect;
@@ -21,6 +21,7 @@ class _SelectTimeState extends State<SelectTime> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GridView.count(
       crossAxisCount: 4,
       mainAxisSpacing: 8,
@@ -41,7 +42,7 @@ class _SelectTimeState extends State<SelectTime> {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: isSelected ? AppColor.mainColor: AppColor.grayColor.withValues(alpha: 0.25),
+              color: isSelected ? AppPalette.primary: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -49,7 +50,7 @@ class _SelectTimeState extends State<SelectTime> {
                 selectTime[index],
                 style: TextStyle(
                   fontSize: 12,
-                  color: isSelected ? Colors.white : AppColor.blackColor,
+                  color: isSelected ? Colors.white : (isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary),
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_responsive.dart';
-
 import '../../../common_ui/circle_button_icon.dart';
-import '../../../constants/colors.dart';
-
+import '../core/theme/app_palette.dart';
 
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -20,7 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       children: [
         Container(
           height: 124,
-          decoration:  BoxDecoration(color: AppColor.mainColor),
+          decoration:  BoxDecoration(color: AppPalette.primary),
         ),
         AppBar(
             backgroundColor: Colors.transparent,
@@ -28,7 +25,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             title: Text(
               title,
               style:  TextStyle(
-                color: AppColor.grayColor,
+                color: Color(0xFFD6D6D6),
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),

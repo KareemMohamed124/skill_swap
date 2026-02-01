@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 import 'package:skill_swap/presentation/select_skills/select_skills.dart';
 
 class SelectTrack extends StatefulWidget {
@@ -36,26 +34,28 @@ class _SelectTrackState extends State<SelectTrack> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 32),
-            const Text(
+            Text(
               "Select your Track",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyLarge!.color
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Choose the skills you already have. This will help us connect you with the right mentors and users.",
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+              style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium!.color
+              ),
             ),
             const SizedBox(height: 24),
             Expanded(
@@ -81,20 +81,21 @@ class _SelectTrackState extends State<SelectTrack> {
                             decoration: BoxDecoration(
                               color:
                                   isSelected
-                                      ? AppColor.mainColor
-                                      : Colors.white,
+                                      ? AppPalette.primary
+                                      : Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(25),
                               border: Border.all(
                                 color:
                                     isSelected
-                                        ? AppColor.mainColor
-                                        : Colors.black54,
+                                        ? AppPalette.primary
+                                        : Theme.of(context).dividerColor,
                               ),
                             ),
                             child: Text(
                               track,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black,
+                                color: isSelected ? Colors.white :
+                                (isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary),
                                 fontSize: 14,
                               ),
                             ),
@@ -114,7 +115,7 @@ class _SelectTrackState extends State<SelectTrack> {
                         }
                         : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.mainColor,
+                  backgroundColor: AppPalette.primary,
                   minimumSize: const Size(200, 48),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

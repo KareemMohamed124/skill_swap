@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:skill_swap/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import 'package:skill_swap/bloc/reset_password_bloc/reset_password_bloc.dart';
@@ -11,6 +12,7 @@ import '../data/repositories/auth_repository_impl.dart';
 import '../data/web_services/auth_api.dart';
 import '../domain/repositories/auth_repository.dart';
 import '../helper/local_storage.dart';
+import '../presentation/sign/screens/sign_in_screen.dart';
 
 final sl = GetIt.instance;
 
@@ -39,17 +41,27 @@ Future<void> initDependencies() async {
   sl.registerFactory<ResetPasswordBloc>(() => ResetPasswordBloc(sl<AuthRepository>()));
 
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
-  //
-  // dio.interceptors.add(
-  //   InterceptorsWrapper(
-  //     onRequest: (options, handler) async {
-  //       final token = await LocalStorage.getToken();
-  //       if (token != null) {
-  //         options.headers['Authorization'] = 'Bearer $token';
-  //       }
-  //       return handler.next(options);
-  //     },
-  //   ),
-  // );
 
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await LocalStorage.getToken();
+        if (token != null) {
+          options.headers["Authorization"] = "Bearer $token";
+        }
+        return handler.next(options);
+      },
+      onError: (e, handler) async {
+        if (e.response?.statusCode == 401) {
+          await LocalStorage.clearToken();
+          Get.offAll(const SignInScreen());
+        }
+        return handler.next(e);
+      },
+    ),
+  );
+
+  if (!sl.isRegistered<Dio>()) {
+    sl.registerLazySingleton<Dio>(() => Dio());
+  }
 }

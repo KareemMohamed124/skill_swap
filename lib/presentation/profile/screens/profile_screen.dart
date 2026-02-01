@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_tabs.dart';
 import '../pages/overview_page.dart';
@@ -43,8 +44,8 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration:  BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
@@ -52,38 +53,23 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
               child: Column(
                 children: [
+                  ProfileTabs(
+                      tabController: _tabController,
+                      tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]
+                  ),
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
-                      ),
-                      child: Container(
-                        color: Color(0XFFFFFFFF),
-                        child: Column(
-                          children: [
-                            ProfileTabs(
-                                tabController: _tabController,
-                                tabs: const ['Overview', 'Skills', 'Reviews']
-                            ),
-                            Expanded(
-                              child: TabBarView(
-                                controller: _tabController,
-                                children: const [
-                                  OverviewPage(),
-                                  SkillsPage(),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                    ),
-                                    child: ReviewsPage(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: const [
+                        OverviewPage(),
+                        SkillsPage(),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                          child: ReviewsPage(),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],

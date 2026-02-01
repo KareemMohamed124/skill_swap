@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:get/get.dart';
+import '../../../core/theme/app_palette.dart';
 
 class PriceFilterSection extends StatefulWidget {
   final double min;
@@ -32,11 +33,10 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
-        const Text(
-          "Price Range",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        Text(
+          "price_range".tr,
+            style: Theme.of(context).textTheme.titleMedium
         ),
-
         const SizedBox(height: 8),
 
         RangeSlider(
@@ -44,7 +44,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           min: widget.min,
           max: widget.max,
           divisions: 10,
-          activeColor: AppColor.mainColor,
+          activeColor: AppPalette.primary,
           inactiveColor: Colors.grey[300],
           labels: RangeLabels(
             "${priceRange.start.round()}",
@@ -63,8 +63,8 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            priceBox("Min", priceRange.start),
-            priceBox("Max", priceRange.end),
+            priceBox("min".tr, priceRange.start),
+            priceBox("max".tr, priceRange.end),
           ],
         ),
       ],
@@ -73,7 +73,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
 
   Widget priceBox(String label, double value) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(label, style: const TextStyle(color: Colors.grey)),
         const SizedBox(height: 4),

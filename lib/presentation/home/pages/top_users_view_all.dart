@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/constants/strings.dart';
 import 'package:skill_swap/presentation/home/widgets/top_user_card.dart';
-
-import '../../../constants/colors.dart';
 import '../../sign/widgets/custom_appbar.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -20,7 +18,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+    //  backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
@@ -36,8 +34,8 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),

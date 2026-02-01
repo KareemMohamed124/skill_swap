@@ -140,8 +140,10 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
   //
-  // @override
-  // Future<UserModel> getProfile() async {
+   @override
+   Future<UserModel> getProfile() async {
+    return await api.getProfile();
+   }
   //   final token = await LocalStorage.getToken();
   //   if (token == null) {
   //     throw Exception("User not logged in");

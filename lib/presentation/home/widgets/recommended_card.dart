@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../constants/colors.dart';
 import '../../book_session/screens/profile_mentor.dart';
 
 class RecommendedCard extends StatelessWidget {
@@ -34,9 +32,9 @@ class RecommendedCard extends StatelessWidget {
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          color: AppColor.grayColor.withValues(alpha: 0.20),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColor.mainColor),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -59,14 +57,14 @@ class RecommendedCard extends StatelessWidget {
                     name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 const Icon(Icons.star, size: 12, color: Color(0xFFFFCE31)),
                 const SizedBox(width: 4),
                 Text(
                   "$rating",
-                  style: const TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -75,10 +73,7 @@ class RecommendedCard extends StatelessWidget {
               "$track Development",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColor.mainColor,
-              ),
+              style: Theme.of(context).textTheme.titleSmall
             ),
           ],
         ),

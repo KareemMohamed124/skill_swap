@@ -6,22 +6,19 @@ part of 'auth_api.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
 class _AuthApi implements AuthApi {
   _AuthApi(
-      this._dio, {
-        this.baseUrl,
-        // this.errorLogger,
-      }) {
+    this._dio, {
+    this.baseUrl,
+  }) {
     baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
   }
 
   final Dio _dio;
 
   String? baseUrl;
-
-  // final ParseErrorLogger? errorLogger;
 
   @override
   Future<RegisterSuccessResponse> register(RegisterRequest body) async {
@@ -30,31 +27,25 @@ class _AuthApi implements AuthApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<RegisterSuccessResponse>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<RegisterSuccessResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-      _dio.options,
-      'register/',
-      queryParameters: queryParameters,
-      data: _data,
-    )
-        .copyWith(
-        baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late RegisterSuccessResponse _value;
-    try {
-      _value = RegisterSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      // errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+            .compose(
+              _dio.options,
+              'register/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = RegisterSuccessResponse.fromJson(_result.data!);
+    return value;
   }
 
   @override
@@ -64,31 +55,25 @@ class _AuthApi implements AuthApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<LoginSuccessResponseNew>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<LoginSuccessResponseNew>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-      _dio.options,
-      'login/',
-      queryParameters: queryParameters,
-      data: _data,
-    )
-        .copyWith(
-        baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late LoginSuccessResponseNew _value;
-    try {
-      _value = LoginSuccessResponseNew.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+            .compose(
+              _dio.options,
+              'login/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = LoginSuccessResponseNew.fromJson(_result.data!);
+    return value;
   }
 
   @override
@@ -98,31 +83,25 @@ class _AuthApi implements AuthApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<SendCodeSuccessResponse>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SendCodeSuccessResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-      _dio.options,
-      'password/forgot/',
-      queryParameters: queryParameters,
-      data: _data,
-    )
-        .copyWith(
-        baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SendCodeSuccessResponse _value;
-    try {
-      _value = SendCodeSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+            .compose(
+              _dio.options,
+              'password/forgot/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = SendCodeSuccessResponse.fromJson(_result.data!);
+    return value;
   }
 
   @override
@@ -132,31 +111,25 @@ class _AuthApi implements AuthApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<VerifyCodeSuccessResponse>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<VerifyCodeSuccessResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-      _dio.options,
-      'password/verify-code/',
-      queryParameters: queryParameters,
-      data: _data,
-    )
-        .copyWith(
-        baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late VerifyCodeSuccessResponse _value;
-    try {
-      _value = VerifyCodeSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+            .compose(
+              _dio.options,
+              'password/verify-code/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = VerifyCodeSuccessResponse.fromJson(_result.data!);
+    return value;
   }
 
   @override
@@ -167,31 +140,52 @@ class _AuthApi implements AuthApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<ResetPasswordSuccessResponse>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ResetPasswordSuccessResponse>(Options(
       method: 'PATCH',
       headers: _headers,
       extra: _extra,
     )
-        .compose(
-      _dio.options,
-      'password/reset/',
-      queryParameters: queryParameters,
-      data: _data,
+            .compose(
+              _dio.options,
+              'password/reset/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = ResetPasswordSuccessResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<UserModel> getProfile() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<UserModel>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
     )
-        .copyWith(
-        baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ResetPasswordSuccessResponse _value;
-    try {
-      _value = ResetPasswordSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+            .compose(
+              _dio.options,
+              'profile/',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = UserModel.fromJson(_result.data!);
+    return value;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
@@ -208,9 +202,9 @@ class _AuthApi implements AuthApi {
   }
 
   String _combineBaseUrls(
-      String dioBaseUrl,
-      String? baseUrl,
-      ) {
+    String dioBaseUrl,
+    String? baseUrl,
+  ) {
     if (baseUrl == null || baseUrl.trim().isEmpty) {
       return dioBaseUrl;
     }

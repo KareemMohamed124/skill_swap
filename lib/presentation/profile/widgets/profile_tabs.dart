@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_palette.dart';
+
 class ProfileTabs extends StatelessWidget {
   final TabController tabController;
   final List<String> tabs;
@@ -15,14 +17,15 @@ class ProfileTabs extends StatelessWidget {
     const Color backgroundColor = Color(0xFFF2F5F8);
     const Color indicatorColor = Color(0xFF1B1464);
     const double borderRadiusValue = 20;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(borderRadiusValue),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: TabBar(
           controller: tabController,
@@ -34,18 +37,19 @@ class ProfileTabs extends StatelessWidget {
           dividerColor: Colors.transparent,
 
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.black,
+          unselectedLabelColor: isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary,
 
           labelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 10,
           ),
-          unselectedLabelStyle: const TextStyle(
+          unselectedLabelStyle: TextStyle(
+            color: isDark ? Colors.white : (isDark ? AppPalette.darkTextSecondary
+                : AppPalette.lightTextSecondary),
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
 
-          /// 🔥 Tabs ديناميك
           tabs: tabs.map((title) => Tab(text: title)).toList(),
         ),
       ),

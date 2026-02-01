@@ -26,7 +26,7 @@ class QuizQuestion {
 
 class QuizController extends GetxController {
   static const int totalTimeInSeconds = 15 * 60;
-  static const apiKey = "AIzaSyAfY_ESoaG8W4Fr90vjWXKB8nIBcqOrpkE";
+  static const apiKey = "AIzaSyCJ4d1kF6fmKoj0E141ITsS3UMk8LkeeDc";
   final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;

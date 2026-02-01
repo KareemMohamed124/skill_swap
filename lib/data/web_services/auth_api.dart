@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
+import 'package:skill_swap/data/models/user/user_model.dart';
 import '../models/login/login_request.dart';
 import '../models/login/login_success_response_new.dart';
 import '../models/register/register_request.dart';
@@ -29,4 +30,6 @@ abstract class AuthApi {
   Future<ResetPasswordSuccessResponse> resetPassword(
       @Body() ResetPasswordRequest body,
       );
+  @GET("profile/")
+  Future<UserModel> getProfile();
 }

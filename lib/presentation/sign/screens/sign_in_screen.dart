@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/common_ui/screen_manager/screen_manager.dart';
+import 'package:skill_swap/domain/repositories/auth_repository.dart';
+import 'package:skill_swap/presentation/sign/screens/sign_up_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
 import '../../../bloc/login_bloc/login_bloc.dart';
 import '../../../bloc/login_bloc/login_event.dart';
 import '../../../bloc/login_bloc/login_state.dart';
-import '../../../constants/colors.dart';
 import '../../../dependency_injection/injection.dart';
 import '../../../data/models/login/login_request.dart';
 import '../../../helper/local_storage.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
-import '../../home/screens/home_screen.dart';
-import 'sign_up_screen.dart' hide Scaffold;
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -60,22 +59,6 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Future<void> handleSignIn(LoginBloc bloc) async {
-    final email = emailController.text;
-
-    final localUser = await LocalStorage.getUserByEmail(email);
-    if (localUser != null) {
-      Get.to(ScreenManager(initialIndex: 0));
-      return;
-    }
-
-    final request = LoginRequest(
-      email: email,
-      password: passwordController.text,
-    );
-    bloc.add(LoginSubmit(request));
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -83,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return BlocProvider(
       create: (_) => sl<LoginBloc>(),
       child: Scaffold(
-        backgroundColor: AppColor.whiteColor,
+      //  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Stack(
           children: [
             Column(
@@ -98,8 +81,8 @@ class _SignInScreenState extends State<SignInScreen> {
               bottom: 0,
               child: Container(
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),
@@ -115,7 +98,10 @@ class _SignInScreenState extends State<SignInScreen> {
                             _handleServerError(state);
                           });
                         } else if (state is LoginSuccessState) {
-                           LocalStorage.setLoggedIn(true);
+                          await LocalStorage.saveToken(state.data.accessToken);
+                          final repo = sl<AuthRepository>();
+                          final user = await repo.getProfile();
+                         await LocalStorage.saveUser(user);
                           ScaffoldMessenger.of(
                             context,
                           ).showSnackBar(SnackBar(content: Text(state.data.message)));
@@ -129,18 +115,19 @@ class _SignInScreenState extends State<SignInScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 "Welcome Back!",
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                    color: Theme.of(context).textTheme.bodyLarge!.color
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 "Sign in to continue your learning journey",
-                                style: TextStyle(color: Colors.black54),
+                                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color
+                              ),
                               ),
                               const SizedBox(height: 32),
 
@@ -188,9 +175,14 @@ class _SignInScreenState extends State<SignInScreen> {
                                 text: state is LoginLoading ? "Logging in..." : "Sign In",
                                 onPressed: state is LoginLoading
                                     ? null
-                                    : () async {
+                                    : () {
                                   if (formKey.currentState!.validate()) {
-                                    await handleSignIn(context.read<LoginBloc>());
+                                    final request = LoginRequest(
+                                      email: emailController.text,
+                                      password: passwordController.text,
+                                    );
+
+                                    context.read<LoginBloc>().add(LoginSubmit(request));
                                   }
                                 },
                               ),
@@ -201,9 +193,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                   onPressed: () {
                                     Get.to(ForgetPassword());
                                   },
-                                  child: const Text(
+                                  child:  Text(
                                     "Forget Password?",
-                                    style: TextStyle(color: AppColor.mainColor),
+                                    style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color
+                                  ),
                                   ),
                                 ),
                               ),
@@ -213,17 +206,21 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text(
+                                    Text(
                                       "Don’t have an account? ",
-                                      style: TextStyle(color: AppColor.mainColor),
+                                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color
+                                      ),
                                     ),
                                     GestureDetector(
                                       onTap: () {
                                         Get.to(SignUpScreen());
                                       },
-                                      child: const Text(
+                                      child: Text(
                                         "Sign Up",
-                                        style: TextStyle(color: AppColor.mainColor),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).textTheme.bodyLarge!.color
+                                        ),
                                       ),
                                     ),
                                   ],

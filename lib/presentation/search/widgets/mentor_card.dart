@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
+import 'package:skill_swap/core/theme/app_palette.dart';
 
 class MentorCard extends StatelessWidget {
   final String image;
@@ -27,12 +27,14 @@ class MentorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColor.mainColor),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,10 +66,7 @@ class MentorCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -103,17 +102,10 @@ class MentorCard extends StatelessWidget {
                             size: 18, color: Colors.amber),
                         const SizedBox(width: 4),
                         Text(
-                          rate.toString(),
-                          style: const TextStyle(fontSize: 12),
+                         "${rate.toString()} • $hours hours • \$$price/hr",
+                            style: Theme.of(context).textTheme.bodySmall
                         ),
-                        Text(
-                          " • $hours hours • ",
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        Text(
-                          "\$$price/hr",
-                          style: const TextStyle(fontSize: 12),
-                        ),
+
                       ],
                     ),
                   ],
@@ -132,14 +124,14 @@ class MentorCard extends StatelessWidget {
                 padding:
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColor.grayColor.withValues(alpha: 0.25),
+                  color: Color(0xFFD6D6D6).withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   skill,
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColor.blackColor,
+                    color: isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

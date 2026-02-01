@@ -1,23 +1,25 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:get/get.dart';
+
+import '../../../core/theme/app_palette.dart';
 
 class FilterButton extends StatelessWidget {
   final int activeFilters;
-  final VoidCallback? onPressed; // أضفنا onPressed هنا
+  final VoidCallback? onPressed;
 
   const FilterButton({super.key, this.activeFilters = 0, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed, // استخدمنا onTap
+      onTap: onPressed,
       child: Container(
         height: 50,
         decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColor.mainColor,
+              color: Theme.of(context).dividerColor
           ),
         ),
         child: Padding(
@@ -25,12 +27,9 @@ class FilterButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Filter',
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500),
+              Text(
+                'filter'.tr,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(width: 4),
               if (activeFilters > 0)
@@ -39,13 +38,13 @@ class FilterButton extends StatelessWidget {
                   height: 20,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColor.mainColor,
+                    color: AppPalette.primary,
                   ),
                   child: Center(
                     child: Text(
                       '$activeFilters',
                       style: const TextStyle(
-                        color: AppColor.whiteColor,
+                        color: Colors.white,
                         fontSize: 12,
                       ),
                     ),

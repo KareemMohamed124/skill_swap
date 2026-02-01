@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/helper/local_storage.dart';
 import 'package:skill_swap/presentation/forget_password/screens/email_verification_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
@@ -9,7 +8,6 @@ import 'package:skill_swap/presentation/sign/widgets/custom_text_field.dart';
 import '../../../bloc/register_bloc/register_bloc.dart';
 import '../../../bloc/register_bloc/register_event.dart';
 import '../../../bloc/register_bloc/register_state.dart';
-import '../../../constants/colors.dart';
 import '../../../data/models/register/register_request.dart';
 import '../../../dependency_injection/injection.dart';
 
@@ -38,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return BlocProvider(
       create: (_) => sl<RegisterBloc>(),
       child: Scaffold(
-        backgroundColor: AppColor.whiteColor,
+       // backgroundColor: AppColor.whiteColor,
         body: Stack(
           children: [
             Column(
@@ -52,8 +50,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               right: 0,
               bottom: 0,
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),
@@ -97,12 +95,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
 
                       if (state is RegisterSuccessState){
-                        LocalStorage.createUser(
-                            id: state.data.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-                            name: nameController.text,
-                            email: emailController.text
-                        );
-                         LocalStorage.setLoggedIn(true);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(state.data.message)),
                         );
@@ -119,17 +111,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                           Text(
                               "Create Account",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
+                                color: Theme.of(context).textTheme.bodyLarge!.color
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
+                             Text(
                               "Join us and start your learning journey today!",
-                              style: TextStyle(color: Colors.black54),
+                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color
+                             ),
                             ),
                             const SizedBox(height: 32),
 
@@ -143,7 +137,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   return "Name is required";
                                 }
 
-                                // ❌ الاسم يبدأ برقم (Front validation)
                                 if (RegExp(r'^\d').hasMatch(value)) {
                                   return "Name cannot start with a number";
                                 }

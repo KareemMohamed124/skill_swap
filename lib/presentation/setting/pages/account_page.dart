@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
+import 'package:get/get.dart';
+import 'package:skill_swap/core/theme/theme_controller.dart';
+import '../../../core/localization/language_controller.dart';
+import '../../../core/theme/app_palette.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -32,7 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final sectionRadius = BorderRadius.circular(12);
 
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -40,42 +43,43 @@ class _SettingsPageState extends State<SettingsPage> {
           //  margin: sectionMargin,
             padding: sectionPadding,
             decoration: BoxDecoration(
-              color: AppColor.grayColor.withValues(alpha: 0.15),
-              border: Border.all(color: AppColor.mainColor),
+              color: Theme.of(context).cardColor,
+              border: Border.all(color: Theme.of(context).dividerColor),
               borderRadius: sectionRadius,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Section 1: Notifications
-                const Text(
-                  'Notifications',
+                 Text(
+                  'notifications'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.bodyLarge!.color
                   ),
                 ),
                 const SizedBox(height: 8),
                 customSwitch(
-                  title: 'Email Notifications',
+                  title: 'email_notifications'.tr,
                   icon: Icons.email_outlined,
                   value: emailNotifications,
                   onChanged: (v) => setState(() => emailNotifications = v),
                 ),
                 customSwitch(
-                  title: 'Push Notifications',
+                  title: 'push_notifications'.tr,
                   icon: Icons.notifications_outlined,
                   value: pushNotifications,
                   onChanged: (v) => setState(() => pushNotifications = v),
                 ),
                 customSwitch(
-                  title: 'New Messages',
+                  title: 'new_messages'.tr,
                   icon: Icons.message_outlined,
                   value: newMessages,
                   onChanged: (v) => setState(() => newMessages = v),
                 ),
                 customSwitch(
-                  title: 'Session Reminders',
+                  title: 'session_reminders'.tr,
                   icon: Icons.schedule_outlined,
                   value: sessionReminders,
                   onChanged: (v) => setState(() => sessionReminders = v),
@@ -83,70 +87,94 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 const SizedBox(height: 16),
                 // Section 2: Privacy
-                const Text(
-                  'Privacy',
+                 Text(
+                  'privacy'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color
                   ),
                 ),
                 const SizedBox(height: 8),
                 customSwitch(
-                  title: 'Profile Visibility',
+                  title: 'profile_visibility'.tr,
                   icon: Icons.person_outline,
-                  subtitle: 'Allow others to find your profile',
+                  subtitle: 'allow_find_profile'.tr,
                   value: profileVisibility,
                   onChanged: (v) => setState(() => profileVisibility = v),
                 ),
                 customSwitch(
-                  title: 'Show Online Status',
+                  title: 'show_online_status'.tr,
                   icon: Icons.wifi_tethering_outlined,
-                  subtitle: "Let others see when you're online",
+                  subtitle: "let_see_online".tr,
                   value: showOnlineStatus,
                   onChanged: (v) => setState(() => showOnlineStatus = v),
                 ),
                 customSwitch(
-                  title: 'Direct Messages',
+                  title: 'direct_messages'.tr,
                   icon: Icons.chat_bubble_outline,
-                  subtitle: 'Allow others to message you directly',
+                  subtitle: 'allow_direct_msg'.tr,
                   value: directMessages,
                   onChanged: (v) => setState(() => directMessages = v),
                 ),
 
                 const SizedBox(height: 16),
                 // Section 3: App Preferences
-                const Text(
-                  'App Preferences',
+                 Text(
+                  'app_preferences'.tr,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color
+
                   ),
                 ),
                 const SizedBox(height: 8),
-                customSwitch(
-                  title: 'Dark Mode',
-                  icon: Icons.dark_mode_outlined,
-                  value: darkMode,
-                  onChanged: (v) => setState(() => darkMode = v),
+                GetBuilder<ThemeController>(
+                    builder: (controller) {
+                      return  customSwitch(
+                        title: 'dark_mode'.tr,
+                        icon: Icons.dark_mode_outlined,
+                        value: controller.themeMode == ThemeMode.dark,
+                        onChanged: (v) {
+                          controller.changeTheme(
+                            v ? ThemeMode.dark : ThemeMode.light
+                          );
+                        },
+                      );
+                    }
                 ),
                 const SizedBox(height: 8),
-                // Language row (غير سويتش)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: const [
-                        Icon(Icons.language_outlined),
-                        SizedBox(width: 12),
-                        Text('Language'),
+                GetBuilder<LanguageController>(
+                  builder: (controller) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.language_outlined),
+                            SizedBox(width: 12),
+                            Text('language'.tr),
+                          ],
+                        ),
+                        DropdownButton<String>(
+                          value: controller.currentLangCode,
+                          underline: const SizedBox(),
+                          items: const [
+                            DropdownMenuItem(value: 'en', child: Text('English')),
+                            DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                          ],
+                          onChanged: (value) {
+                            controller.changeLanguage(value!);
+                          },
+                        ),
                       ],
-                    ),
-                    Text(language),
-                  ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 customSwitch(
-                  title: 'Sound Effects',
+                  title: 'sound_effects'.tr,
                   icon: Icons.volume_up_outlined,
                   value: soundEffects,
                   onChanged: (v) => setState(() => soundEffects = v),
@@ -174,8 +202,8 @@ class _SettingsPageState extends State<SettingsPage> {
       secondary: Icon(icon),
       value: value,
       onChanged: onChanged,
-      activeColor: AppColor.whiteColor,
-      activeTrackColor: AppColor.mainColor,
+      activeColor: Colors.white,
+      activeTrackColor: AppPalette.primary,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity(horizontal: -4, vertical: -4),
     );

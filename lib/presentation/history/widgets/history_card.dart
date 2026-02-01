@@ -28,8 +28,6 @@ class HistoryCard extends StatelessWidget {
   bool get isFinishedRated => data.status == "Finished" && data.rating > 0;
   bool get isFinishedNotRated =>
       data.status == "Finished" && data.rating == 0;
-
-  // 🔥 NEW
   bool get isReviewReceived => data.isReviewReceived == true;
 
   @override
@@ -38,9 +36,9 @@ class HistoryCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFD6D6D6).withValues(alpha: 0.25),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFD6D6D6), width: 1.2),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,14 +61,11 @@ class HistoryCard extends StatelessWidget {
                   children: [
                     Text(
                       data.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
                     ),
                     Text(
                       data.role,
-                      style: const TextStyle(fontSize: 14),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
@@ -99,9 +94,9 @@ class HistoryCard extends StatelessWidget {
 
           Row(
             children: [
-              const Icon(Icons.calendar_month, size: 20),
+              Icon(Icons.calendar_month, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color,),
               const SizedBox(width: 8),
-              Text(data.date),
+              Text(data.date, style: Theme.of(context).textTheme.bodyMedium,),
             ],
           ),
 
@@ -109,9 +104,9 @@ class HistoryCard extends StatelessWidget {
 
           Row(
             children: [
-              const Icon(Icons.access_time, size: 20),
+              Icon(Icons.access_time, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color),
               const SizedBox(width: 8),
-              Text("${data.time} – ${data.duration}"),
+              Text("${data.time} – ${data.duration}", style: Theme.of(context).textTheme.bodyMedium,),
             ],
           ),
 
@@ -138,9 +133,9 @@ class HistoryCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text(
+                 Text(
                   "Their rating:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(width: 8),
                 Row(
@@ -182,9 +177,9 @@ class HistoryCard extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 16),
-            const Text(
+             Text(
               "Error: ",
-              style: TextStyle(fontWeight: FontWeight.bold),
+               style: TextStyle(color: Colors.black),
             ),
             Text(
               data.errorMessage!,
@@ -204,10 +199,10 @@ class HistoryCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFD6D6D6)),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: const Center(
+        child:  Center(
           child: Text(
             "View Details",
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
       );
@@ -224,9 +219,9 @@ class HistoryCard extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 16),
-            const Text(
+            Text(
               "Your rating: ",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             Row(
               children: List.generate(
@@ -256,12 +251,12 @@ class HistoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFD6D6D6)),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Row(
+                child:  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.star_border_outlined),
                     SizedBox(width: 4),
-                    Text("Rate Session"),
+                    Text("Rate Session", style: Theme.of(context).textTheme.titleMedium,),
                   ],
                 ),
               ),
@@ -293,12 +288,12 @@ class HistoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFD6D6D6)),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Row(
+                child:  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.description_outlined),
                     SizedBox(width: 4),
-                    Text("View Details"),
+                    Text("View Details", style: Theme.of(context).textTheme.titleMedium,),
                   ],
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'chat_screen.dart';
 import 'dart:math';
 
@@ -56,10 +57,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -69,10 +72,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
           children: [
             TextField(
               decoration: InputDecoration(
-                hintText: "Search",
-                prefixIcon: Icon(Icons.search, color: Color(0xFF0D035F)),
+                hintText: "search".tr,
+                prefixIcon: Icon(Icons.search, color: Theme.of(context).textTheme.bodyLarge!.color,),
                 filled: true,
-                fillColor: Color(0XFFF2F5F8),
+                fillColor: Theme.of(context).cardColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -81,15 +84,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
             ),
             const SizedBox(height: 20),
             Row(
-              children: const [
-                Icon(Icons.expand_more, color: Color(0xFF0D035F)),
+              children: [
+                Icon(Icons.expand_more, color: Theme.of(context).textTheme.bodyLarge!.color,),
                 SizedBox(width: 8),
                 Text(
-                  "Channels",
+                  "channels".tr,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Color(0xFF0D035F),
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                 ),
               ],
@@ -111,14 +114,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     decoration: BoxDecoration(
                       color:
                       isSelected
-                          ? const Color(0xFFE6E7FF)
-                          : const Color.fromARGB(255, 255, 255, 255),
+                          ? (isDark ? Color(0xFF8F94FF) : Color(0xFFE6E7FF))
+                          : Theme.of(context).cardColor,
 
                       border: Border.all(
                         color:
                         isSelected
                             ? Color(0xFF0D035F)
-                            : const Color(0XFFF2F5F8),
+                            : Theme.of(context).dividerColor,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(12),
@@ -145,9 +148,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       subtitle: Text(getRandomSubtitle()),
                       trailing: Text(
                         getRandomTime(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.black54,
+                         color: Theme.of(context).textTheme.bodyMedium!.color,
                         ),
                       ),
                       onTap: () {

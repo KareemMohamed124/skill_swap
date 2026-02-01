@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/constants/colors.dart';
 
 class NotificationCard extends StatelessWidget {
   final Color bgColor;
@@ -31,9 +30,9 @@ class NotificationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 18),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xFFD6D6D6).withValues(alpha: 0.25),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFD6D6D6), width: 1.2),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +64,7 @@ class NotificationCard extends StatelessWidget {
              ),
               Text(
                 timeAgo,
-                style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
@@ -74,10 +73,7 @@ class NotificationCard extends StatelessWidget {
 
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
           ),
 
           const SizedBox(height: 4),
@@ -85,7 +81,7 @@ class NotificationCard extends StatelessWidget {
           Text(
             "Mentor: $mentorName",
             style: TextStyle(
-              color: AppColor.mainColor,
+              color: Theme.of(context).textTheme.bodySmall!.color,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -96,11 +92,11 @@ class NotificationCard extends StatelessWidget {
           if (sessionTime.isNotEmpty)
             Row(
               children: [
-                const Icon(Icons.access_time, size: 16),
+                Icon(Icons.access_time, size: 16, color: Theme.of(context).textTheme.bodyMedium!.color,),
                 const SizedBox(width: 4),
                 Text(
                   sessionTime,
-                  style: const TextStyle(fontSize: 12),
+                  style:  Theme.of(context).textTheme.bodyMedium
                 ),
               ],
             ),

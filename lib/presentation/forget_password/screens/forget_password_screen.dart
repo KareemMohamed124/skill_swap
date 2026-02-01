@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:skill_swap/presentation/forget_password/screens/verify_screen.dart';
 import 'package:skill_swap/presentation/forget_password/widgets/custom_auth.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import '../../../bloc/send_code_bloc/send_code_bloc.dart';
-import '../../../constants/colors.dart';
 import '../../../data/models/send_code/send_code_request.dart';
 import '../../../dependency_injection/injection.dart';
 
@@ -28,7 +26,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     return BlocProvider(
       create: (context) => sl<SendCodeBloc>(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         resizeToAvoidBottomInset: false,
         body: BlocConsumer<SendCodeBloc, SendCodeState>(
           listener: (context, state) {
@@ -65,7 +63,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         decoration: InputDecoration(
                           hintText: "Enter Email Address",
                           filled: true,
-                          fillColor: AppColor.grayColor.withValues(alpha: 0.20),
+                          fillColor: Color(0xFFD6D6D6).withValues(alpha: 0.20),
                           prefixIcon: const Icon(Icons.email_outlined),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),

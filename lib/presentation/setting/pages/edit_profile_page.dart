@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:skill_swap/constants/colors.dart';
 import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_button.dart';
 
+import '../../../core/theme/app_palette.dart';
 import '../../../data/models/user/user_model.dart';
 import '../../../dependency_injection/injection.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -34,16 +34,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> loadUser() async {
-    final fetchedUser = await LocalStorage.getUser();
-    setState(() {
-      user = fetchedUser;
-      nameController = TextEditingController(text: user!.name ?? "");
-      emailController = TextEditingController(text: user!.email ?? "");
-      if(user?.imagePath != null) {
-        selectedImage = File(user!.imagePath!);
+    final localUser = await LocalStorage.getUser();
+    if (mounted) {
+      setState(() {
+        user = localUser;
+        loading = false;
+      });
+    }
+
+    try {
+      final repo = sl<AuthRepository>();
+      final freshUser = await repo.getProfile();
+
+      await LocalStorage.saveUser(freshUser);
+
+      if (mounted) {
+        setState(() {
+          user = freshUser;
+        });
       }
-      loading = false;
-    });
+    } catch (_) {
+    }
   }
   // Controllers
   final bioController = TextEditingController(text: "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
@@ -56,7 +67,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final image = await picker.pickImage(source: source);
 
     if (image != null) {
-      await LocalStorage.saveUserImage(image.path);
+      //await LocalStorage.saveUserImage(image.path);
       setState(() {
         selectedImage = File(image.path);
       });
@@ -97,29 +108,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             /// Profile Picture
             containerWrapper(
+              context: context,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("Profile Picture"),
+                  sectionTitle("profile_picture".tr),
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor: AppColor.mainColor.withValues(alpha: 0.25),
+                        backgroundColor: AppPalette.primary.withValues(alpha: 0.25),
                         backgroundImage: selectedImage != null
                             ? FileImage(selectedImage!)
                             : (user?.imagePath != null && user!.imagePath!.isNotEmpty
                             ? FileImage(File(user!.imagePath!))
                             : null),
                         child: (selectedImage == null && (user?.imagePath == null || user!.imagePath!.isEmpty))
-                            ? const Icon(Icons.person, size: 30, color: AppColor.whiteColor,)
+                            ? const Icon(Icons.person, size: 30, color: Colors.white,)
                             : null,
                       ),
                       const SizedBox(width: 8),
@@ -129,7 +141,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ElevatedButton.icon(
                             onPressed: showImageSourceSheet,
                             icon: const Icon(Icons.camera_alt),
-                            label: const Text("Change Photo"),
+                            label: Text("change_photo".tr),
                           ),
                           const SizedBox(height: 4,),
                           const Text(
@@ -151,19 +163,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             /// Personal Information
             containerWrapper(
+              context: context,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("Personal Information"),
+                  sectionTitle("personal_information".tr),
                   const SizedBox(height: 8,),
-                  inputField("Full Name", "ex: Nada Sayed", nameController),
-                  inputField("Email", "ex: example@gmail.com", emailController),
-                  inputField("Bio", "Tell others about yourself...", bioController, maxLines: 3),
-                  inputField("Skills", "JavaScript, React, Python...", skillsController),
+                  inputField("full_name".tr, "ex: Nada Sayed", nameController),
+                  inputField("email".tr, "ex: example@gmail.com", emailController),
+                  inputField("bio".tr, "Tell others about yourself...", bioController, maxLines: 3),
+                  inputField("skills".tr, "JavaScript, React, Python...", skillsController),
                   const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
-                    child: CustomButton(text: "Save Changes", onPressed: (){}),
+                    child: CustomButton(text: "save_changes".tr, onPressed: (){}),
                   ),
                 ],
               ),
@@ -200,30 +213,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             /// Account Actions
             containerWrapper(
+              context: context,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("Account Actions"),
+                  sectionTitle("account_actions".tr),
                   const SizedBox(height: 8),
                   actionButton(
                       onPressedAction: (){},
-                      colorButton: AppColor.whiteColor,
+                      colorButton: Colors.white,
                       icon: Icons.delete,
-                      colorIcon: AppColor.redColor,
-                      actionText: "Delete Account",
-                      colorText: AppColor.redColor
+                      colorIcon: Color(0xFFD91515),
+                      actionText: "delete_account".tr,
+                      colorText: Color(0xFFD91515)
                   ),
                   const SizedBox(height: 8),
                   actionButton(
                       onPressedAction: (){
-                        LocalStorage.signOut();
+                       // LocalStorage.signOut();
                         Get.to(SignInScreen());
                         },
-                      colorButton: AppColor.redColor,
+                      colorButton: Color(0xFFD91515),
                       icon: Icons.logout,
-                      colorIcon: AppColor.whiteColor,
-                      actionText:"Sign Out",
-                      colorText:AppColor.whiteColor,
+                      colorIcon: Colors.white,
+                      actionText:"sign_out".tr,
+                      colorText: Colors.white,
                   ),
 
                 ],
@@ -234,14 +248,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             /// Account Status
             containerWrapper(
+              context: context,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("Account Status"),
-                  statusRow("Account Type", "Learner"),
+                  sectionTitle("account_status".tr),
+                  statusRow("account_type".tr, "learner".tr),
                  // statusRow("Current Plan", "Free"),
                   //statusRow("Hours Available", "2 / Week"),
-                  statusRow("Member Since", "January 2024"),
+                  statusRow("member_since".tr, "january_2024".tr),
                 ],
               ),
             ),
@@ -272,13 +287,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget containerWrapper({required Widget child}) {
+  Widget containerWrapper({required BuildContext context,required Widget child}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColor.grayColor.withValues(alpha: 0.15),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColor.mainColor),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: child,
     );
@@ -289,7 +304,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge!.color
+        ),
       ),
     );
   }
@@ -309,7 +328,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           hintText: hint,
           hintStyle: TextStyle(
             fontSize: 12,
-            color: AppColor.mainColor.withValues(alpha: 0.25)
+            color: AppPalette.primary.withValues(alpha: 0.25)
           ),
           labelText: label,
           border: OutlineInputBorder(

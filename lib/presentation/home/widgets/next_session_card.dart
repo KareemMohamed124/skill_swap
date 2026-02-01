@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
-import '../../../constants/colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class NextSessionCard extends StatelessWidget {
   final String name;
@@ -26,11 +25,11 @@ class NextSessionCard extends StatelessWidget {
       child: Container(
         height: 86,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Theme.of(context).dividerColor,
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -51,10 +50,10 @@ class NextSessionCard extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     isMentor
-                        ? AppColor.mainColor
+                        ? AppPalette.primary
                         : Colors.purple,
                     (isMentor
-                        ? AppColor.mainColor
+                        ? AppPalette.primary
                         : Colors.purple)
                         .withOpacity(0.3),
                   ],
@@ -69,13 +68,13 @@ class NextSessionCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColor.mainColor.withOpacity(0.1),
+                  color: AppPalette.primary.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                     isMentor ? Icons.school : Icons.book,
                     size: 22,
-                    color: AppColor.mainColor
+                    color: AppPalette.primary
                 )
             ),
 
@@ -95,10 +94,7 @@ class NextSessionCard extends StatelessWidget {
                           name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
                         ),
                       ),
                       Text(
@@ -120,24 +116,18 @@ class NextSessionCard extends StatelessWidget {
                     children: [
                       Text(
                         "$dateTime • $duration",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium
                       ),
                       const SizedBox(width: 8),
-                      const Icon(
+                       Icon(
                         Icons.videocam_outlined,
-                        size: 14,
-                        color: Colors.grey,
+                        size: 16,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         "Video Call",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium
                       ),
                     ],
                   ),

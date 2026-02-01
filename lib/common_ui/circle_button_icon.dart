@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../constants/colors.dart';
-
 class CircleButtonIcon extends StatefulWidget {
   final  IconData icon;
   final VoidCallback? onTap;
@@ -14,8 +12,9 @@ class CircleButtonIcon extends StatefulWidget {
 class _CircleButtonIconState extends State<CircleButtonIcon> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       shape: const CircleBorder(),
       elevation: 3,
       child: InkWell(
@@ -23,10 +22,12 @@ class _CircleButtonIconState extends State<CircleButtonIcon> {
         onTap: widget.onTap,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Icon(
-            widget.icon,
-            size: 16,
-            color: AppColor.mainColor,
+          child: Center(
+            child: Icon(
+              widget.icon,
+              size: 18,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+            ),
           ),
         ),
       ),

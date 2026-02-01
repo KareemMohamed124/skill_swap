@@ -1,52 +1,73 @@
 name: skill_swap
 description: A new Flutter project.
-
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_native_splash: ^2.3.2
+
+  cupertino_icons: ^1.0.8
+  flutter_bloc: ^9.1.1
+  bloc: ^9.1.0
+  equatable: ^2.0.7
+
+  # UI
   smooth_page_indicator: ^1.1.0
   carousel_slider_plus: ^7.1.1
-  flutter_bloc: ^9.1.1
   iconsax_flutter: ^1.0.1
-  cupertino_icons: ^1.0.8
-  get: ^4.6.5
   lottie: ^3.1.0
-  intl_phone_field: ^3.2.0
-  dio: ^5.4.0
-  retrofit: ^4.1.0
-  json_annotation: ^4.9.0
-  get_it: ^8.1.0
-  injectable: ^2.2.0
-  bloc: ^9.1.0
-  device_preview: ^1.1.0
-  table_calendar: ^3.2.0
-  equatable: ^2.0.7
   bottom_sheet: ^4.0.4
   dropdown_button2: ^2.3.9
   modal_side_sheet: ^0.0.1
   range_slider_flutter: ^0.0.2
+  table_calendar: ^3.2.0
+
+  # State / Navigation
+  get: ^4.6.5
+  get_it: ^8.1.0
+
+  # Network
+  dio: ^5.4.0
+  retrofit: 4.8.0
+  json_annotation: ^4.8.1
+
+  # Local storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  get_storage: ^2.1.1
+
+  # Device
+  image_picker: ^1.2.1
+  intl_phone_field: ^3.2.0
+
+  # AI
   google_generative_ai: ^0.4.7
   flutter_gemini: ^3.0.0
-  image_picker: ^1.2.1
-  hive_flutter: ^1.1.0
-  hive: ^2.2.3
+
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+  # Splash
+  flutter_native_splash: ^2.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^5.0.0
-  build_runner: ^2.4.0
-  json_serializable: ^6.8.0
-  retrofit_generator: ^8.0.0
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+  retrofit_generator: 8.1.0
   injectable_generator: ^2.2.0
-  table_calendar: ^3.2.0
+  injectable: ^2.2.0
+  device_preview: ^1.1.0
 
 flutter:
   uses-material-design: true

@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../constants/colors.dart';
+import 'package:get/get.dart';
 
 class SectionHeader extends StatelessWidget {
   final String sectionTitle;
@@ -16,29 +15,21 @@ class SectionHeader extends StatelessWidget {
       children: [
         Text(
           sectionTitle,
-          style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColor.blackColor
-          ),
+          style: Theme.of(context).textTheme.bodySmall
         ),
         GestureDetector(
           onTap: onTop,
           child: Row(
             children: [
               Text(
-                "View All",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColor.blackColor,
-                  fontWeight: FontWeight.w600,
-                ),
+                "view_all".tr,
+                style: Theme.of(context).textTheme.bodySmall
               ),
               const SizedBox(width: 8),
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: AppColor.blackColor,
+                color: Theme.of(context).textTheme.titleMedium!.color,
               ),
             ],
           ),

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 import 'package:skill_swap/bloc/mentor_filter_bloc/mentor_filter_event.dart';
-import 'package:skill_swap/constants/colors.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../bloc/mentor_filter_bloc/mentor_filter_state.dart';
 import '../../book_session/screens/profile_mentor.dart';
@@ -28,8 +26,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppColor.whiteColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       // appBar: AppBar(
       //   backgroundColor: AppColor.whiteColor,
       //   title: const Text('Search'),
@@ -51,7 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
                ),
         Spacer(),
 
-               Text('Search',
+               Text('search'.tr,
                    textAlign: TextAlign.center,
                    style: Theme.of(context).textTheme.titleLarge
                ),
@@ -66,22 +65,22 @@ class _SearchScreenState extends State<SearchScreen> {
                     height: 50,
                     child: TextField(
                       controller: searchTextController,
-                      cursorColor: AppColor.mainColor,
+                      cursorColor: isDark ? Colors.white : Colors.black,
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: AppColor.mainColor,
+                              color: Theme.of(context).dividerColor
                           ),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: AppColor.mainColor.withValues(alpha: 0.8),
+                              color: Theme.of(context).dividerColor
                           ),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         prefixIcon: const Icon(Icons.search),
-                        hintText: "Search by skill or mentor name...",
+                        hintText: "search_placeholder".tr,
                       ),
                       onChanged: (searchValue) {
                         context
@@ -97,28 +96,17 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(width: 8),
 
                 Container(
-
                   height: 50,
-
                   width: 50,
-
                   decoration: BoxDecoration(
-
-                    // color: AppColor.grayColor,
-
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
-
                     border: Border.all(
-
-                      color: AppColor.mainColor, ),
-
-
-
+                    color: Theme.of(context).dividerColor
                   ),
-
-
+                  ),
                   child: IconButton(
-                    icon: Icon(Icons.tune_outlined, color: AppColor.mainColor),
+                    icon: Icon(Icons.tune_outlined, color: isDark ? Colors.white : Colors.black),
                     onPressed: () async {
                       final bloc = context.read<MentorFilterBloc>();
                       final state = bloc.state;
@@ -126,7 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       final activeFilters = await showModalSideSheet<int>(
                         context: context,
                         withCloseControll: false,
-                        barrierColor: AppColor.grayColor.withValues(alpha: 0.3),
+                        barrierColor: Color(0xFFD6D6D6).withValues(alpha: 0.3),
                         width: MediaQuery.of(context).size.width * 0.8,
                         body: BlocProvider.value(
                           value: bloc,
@@ -169,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       final activeFilters = await showModalSideSheet<int>(
                         context: context,
                         withCloseControll: false,
-                        barrierColor: AppColor.grayColor.withValues(alpha: 0.3),
+                        barrierColor: Color(0xFFD6D6D6).withValues(alpha: 0.3),
                         width: MediaQuery.of(context).size.width * 0.8,
                         body: BlocProvider.value(
                           value: bloc,

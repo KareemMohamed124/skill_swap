@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:skill_swap/presentation/sign/widgets/custom_appbar.dart';
 
 import '../../../constants/strings.dart';
@@ -40,7 +41,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
         children: [
           Column(
             children: [
-              CustomAppBar(title: "History Sessions"),
+              CustomAppBar(title: "history_sessions".tr),
             ],
           ),
 
@@ -52,8 +53,8 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
@@ -63,7 +64,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
                 children: [
                   ProfileTabs(
                     tabController: _tabController,
-                    tabs: const ['Completed', 'Cancelled', 'Issue', 'Reviews'],
+                    tabs: ['completed'.tr, 'cancelled'.tr, 'issue'.tr, 'reviews'.tr],
                   ),
                   Expanded(
                     child: TabBarView(
