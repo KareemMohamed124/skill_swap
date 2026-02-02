@@ -4,17 +4,18 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:skill_swap/core/localization/app_translation.dart';
-import 'package:skill_swap/core/localization/language_controller.dart';
-import 'package:skill_swap/core/theme/dark_theme.dart';
-import 'package:skill_swap/helper/local_storage.dart';
-import 'package:skill_swap/presentation/onboarding_screen/screens/onboarding.dart';
-import 'package:skill_swap/presentation/sign/screens/sign_in_screen.dart';
-import 'common_ui/screen_manager/screen_manager.dart';
-import 'core/theme/light_theme.dart';
-import 'core/theme/theme_controller.dart';
-import 'data/quiz/quiz_controller.dart';
-import 'dependency_injection/injection.dart';
+import 'package:skill_swap/shared/common_ui/screen_manager/screen_manager.dart';
+import 'package:skill_swap/shared/core/localization/app_translation.dart';
+import 'package:skill_swap/shared/core/localization/language_controller.dart';
+import 'package:skill_swap/shared/core/theme/dark_theme.dart';
+import 'package:skill_swap/shared/core/theme/light_theme.dart';
+import 'package:skill_swap/shared/core/theme/theme_controller.dart';
+import 'package:skill_swap/shared/data/quiz/quiz_controller.dart';
+import 'package:skill_swap/shared/dependency_injection/injection.dart';
+import 'package:skill_swap/shared/helper/local_storage.dart';
+
+import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
+import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
