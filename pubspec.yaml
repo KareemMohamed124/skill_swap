@@ -41,8 +41,8 @@ dependencies:
   hive_flutter: ^1.1.0
   get_storage: ^2.1.1
 
-  # Device
-  image_picker: ^1.2.1
+  # Device / Camera
+  image_picker: ^0.8.7+6
   intl_phone_field: ^3.2.0
 
   # AI
@@ -92,3 +92,7 @@ flutter_native_splash:
     image_dark: assets/logo/logo.png
 
   web: true
+
+# لو حابة تضمن النسخ الموبايل فقط للكاميرا
+dependency_overrides:
+  image_picker_for_web: ^2.1.1

@@ -14,6 +14,7 @@ import '../widgets/next_session_card.dart';
 import '../widgets/recommended_card.dart';
 import '../widgets/section_header.dart';
 import '../widgets/top_user_card.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -32,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadUser() async {
     final localUser = await LocalStorage.getUser();
-
     if (mounted && localUser != null) {
       setState(() {
         user = localUser;
@@ -42,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final repo = sl<AuthRepository>();
       final freshUser = await repo.getProfile();
-
       await LocalStorage.saveUser(freshUser);
 
       if (mounted) {
@@ -56,20 +55,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-    //  backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
             children: [
               CustomHeader(
                 name: user?.name != null ? 'Hi, ${user!.name}' : 'Hi, Kemo',
-
                 subtitle: 'keep_learning'.tr,
-
                 avatarPath: user?.imagePath ?? '',
-
                 onIcon1: () {},
                 onIcon2: () {
                   Get.to(NotificationsScreen());
@@ -79,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Positioned(
-            top: 132,
+            top: screenHeight * 0.15, // بدل 132
             left: 0,
             right: 0,
             bottom: 0,
@@ -88,14 +84,14 @@ class _HomeScreenState extends State<HomeScreen> {
               constraints: BoxConstraints(minHeight: screenHeight),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(screenWidth * 0.06), // بدل 24
+                  topRight: Radius.circular(screenWidth * 0.06), // بدل 24
                 ),
               ),
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(screenWidth * 0.04), // بدل 16
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -106,14 +102,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(TopUsersViewAll());
                         },
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: screenHeight * 0.01), // بدل 8
                       SizedBox(
-                        height: 128,
+                        height: screenHeight * 0.15, // بدل 128
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppData.topUsers.length,
                           separatorBuilder: (_, __) =>
-                          const SizedBox(width: 16),
+                              SizedBox(width: screenWidth * 0.04), // بدل 16
                           itemBuilder: (context, index) {
                             final u = AppData.topUsers[index];
                             return TopUserCard(
@@ -127,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: screenHeight * 0.03), // بدل 24
 
                       /// Next Session
                       SectionHeader(
@@ -136,13 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(NextSessionViewAll());
                         },
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: screenHeight * 0.01), // بدل 8
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: AppData.nextSessions.length,
                         separatorBuilder: (_, __) =>
-                        const SizedBox(height: 8),
+                            SizedBox(height: screenHeight * 0.01), // بدل 8
                         itemBuilder: (context, index) {
                           final s = AppData.nextSessions[index];
                           return NextSessionCard(
@@ -155,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: screenHeight * 0.03), // بدل 24
 
                       /// Recommended
                       SectionHeader(
@@ -164,14 +160,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(RecommendedViewAll());
                         },
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: screenHeight * 0.01), // بدل 8
                       SizedBox(
-                        height: 180,
+                        height: screenHeight * 0.21, // بدل 180
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppData.recommendedMentors.length,
                           separatorBuilder: (_, __) =>
-                          const SizedBox(width: 16),
+                              SizedBox(width: screenWidth * 0.04), // بدل 16
                           itemBuilder: (context, index) {
                             final m = AppData.recommendedMentors[index];
                             return RecommendedCard(

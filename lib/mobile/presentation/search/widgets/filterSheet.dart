@@ -73,188 +73,215 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(32),
-          bottomLeft: Radius.circular(32),
+    return FractionallySizedBox(
+      heightFactor: 0.9,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(32),
+            bottomLeft: Radius.circular(32),
+          ),
         ),
-      ),
-      child: ListView(
-        children: [
-           Text(
-            "filters".tr,
-              style: Theme.of(context).textTheme.titleMedium
-           ),
-          const SizedBox(height: 8),
-          const Divider(),
-          const SizedBox(height: 8),
-
-          // Price
-          PriceFilterSection(
-            min: 0,
-            max: 100,
-            onChanged: (start, end) {
-              setState(() {
-                if (startPrice == 20 && endPrice == 60 && (start != 20 || end != 60)) {
-                  activeFiltersCount++;
-                }
-                startPrice = start;
-                endPrice = end;
-              });
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          // Status
-           Text("status".tr, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          buildChoiceChips<String>(
-            context: context,
-            items: statuses,
-            selectedItem: selectedStatus,
-            onSelected: (value) {
-              setState(() {
-                if (selectedStatus == null && value != null) activeFiltersCount++;
-                else if (selectedStatus != null && value == null) activeFiltersCount--;
-                selectedStatus = value;
-              });
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          // Track
-          Text("track".tr,style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          buildChoiceChips<String>(
-            context: context,
-            items: tracks,
-            selectedItem: selectedTrack,
-            onSelected: (value) {
-              setState(() {
-                if (selectedTrack == null && value != null) activeFiltersCount++;
-                else if (selectedTrack != null && value == null) activeFiltersCount--;
-                selectedTrack = value;
-              });
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          // Skill
-          Text("skill".tr, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 50,
-            child: TextField(
-              controller: skillController,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Theme.of(context).cardColor,
-                hintText: "enter_skill_name".tr,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  final trimmed = value.trim();
-                  if (enteredSkill == null && trimmed.isNotEmpty) activeFiltersCount++;
-                  else if (enteredSkill != null && trimmed.isEmpty) activeFiltersCount--;
-                  enteredSkill = trimmed.isEmpty ? null : trimmed;
-                });
-              },
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Rating
-         Text("rating".tr,  style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          buildChoiceChips<int>(
-            context: context,
-            items: rates,
-            selectedItem: selectedRate,
-            onSelected: (value) {
-              setState(() {
-                if (selectedRate == null && value != null) activeFiltersCount++;
-                else if (selectedRate != null && value == null) activeFiltersCount--;
-                selectedRate = value;
-              });
-            },
-            showIcon: true,
-            icon: Icons.star,
-          ),
-
-          const SizedBox(height: 32),
-
-          // Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: SafeArea(
+          child: ListView(
             children: [
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).cardColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Text("filters".tr,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              const Divider(),
+              const SizedBox(height: 8),
+
+              /// Price
+              PriceFilterSection(
+                min: 0,
+                max: 100,
+                onChanged: (start, end) {
+                  setState(() {
+                    if (startPrice == 20 &&
+                        endPrice == 60 &&
+                        (start != 20 || end != 60)) {
+                      activeFiltersCount++;
+                    }
+                    startPrice = start;
+                    endPrice = end;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              /// Status
+              Text("status".tr,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              buildChoiceChips<String>(
+                context: context,
+                items: statuses,
+                selectedItem: selectedStatus,
+                onSelected: (value) {
+                  setState(() {
+                    if (selectedStatus == null && value != null) {
+                      activeFiltersCount++;
+                    } else if (selectedStatus != null && value == null) {
+                      activeFiltersCount--;
+                    }
+                    selectedStatus = value;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              /// Track
+              Text("track".tr,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              buildChoiceChips<String>(
+                context: context,
+                items: tracks,
+                selectedItem: selectedTrack,
+                onSelected: (value) {
+                  setState(() {
+                    if (selectedTrack == null && value != null) {
+                      activeFiltersCount++;
+                    } else if (selectedTrack != null && value == null) {
+                      activeFiltersCount--;
+                    }
+                    selectedTrack = value;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              /// Skill
+              Text("skill".tr,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 50),
+                child: TextField(
+                  controller: skillController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
+                    hintText: "enter_skill_name".tr,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                child: Text(
-                  "cancel".tr,
-                    style: Theme.of(context).textTheme.titleMedium
+                  onChanged: (value) {
+                    setState(() {
+                      final trimmed = value.trim();
+                      if (enteredSkill == null && trimmed.isNotEmpty) {
+                        activeFiltersCount++;
+                      } else if (enteredSkill != null && trimmed.isEmpty) {
+                        activeFiltersCount--;
+                      }
+                      enteredSkill = trimmed.isEmpty ? null : trimmed;
+                    });
+                  },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<MentorFilterBloc>().add(
-                    ApplyFiltersEvent(
-                      minPrice: startPrice,
-                      maxPrice: endPrice,
-                      minRate: selectedRate?.toDouble(),
-                      status: selectedStatus,
-                      track: selectedTrack,
-                      skill: enteredSkill,
-                    ),
-                  );
 
-                  Navigator.pop(context, activeFiltersCount);
+              const SizedBox(height: 16),
+
+              /// Rating
+              Text("rating".tr,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              buildChoiceChips<int>(
+                context: context,
+                items: rates,
+                selectedItem: selectedRate,
+                onSelected: (value) {
+                  setState(() {
+                    if (selectedRate == null && value != null) {
+                      activeFiltersCount++;
+                    } else if (selectedRate != null && value == null) {
+                      activeFiltersCount--;
+                    }
+                    selectedRate = value;
+                  });
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppPalette.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                showIcon: true,
+                icon: Icons.star,
+              ),
+
+              const SizedBox(height: 32),
+
+              /// Buttons
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: Get.width * 0.4,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).cardColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text("cancel".tr,
+                          style:
+                          Theme.of(context).textTheme.titleMedium),
+                    ),
                   ),
-                ),
-                child: Text(
-                  "apply".tr,
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
-                ),
+                  SizedBox(
+                    width: Get.width * 0.4,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<MentorFilterBloc>().add(
+                          ApplyFiltersEvent(
+                            minPrice: startPrice,
+                            maxPrice: endPrice,
+                            minRate: selectedRate?.toDouble(),
+                            status: selectedStatus,
+                            track: selectedTrack,
+                            skill: enteredSkill,
+                          ),
+                        );
+                        Navigator.pop(context, activeFiltersCount);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppPalette.primary,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        "apply".tr,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  // Generic ChoiceChips builder
   Widget buildChoiceChips<T>({
     required BuildContext context,
     required List<T> items,
@@ -268,7 +295,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     final activeColor = AppPalette.primary;
     final inactiveColor = Theme.of(context).cardColor;
     final textActive = Colors.white;
-    final textInactive = isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
+    final textInactive =
+    isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
 
     return Wrap(
       spacing: 8,
@@ -282,25 +310,18 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null)
-                Icon(
-                  icon,
-                  size: 18,
-                  color: selected ? textActive : textInactive,
-                ),
-              Text(
-                "  $item",
-                style: TextStyle(
-                  color: selected ? textActive : textInactive,
-                ),
-              ),
+                Icon(icon,
+                    size: 18,
+                    color: selected ? textActive : textInactive),
+              Text("  $item",
+                  style: TextStyle(
+                      color:
+                      selected ? textActive : textInactive)),
             ],
           )
-              : Text(
-            "$item",
-            style: TextStyle(
-              color: selected ? textActive : textInactive,
-            ),
-          ),
+              : Text("$item",
+              style: TextStyle(
+                  color: selected ? textActive : textInactive)),
           selected: selected,
           backgroundColor: inactiveColor,
           selectedColor: activeColor,

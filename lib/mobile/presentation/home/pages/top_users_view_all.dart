@@ -16,18 +16,26 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Number of columns for responsive design
+    int crossAxisCount = 2;
+    if (screenWidth > 1200) {
+      crossAxisCount = 4;
+    } else if (screenWidth > 800) {
+      crossAxisCount = 3;
+    }
 
     return Scaffold(
-    //  backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
             children: const [
-              CustomAppBar(title: 'Top Users',)
+              CustomAppBar(title: 'Top Users'),
             ],
           ),
           Positioned(
-            top: 80,
+            top: screenHeight * 0.1, // بدل 80
             left: 0,
             right: 0,
             bottom: 0,
@@ -37,44 +45,45 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+                  topLeft: Radius.circular(screenWidth * 0.08), // بدل 32
+                  topRight: Radius.circular(screenWidth * 0.08), // بدل 32
                 ),
               ),
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.2,
+                  padding: EdgeInsets.all(screenWidth * 0.04), // بدل 16
+                  child: GridView.builder(
                     shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: List.generate(AppData.topUsers.length, (index) {
-                      final isSelected = selectedIndex == index;
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: screenWidth * 0.04, // بدل 16
+                      crossAxisSpacing: screenWidth * 0.04, // بدل 16
+                      childAspectRatio: 1.2,
+                    ),
+                    itemCount: AppData.topUsers.length,
+                    itemBuilder: (context, index) {
                       final user = AppData.topUsers[index];
                       return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                            });
-                          },
-                          child: TopUserCard(
-                            id: user.id,
-                            image: user.image,
-                            name: user.name,
-                            track: user.track,
-                            hours: user.hours,
-                          )
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                        },
+                        child: TopUserCard(
+                          id: user.id,
+                          image: user.image,
+                          name: user.name,
+                          track: user.track,
+                          hours: user.hours,
+                        ),
                       );
-                    }),
+                    },
                   ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

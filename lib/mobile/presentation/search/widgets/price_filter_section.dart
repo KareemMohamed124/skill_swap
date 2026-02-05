@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../../shared/core/theme/app_palette.dart';
 
 class PriceFilterSection extends StatefulWidget {
@@ -25,20 +24,22 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
   @override
   void initState() {
     super.initState();
-    priceRange = RangeValues(widget.min + 10, widget.min + 50); // default
+    priceRange = RangeValues(widget.min + 10, widget.min + 50);
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         Text(
           "price_range".tr,
-            style: Theme.of(context).textTheme.titleMedium
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
+
+        SizedBox(height: width * 0.02),
 
         RangeSlider(
           values: priceRange,
@@ -53,42 +54,54 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           ),
           onChanged: (values) {
             setState(() => priceRange = values);
-
-            widget.onChanged(
-              values.start,
-              values.end,
-            );
+            widget.onChanged(values.start, values.end);
           },
         ),
 
+        SizedBox(height: width * 0.01),
+
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            priceBox("min".tr, priceRange.start),
-            priceBox("max".tr, priceRange.end),
+            Expanded(child: priceBox("min".tr, priceRange.start, width)),
+            SizedBox(width: width * 0.04),
+            Expanded(child: priceBox("max".tr, priceRange.end, width)),
           ],
         ),
       ],
     );
   }
 
-  Widget priceBox(String label, double value) {
+  Widget priceBox(String label, double value, double width) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(label, style: const TextStyle(color: Colors.grey)),
-        const SizedBox(height: 4),
+        FittedBox(
+          child: Text(
+            label,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+        SizedBox(height: width * 0.01),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 0.03,
+            vertical: width * 0.02,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
           ),
-          child: Text(
-            "\$${value.round()}",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          child: FittedBox(
+            child: Text(
+              "\$${value.round()}",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ),
-        )
+        ),
       ],
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../shared/core/theme/app_palette.dart';
 
 class MentorCard extends StatelessWidget {
@@ -29,9 +28,11 @@ class MentorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final width = MediaQuery.of(context).size.width;
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(vertical: width * 0.025),
+      padding: EdgeInsets.all(width * 0.04),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -48,13 +49,13 @@ class MentorCard extends StatelessWidget {
               ClipOval(
                 child: Image.asset(
                   image,
-                  width: 50,
-                  height: 50,
+                  width: width * 0.13,
+                  height: width * 0.13,
                   fit: BoxFit.cover,
                 ),
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: width * 0.03),
 
               Expanded(
                 child: Column(
@@ -73,8 +74,10 @@ class MentorCard extends StatelessWidget {
                         ),
 
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02,
+                            vertical: width * 0.01,
+                          ),
                           decoration: BoxDecoration(
                             color: status == "Available"
                                 ? Colors.green.withOpacity(.15)
@@ -87,7 +90,7 @@ class MentorCard extends StatelessWidget {
                               color: status == "Available"
                                   ? Colors.green
                                   : Colors.blue,
-                              fontSize: 12,
+                              fontSize: width * 0.028,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -95,18 +98,19 @@ class MentorCard extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 6),
+                    SizedBox(height: width * 0.015),
 
                     Row(
                       children: [
-                        const Icon(Icons.star,
-                            size: 18, color: Colors.amber),
-                        const SizedBox(width: 4),
-                        Text(
-                         "${rate.toString()} • $hours hours • \$$price/hr",
-                            style: Theme.of(context).textTheme.bodySmall
+                        const Icon(Icons.star, size: 18, color: Colors.amber),
+                        SizedBox(width: width * 0.01),
+                        Flexible(
+                          child: Text(
+                            "${rate.toString()} • $hours hours • \$$price/hr",
+                            style: Theme.of(context).textTheme.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-
                       ],
                     ),
                   ],
@@ -115,40 +119,34 @@ class MentorCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: width * 0.02),
 
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: width * 0.02,
+            runSpacing: width * 0.02,
             children: skills.map((skill) {
               return Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.025,
+                  vertical: width * 0.02,
+                ),
                 decoration: BoxDecoration(
-                  color: Color(0xFFD6D6D6).withValues(alpha: 0.25),
+                  color: const Color(0xFFD6D6D6).withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   skill,
                   style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary,
+                    fontSize: width * 0.028,
+                    color: isDark
+                        ? AppPalette.darkTextSecondary
+                        : AppPalette.lightTextSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               );
             }).toList(),
           ),
-
-          // const SizedBox(height: 8),
-          //
-          // Text(
-          //   "Usually responds in $responseTime",
-          //   style: TextStyle(
-          //     color: AppColor.mainColor,
-          //     fontSize: 12,
-          //   ),
-          // ),
         ],
       ),
     );

@@ -16,7 +16,7 @@ class _CircleButtonIconState extends State<CircleButtonIcon> {
     return Material(
       color: Theme.of(context).cardColor,
       shape: const CircleBorder(),
-      elevation: 3,
+      elevation: 1,
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: widget.onTap,
@@ -25,7 +25,7 @@ class _CircleButtonIconState extends State<CircleButtonIcon> {
           child: Center(
             child: Icon(
               widget.icon,
-              size: 18,
+              size: 16,
               color: Theme.of(context).textTheme.bodyLarge!.color,
             ),
           ),

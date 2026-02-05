@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../shared/common_ui/screen_manager/screen_manager.dart';
+import 'package:skill_swap/main.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 
@@ -111,7 +110,8 @@ class ResultScreen extends StatelessWidget {
                   if (Get.isRegistered<QuizController>()) {
                     Get.find<QuizController>().resetQuiz();
                   }
-                  Get.to(ScreenManager(initialIndex: 4,));
+                  desktopKey.currentState?.openPage(index: 4);
+                  //Get.to(ScreenManager(initialIndex: 4,));
                 },
                 child: const Text(
                   "Continue",

@@ -7,6 +7,8 @@ import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../setting/screens/setting.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
 class ProfileHeader extends StatefulWidget {
   const ProfileHeader({Key? key}) : super(key: key);
 
@@ -89,10 +91,10 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: Theme.of(context).cardColor,
-                  backgroundImage:
-                  hasImage ? FileImage(File(imagePath)) : null,
-
-                  child: !hasImage
+                  backgroundImage: (defaultTargetPlatform == TargetPlatform.windows)
+                      ? null :
+                  (hasImage ? FileImage(File(imagePath)) : null),
+                  child: (!hasImage || defaultTargetPlatform == TargetPlatform.windows)
                       ? Icon(
                     Icons.person,
                     size: 30,

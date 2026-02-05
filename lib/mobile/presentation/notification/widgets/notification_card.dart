@@ -26,42 +26,48 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 18),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: screenHeight * 0.02), // بدل 18
+      padding: EdgeInsets.all(16), // بدل 16
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16), // بدل 16
         border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// Tag + Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-             Row(
-               children: [
-                 Icon(icon, size: 18, color: tagColor,),
-                 SizedBox(width: 4,),
-                 Container(
-                   padding:
-                   const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                   decoration: BoxDecoration(
-                     color: tagColor.withValues(alpha: .15),
-                     borderRadius: BorderRadius.circular(8),
-                   ),
-                   child: Text(
-                     tag,
-                     style: TextStyle(
-                       color: tagColor,
-                       fontSize: 12,
-                       fontWeight: FontWeight.w500,
-                     ),
-                   ),
-                 ),
-               ],
-             ),
+              Row(
+                children: [
+                  Icon(icon, size: screenWidth * 0.045, color: tagColor,), // بدل 18
+                  SizedBox(width: screenWidth * 0.01), // بدل 4
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.02, // بدل 8
+                      vertical: screenHeight * 0.005, // بدل 4
+                    ),
+                    decoration: BoxDecoration(
+                      color: tagColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.02), // بدل 8
+                    ),
+                    child: Text(
+                      tag,
+                      style: TextStyle(
+                        color: tagColor,
+                        fontSize: screenWidth * 0.03, // بدل 12
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Text(
                 timeAgo,
                 style: Theme.of(context).textTheme.bodySmall,
@@ -69,34 +75,38 @@ class NotificationCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: screenHeight * 0.01), // بدل 8
 
           Text(
             title,
-            style: Theme.of(context).textTheme.bodySmall
+            style: Theme.of(context).textTheme.bodySmall,
           ),
 
-          const SizedBox(height: 4),
+          SizedBox(height: screenHeight * 0.005), // بدل 4
 
           Text(
             "Mentor: $mentorName",
             style: TextStyle(
               color: Theme.of(context).textTheme.bodySmall!.color,
-              fontSize: 12,
+              fontSize: screenWidth * 0.03, // بدل 12
               fontWeight: FontWeight.w600,
             ),
           ),
 
-          const SizedBox(height: 4),
+          SizedBox(height: screenHeight * 0.005), // بدل 4
 
           if (sessionTime.isNotEmpty)
             Row(
               children: [
-                Icon(Icons.access_time, size: 16, color: Theme.of(context).textTheme.bodyMedium!.color,),
-                const SizedBox(width: 4),
+                Icon(
+                  Icons.access_time,
+                  size: screenWidth * 0.04, // بدل 16
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+                SizedBox(width: screenWidth * 0.01), // بدل 4
                 Text(
                   sessionTime,
-                  style:  Theme.of(context).textTheme.bodyMedium
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),

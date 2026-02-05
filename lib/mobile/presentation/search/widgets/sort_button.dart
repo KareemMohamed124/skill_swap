@@ -26,8 +26,11 @@ class _SortButtonState extends State<SortButton> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Container(
-      height: 50,
+      height: width * 0.12, // بدل رقم ثابت
+      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         border: Border.all(color: Theme.of(context).dividerColor),
@@ -36,37 +39,38 @@ class _SortButtonState extends State<SortButton> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton2<String>(
           buttonStyleData: ButtonStyleData(
-            padding: EdgeInsets.only(right: 16)
+            padding: EdgeInsets.only(right: width * 0.03),
           ),
           value: selected,
           hint: Text(
             'sort'.tr,
             style: Theme.of(context).textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
           ),
           style: Theme.of(context).textTheme.bodyMedium,
           isExpanded: true,
           items: items
               .map((option) => DropdownMenuItem(
             value: option,
-            child: Text(option,
+            child: Text(
+              option,
               style: Theme.of(context).textTheme.bodyMedium,
+              overflow: TextOverflow.ellipsis,
             ),
           ))
               .toList(),
-
           dropdownStyleData: DropdownStyleData(
             offset: const Offset(0, -5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
             ),
-            maxHeight: 250,
+            maxHeight: width * 0.7,
           ),
           iconStyleData: IconStyleData(
             icon: selected == null
                 ? const Icon(Icons.keyboard_arrow_down_outlined)
                 : const SizedBox(),
           ),
-
           onChanged: (value) {
             if (value == null) return;
 

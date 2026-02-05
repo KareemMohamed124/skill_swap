@@ -61,175 +61,231 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return BlocProvider(
       create: (_) => sl<LoginBloc>(),
       child: Scaffold(
-      //  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Stack(
+        body: Column(
           children: [
-            Column(
-              children: [
-                const CustomAppBar(title: "Sign In"),
-              ],
-            ),
-            Positioned(
-              top: 80,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
+            /// ===== Header =====
+            const CustomAppBar(title: "Sign In"),
+
+            /// ===== Content =====
+            Expanded(
+              child: Transform.translate(
+                offset: Offset(0, -screenHeight * 0.045), // ⬅️ الطلوع الآمن
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
+                    ),
                   ),
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: BlocConsumer<LoginBloc, LoginState>(
-                      listener: (context, state) async {
-                        if (state is LoginFailureState) {
-                          setState(() {
-                            _handleServerError(state);
-                          });
-                        } else if (state is LoginSuccessState) {
-                          await LocalStorage.saveToken(state.data.accessToken);
-                          final repo = sl<AuthRepository>();
-                          final user = await repo.getProfile();
-                         await LocalStorage.saveUser(user);
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(state.data.message)));
-                          Get.to(ScreenManager(initialIndex: 0));
-                        }
-                      },
-                      builder: (context, state) {
-                        return Form(
-                          key: formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 16),
-                              Text(
-                                "Welcome Back!",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).textTheme.bodyLarge!.color
+                  child: SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight:
+                        screenHeight -
+                            kToolbarHeight -
+                            MediaQuery.of(context).padding.top,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: BlocConsumer<LoginBloc, LoginState>(
+                          listener: (context, state) async {
+                            if (state is LoginFailureState) {
+                              setState(() {
+                                _handleServerError(state);
+                              });
+                            } else if (state is LoginSuccessState) {
+                              await LocalStorage.saveToken(
+                                  state.data.accessToken);
+                              final repo = sl<AuthRepository>();
+                              final user = await repo.getProfile();
+                              await LocalStorage.saveUser(user);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(state.data.message),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "Sign in to continue your learning journey",
-                                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color
-                              ),
-                              ),
-                              const SizedBox(height: 32),
+                              );
 
-                              CustomTextField(
-                                controller: emailController,
-                                labelText: "Email",
-                                hintText: "Enter your email",
-                                errorText: emailError,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Email is required";
-                                  }
-                                  if (!RegExp(
-                                    r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                  ).hasMatch(value)) {
-                                    return "Enter a valid email";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
+                              Get.to(
+                                ScreenManager(initialIndex: 0),
+                              );
+                            }
+                          },
+                          builder: (context, state) {
+                            return Form(
+                              key: formKey,
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 24),
 
-                              CustomTextField(
-                                controller: passwordController,
-                                labelText: "Password",
-                                hintText: "Enter your password",
-                                obscureText: true,
-                                errorText: passwordError,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Password is required";
-                                  }
-                                  if (!RegExp(
-                                    r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
-                                  ).hasMatch(value)) {
-                                    return "Password must contain at least 8 character, uppercase, lowercase, and a number";
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: 32),
-
-                              CustomButton(
-                                text: state is LoginLoading ? "Logging in..." : "Sign In",
-                                onPressed: state is LoginLoading
-                                    ? null
-                                    : () {
-                                  if (formKey.currentState!.validate()) {
-                                    final request = LoginRequest(
-                                      email: emailController.text,
-                                      password: passwordController.text,
-                                    );
-
-                                    context.read<LoginBloc>().add(LoginSubmit(request));
-                                  }
-                                },
-                              ),
-
-                              const SizedBox(height: 24),
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    Get.to(ForgetPassword());
-                                  },
-                                  child:  Text(
-                                    "Forget Password?",
-                                    style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color
-                                  ),
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 32),
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Don’t have an account? ",
-                                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color
-                                      ),
+                                  Text(
+                                    "Welcome Back!",
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color,
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.to(SignUpScreen());
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    "Sign in to continue your learning journey",
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .color,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 32),
+
+                                  CustomTextField(
+                                    controller: emailController,
+                                    labelText: "Email",
+                                    hintText: "Enter your email",
+                                    errorText: emailError,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.isEmpty) {
+                                        return "Email is required";
+                                      }
+                                      if (!RegExp(
+                                        r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                                      ).hasMatch(value)) {
+                                        return "Enter a valid email";
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 16),
+
+                                  CustomTextField(
+                                    controller: passwordController,
+                                    labelText: "Password",
+                                    hintText: "Enter your password",
+                                    obscureText: true,
+                                    errorText: passwordError,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.isEmpty) {
+                                        return "Password is required";
+                                      }
+                                      if (!RegExp(
+                                        r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+                                      ).hasMatch(value)) {
+                                        return "Password must contain at least 8 character, uppercase, lowercase, and a number";
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 32),
+
+                                  CustomButton(
+                                    text: state is LoginLoading
+                                        ? "Logging in..."
+                                        : "Sign In",
+                                    onPressed:
+                                    state is LoginLoading
+                                        ? null
+                                        : () {
+                                      if (formKey.currentState!
+                                          .validate()) {
+                                        final request =
+                                        LoginRequest(
+                                          email:
+                                          emailController
+                                              .text,
+                                          password:
+                                          passwordController
+                                              .text,
+                                        );
+
+                                        context
+                                            .read<LoginBloc>()
+                                            .add(
+                                          LoginSubmit(
+                                              request),
+                                        );
+                                      }
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 24),
+
+                                  Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Get.to(
+                                            ForgetPassword());
                                       },
                                       child: Text(
-                                        "Sign Up",
+                                        "Forget Password?",
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).textTheme.bodyLarge!.color
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+
+                                  const SizedBox(height: 32),
+
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Don’t have an account? ",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color,
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Get.to(
+                                                SignUpScreen());
+                                          },
+                                          child: Text(
+                                            "Sign Up",
+                                            style: TextStyle(
+                                              fontWeight:
+                                              FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge!
+                                                  .color,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        );
-                      },
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),

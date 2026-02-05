@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../shared/core/theme/app_palette.dart';
 
 class NextSessionCard extends StatelessWidget {
@@ -20,11 +19,14 @@ class NextSessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {},
       child: Container(
-        height: 86,
+        height: screenHeight * 0.11, // بدل 86
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
@@ -32,7 +34,7 @@ class NextSessionCard extends StatelessWidget {
             BoxShadow(
               color: Theme.of(context).dividerColor,
               blurRadius: 10,
-              offset: const Offset(0, 4),
+              offset: Offset(0, screenHeight * 0.005), // بدل 4
             ),
           ],
         ),
@@ -40,7 +42,7 @@ class NextSessionCard extends StatelessWidget {
           children: [
             /// Left Gradient Line
             Container(
-              width: 4,
+              width: screenWidth * 0.01, // بدل 4
               height: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.horizontal(
@@ -62,24 +64,24 @@ class NextSessionCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 12),
+            SizedBox(width: screenWidth * 0.03), // بدل 12
 
             /// Icon
             Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppPalette.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                    isMentor ? Icons.school : Icons.book,
-                    size: 22,
-                    color: AppPalette.primary
-                )
+              width: screenWidth * 0.1, // بدل 40
+              height: screenWidth * 0.1, // بدل 40
+              decoration: BoxDecoration(
+                color: AppPalette.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isMentor ? Icons.school : Icons.book,
+                size: screenWidth * 0.055, // بدل 22
+                color: AppPalette.primary,
+              ),
             ),
 
-            const SizedBox(width: 16),
+            SizedBox(width: screenWidth * 0.04), // بدل 16
 
             /// Content
             Expanded(
@@ -91,44 +93,58 @@ class NextSessionCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: screenWidth * 0.02),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
                         child: Text(
-                          name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium
+                          startsIn,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.03, // بدل 12
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      Text(
-                        startsIn,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(width: 16,)
+                      SizedBox(width: screenWidth * 0.04), // بدل 16
                     ],
                   ),
 
-                  const SizedBox(height: 6),
+                  SizedBox(height: screenHeight * 0.008), // بدل 6
 
                   /// Date & Call type
                   Row(
                     children: [
-                      Text(
-                        "$dateTime • $duration",
-                        style: Theme.of(context).textTheme.bodyMedium
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "$dateTime • $duration",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                       Icon(
+                      SizedBox(width: screenWidth * 0.02), // بدل 8
+                      Icon(
                         Icons.videocam_outlined,
-                        size: 16,
+                        size: screenWidth * 0.04, // بدل 16
                         color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "Video Call",
-                        style: Theme.of(context).textTheme.bodyMedium
+                      SizedBox(width: screenWidth * 0.01), // بدل 4
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "Video Call",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                       ),
                     ],
                   ),

@@ -16,39 +16,39 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-    //  backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
             children: const [
-              CustomAppBar(title: 'Next Sessions',)
+              CustomAppBar(title: 'Next Sessions'),
             ],
           ),
           Positioned(
-            top: 80,
+            top: screenHeight * 0.1, // بدل 80
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+                  topLeft: Radius.circular(screenWidth * 0.08), // بدل 32
+                  topRight: Radius.circular(screenWidth * 0.08), // بدل 32
                 ),
               ),
-              child:  Padding(
-                padding: const EdgeInsets.all(16.0),
+              child: Padding(
+                padding: EdgeInsets.all(screenWidth * 0.04), // بدل 16
                 child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   itemCount: AppData.nextSessions.length,
                   padding: EdgeInsets.zero,
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.02), // بدل 16
                   itemBuilder: (context, index) {
                     final session = AppData.nextSessions[index];
                     return NextSessionCard(
@@ -62,7 +62,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

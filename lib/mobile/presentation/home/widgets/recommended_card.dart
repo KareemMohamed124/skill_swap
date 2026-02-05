@@ -8,8 +8,8 @@ class RecommendedCard extends StatelessWidget {
   final String name;
   final String track;
   final double rating;
-  final double width;
-  final double imageHeight;
+  final double? width;
+  final double? imageHeight;
 
   const RecommendedCard({
     super.key,
@@ -18,25 +18,36 @@ class RecommendedCard extends StatelessWidget {
     required this.name,
     required this.track,
     required this.rating,
-    this.width = 200,
-    this.imageHeight = 116,
+    this.width,
+    this.imageHeight,
   });
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final cardWidth = width ?? screenWidth * 0.45;
+    final cardImageHeight = imageHeight ?? cardWidth * 0.55;
+
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        Get.to(ProfileMentor(id: id, name: name, track: track, rate: rating, image: image,));
+        Get.to(ProfileMentor(
+          id: id,
+          name: name,
+          track: track,
+          rate: rating,
+          image: image,
+        ));
       },
       child: Container(
-        width: width,
+        width: cardWidth,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Theme.of(context).dividerColor),
         ),
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(screenWidth * 0.02), // بدل 8
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -45,35 +56,48 @@ class RecommendedCard extends StatelessWidget {
               child: Image.asset(
                 image,
                 width: double.infinity,
-                height: imageHeight,
+                height: cardImageHeight,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: screenWidth * 0.01), // بدل 4
             Row(
               children: [
                 Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.star,
+                  size: screenWidth * 0.03, // بدل 12
+                  color: const Color(0xFFFFCE31),
+                ),
+                SizedBox(width: screenWidth * 0.01), // بدل 4
+                FittedBox(
+                  fit: BoxFit.scaleDown,
                   child: Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    "$rating",
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
-                const Icon(Icons.star, size: 12, color: Color(0xFFFFCE31)),
-                const SizedBox(width: 4),
-                Text(
-                  "$rating",
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
               ],
             ),
-            //const SizedBox(height: 4),
-            Text(
-              "$track Development",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "$track Development",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
           ],
         ),

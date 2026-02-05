@@ -40,8 +40,7 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<ResetPasswordBloc>(() => ResetPasswordBloc(sl<AuthRepository>()));
 
-  sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
-
+  sl.registerLazySingleton<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {

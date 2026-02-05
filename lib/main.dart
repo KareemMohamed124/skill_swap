@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:skill_swap/shared/common_ui/screen_manager/screen_manager.dart';
 import 'package:skill_swap/shared/core/localization/app_translation.dart';
@@ -14,28 +14,25 @@ import 'package:skill_swap/shared/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/shared/dependency_injection/injection.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
 
+import 'desktop/presentation/common/desktop_scaffold.dart';
+import 'desktop/presentation/common/desktop_screen_manager.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
+final GlobalKey<DesktopScreenManagerState> desktopKey = GlobalKey<DesktopScreenManagerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     Gemini.init(apiKey: QuizController.apiKey);
-    print("✅ Gemini initialized with API key");
+    print("Gemini initialized with API key");
   } catch (e) {
-    print("❌ Failed to initialize Gemini: $e");
-    print(
-      "⚠️ Please check your API key at: https://aistudio.google.com/app/apikey",
-    );
+    print("Failed to initialize Gemini: $e");
   }
 
   await Hive.initFlutter();
-
   await Hive.openBox('appBox');
-
   await initDependencies();
-
   await GetStorage.init();
 
   final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
@@ -45,11 +42,24 @@ void main() async {
 
   if (!isOnboardingSeen) {
     startScreen = OnBoardingScreen();
-  } else if (isLogged) {
-    startScreen = ScreenManager();
-  } else {
+  } else if (!isLogged) {
     startScreen = const SignInScreen();
+  } else {
+    // هنا نحدد نسخة الموبايل أو الديسكتوب
+    startScreen = LayoutBuilder(
+      builder: (context, constraints) {
+        if(kIsWeb){
+          return ScreenManager();
+        }
+        if (constraints.maxWidth >= 800) {
+          // ديسكتوب أو ويب لو العرض كبير
+          return DesktopScaffold(body: DesktopScreenManager(key: desktopKey,),);
+        }
+          return ScreenManager();
+      },
+    );
   }
+
   Get.put(ThemeController()..loadSavedTheme());
   runApp(MyApp(startScreen: startScreen));
 }
@@ -63,7 +73,7 @@ class MyApp extends StatelessWidget {
     final LanguageController langController = Get.put(LanguageController());
     return GetBuilder<ThemeController>(
       builder: (controller) {
-        return  GetMaterialApp(
+        return GetMaterialApp(
           title: 'SkillSwap',
           debugShowCheckedModeBanner: false,
           theme: lightTheme,

@@ -14,6 +14,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -26,22 +27,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
 
           Positioned(
-            top: 80,
+            top: screenHeight * 0.09, // بدل 80
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+                  topLeft: Radius.circular(screenWidth * 0.08), // بدل 32
+                  topRight: Radius.circular(screenWidth * 0.08), // بدل 32
                 ),
               ),
               child: ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(screenWidth * 0.04), // بدل 16
                 itemCount: AppData.notificationCard.length,
                 itemBuilder: (context, index) {
                   final item = AppData.notificationCard[index];
@@ -55,7 +56,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     title: item.title,
                     mentorName: item.mentorName,
                     sessionTime: item.sessionTime,
-                    icon: item.icon
+                    icon: item.icon,
                   );
                 },
               ),
