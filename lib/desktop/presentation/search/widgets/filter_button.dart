@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../../shared/core/theme/app_palette.dart';
 
 class FilterButton extends StatelessWidget {
@@ -11,8 +10,6 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 380), // زي Search
@@ -41,7 +38,7 @@ class FilterButton extends StatelessWidget {
                 ),
                 if (activeFilters > 0)
                   Container(
-                    width: 22, // دائرة صغيرة Desktop
+                    width: 22,
                     height: 22,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,

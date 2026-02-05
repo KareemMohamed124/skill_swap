@@ -64,7 +64,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
       case 2:
         return BlocProvider(
           create: (_) => sl<MentorFilterBloc>(),
-          child: const SearchScreen(),
+          child: SearchScreen(),
         );
 
       case 3:
@@ -85,7 +85,11 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   final List<Widget?> rightPanels = [
     NotificationDesktopPanel(),
     null,
-    MentorFilterSheet(),
+    BlocProvider(
+        create: (_) => sl<MentorFilterBloc>(),
+      child: MentorFilterSheet(),
+    ),
+   // MentorFilterSheet(),
     null,
     null,
     null

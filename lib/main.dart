@@ -45,14 +45,12 @@ void main() async {
   } else if (!isLogged) {
     startScreen = const SignInScreen();
   } else {
-    // هنا نحدد نسخة الموبايل أو الديسكتوب
     startScreen = LayoutBuilder(
       builder: (context, constraints) {
         if(kIsWeb){
           return ScreenManager();
         }
         if (constraints.maxWidth >= 800) {
-          // ديسكتوب أو ويب لو العرض كبير
           return DesktopScaffold(body: DesktopScreenManager(key: desktopKey,),);
         }
           return ScreenManager();

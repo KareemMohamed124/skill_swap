@@ -64,29 +64,6 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     if (enteredSkill != null && enteredSkill!.isNotEmpty) activeFiltersCount++;
   }
 
-  void _applyFilters() {
-    context.read<MentorFilterBloc>().add(
-      ApplyFiltersEvent(
-        minPrice: startPrice,
-        maxPrice: endPrice,
-        minRate: selectedRate?.toDouble(),
-        status: selectedStatus,
-        track: selectedTrack,
-        skill: enteredSkill,
-      ),
-    );
-  }
-
-  int _calculateFilters() {
-    int count = 0;
-    if (startPrice != 20 || endPrice != 60) count++;
-    if (selectedRate != null) count++;
-    if (selectedStatus != null) count++;
-    if (selectedTrack != null) count++;
-    if (enteredSkill != null && enteredSkill!.isNotEmpty) count++;
-    return count;
-  }
-
   @override
   void dispose() {
     skillController.dispose();
@@ -122,14 +99,14 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 max: 100,
                 onChanged: (start, end) {
                   setState(() {
-                    if (startPrice == 20 && endPrice == 60 &&
+                    if (startPrice == 20 &&
+                        endPrice == 60 &&
                         (start != 20 || end != 60)) {
                       activeFiltersCount++;
                     }
                     startPrice = start;
                     endPrice = end;
                   });
-                  _applyFilters();
                 },
               ),
 
@@ -152,7 +129,6 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                     }
                     selectedStatus = value;
                   });
-                  _applyFilters();
                 },
               ),
 
@@ -175,7 +151,6 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                     }
                     selectedTrack = value;
                   });
-                  _applyFilters();
                 },
               ),
 
@@ -197,7 +172,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                      borderSide: BorderSide(
+                          color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -211,7 +187,6 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                       }
                       enteredSkill = trimmed.isEmpty ? null : trimmed;
                     });
-                    _applyFilters();
                   },
                 ),
               ),
@@ -235,7 +210,6 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                     }
                     selectedRate = value;
                   });
-                  _applyFilters();
                 },
                 showIcon: true,
                 icon: Icons.star,
@@ -243,12 +217,11 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
               const SizedBox(height: 32),
 
+              /// Buttons
               SizedBox(
                 width: Get.width * 0.4,
-                child:ElevatedButton(
+                child: ElevatedButton(
                   onPressed: () {
-                    final filtersCount = _calculateFilters();
-
                     context.read<MentorFilterBloc>().add(
                       ApplyFiltersEvent(
                         minPrice: startPrice,
@@ -259,19 +232,23 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                         skill: enteredSkill,
                       ),
                     );
-
-                    Navigator.pop(context, filtersCount);
+                    //Navigator.pop(context, activeFiltersCount);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.primary,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text("apply".tr,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                  child: Text(
+                    "apply".tr,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  ),
                 ),
               ),
             ],
@@ -290,10 +267,12 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     IconData? icon,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final activeColor = AppPalette.primary;
     final inactiveColor = Theme.of(context).cardColor;
     final textActive = Colors.white;
-    final textInactive = isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
+    final textInactive =
+    isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
 
     return Wrap(
       spacing: 8,
@@ -307,11 +286,18 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null)
-                Icon(icon, size: 18, color: selected ? textActive : textInactive),
-              Text("  $item", style: TextStyle(color: selected ? textActive : textInactive)),
+                Icon(icon,
+                    size: 18,
+                    color: selected ? textActive : textInactive),
+              Text("  $item",
+                  style: TextStyle(
+                      color:
+                      selected ? textActive : textInactive)),
             ],
           )
-              : Text("$item", style: TextStyle(color: selected ? textActive : textInactive)),
+              : Text("$item",
+              style: TextStyle(
+                  color: selected ? textActive : textInactive)),
           selected: selected,
           backgroundColor: inactiveColor,
           selectedColor: activeColor,
