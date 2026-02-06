@@ -58,36 +58,34 @@ class _SearchScreenState extends State<SearchScreen> {
                       const SizedBox(height: 16),
 
                       /// Search Field + Filter Icon
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: TextField(
-                            controller: searchTextController,
-                            cursorColor:
-                            isDark ? Colors.white : Colors.black,
-                            decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Theme.of(context).dividerColor),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              prefixIcon: const Icon(Icons.search),
-                              hintText: "search_placeholder".tr,
+                      SizedBox(
+                        height: 50,
+                        child: TextField(
+                          controller: searchTextController,
+                          cursorColor:
+                          isDark ? Colors.white : Colors.black,
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor),
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            onChanged: (searchValue) {
-                              context
-                                  .read<MentorFilterBloc>()
-                                  .add(SearchMentorEvent(searchValue));
-                              setState(() {
-                                isSearched = searchValue.isNotEmpty;
-                              });
-                            },
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            prefixIcon: const Icon(Icons.search),
+                            hintText: "search_placeholder".tr,
                           ),
+                          onChanged: (searchValue) {
+                            context
+                                .read<MentorFilterBloc>()
+                                .add(SearchMentorEvent(searchValue));
+                            setState(() {
+                              isSearched = searchValue.isNotEmpty;
+                            });
+                          },
                         ),
                       ),
 
