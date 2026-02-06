@@ -23,7 +23,7 @@ class ReviewsPage extends StatelessWidget {
             context: context,
             name: "Sarah Johnson",
             review:
-            "Great session on JavaScript fundamentals. Highly recommend!",
+                "Great session on JavaScript fundamentals. Highly recommend!",
             skill: "JavaScript",
             time: "1 week ago",
             rating: 5,
@@ -63,14 +63,11 @@ class ReviewsPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      name,
-                      style: Theme.of(context).textTheme.bodyLarge
-                    ),
+                    Text(name, style: Theme.of(context).textTheme.bodyLarge),
                     Row(
                       children: List.generate(
                         rating,
-                            (i) => const Icon(
+                        (i) => const Icon(
                           Icons.star,
                           color: Colors.amber,
                           size: 18,
@@ -85,7 +82,11 @@ class ReviewsPage extends StatelessWidget {
 
           const SizedBox(height: 8),
 
-          Text(review, style: TextStyle(color: Theme.of(context).textTheme.titleSmall!.color),),
+          Text(
+            review,
+            style:
+                TextStyle(color: Theme.of(context).textTheme.titleSmall!.color),
+          ),
 
           const SizedBox(height: 12),
 
@@ -103,7 +104,9 @@ class ReviewsPage extends StatelessWidget {
                 child: Text(skill),
               ),
               const Spacer(),
-              Text(time, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color)),
+              Text(time,
+                  style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium!.color)),
             ],
           ),
         ],

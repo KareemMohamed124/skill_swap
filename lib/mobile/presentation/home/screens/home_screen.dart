@@ -73,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-
           Positioned(
             top: screenHeight * 0.15, // بدل 132
             left: 0,
@@ -81,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: 0,
             child: Container(
               width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
+              constraints: BoxConstraints(minHeight: screenHeight * 0.85),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(

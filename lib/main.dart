@@ -19,10 +19,15 @@ import 'desktop/presentation/common/desktop_screen_manager.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
-final GlobalKey<DesktopScreenManagerState> desktopKey = GlobalKey<DesktopScreenManagerState>();
+import 'package:device_preview/device_preview.dart';
+
+final GlobalKey<DesktopScreenManagerState> desktopKey =
+    GlobalKey<DesktopScreenManagerState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Gemini Initialization
   try {
     Gemini.init(apiKey: QuizController.apiKey);
     print("Gemini initialized with API key");
@@ -30,6 +35,7 @@ void main() async {
     print("Failed to initialize Gemini: $e");
   }
 
+  // Hive & Storage Initialization
   await Hive.initFlutter();
   await Hive.openBox('appBox');
   await initDependencies();
@@ -45,23 +51,31 @@ void main() async {
   } else if (!isLogged) {
     startScreen = const SignInScreen();
   } else {
-    // هنا نحدد نسخة الموبايل أو الديسكتوب
     startScreen = LayoutBuilder(
       builder: (context, constraints) {
-        if(kIsWeb){
+        if (kIsWeb) {
           return ScreenManager();
         }
         if (constraints.maxWidth >= 800) {
-          // ديسكتوب أو ويب لو العرض كبير
-          return DesktopScaffold(body: DesktopScreenManager(key: desktopKey,),);
+          // Desktop or large screen
+          return DesktopScaffold(
+            body: DesktopScreenManager(key: desktopKey),
+          );
         }
-          return ScreenManager();
+        return ScreenManager(); // Mobile
       },
     );
   }
 
   Get.put(ThemeController()..loadSavedTheme());
-  runApp(MyApp(startScreen: startScreen));
+
+  // Run App with Device Preview
+  runApp(
+    DevicePreview(
+      enabled: true, // خليها false للـ release
+      builder: (context) => MyApp(startScreen: startScreen),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -71,9 +85,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final LanguageController langController = Get.put(LanguageController());
+
     return GetBuilder<ThemeController>(
       builder: (controller) {
         return GetMaterialApp(
+          useInheritedMediaQuery: true, // مهم للـ Device Preview
+          builder: DevicePreview.appBuilder, // مهم للـ Device Preview
           title: 'SkillSwap',
           debugShowCheckedModeBanner: false,
           theme: lightTheme,

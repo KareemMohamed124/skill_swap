@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../shared/core/theme/app_palette.dart';
 
 class DurationSelector extends StatefulWidget {
@@ -12,12 +11,18 @@ class DurationSelector extends StatefulWidget {
 
 class _DurationSelectorState extends State<DurationSelector> {
   final List<int> durations = [30, 45, 60, 90, 120];
-
   int selectedDuration = 60;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final boxWidth = screenWidth * 0.12; // عرض نسبي
+    final boxHeight = screenHeight * 0.08; // ارتفاع نسبي
+    final fontSize = screenWidth * 0.035; // حجم الخط نسبي
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: durations.map((duration) {
@@ -31,34 +36,45 @@ class _DurationSelectorState extends State<DurationSelector> {
             widget.onSelect(duration);
           },
           child: Container(
-            width: 59,
-            height: 60,
+            width: boxWidth,
+            height: boxHeight,
             decoration: BoxDecoration(
-              color: isSelected ? AppPalette.primary : Theme.of(context).cardColor,
+              color:
+                  isSelected ? AppPalette.primary : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppPalette.primary : Theme.of(context).dividerColor,
+                color: isSelected
+                    ? AppPalette.primary
+                    : Theme.of(context).dividerColor,
                 width: 2,
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(screenWidth * 0.02), // padding نسبي
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     duration.toString(),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : (isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary),
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark
+                              ? AppPalette.darkTextSecondary
+                              : AppPalette.lightTextSecondary),
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: fontSize,
                     ),
                   ),
                   Text(
                     "min",
                     style: TextStyle(
-                      color: isSelected ? Colors.white : (isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary),
-                      fontSize: 12,
+                      color: isSelected
+                          ? Colors.white
+                          : (isDark
+                              ? AppPalette.darkTextSecondary
+                              : AppPalette.lightTextSecondary),
+                      fontSize: fontSize,
                     ),
                   ),
                 ],

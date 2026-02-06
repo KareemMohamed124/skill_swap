@@ -25,18 +25,21 @@ class HistoryCard extends StatelessWidget {
   bool get isIssue => data.errorMessage != null;
   bool get isCancelled => data.status == "Cancelled";
   bool get isFinishedRated => data.status == "Finished" && data.rating > 0;
-  bool get isFinishedNotRated =>
-      data.status == "Finished" && data.rating == 0;
+  bool get isFinishedNotRated => data.status == "Finished" && data.rating == 0;
   bool get isReviewReceived => data.isReviewReceived == true;
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.01, horizontal: screenWidth * 0.04),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(screenWidth * 0.04),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
@@ -47,102 +50,97 @@ class HistoryCard extends StatelessWidget {
               ClipOval(
                 child: Image.asset(
                   data.imageUrl,
-                  width: 40,
-                  height: 40,
+                  width: screenWidth * 0.1, // بدل 40
+                  height: screenWidth * 0.1,
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(width: 8),
-
+              SizedBox(width: screenWidth * 0.02),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      data.name,
-                      style: Theme.of(context).textTheme.titleMedium
-                    ),
-                    Text(
-                      data.role,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    Text(data.name,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(data.role,
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
-
               if (!isReviewReceived)
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.005,
+                      horizontal: screenWidth * 0.02),
                   decoration: BoxDecoration(
-                    color: getStatusColor().withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
+                    color: getStatusColor().withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
                   ),
                   child: Text(
                     data.status,
                     style: TextStyle(
                       color: getStatusColor(),
                       fontWeight: FontWeight.bold,
+                      fontSize: screenWidth * 0.035,
                     ),
                   ),
                 )
             ],
           ),
-
-          const SizedBox(height: 16),
-
+          SizedBox(height: screenHeight * 0.02),
           Row(
             children: [
-              Icon(Icons.calendar_month, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color,),
-              const SizedBox(width: 8),
-              Text(data.date, style: Theme.of(context).textTheme.bodyMedium,),
+              Icon(Icons.calendar_month,
+                  size: screenWidth * 0.05,
+                  color: Theme.of(context).textTheme.bodyMedium!.color),
+              SizedBox(width: screenWidth * 0.02),
+              Text(data.date, style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
-
-          const SizedBox(height: 4),
-
+          SizedBox(height: screenHeight * 0.005),
           Row(
             children: [
-              Icon(Icons.access_time, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color),
-              const SizedBox(width: 8),
-              Text("${data.time} – ${data.duration}", style: Theme.of(context).textTheme.bodyMedium,),
+              Icon(Icons.access_time,
+                  size: screenWidth * 0.05,
+                  color: Theme.of(context).textTheme.bodyMedium!.color),
+              SizedBox(width: screenWidth * 0.02),
+              Text("${data.time} – ${data.duration}",
+                  style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
-
-          const SizedBox(height: 16),
-
-          buildBottomSection(context),
+          SizedBox(height: screenHeight * 0.02),
+          buildBottomSection(context, screenWidth, screenHeight),
         ],
       ),
     );
   }
 
-  Widget buildBottomSection(BuildContext context) {
+  Widget buildBottomSection(
+      BuildContext context, double screenWidth, double screenHeight) {
+    double buttonHeight = screenHeight * 0.06;
 
     // REVIEW RECEIVED
     if (isReviewReceived) {
       return Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(screenWidth * 0.03),
         decoration: BoxDecoration(
-          color: const Color(0xFFE7BA2A).withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(14),
+          color: const Color(0xFFE7BA2A).withOpacity(0.16),
+          borderRadius: BorderRadius.circular(screenWidth * 0.035),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                 Text(
-                  "Their rating:",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(width: 8),
+                Text("Their rating:",
+                    style: Theme.of(context).textTheme.titleMedium),
+                SizedBox(width: screenWidth * 0.02),
                 Row(
                   children: List.generate(
                     5,
-                        (i) => Icon(
+                    (i) => Icon(
                       i < data.rating ? Icons.star : Icons.star_border,
-                      size: 18,
+                      size: screenWidth * 0.045,
                       color: Colors.amber,
                     ),
                   ),
@@ -151,11 +149,11 @@ class HistoryCard extends StatelessWidget {
             ),
             if (data.reviewComment != null &&
                 data.reviewComment!.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: screenHeight * 0.01),
               Text(
                 "“${data.reviewComment}”",
-                style: const TextStyle(
-                  fontSize: 13,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.033,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -165,69 +163,65 @@ class HistoryCard extends StatelessWidget {
       );
     }
 
-    //  ISSUE
+    // ISSUE
     if (isIssue) {
       return Container(
-        height: 44,
+        height: buttonHeight,
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
         decoration: BoxDecoration(
           color: const Color(0xFFF9DADA),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(screenWidth * 0.035),
         ),
         child: Row(
           children: [
-            const SizedBox(width: 16),
-             Text(
-              "Error: ",
-               style: TextStyle(color: Colors.black),
-            ),
-            Text(
-              data.errorMessage!,
-              style: const TextStyle(color: Colors.red),
+            Text("Error: ", style: TextStyle(color: Colors.black)),
+            Expanded(
+              child: Text(
+                data.errorMessage!,
+                style: TextStyle(color: Colors.red),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
       );
     }
 
-    //  CANCELLED
+    // CANCELLED
     if (isCancelled) {
       return Container(
         width: double.infinity,
-        height: 44,
+        height: buttonHeight,
         decoration: BoxDecoration(
           border: Border.all(color: const Color(0xFFD6D6D6)),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(screenWidth * 0.035),
         ),
-        child:  Center(
-          child: Text(
-            "View Details",
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+        child: Center(
+          child: Text("View Details",
+              style: Theme.of(context).textTheme.titleMedium),
         ),
       );
     }
 
-    //  FINISHED & RATED
+    // FINISHED & RATED
     if (isFinishedRated) {
       return Container(
-        height: 44,
+        height: buttonHeight,
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
         decoration: BoxDecoration(
-          color: const Color(0xFFE7BA2A).withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(14),
+          color: const Color(0xFFE7BA2A).withOpacity(0.16),
+          borderRadius: BorderRadius.circular(screenWidth * 0.035),
         ),
         child: Row(
           children: [
-            const SizedBox(width: 16),
-            Text(
-              "Your rating: ",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text("Your rating: ",
+                style: Theme.of(context).textTheme.titleMedium),
             Row(
               children: List.generate(
                 5,
-                    (i) => Icon(
+                (i) => Icon(
                   i < data.rating ? Icons.star : Icons.star_border,
-                  size: 18,
+                  size: screenWidth * 0.045,
                   color: Colors.amber,
                 ),
               ),
@@ -237,7 +231,7 @@ class HistoryCard extends StatelessWidget {
       );
     }
 
-    //  FINISHED NOT RATED
+    // FINISHED NOT RATED
     if (isFinishedNotRated) {
       return Row(
         children: [
@@ -245,23 +239,24 @@ class HistoryCard extends StatelessWidget {
             child: InkWell(
               onTap: () {},
               child: Container(
-                height: 44,
+                height: buttonHeight,
                 decoration: BoxDecoration(
                   border: Border.all(color: const Color(0xFFD6D6D6)),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.035),
                 ),
-                child:  Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.star_border_outlined),
-                    SizedBox(width: 4),
-                    Text("Rate Session", style: Theme.of(context).textTheme.titleMedium,),
+                    Icon(Icons.star_border_outlined, size: screenWidth * 0.05),
+                    SizedBox(width: screenWidth * 0.01),
+                    Text("Rate Session",
+                        style: Theme.of(context).textTheme.titleMedium),
                   ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: screenWidth * 0.02),
           Expanded(
             child: InkWell(
               onTap: () {
@@ -272,27 +267,28 @@ class HistoryCard extends StatelessWidget {
                     mentorName: data.name,
                     mentorTrack: data.role,
                     status: data.status,
-                    date: DateTime(2025,10,6),
+                    date: DateTime(2025, 10, 6),
                     time: data.time,
                     duration: data.duration,
                     rating: data.rating,
                     review: 'Great session, learned a lot!',
-                    notes: 'Covered Flutter BLoC basics'
-
-                  ),));
+                    notes: 'Covered Flutter BLoC basics',
+                  ),
+                ));
               },
               child: Container(
-                height: 44,
+                height: buttonHeight,
                 decoration: BoxDecoration(
                   border: Border.all(color: const Color(0xFFD6D6D6)),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.035),
                 ),
-                child:  Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.description_outlined),
-                    SizedBox(width: 4),
-                    Text("View Details", style: Theme.of(context).textTheme.titleMedium,),
+                    Icon(Icons.description_outlined, size: screenWidth * 0.05),
+                    SizedBox(width: screenWidth * 0.01),
+                    Text("View Details",
+                        style: Theme.of(context).textTheme.titleMedium),
                   ],
                 ),
               ),

@@ -8,16 +8,24 @@ class IssueSessionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // MediaQuery for responsive sizing
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    return  ListView.separated(
-    //  physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      itemCount: AppData.issueSessions.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (_, index) {
-        return HistoryCard(data: AppData.issueSessions[index]);
-      },
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.03, // 3% padding from sides
+        vertical: screenHeight * 0.01, // 1% padding from top/bottom
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        itemCount: AppData.issueSessions.length,
+        separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.01),
+        itemBuilder: (_, index) {
+          return HistoryCard(data: AppData.issueSessions[index]);
+        },
+      ),
     );
   }
 }

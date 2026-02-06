@@ -62,6 +62,25 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // MediaQuery values for responsiveness (Mobile + Tablet)
+    double titleFontSize = 22;
+    double subtitleFontSize = 16;
+    double verticalSpacing = 32;
+    double formSpacing = 16;
+    double paddingAll = 16;
+    double transformOffset = screenHeight * 0.045;
+
+    if (screenWidth >= 800) {
+      // Tablet
+      titleFontSize = 28;
+      subtitleFontSize = 18;
+      verticalSpacing = 40;
+      formSpacing = 20;
+      paddingAll = 24;
+      transformOffset = screenHeight * 0.048;
+    }
 
     return BlocProvider(
       create: (_) => sl<LoginBloc>(),
@@ -74,7 +93,7 @@ class _SignInScreenState extends State<SignInScreen> {
             /// ===== Content =====
             Expanded(
               child: Transform.translate(
-                offset: Offset(0, -screenHeight * 0.045), // ⬅️ الطلوع الآمن
+                offset: Offset(0, -transformOffset),
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -87,13 +106,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: SingleChildScrollView(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        minHeight:
-                        screenHeight -
+                        minHeight: screenHeight -
                             kToolbarHeight -
                             MediaQuery.of(context).padding.top,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(paddingAll),
                         child: BlocConsumer<LoginBloc, LoginState>(
                           listener: (context, state) async {
                             if (state is LoginFailureState) {
@@ -122,15 +140,13 @@ class _SignInScreenState extends State<SignInScreen> {
                             return Form(
                               key: formKey,
                               child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 24),
-
+                                  SizedBox(height: verticalSpacing),
                                   Text(
                                     "Welcome Back!",
                                     style: TextStyle(
-                                      fontSize: 22,
+                                      fontSize: titleFontSize,
                                       fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .textTheme
@@ -138,27 +154,25 @@ class _SignInScreenState extends State<SignInScreen> {
                                           .color,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: formSpacing / 2),
                                   Text(
                                     "Sign in to continue your learning journey",
                                     style: TextStyle(
+                                      fontSize: subtitleFontSize,
                                       color: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
                                           .color,
                                     ),
                                   ),
-
-                                  const SizedBox(height: 32),
-
+                                  SizedBox(height: verticalSpacing),
                                   CustomTextField(
                                     controller: emailController,
                                     labelText: "Email",
                                     hintText: "Enter your email",
                                     errorText: emailError,
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty) {
+                                      if (value == null || value.isEmpty) {
                                         return "Email is required";
                                       }
                                       if (!RegExp(
@@ -169,9 +183,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       return null;
                                     },
                                   ),
-
-                                  const SizedBox(height: 16),
-
+                                  SizedBox(height: formSpacing),
                                   CustomTextField(
                                     controller: passwordController,
                                     labelText: "Password",
@@ -179,8 +191,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     obscureText: true,
                                     errorText: passwordError,
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty) {
+                                      if (value == null || value.isEmpty) {
                                         return "Password is required";
                                       }
                                       if (!RegExp(
@@ -191,50 +202,38 @@ class _SignInScreenState extends State<SignInScreen> {
                                       return null;
                                     },
                                   ),
-
-                                  const SizedBox(height: 32),
-
+                                  SizedBox(height: verticalSpacing),
                                   CustomButton(
                                     text: state is LoginLoading
                                         ? "Logging in..."
                                         : "Sign In",
-                                    onPressed:
-                                    state is LoginLoading
+                                    onPressed: state is LoginLoading
                                         ? null
                                         : () {
-                                      if (formKey.currentState!
-                                          .validate()) {
-                                        final request =
-                                        LoginRequest(
-                                          email:
-                                          emailController
-                                              .text,
-                                          password:
-                                          passwordController
-                                              .text,
-                                        );
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              final request = LoginRequest(
+                                                email: emailController.text,
+                                                password:
+                                                    passwordController.text,
+                                              );
 
-                                        context
-                                            .read<LoginBloc>()
-                                            .add(
-                                          LoginSubmit(
-                                              request),
-                                        );
-                                      }
-                                    },
+                                              context
+                                                  .read<LoginBloc>()
+                                                  .add(LoginSubmit(request));
+                                            }
+                                          },
                                   ),
-
-                                  const SizedBox(height: 24),
-
+                                  SizedBox(height: verticalSpacing / 1.5),
                                   Center(
                                     child: TextButton(
                                       onPressed: () {
-                                        Get.to(
-                                            ForgetPassword());
+                                        Get.to(ForgetPassword());
                                       },
                                       child: Text(
                                         "Forget Password?",
                                         style: TextStyle(
+                                          fontSize: subtitleFontSize,
                                           color: Theme.of(context)
                                               .textTheme
                                               .bodyLarge!
@@ -243,17 +242,16 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ),
                                     ),
                                   ),
-
-                                  const SizedBox(height: 32),
-
+                                  SizedBox(height: verticalSpacing),
                                   Center(
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           "Don’t have an account? ",
                                           style: TextStyle(
+                                            fontSize: subtitleFontSize,
                                             color: Theme.of(context)
                                                 .textTheme
                                                 .bodyLarge!
@@ -262,14 +260,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                         ),
                                         GestureDetector(
                                           onTap: () {
-                                            Get.to(
-                                                SignUpScreen());
+                                            Get.to(SignUpScreen());
                                           },
                                           child: Text(
                                             "Sign Up",
                                             style: TextStyle(
-                                              fontWeight:
-                                              FontWeight.bold,
+                                              fontSize: subtitleFontSize,
+                                              fontWeight: FontWeight.bold,
                                               color: Theme.of(context)
                                                   .textTheme
                                                   .bodyLarge!
@@ -280,6 +277,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       ],
                                     ),
                                   ),
+                                  SizedBox(height: verticalSpacing),
                                 ],
                               ),
                             );

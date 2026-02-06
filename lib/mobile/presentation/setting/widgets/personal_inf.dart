@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'info_field.dart';
 
 class PersonalInfoSection extends StatelessWidget {
@@ -7,9 +6,19 @@ class PersonalInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // padding ديناميكي
+    final horizontalPadding = screenWidth * 0.04; // 4% من عرض الشاشة
+    final verticalPadding = screenHeight * 0.02; // 2% من ارتفاع الشاشة
+
     return Container(
       decoration: boxDecoration(),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [

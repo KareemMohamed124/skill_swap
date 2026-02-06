@@ -20,65 +20,54 @@ class SessionsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
-      height: 188,
+      height: screenHeight * 0.24, // responsive height
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 32),
+          SizedBox(height: screenHeight * 0.04),
           Row(
             children: [
-              // GestureDetector(
-              //   onTap: onBack,
-              //   child: const Icon(
-              //     Icons.arrow_back_ios,
-              //     size: 18,
-              //     color: AppColor.whiteColor,
-              //   ),
-              // ),
-              // const SizedBox(width: 8),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style:TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white
-                      )
+                        color: Colors.white,
+                      ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: screenHeight * 0.005),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: screenWidth * 0.035,
                         color: Colors.white,
                       ),
                     ),
                   ],
                 ),
               ),
-              CircleButtonIcon(icon: Icons.history, onTap: (){Get.to(HistoryScreen());},),
-              // IconButton(
-              //   onPressed: onHistory,
-              //   icon: const Icon(
-              //     Icons.history,
-              //     color: AppColor.whiteColor,
-              //   ),
-              // ),
+              CircleButtonIcon(
+                icon: Icons.history,
+                onTap: () {
+                  Get.to(HistoryScreen());
+                },
+              ),
             ],
           ),
-
-          const SizedBox(height: 16),
-
+          SizedBox(height: screenHeight * 0.02),
           StatusFilter(
             selectedIndex: selectedIndex,
             onSelect: onSelect,
@@ -88,7 +77,6 @@ class SessionsHeader extends StatelessWidget {
     );
   }
 }
-
 
 Widget selectStatus({
   required BuildContext context,
@@ -101,27 +89,31 @@ Widget selectStatus({
     "Pending",
     "Request",
   ];
+  final screenWidth = MediaQuery.of(context).size.width;
 
   return Wrap(
-    spacing: 8,
-    runSpacing: 8,
+    spacing: screenWidth * 0.02,
+    runSpacing: screenWidth * 0.02,
     children: List.generate(statusList.length, (index) {
       final isSelected = selectedIndex == index;
 
       return GestureDetector(
         onTap: () => onSelect(index),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.03,
+            vertical: screenWidth * 0.015,
+          ),
           decoration: BoxDecoration(
             color: isSelected
                 ? Theme.of(context).colorScheme.surface
                 : Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(screenWidth * 0.02),
           ),
           child: Text(
             statusList[index],
             style: TextStyle(
-              fontSize: 12,
+              fontSize: screenWidth * 0.035,
               color: isSelected
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.onPrimaryContainer,

@@ -15,6 +15,33 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Adjust sizes based on screen width
+    double selectedIconSize = 20;
+    double unselectedIconSize = 22;
+    double containerPaddingVertical = 4;
+    double containerPaddingHorizontal = 12;
+    double fontSize = 12;
+    double circleSize = 48;
+
+    if (screenWidth >= 1200) {
+      // Desktop
+      selectedIconSize = 28;
+      unselectedIconSize = 30;
+      containerPaddingVertical = 12;
+      containerPaddingHorizontal = 24;
+      fontSize = 16;
+      circleSize = 64;
+    } else if (screenWidth >= 800) {
+      // Tablet
+      selectedIconSize = 24;
+      unselectedIconSize = 26;
+      containerPaddingVertical = 8;
+      containerPaddingHorizontal = 16;
+      fontSize = 14;
+      circleSize = 56;
+    }
 
     final items = <NavItem>[
       NavItem(icon: Icons.home_outlined, label: 'home'.tr),
@@ -25,9 +52,12 @@ class CustomBottomNav extends StatelessWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      padding: EdgeInsets.symmetric(
+        vertical: containerPaddingVertical,
+        horizontal: containerPaddingHorizontal,
+      ),
       decoration: BoxDecoration(
-        color: isDark ? AppPalette.darkSurface : AppPalette.lightSurface, // أو AppPalette.lightSurface / darkSurface
+        color: isDark ? AppPalette.darkSurface : AppPalette.lightSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
@@ -45,10 +75,9 @@ class CustomBottomNav extends StatelessWidget {
             final item = items[index];
             final isSelected = index == selectedIndex;
 
-            // Gradient colors based on theme
             final gradientColors = isDark
-                ? [Color(0xFF3B3B70), Color(0xFF0B0A3F)] // أغمق للدارك مود
-                : [Color(0xFF2D8CFF), Color(0xFF0D035F)]; // Light
+                ? [Color(0xFF3B3B70), Color(0xFF0B0A3F)]
+                : [Color(0xFF2D8CFF), Color(0xFF0D035F)];
 
             if (isSelected) {
               return GestureDetector(
@@ -58,8 +87,8 @@ class CustomBottomNav extends StatelessWidget {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
-                      width: 48,
-                      height: 48,
+                      width: circleSize,
+                      height: circleSize,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
@@ -78,14 +107,14 @@ class CustomBottomNav extends StatelessWidget {
                       child: Icon(
                         item.icon,
                         color: Colors.white,
-                        size: 20,
+                        size: selectedIconSize,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: fontSize / 3),
                     Text(
                       item.label,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.w600,
                         color: isDark ? Colors.white : Colors.black,
                       ),
@@ -95,7 +124,6 @@ class CustomBottomNav extends StatelessWidget {
               );
             }
 
-            // Unselected items
             final iconColor = isDark
                 ? AppPalette.darkTextSecondary.withOpacity(0.7)
                 : AppPalette.lightTextSecondary.withOpacity(0.7);
@@ -107,14 +135,14 @@ class CustomBottomNav extends StatelessWidget {
                 children: [
                   Icon(
                     item.icon,
-                    size: 22,
+                    size: unselectedIconSize,
                     color: iconColor,
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: fontSize / 3),
                   Text(
                     item.label,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: fontSize,
                       color: iconColor,
                       fontWeight: FontWeight.w600,
                     ),

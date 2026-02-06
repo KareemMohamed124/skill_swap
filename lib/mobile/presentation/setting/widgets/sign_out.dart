@@ -5,12 +5,17 @@ class SignOutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // padding ديناميكي حسب ارتفاع الشاشة
+    final verticalPadding = screenHeight * 0.02; // 2% من ارتفاع الشاشة
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: EdgeInsets.symmetric(vertical: verticalPadding),
         ),
         onPressed: () {},
         icon: const Icon(Icons.logout),

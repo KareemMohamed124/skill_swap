@@ -35,6 +35,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // MediaQuery values for responsiveness (Mobile + Tablet)
+    double titleFontSize = 22;
+    double subtitleFontSize = 16;
+    double verticalSpacing = 32;
+    double formSpacing = 16;
+    double paddingAll = 16;
+    double transformOffset = screenHeight * 0.045;
+
+    if (screenWidth >= 800) {
+      // Tablet
+      titleFontSize = 28;
+      subtitleFontSize = 18;
+      verticalSpacing = 40;
+      formSpacing = 20;
+      paddingAll = 24;
+      transformOffset = screenHeight * 0.048;
+    }
 
     return BlocProvider(
       create: (_) => sl<RegisterBloc>(),
@@ -47,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             /// ===== Content =====
             Expanded(
               child: Transform.translate(
-                offset: Offset(0, -screenHeight * 0.045), // ⬅️ الطلوع الآمن
+                offset: Offset(0, -transformOffset),
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -60,15 +79,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: SingleChildScrollView(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        minHeight:
-                        screenHeight -
+                        minHeight: screenHeight -
                             kToolbarHeight -
                             MediaQuery.of(context).padding.top,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child:
-                        BlocConsumer<RegisterBloc, RegisterState>(
+                        padding: EdgeInsets.all(paddingAll),
+                        child: BlocConsumer<RegisterBloc, RegisterState>(
                           listener: (context, state) {
                             if (state is RegisterFailureState) {
                               setState(() {
@@ -77,11 +94,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 passwordError = null;
                                 confirmPasswordError = null;
 
-                                final errors =
-                                    state.error.validationErrors;
-
-                                if (errors != null &&
-                                    errors.isNotEmpty) {
+                                final errors = state.error.validationErrors;
+                                if (errors != null && errors.isNotEmpty) {
                                   for (var err in errors) {
                                     switch (err.field) {
                                       case "name":
@@ -94,14 +108,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         passwordError = err.message;
                                         break;
                                       case "confirmPassword":
-                                        confirmPasswordError =
-                                            err.message;
+                                        confirmPasswordError = err.message;
                                         break;
                                     }
                                   }
                                 } else {
-                                  emailError =
-                                      state.error.message;
+                                  emailError = state.error.message;
                                 }
                               });
 
@@ -109,11 +121,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             }
 
                             if (state is RegisterSuccessState) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content:
-                                  Text(state.data.message),
+                                  content: Text(state.data.message),
                                 ),
                               );
 
@@ -128,48 +138,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             return Form(
                               key: formKey,
                               child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 24),
-
+                                  SizedBox(height: verticalSpacing),
                                   Text(
                                     "Create Account",
                                     style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight:
-                                      FontWeight.bold,
+                                      fontSize: titleFontSize,
+                                      fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .textTheme
                                           .bodyLarge!
                                           .color,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: formSpacing / 2),
                                   Text(
                                     "Join us and start your learning journey today!",
                                     style: TextStyle(
+                                      fontSize: subtitleFontSize,
                                       color: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
                                           .color,
                                     ),
                                   ),
-
-                                  const SizedBox(height: 32),
-
+                                  SizedBox(height: verticalSpacing),
                                   CustomTextField(
                                     controller: nameController,
                                     labelText: "Full Name",
-                                    hintText:
-                                    "Enter your full name",
+                                    hintText: "Enter your full name",
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty) {
+                                      if (value == null || value.isEmpty) {
                                         return "Name is required";
                                       }
-                                      if (RegExp(r'^\d')
-                                          .hasMatch(value)) {
+                                      if (RegExp(r'^\d').hasMatch(value)) {
                                         return "Name cannot start with a number";
                                       }
                                       if (value.length < 2 ||
@@ -179,18 +182,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       return nameError;
                                     },
                                   ),
-
-                                  const SizedBox(height: 16),
-
+                                  SizedBox(height: formSpacing),
                                   CustomTextField(
-                                    controller:
-                                    emailController,
+                                    controller: emailController,
                                     labelText: "Email",
-                                    hintText:
-                                    "Enter your email",
+                                    hintText: "Enter your email",
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty) {
+                                      if (value == null || value.isEmpty) {
                                         return "Email is required";
                                       }
                                       if (!RegExp(
@@ -201,19 +199,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       return emailError;
                                     },
                                   ),
-
-                                  const SizedBox(height: 16),
-
+                                  SizedBox(height: formSpacing),
                                   CustomTextField(
-                                    controller:
-                                    passwordController,
+                                    controller: passwordController,
                                     labelText: "Password",
-                                    hintText:
-                                    "Create a password",
+                                    hintText: "Create a password",
                                     obscureText: true,
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty) {
+                                      if (value == null || value.isEmpty) {
                                         return "Password is required";
                                       }
                                       if (!RegExp(
@@ -224,69 +217,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       return passwordError;
                                     },
                                   ),
-
-                                  const SizedBox(height: 16),
-
+                                  SizedBox(height: formSpacing),
                                   CustomTextField(
-                                    controller:
-                                    confirmPasswordController,
-                                    labelText:
-                                    "Confirm Password",
-                                    hintText:
-                                    "Confirm your password",
+                                    controller: confirmPasswordController,
+                                    labelText: "Confirm Password",
+                                    hintText: "Confirm your password",
                                     obscureText: true,
                                     validator: (value) {
-                                      if (value == null ||
-                                          value.isEmpty) {
+                                      if (value == null || value.isEmpty) {
                                         return "Confirm password is required";
                                       }
-                                      if (value !=
-                                          passwordController
-                                              .text) {
+                                      if (value != passwordController.text) {
                                         return "Passwords do not match";
                                       }
                                       return confirmPasswordError;
                                     },
                                   ),
-
-                                  const SizedBox(height: 32),
-
+                                  SizedBox(height: verticalSpacing),
                                   CustomButton(
-                                    text: state
-                                    is RegisterLoading
+                                    text: state is RegisterLoading
                                         ? "Registering..."
                                         : "Sign Up",
-                                    onPressed:
-                                    state is RegisterLoading
+                                    onPressed: state is RegisterLoading
                                         ? null
                                         : () {
-                                      if (formKey
-                                          .currentState!
-                                          .validate()) {
-                                        context
-                                            .read<
-                                            RegisterBloc>()
-                                            .add(
-                                          RegisterSubmit(
-                                            RegisterRequest(
-                                              name:
-                                              nameController
-                                                  .text,
-                                              email:
-                                              emailController
-                                                  .text,
-                                              password:
-                                              passwordController
-                                                  .text,
-                                              confirmPassword:
-                                              confirmPasswordController
-                                                  .text,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              context.read<RegisterBloc>().add(
+                                                    RegisterSubmit(
+                                                      RegisterRequest(
+                                                        name:
+                                                            nameController.text,
+                                                        email: emailController
+                                                            .text,
+                                                        password:
+                                                            passwordController
+                                                                .text,
+                                                        confirmPassword:
+                                                            confirmPasswordController
+                                                                .text,
+                                                      ),
+                                                    ),
+                                                  );
+                                            }
+                                          },
                                   ),
+                                  SizedBox(height: verticalSpacing),
                                 ],
                               ),
                             );

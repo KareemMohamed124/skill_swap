@@ -36,99 +36,109 @@ class _SelectTrackState extends State<SelectTrack> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(screenWidth * 0.04), // responsive padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 32),
+            SizedBox(height: screenHeight * 0.04),
             Text(
               "Select your Track",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: screenWidth * 0.06, // responsive font size
                 fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge!.color
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: screenHeight * 0.01),
             Text(
               "Choose the skills you already have. This will help us connect you with the right mentors and users.",
-              style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium!.color
+              style: TextStyle(
+                fontSize: screenWidth * 0.04,
+                color: Theme.of(context).textTheme.bodyMedium!.color,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: screenHeight * 0.03),
             Expanded(
               child: SingleChildScrollView(
                 child: Wrap(
-                  spacing: 10,
-                  runSpacing: 12,
-                  children:
-                      tracks.map((track) {
-                        bool isSelected = selectedTrack == track;
+                  spacing: screenWidth * 0.025,
+                  runSpacing: screenHeight * 0.015,
+                  children: tracks.map((track) {
+                    bool isSelected = selectedTrack == track;
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedTrack = track;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  isSelected
-                                      ? AppPalette.primary
-                                      : Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color:
-                                    isSelected
-                                        ? AppPalette.primary
-                                        : Theme.of(context).dividerColor,
-                              ),
-                            ),
-                            child: Text(
-                              track,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white :
-                                (isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary),
-                                fontSize: 14,
-                              ),
-                            ),
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedTrack = track;
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.04,
+                          vertical: screenHeight * 0.015,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppPalette.primary
+                              : Theme.of(context).cardColor,
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.06),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppPalette.primary
+                                : Theme.of(context).dividerColor,
                           ),
-                        );
-                      }).toList(),
+                        ),
+                        child: Text(
+                          track,
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark
+                                    ? AppPalette.darkTextPrimary
+                                    : AppPalette.lightTextPrimary),
+                            fontSize: screenWidth * 0.035,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: screenHeight * 0.03),
             Center(
               child: ElevatedButton(
-                onPressed:
-                    selectedTrack != null
-                        ? () {
-                          Get.to(SelectSkills(selectedTrack: selectedTrack,));
-                        }
-                        : null,
+                onPressed: selectedTrack != null
+                    ? () {
+                        Get.to(SelectSkills(
+                          selectedTrack: selectedTrack,
+                        ));
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppPalette.primary,
-                  minimumSize: const Size(200, 48),
+                  minimumSize: Size(screenWidth * 0.5, screenHeight * 0.07),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   "Continue",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.045,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: screenHeight * 0.04),
           ],
         ),
       ),

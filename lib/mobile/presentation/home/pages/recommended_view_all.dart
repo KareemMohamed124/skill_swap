@@ -43,7 +43,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
             bottom: 0,
             child: Container(
               width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
+              constraints: BoxConstraints(minHeight: screenHeight * 0.9),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
@@ -57,7 +57,9 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       final spacing = screenWidth * 0.04; // بدل 16
-                      final itemWidth = (constraints.maxWidth - spacing * (crossAxisCount - 1)) / crossAxisCount;
+                      final itemWidth = (constraints.maxWidth -
+                              spacing * (crossAxisCount - 1)) /
+                          crossAxisCount;
                       final itemHeight = itemWidth * 1.2;
                       final aspectRatio = itemWidth / itemHeight;
 

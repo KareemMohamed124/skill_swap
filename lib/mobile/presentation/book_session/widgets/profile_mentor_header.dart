@@ -19,34 +19,43 @@ class ProfileMentorHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final containerHeight = screenHeight * 0.2; // ارتفاع نسبي
+    final imageSize = screenWidth * 0.12; // حجم الصورة نسبي
+    final nameFontSize = screenWidth * 0.05; // حجم الخط لاسم
+    final trackFontSize = screenWidth * 0.045;
+    final rateFontSize = screenWidth * 0.04;
+    final iconSize = screenWidth * 0.04;
+
     return Container(
-      height: 160,
+      height: containerHeight,
       width: double.infinity,
       decoration: const BoxDecoration(
         color: AppPalette.primary,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(screenWidth * 0.04),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-                icon: const Icon(Icons.arrow_back),
-                color: Colors.white,
-                onPressed: (){
-                  Get.back();
-                }
+              icon: Icon(Icons.arrow_back, size: iconSize, color: Colors.white),
+              onPressed: () {
+                Get.back();
+              },
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: screenWidth * 0.01),
             ClipOval(
               child: Image.asset(
                 image,
-                width: 50,
-                height: 50,
+                width: imageSize,
+                height: imageSize,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: screenWidth * 0.02),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -54,29 +63,31 @@ class ProfileMentorHeader extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    style:
+                        TextStyle(fontSize: nameFontSize, color: Colors.white),
                   ),
-                  const SizedBox(height: 4),
-
+                  SizedBox(height: screenHeight * 0.005),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         "$track Developer • ",
-                        style: const TextStyle(fontSize: 16, color: Colors.white70),
+                        style: TextStyle(
+                            fontSize: trackFontSize, color: Colors.white70),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
-                          const SizedBox(width: 4),
+                          Icon(Icons.star,
+                              size: iconSize, color: const Color(0xFFFFCE31)),
+                          SizedBox(width: screenWidth * 0.01),
                           Text(
                             "$rate",
-                            style: const TextStyle(fontSize: 14, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: rateFontSize, color: Colors.white),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -86,47 +97,5 @@ class ProfileMentorHeader extends StatelessWidget {
         ),
       ),
     );
-      ///////////////////////////////
-      Container(
-        width: double.infinity,
-        color: AppPalette.primary,
-        height: 216,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 16,),
-            ClipOval(
-              child: Image.asset(
-                image,
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              name,
-              style: const TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            Text(
-              "$track Developer",
-              style: const TextStyle(fontSize: 16, color: Colors.white70),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.star, size: 14, color: Color(0xFFFFCE31)),
-                const SizedBox(width: 4),
-                Text(
-                  "$rate",
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                ),
-              ],
-            ),
-          ],
-        ),
-    );
   }
 }
-
-

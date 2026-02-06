@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../shared/core/theme/app_palette.dart';
 
 class CustomButton extends StatelessWidget {
@@ -7,7 +6,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color colorButton;
   final Color colorText;
-  final double widthButton;
+  final double? widthButton; // خليتها nullable عشان نقدر نستخدم screenWidth
 
   const CustomButton({
     super.key,
@@ -15,14 +14,18 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     this.colorButton = AppPalette.primary,
     this.colorText = Colors.white,
-    this.widthButton = double.infinity
+    this.widthButton,
   });
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return SizedBox(
-      width: widthButton,
-      height: 50,
+      width: widthButton ??
+          screenWidth * 0.8, // لو مفيش width محدد، ناخد 80% من الشاشة
+      height: screenHeight * 0.07, // ارتفاع نسبي للشاشة
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorButton,
@@ -33,9 +36,12 @@ class CustomButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           text,
-          style:  TextStyle(
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
             color: colorText,
             fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.045, // حجم الخط نسبي للشاشة
           ),
         ),
       ),

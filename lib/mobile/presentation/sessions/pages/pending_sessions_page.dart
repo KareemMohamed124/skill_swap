@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/constants/strings.dart';
-import '../models/session.dart';
 import '../widgets/session_card.dart';
 
 class PendingSessionsPage extends StatelessWidget {
@@ -8,13 +7,16 @@ class PendingSessionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
-    return  ListView.separated(
+    return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(screenWidth * 0.04), // responsive padding
       itemCount: AppData.pendingList.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      separatorBuilder: (_, __) =>
+          SizedBox(height: screenHeight * 0.02), // responsive spacing
       itemBuilder: (_, index) {
         return SessionCard(session: AppData.pendingList[index]);
       },

@@ -39,10 +39,24 @@ class _ScreenManagerState extends State<ScreenManager> {
 
   @override
   Widget build(BuildContext context) {
+    // الحصول على حجم الشاشة
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: screens,
+      // نستخدم SizedBox.expand لضمان ملء المساحة بشكل ديناميكي
+      body: SizedBox.expand(
+        child: IndexedStack(
+          index: currentIndex,
+          children: screens.map((screen) {
+            return SizedBox(
+              width: screenWidth,
+              height: screenHeight,
+              child: screen,
+            );
+          }).toList(),
+        ),
       ),
       bottomNavigationBar: CustomBottomNav(
         selectedIndex: currentIndex,

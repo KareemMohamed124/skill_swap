@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/mobile/presentation/search/widgets/price_filter_section.dart';
-
 import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_event.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import 'package:skill_swap/mobile/presentation/search/widgets/price_filter_section.dart';
 
 class MentorFilterSheet extends StatefulWidget {
   final double initialMinPrice;
@@ -73,10 +72,15 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 900;
+
+    final buttonWidth = isDesktop ? screenWidth * 0.2 : screenWidth * 0.4;
+
     return FractionallySizedBox(
       heightFactor: 0.9,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(screenWidth * 0.04), // responsive padding
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: const BorderRadius.only(
@@ -89,9 +93,9 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             children: [
               Text("filters".tr,
                   style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              const Divider(),
-              const SizedBox(height: 8),
+              SizedBox(height: screenWidth * 0.02),
+              Divider(),
+              SizedBox(height: screenWidth * 0.02),
 
               /// Price
               PriceFilterSection(
@@ -110,12 +114,11 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 },
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenWidth * 0.04),
 
               /// Status
-              Text("status".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
+              Text("status".tr, style: Theme.of(context).textTheme.titleMedium),
+              SizedBox(height: screenWidth * 0.02),
               buildChoiceChips<String>(
                 context: context,
                 items: statuses,
@@ -132,12 +135,11 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 },
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenWidth * 0.04),
 
               /// Track
-              Text("track".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
+              Text("track".tr, style: Theme.of(context).textTheme.titleMedium),
+              SizedBox(height: screenWidth * 0.02),
               buildChoiceChips<String>(
                 context: context,
                 items: tracks,
@@ -154,14 +156,13 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 },
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenWidth * 0.04),
 
               /// Skill
-              Text("skill".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
+              Text("skill".tr, style: Theme.of(context).textTheme.titleMedium),
+              SizedBox(height: screenWidth * 0.02),
               ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 50),
+                constraints: BoxConstraints(minHeight: 50),
                 child: TextField(
                   controller: skillController,
                   decoration: InputDecoration(
@@ -172,8 +173,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Theme.of(context).dividerColor),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -191,12 +192,11 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: screenWidth * 0.04),
 
               /// Rating
-              Text("rating".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
+              Text("rating".tr, style: Theme.of(context).textTheme.titleMedium),
+              SizedBox(height: screenWidth * 0.02),
               buildChoiceChips<int>(
                 context: context,
                 items: rates,
@@ -215,51 +215,52 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 icon: Icons.star,
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: screenWidth * 0.08),
 
               /// Buttons
               Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: screenWidth * 0.03,
+                runSpacing: screenWidth * 0.03,
                 alignment: WrapAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    width: Get.width * 0.4,
+                    width: buttonWidth,
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).cardColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 12),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.06,
+                            vertical: screenWidth * 0.03),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: Text("cancel".tr,
-                          style:
-                          Theme.of(context).textTheme.titleMedium),
+                          style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ),
                   SizedBox(
-                    width: Get.width * 0.4,
+                    width: buttonWidth,
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<MentorFilterBloc>().add(
-                          ApplyFiltersEvent(
-                            minPrice: startPrice,
-                            maxPrice: endPrice,
-                            minRate: selectedRate?.toDouble(),
-                            status: selectedStatus,
-                            track: selectedTrack,
-                            skill: enteredSkill,
-                          ),
-                        );
+                              ApplyFiltersEvent(
+                                minPrice: startPrice,
+                                maxPrice: endPrice,
+                                minRate: selectedRate?.toDouble(),
+                                status: selectedStatus,
+                                track: selectedTrack,
+                                skill: enteredSkill,
+                              ),
+                            );
                         Navigator.pop(context, activeFiltersCount);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.primary,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 12),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.06,
+                            vertical: screenWidth * 0.03),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -296,7 +297,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     final inactiveColor = Theme.of(context).cardColor;
     final textActive = Colors.white;
     final textInactive =
-    isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
+        isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
 
     return Wrap(
       spacing: 8,
@@ -307,21 +308,20 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
         return ChoiceChip(
           label: showIcon
               ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null)
-                Icon(icon,
-                    size: 18,
-                    color: selected ? textActive : textInactive),
-              Text("  $item",
-                  style: TextStyle(
-                      color:
-                      selected ? textActive : textInactive)),
-            ],
-          )
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null)
+                      Icon(icon,
+                          size: 18,
+                          color: selected ? textActive : textInactive),
+                    Text("  $item",
+                        style: TextStyle(
+                            color: selected ? textActive : textInactive)),
+                  ],
+                )
               : Text("$item",
-              style: TextStyle(
-                  color: selected ? textActive : textInactive)),
+                  style:
+                      TextStyle(color: selected ? textActive : textInactive)),
           selected: selected,
           backgroundColor: inactiveColor,
           selectedColor: activeColor,

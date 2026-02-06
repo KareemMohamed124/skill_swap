@@ -12,6 +12,9 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     final percent = (score / total) * 100;
     final passed = percent >= 85;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -19,7 +22,7 @@ class ResultScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -27,48 +30,53 @@ class ResultScreen extends StatelessWidget {
               Icon(
                 passed ? Icons.emoji_events : Icons.adjust,
                 color: passed ? Colors.amber : Colors.orange,
-                size: 60,
+                size: screenWidth * 0.15, // حجم الأيقونة نسبي للشاشة
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: screenHeight * 0.02),
               Text(
                 passed ? "Congratulations!" : "Keep Learning!",
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: screenWidth * 0.06,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyLarge!.color
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: screenHeight * 0.01),
               Text(
                 "${percent.toInt()}%",
                 style: TextStyle(
-                  fontSize: 36,
+                  fontSize: screenWidth * 0.12,
                   fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.bodyLarge!.color
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: screenHeight * 0.01),
               Text(
                 "You got $score out of $total questions correct",
-                style: TextStyle(fontSize: 16, color: isDark ? AppPalette.darkTextPrimary : const Color(0xFF0D035F)),
+                style: TextStyle(
+                  fontSize: screenWidth * 0.045,
+                  color: isDark
+                      ? AppPalette.darkTextPrimary
+                      : const Color(0xFF0D035F),
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
                   value: percent / 100,
-                  minHeight: 10,
-                  backgroundColor: Color(0XFFF2F5F8),
-                  valueColor: AlwaysStoppedAnimation(const Color(0xFF0D035F)),
+                  minHeight: screenHeight * 0.015,
+                  backgroundColor: const Color(0XFFF2F5F8),
+                  valueColor: const AlwaysStoppedAnimation(Color(0xFF0D035F)),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               if (passed)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 12,
+                  padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.01,
+                    horizontal: screenWidth * 0.03,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
@@ -76,32 +84,36 @@ class ResultScreen extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.check, color: Colors.green, size: 20),
-                      SizedBox(width: 6),
+                    children: [
+                      Icon(Icons.check,
+                          color: Colors.green, size: screenWidth * 0.05),
+                      SizedBox(width: screenWidth * 0.015),
                       Text(
                         "Skill Verified",
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
+                          fontSize: screenWidth * 0.045,
                         ),
                       ),
                     ],
                   ),
                 ),
               if (!passed)
-                const Text(
+                Text(
                   "Need 85% to pass. Try again!",
                   style: TextStyle(
                     color: Colors.red,
                     fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.045,
                   ),
                 ),
-              const SizedBox(height: 30),
+              SizedBox(height: screenHeight * 0.04),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D035F),
-                  minimumSize: const Size(double.infinity, 50),
+                  minimumSize:
+                      Size(double.infinity, screenHeight * 0.07), // ارتفاع نسبي
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -111,13 +123,13 @@ class ResultScreen extends StatelessWidget {
                     Get.find<QuizController>().resetQuiz();
                   }
                   desktopKey.currentState?.openPage(index: 4);
-                  //Get.to(ScreenManager(initialIndex: 4,));
                 },
-                child: const Text(
+                child: Text(
                   "Continue",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    fontSize: screenWidth * 0.045, // حجم الخط نسبي
                   ),
                 ),
               ),

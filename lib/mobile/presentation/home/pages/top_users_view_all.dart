@@ -18,7 +18,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Number of columns for responsive design
+    // عدد الأعمدة responsive
     int crossAxisCount = 2;
     if (screenWidth > 1200) {
       crossAxisCount = 4;
@@ -41,7 +41,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
             bottom: 0,
             child: Container(
               width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
+              constraints: BoxConstraints(minHeight: screenHeight * 0.9),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(

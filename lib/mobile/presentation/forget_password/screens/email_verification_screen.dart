@@ -48,26 +48,42 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Use MediaQuery for responsive sizing
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: CustomAuth(
-        title: "Verify Your Email",
-        subTitle: "We have sent a verification link to ${widget.email}, Please check your email to continue.",
-        childWidget: const SizedBox(),
-        buttonText: "Skip",
-        onPressed: goNextPage,
-        bottomText: "00:${secondsRemaining.toString().padLeft(2, '0')}",
-        bottomActionText:  '',
-        onBottomTap: isResend
-            ? () {
-          setState(() {
-            secondsRemaining = 30;
-            isResend = false;
-          });
-          startTimer();
-        }
-            : () {
-         Get.to(SelectTrack());
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: CustomAuth(
+                title: "Verify Your Email",
+                subTitle:
+                    "We have sent a verification link to ${widget.email}, Please check your email to continue.",
+                childWidget: const SizedBox(),
+                buttonText: "Skip",
+                onPressed: goNextPage,
+                bottomText: "00:${secondsRemaining.toString().padLeft(2, '0')}",
+                bottomActionText: '',
+                onBottomTap: isResend
+                    ? () {
+                        setState(() {
+                          secondsRemaining = 30;
+                          isResend = false;
+                        });
+                        startTimer();
+                      }
+                    : () {
+                        Get.to(SelectTrack());
+                      },
+              ),
+            ),
+          );
         },
       ),
     );

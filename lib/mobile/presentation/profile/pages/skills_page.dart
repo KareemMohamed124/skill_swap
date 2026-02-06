@@ -12,11 +12,23 @@ class SkillsPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          skillCard(context: context, title: "JavaScript", proficiency: 0.95, verified: true),
+          skillCard(
+              context: context,
+              title: "JavaScript",
+              proficiency: 0.95,
+              verified: true),
           const SizedBox(height: 20),
-          skillCard(context: context, title: "React", proficiency: 0.80, verified: false),
+          skillCard(
+              context: context,
+              title: "React",
+              proficiency: 0.80,
+              verified: false),
           const SizedBox(height: 20),
-          skillCard(context: context, title: "Flutter", proficiency: 0.70, verified: false),
+          skillCard(
+              context: context,
+              title: "Flutter",
+              proficiency: 0.70,
+              verified: false),
         ],
       ),
     );
@@ -86,10 +98,18 @@ class SkillsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text("Proficiency", style: TextStyle( color: Theme.of(context).textTheme.bodyMedium!.color,),),
+              Text(
+                "Proficiency",
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
               Text(
                 "${(proficiency * 100).round()}%",
-                style: TextStyle(fontWeight: FontWeight.bold,  color: Theme.of(context).textTheme.bodyMedium!.color,),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
               ),
             ],
           ),

@@ -33,12 +33,12 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
             bottom: 0,
             child: Container(
               width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
+              constraints: BoxConstraints(minHeight: screenHeight * 0.9),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(screenWidth * 0.08), // بدل 32
-                  topRight: Radius.circular(screenWidth * 0.08), // بدل 32
+                  topLeft: Radius.circular(screenWidth * 0.08),
+                  topRight: Radius.circular(screenWidth * 0.08),
                 ),
               ),
               child: Padding(
@@ -48,7 +48,8 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                   scrollDirection: Axis.vertical,
                   itemCount: AppData.nextSessions.length,
                   padding: EdgeInsets.zero,
-                  separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.02), // بدل 16
+                  separatorBuilder: (_, __) =>
+                      SizedBox(height: screenHeight * 0.02), // بدل 16
                   itemBuilder: (context, index) {
                     final session = AppData.nextSessions[index];
                     return NextSessionCard(

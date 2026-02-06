@@ -33,18 +33,30 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Mobile-friendly dimensions
+    final labelFontSize =
+        screenWidth * 0.045; // تقريباً 16px على شاشة 360px عرض
+    final verticalSpacing = screenHeight * 0.02; // 2% من ارتفاع الشاشة ~ 8-10px
+    final contentPadding = EdgeInsets.symmetric(
+      horizontal: screenWidth * 0.04, // 4% من عرض الشاشة
+      vertical: screenHeight * 0.02, // 2% من ارتفاع الشاشة
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.labelText,
-          style:  TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: labelFontSize,
             fontWeight: FontWeight.w600,
-              color: Theme.of(context).textTheme.bodyLarge!.color
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: verticalSpacing),
         TextFormField(
           controller: widget.controller,
           obscureText: _isObscure,
@@ -54,31 +66,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintStyle: Theme.of(context).textTheme.bodyMedium,
             filled: true,
             fillColor: Theme.of(context).cardColor,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
-            ),
+            contentPadding: contentPadding,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             errorText: widget.errorText,
             errorMaxLines: 3,
-
             suffixIcon: widget.obscureText
                 ? IconButton(
-              icon: Icon(
-                _isObscure
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isObscure = !_isObscure;
-                });
-              },
-            )
+                    icon: Icon(
+                      _isObscure ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
+                  )
                 : null,
           ),
         ),

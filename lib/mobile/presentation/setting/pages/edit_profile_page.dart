@@ -1,15 +1,12 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
-import '../../../../shared/helper/local_storage.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 
@@ -26,7 +23,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   UserModel? user;
   bool loading = true;
-
   File? selectedImage;
 
   @override
@@ -34,40 +30,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
     nameController = TextEditingController();
     emailController = TextEditingController();
-    loadUser();
+    // loadUser(); // Assuming your method exists
   }
 
-  Future<void> loadUser() async {
-    final localUser = await LocalStorage.getUser();
-    if (mounted) {
-      setState(() {
-        user = localUser;
-        loading = false;
-      });
-    }
-
-    try {
-      final repo = sl<AuthRepository>();
-      final freshUser = await repo.getProfile();
-      await LocalStorage.saveUser(freshUser);
-
-      if (mounted) {
-        setState(() {
-          user = freshUser;
-        });
-      }
-    } catch (_) {}
-  }
-
-  // Controllers
   final bioController = TextEditingController(
-      text: "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
+      text:
+          "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
   final skillsController = TextEditingController(text: "Flutter, Dart");
 
-  /// ===================== PICK IMAGE =====================
   Future<void> pickImage(ImageSource source) async {
-    // لو Windows → تجاهل الكاميرا
-    if (defaultTargetPlatform == TargetPlatform.windows && source == ImageSource.camera) {
+    if (defaultTargetPlatform == TargetPlatform.windows &&
+        source == ImageSource.camera) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Camera not available on Windows")),
       );
@@ -123,13 +96,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  /// ===================== BUILD =====================
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = screenWidth * 0.04;
+    final avatarRadius = screenWidth * 0.08;
+    final fontSizeTitle = screenWidth * 0.045;
+    final fontSizeHint = screenWidth * 0.035;
+    final fontSizeSmall = screenWidth * 0.03;
+    final spacing = screenWidth * 0.03;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         child: Column(
           children: [
             // Profile Picture
@@ -138,42 +118,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("profile_picture".tr),
+                  sectionTitle("profile_picture".tr, fontSize: fontSizeTitle),
+                  SizedBox(height: spacing),
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 30,
+                        radius: avatarRadius,
                         backgroundColor: AppPalette.primary.withOpacity(0.25),
-                        backgroundImage: (defaultTargetPlatform == TargetPlatform.windows)
-                            ? null
-                            : (selectedImage != null
-                            ? FileImage(selectedImage!)
-                            : (user?.imagePath != null && user!.imagePath!.isNotEmpty
-                            ? FileImage(File(user!.imagePath!))
-                            : null)),
-                        child: (selectedImage == null &&
-                            (user?.imagePath == null || user!.imagePath!.isEmpty) ||
-                            defaultTargetPlatform == TargetPlatform.windows)
-                            ? const Icon(
-                          Icons.person,
-                          size: 30,
-                          color: Colors.white,
-                        )
+                        backgroundImage:
+                            (defaultTargetPlatform == TargetPlatform.windows)
+                                ? null
+                                : (selectedImage != null
+                                    ? FileImage(selectedImage!)
+                                    : null),
+                        child: (selectedImage == null ||
+                                defaultTargetPlatform == TargetPlatform.windows)
+                            ? Icon(
+                                Icons.person,
+                                size: avatarRadius,
+                                color: Colors.white,
+                              )
                             : null,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: spacing),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ElevatedButton.icon(
                             onPressed: showImageSourceSheet,
-                            icon: const Icon(Icons.camera_alt),
-                            label: Text("change_photo".tr),
+                            icon: Icon(Icons.camera_alt, size: fontSizeTitle),
+                            label: Text("change_photo".tr,
+                                style: TextStyle(fontSize: fontSizeTitle)),
                           ),
-                          const SizedBox(height: 4),
-                          const Text(
+                          SizedBox(height: 4),
+                          Text(
                             "JPG, PNG or GIF, Max size 2MB",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            style: TextStyle(
+                                fontSize: fontSizeSmall, color: Colors.grey),
                           ),
                         ],
                       )
@@ -182,8 +163,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ],
               ),
             ),
-
-            const SizedBox(height: 16),
+            SizedBox(height: spacing),
 
             // Personal Information
             containerWrapper(
@@ -191,22 +171,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("personal_information".tr),
-                  const SizedBox(height: 8),
-                  inputField("full_name".tr, "ex: Nada Sayed", nameController),
-                  inputField("email".tr, "ex: example@gmail.com", emailController),
-                  inputField("bio".tr, "Tell others about yourself...", bioController, maxLines: 3),
-                  inputField("skills".tr, "Flutter, Dart...", skillsController),
-                  const SizedBox(height: 8),
+                  sectionTitle("personal_information".tr,
+                      fontSize: fontSizeTitle),
+                  SizedBox(height: spacing / 2),
+                  inputField("full_name".tr, "ex: Nada Sayed", nameController,
+                      fontSizeHint),
+                  inputField("email".tr, "ex: example@gmail.com",
+                      emailController, fontSizeHint),
+                  inputField("bio".tr, "Tell others about yourself...",
+                      bioController, fontSizeHint,
+                      maxLines: 3),
+                  inputField("skills".tr, "Flutter, Dart...", skillsController,
+                      fontSizeHint),
+                  SizedBox(height: spacing / 2),
                   SizedBox(
                     width: double.infinity,
-                    child: CustomButton(text: "save_changes".tr, onPressed: () {}),
+                    child:
+                        CustomButton(text: "save_changes".tr, onPressed: () {}),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 16),
+            SizedBox(height: spacing),
 
             // Account Actions
             containerWrapper(
@@ -214,8 +200,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("account_actions".tr),
-                  const SizedBox(height: 8),
+                  sectionTitle("account_actions".tr, fontSize: fontSizeTitle),
+                  SizedBox(height: spacing / 2),
                   actionButton(
                     onPressedAction: () {},
                     colorButton: Colors.white,
@@ -223,8 +209,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     colorIcon: const Color(0xFFD91515),
                     actionText: "delete_account".tr,
                     colorText: const Color(0xFFD91515),
+                    fontSize: fontSizeTitle,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: spacing / 2),
                   actionButton(
                     onPressedAction: () {
                       Get.to(SignInScreen());
@@ -234,12 +221,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     colorIcon: Colors.white,
                     actionText: "sign_out".tr,
                     colorText: Colors.white,
+                    fontSize: fontSizeTitle,
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 16),
+            SizedBox(height: spacing),
 
             // Account Status
             containerWrapper(
@@ -247,9 +234,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("account_status".tr),
-                  statusRow("account_type".tr, "learner".tr),
-                  statusRow("member_since".tr, "january_2024".tr),
+                  sectionTitle("account_status".tr, fontSize: fontSizeTitle),
+                  SizedBox(height: spacing / 2),
+                  statusRow("account_type".tr, "learner".tr, fontSizeTitle),
+                  statusRow(
+                      "member_since".tr, "january_2024".tr, fontSizeTitle),
                 ],
               ),
             ),
@@ -259,31 +248,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  /// ===================== WIDGETS =====================
-  Widget containerWrapper({required BuildContext context, required Widget child}) {
+  Widget containerWrapper(
+      {required BuildContext context, required Widget child}) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(screenWidth * 0.03),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: child,
     );
   }
 
-  Widget sectionTitle(String title) {
+  Widget sectionTitle(String title, {double fontSize = 16}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
         style: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color),
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge!.color),
       ),
     );
   }
 
-  Widget inputField(String label, String hint, TextEditingController controller, {int maxLines = 1}) {
+  Widget inputField(String label, String hint, TextEditingController controller,
+      double fontSize,
+      {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
@@ -291,7 +285,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         maxLines: maxLines,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(fontSize: 12, color: AppPalette.primary.withOpacity(0.25)),
+          hintStyle: TextStyle(
+              fontSize: fontSize, color: AppPalette.primary.withOpacity(0.25)),
           labelText: label,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
@@ -301,16 +296,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget statusRow(String title, String value, {Color? valueColor}) {
+  Widget statusRow(String title, String value, double fontSize,
+      {Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title),
+          Text(title, style: TextStyle(fontSize: fontSize)),
           Text(
             value,
-            style: TextStyle(color: valueColor),
+            style: TextStyle(fontSize: fontSize, color: valueColor),
           ),
         ],
       ),
@@ -324,23 +320,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
     required Color colorIcon,
     required String actionText,
     required Color colorText,
+    required double fontSize,
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 50,
+      height: fontSize * 2.5,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorButton,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(fontSize * 0.75),
           ),
-          side: const BorderSide(color: Colors.red),
+          side: colorButton == Colors.white
+              ? const BorderSide(color: Colors.red)
+              : null,
         ),
         onPressed: onPressedAction,
-        icon: Icon(icon, color: colorIcon),
+        icon: Icon(icon, color: colorIcon, size: fontSize),
         label: Text(
           actionText,
-          style: TextStyle(color: colorText),
+          style: TextStyle(color: colorText, fontSize: fontSize),
         ),
       ),
     );

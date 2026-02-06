@@ -44,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
@@ -55,8 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 children: [
                   ProfileTabs(
                       tabController: _tabController,
-                      tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]
-                  ),
+                      tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]),
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,

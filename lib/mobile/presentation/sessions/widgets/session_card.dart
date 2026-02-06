@@ -28,140 +28,125 @@ class SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(screenWidth * 0.04),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             children: [
-      ClipOval(
-      child: Image.asset(
-        session.image,
-        width: 50,
-        height: 50,
-        fit: BoxFit.cover,
-      ),
-    ),
-              const SizedBox(width: 8),
+              ClipOval(
+                child: Image.asset(
+                  session.image,
+                  width: screenWidth * 0.13,
+                  height: screenWidth * 0.13,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(width: screenWidth * 0.02),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      session.name,
-                      style: Theme.of(context).textTheme.titleMedium
-                    ),
-
-                    Text(
-                      session.role,
-                      style: Theme.of(context).textTheme.bodySmall
-                    ),
+                    Text(session.name,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(session.role,
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
-                if(isRequest)
-                  Text(
-                    session.timeAgo,
-                    style: Theme.of(context).textTheme.bodySmall
-                  ),
+              if (isRequest)
+                Text(session.timeAgo,
+                    style: Theme.of(context).textTheme.bodySmall),
               if (!isRequest)
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.02,
+                    vertical: screenWidth * 0.01,
+                  ),
                   decoration: BoxDecoration(
                     color: badgeColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
                     border: Border.all(color: badgeColor),
                   ),
-                  ///////////////////////////////////
                   child: Text(
                     badgeText,
                     style: TextStyle(
                       color: badgeColor,
-                      fontSize: 12,
+                      fontSize: screenWidth * 0.03,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
             ],
           ),
-
-          const SizedBox(height: 16),
+          SizedBox(height: screenWidth * 0.04),
           iconText(
             context: context,
-              icon: Icons.access_time,
-              data: "1h session"
+            icon: Icons.access_time,
+            data: "1h session",
+            screenWidth: screenWidth,
           ),
-          // Row(
-          //   children: [
-          //     iconText(
-          //         icon: Icons.access_time,
-          //         data: "1h session"
-          //     ),
-          //     const SizedBox(width: 32),
-          //     iconText(
-          //         icon: Icons.chat_bubble_outline,
-          //         data: session.type
-          //     ),
-          //   ],
-          // ),
-          const SizedBox(height: 8),
+          SizedBox(height: screenWidth * 0.02),
           iconText(
             context: context,
-              icon: Icons.calendar_today_outlined,
-              data:  "${session.dateTime.day}/${session.dateTime.month}/${session.dateTime.year} "
-                  "at ${session.dateTime.hour}:${session.dateTime.minute.toString().padLeft(2, '0')} PM"
+            icon: Icons.calendar_today_outlined,
+            data:
+                "${session.dateTime.day}/${session.dateTime.month}/${session.dateTime.year} "
+                "at ${session.dateTime.hour}:${session.dateTime.minute.toString().padLeft(2, '0')} PM",
+            screenWidth: screenWidth,
           ),
-          const SizedBox(height: 8),
-        iconText(
-          context: context,
+          SizedBox(height: screenWidth * 0.02),
+          iconText(
+            context: context,
             icon: Icons.attach_money,
-            data: session.price
-        ),
-
-          const SizedBox(height: 16),
-
+            data: session.price,
+            screenWidth: screenWidth,
+          ),
+          SizedBox(height: screenWidth * 0.04),
           if (isRequest)
             Row(
               children: [
                 Expanded(
                   child: Container(
-                    height: 40,
+                    height: screenWidth * 0.1,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: Colors.green,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.02),
                     ),
                     child: Text(
                       "accept".tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
+                        fontSize: screenWidth * 0.035,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: screenWidth * 0.03),
                 Expanded(
                   child: Container(
-                    height: 40,
+                    height: screenWidth * 0.1,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.red),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.02),
                     ),
                     child: Text(
                       "decline".tr,
                       style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.w600,
+                        fontSize: screenWidth * 0.035,
                       ),
                     ),
                   ),
@@ -170,22 +155,25 @@ class SessionCard extends StatelessWidget {
             )
           else
             Container(
-              height: 44,
+              height: screenWidth * 0.11,
               width: double.infinity,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                 color: isPending ? Colors.grey.shade300 : (isConfirmed ? Theme.of(context).primaryColor : Colors.green),
-                //color: isConfirmed ? Colors.green : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(12),
+                color: isPending
+                    ? Colors.grey.shade300
+                    : (isConfirmed
+                        ? Theme.of(context).primaryColor
+                        : Colors.green),
+                borderRadius: BorderRadius.circular(screenWidth * 0.03),
               ),
               child: Text(
-                isPending ? "pending_approval".tr : (
-                    isConfirmed ?  "pay_now".tr : "join_now".tr
-                ),
-                //isConfirmed ? "Join Now" : "Pending Approval",
+                isPending
+                    ? "pending_approval".tr
+                    : (isConfirmed ? "pay_now".tr : "join_now".tr),
                 style: TextStyle(
                   color: isPending ? Colors.black : Colors.white,
                   fontWeight: FontWeight.w600,
+                  fontSize: screenWidth * 0.035,
                 ),
               ),
             ),
@@ -195,19 +183,27 @@ class SessionCard extends StatelessWidget {
   }
 }
 
-
-Widget iconText({required BuildContext context, required IconData icon, required String data}) {
-     final textColor = Theme.of(context).textTheme.bodyMedium!.color;
-  return  Row(
+Widget iconText({
+  required BuildContext context,
+  required IconData icon,
+  required String data,
+  required double screenWidth,
+}) {
+  final textColor = Theme.of(context).textTheme.bodyMedium!.color;
+  return Row(
     children: [
-       Icon(icon, size: 18, color: data == "Free" ? Colors.green : textColor
-       ),
-      const SizedBox(width: 6),
-      Text(
+      Icon(icon,
+          size: screenWidth * 0.045,
+          color: data == "Free" ? Colors.green : textColor),
+      SizedBox(width: screenWidth * 0.015),
+      Flexible(
+        child: Text(
           data,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: data == "Free" ? Colors.green : null
-        )
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: screenWidth * 0.035,
+                color: data == "Free" ? Colors.green : null,
+              ),
+        ),
       ),
     ],
   );
