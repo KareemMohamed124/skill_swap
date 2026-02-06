@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../pages/overview_page.dart';
+import '../pages/reviews_page.dart';
+import '../pages/skills_page.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_tabs.dart';
-import '../pages/overview_page.dart';
-import '../pages/skills_page.dart';
-import '../pages/reviews_page.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -44,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Container(
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
@@ -55,8 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 children: [
                   ProfileTabs(
                       tabController: _tabController,
-                      tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]
-                  ),
+                      tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]),
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,

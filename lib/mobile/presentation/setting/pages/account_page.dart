@@ -31,17 +31,19 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final sectionPadding = const EdgeInsets.all(8.0);
-    final sectionMargin = const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
-    final sectionRadius = BorderRadius.circular(12);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final sectionPadding = EdgeInsets.all(screenWidth * 0.02);
+    final sectionMargin = EdgeInsets.symmetric(
+        vertical: screenWidth * 0.02, horizontal: screenWidth * 0.04);
+    final sectionRadius = BorderRadius.circular(screenWidth * 0.03);
+    final textStyleSize = screenWidth * 0.045;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(screenWidth * 0.04),
         children: [
           Container(
-          //  margin: sectionMargin,
             padding: sectionPadding,
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
@@ -52,15 +54,14 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Section 1: Notifications
-                 Text(
+                Text(
                   'notifications'.tr,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.bodyLarge!.color
-                  ),
+                      fontSize: textStyleSize,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: screenWidth * 0.02),
                 customSwitch(
                   title: 'email_notifications'.tr,
                   icon: Icons.email_outlined,
@@ -86,17 +87,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   onChanged: (v) => setState(() => sessionReminders = v),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: screenWidth * 0.04),
                 // Section 2: Privacy
-                 Text(
+                Text(
                   'privacy'.tr,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color
-                  ),
+                      fontSize: textStyleSize,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: screenWidth * 0.02),
                 customSwitch(
                   title: 'profile_visibility'.tr,
                   icon: Icons.person_outline,
@@ -119,33 +119,28 @@ class _SettingsPageState extends State<SettingsPage> {
                   onChanged: (v) => setState(() => directMessages = v),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: screenWidth * 0.04),
                 // Section 3: App Preferences
-                 Text(
+                Text(
                   'app_preferences'.tr,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color
-
-                  ),
+                      fontSize: textStyleSize,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge!.color),
                 ),
-                const SizedBox(height: 8),
-                GetBuilder<ThemeController>(
-                    builder: (controller) {
-                      return  customSwitch(
-                        title: 'dark_mode'.tr,
-                        icon: Icons.dark_mode_outlined,
-                        value: controller.themeMode == ThemeMode.dark,
-                        onChanged: (v) {
-                          controller.changeTheme(
-                            v ? ThemeMode.dark : ThemeMode.light
-                          );
-                        },
-                      );
-                    }
-                ),
-                const SizedBox(height: 8),
+                SizedBox(height: screenWidth * 0.02),
+                GetBuilder<ThemeController>(builder: (controller) {
+                  return customSwitch(
+                    title: 'dark_mode'.tr,
+                    icon: Icons.dark_mode_outlined,
+                    value: controller.themeMode == ThemeMode.dark,
+                    onChanged: (v) {
+                      controller
+                          .changeTheme(v ? ThemeMode.dark : ThemeMode.light);
+                    },
+                  );
+                }),
+                SizedBox(height: screenWidth * 0.02),
                 GetBuilder<LanguageController>(
                   builder: (controller) {
                     return Row(
@@ -153,17 +148,22 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.language_outlined),
-                            SizedBox(width: 12),
-                            Text('language'.tr),
+                            Icon(Icons.language_outlined,
+                                size: screenWidth * 0.06),
+                            SizedBox(width: screenWidth * 0.03),
+                            Text('language'.tr,
+                                style:
+                                    TextStyle(fontSize: screenWidth * 0.045)),
                           ],
                         ),
                         DropdownButton<String>(
                           value: controller.currentLangCode,
                           underline: const SizedBox(),
                           items: const [
-                            DropdownMenuItem(value: 'en', child: Text('English')),
-                            DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                            DropdownMenuItem(
+                                value: 'en', child: Text('English')),
+                            DropdownMenuItem(
+                                value: 'ar', child: Text('العربية')),
                           ],
                           onChanged: (value) {
                             controller.changeLanguage(value!);
@@ -173,7 +173,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
                   },
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: screenWidth * 0.02),
                 customSwitch(
                   title: 'sound_effects'.tr,
                   icon: Icons.volume_up_outlined,
@@ -196,11 +196,15 @@ class _SettingsPageState extends State<SettingsPage> {
     required ValueChanged<bool> onChanged,
     String? subtitle,
   }) {
+    final screenWidth = MediaQuery.of(Get.context!).size.width;
+
     return SwitchListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12)) : null,
-      secondary: Icon(icon),
+      contentPadding: EdgeInsets.symmetric(vertical: screenWidth * 0.005),
+      title: Text(title, style: TextStyle(fontSize: screenWidth * 0.04)),
+      subtitle: subtitle != null
+          ? Text(subtitle, style: TextStyle(fontSize: screenWidth * 0.035))
+          : null,
+      secondary: Icon(icon, size: screenWidth * 0.065),
       value: value,
       onChanged: onChanged,
       activeColor: Colors.white,

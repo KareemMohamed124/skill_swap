@@ -13,24 +13,27 @@ class StatusFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     final statusList = ["all".tr, "accepted".tr, "pending".tr, "request".tr];
 
     return Wrap(
-      spacing: 8,
+      spacing: screenWidth * 0.02, // responsive spacing
       children: List.generate(statusList.length, (index) {
         final isSelected = selectedIndex == index;
 
         return GestureDetector(
           onTap: () => onSelect(index),
           child: Container(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.03,
+              vertical: screenWidth * 0.015,
+            ),
             decoration: BoxDecoration(
               color: isSelected
                   ? colorScheme.primary.withOpacity(0.15)
                   : colorScheme.surface,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(screenWidth * 0.02),
               border: Border.all(
                 color: isSelected
                     ? colorScheme.primary.withOpacity(0.4)
@@ -40,7 +43,7 @@ class StatusFilter extends StatelessWidget {
             child: Text(
               statusList[index],
               style: TextStyle(
-                fontSize: 13,
+                fontSize: screenWidth * 0.035,
                 fontWeight: FontWeight.w600,
                 color: isSelected
                     ? colorScheme.primary

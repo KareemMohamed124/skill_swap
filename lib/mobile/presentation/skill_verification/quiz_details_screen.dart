@@ -1,45 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../shared/data/quiz/quiz_controller.dart';
 import 'quiz_screen.dart';
 
 class QuizDetailsScreen extends StatelessWidget {
   final String skillName;
+
   QuizDetailsScreen({super.key, required this.skillName});
 
   final QuizController controller = Get.put(QuizController(), permanent: true);
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge!.color,
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+            size: screenWidth * 0.06, // حجم الأيقونة نسبي
           ),
           onPressed: () => Get.back(),
         ),
-        title:  Text(
+        title: Text(
           "Quiz Details",
           style: TextStyle(
             color: Theme.of(context).textTheme.bodyLarge!.color,
-            fontSize: 18,
+            fontSize: screenWidth * 0.05,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
-
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(screenWidth * 0.04),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(screenWidth * 0.05),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
@@ -52,109 +59,105 @@ class QuizDetailsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     skillName,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
-
-                  const SizedBox(height: 12),
-
+                  SizedBox(height: screenHeight * 0.015),
                   Row(
                     children: [
                       Chip(
                         label: Text(
                           "Beginner",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
-
+                            color:
+                                Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
-                        backgroundColor: Color(0XFFF2F5F8),
+                        backgroundColor: const Color(0XFFF2F5F8),
                       ),
-                      SizedBox(width: 8),
+                      SizedBox(width: screenWidth * 0.02),
                       Chip(
                         label: Text(
                           "15 Q",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                            color:
+                                Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
-                        backgroundColor: Color(0XFFF2F5F8),
+                        backgroundColor: const Color(0XFFF2F5F8),
                       ),
-                      SizedBox(width: 8),
+                      SizedBox(width: screenWidth * 0.02),
                       Chip(
                         label: Text(
                           "15m",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: screenWidth * 0.035,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                            color:
+                                Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
-                        backgroundColor: Color(0XFFF2F5F8),
+                        backgroundColor: const Color(0XFFF2F5F8),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 20),
-
+                  SizedBox(height: screenHeight * 0.02),
                   Text(
                     "Test your knowledge of basics including variables, "
-                        "functions and control structures.",
-                    style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyLarge!.color,
+                    "functions and control structures.",
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.035,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-                  rowDetails(context, "Questions:", "15"),
-                  SizedBox(height: 8),
-                  rowDetails(context, "Time Limit:", "15 minutes"),
-                  SizedBox(height: 8),
-                  rowDetails(context, "Passing Score:", "85%"),
-                  SizedBox(height: 8),
-                  rowDetails(context, "Difficulty:", "Beginner"),
+                  SizedBox(height: screenHeight * 0.02),
+                  rowDetails(context, "Questions:", "15", screenWidth),
+                  SizedBox(height: screenHeight * 0.01),
+                  rowDetails(context, "Time Limit:", "15 minutes", screenWidth),
+                  SizedBox(height: screenHeight * 0.01),
+                  rowDetails(context, "Passing Score:", "85%", screenWidth),
+                  SizedBox(height: screenHeight * 0.01),
+                  rowDetails(context, "Difficulty:", "Beginner", screenWidth),
                 ],
               ),
             ),
-
-            const SizedBox(height: 25),
-
+            SizedBox(height: screenHeight * 0.03),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(screenWidth * 0.05),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child:  Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Important Notes:",
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: screenHeight * 0.01),
                   Text(
                     "• You cannot pause once started",
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
+                      fontSize: screenWidth * 0.035,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -162,7 +165,7 @@ class QuizDetailsScreen extends StatelessWidget {
                     "• Questions are randomly selected",
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
+                      fontSize: screenWidth * 0.035,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -170,7 +173,7 @@ class QuizDetailsScreen extends StatelessWidget {
                     "• You need 80% to pass and get verified",
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
+                      fontSize: screenWidth * 0.035,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -178,72 +181,67 @@ class QuizDetailsScreen extends StatelessWidget {
                     "• You can retake if you don't pass",
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
+                      fontSize: screenWidth * 0.035,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 30),
-
+            SizedBox(height: screenHeight * 0.04),
             Obx(
-                  () => SizedBox(
+              () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0XFF0D035F),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding:
+                        EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  onPressed:
-                  controller.loading.value
+                  onPressed: controller.loading.value
                       ? null
                       : () async {
-                    controller.loading.value = true;
-
-                    await controller.generateQuiz(skillName);
-
-                    controller.loading.value = false;
-
-                    if (controller.questions.isNotEmpty) {
-                      Get.to(() => QuizScreen());
-                    } else {
-                      Get.snackbar(
-                        'Error',
-                        'Failed to generate quiz.',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    }
-                  },
-                  child:
-                  controller.loading.value
-                      ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                      : const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.timer, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        "Start Quiz",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          controller.loading.value = true;
+                          await controller.generateQuiz(skillName);
+                          controller.loading.value = false;
+                          if (controller.questions.isNotEmpty) {
+                            Get.to(() => QuizScreen());
+                          } else {
+                            Get.snackbar(
+                              'Error',
+                              'Failed to generate quiz.',
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          }
+                        },
+                  child: controller.loading.value
+                      ? SizedBox(
+                          height: screenHeight * 0.03,
+                          width: screenHeight * 0.03,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.timer,
+                                color: Colors.white, size: screenWidth * 0.05),
+                            SizedBox(width: screenWidth * 0.02),
+                            Text(
+                              "Start Quiz",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
@@ -254,25 +252,21 @@ class QuizDetailsScreen extends StatelessWidget {
   }
 
   Widget rowDetails(
-      BuildContext context,
-      String title,
-      String subTitle
-      ) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:  [
-          //"Time Limit:"
-          Text( title,
-               style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).textTheme.bodyMedium!.color
-          )),
-          //"15 minutes"
-          Text(subTitle, style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).textTheme.bodyMedium!.color
-          )),
-        ],
-      );
+      BuildContext context, String title, String subTitle, double screenWidth) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title,
+            style: TextStyle(
+              fontSize: screenWidth * 0.035,
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+            )),
+        Text(subTitle,
+            style: TextStyle(
+              fontSize: screenWidth * 0.035,
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+            )),
+      ],
+    );
   }
 }

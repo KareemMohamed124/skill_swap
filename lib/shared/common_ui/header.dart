@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../core/theme/app_palette.dart';
 import 'circle_button_icon.dart';
 
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+
   const CustomAppBar({super.key, required this.title});
 
   @override
@@ -13,28 +14,46 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Adjust sizes based on screen width
+    double containerHeight = 100;
+    double fontSize = 22;
+    double iconSize = 16; // هذا مرتبط بـ CircleButtonIcon
+
+    if (screenWidth >= 1200) {
+      // Desktop
+      containerHeight = 180;
+      fontSize = 32;
+      iconSize = 28;
+    } else if (screenWidth >= 800) {
+      // Tablet
+      containerHeight = 150;
+      fontSize = 28;
+      iconSize = 24;
+    }
+
     return Stack(
       children: [
         Container(
-          height: 124,
-          decoration:  BoxDecoration(color: AppPalette.primary),
+          height: containerHeight,
+          decoration: BoxDecoration(color: AppPalette.primary),
         ),
         AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Text(
-              title,
-              style:  TextStyle(
-                color: Color(0xFFD6D6D6),
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-              ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            title,
+            style: TextStyle(
+              color: const Color(0xFFD6D6D6),
+              fontSize: fontSize,
+              fontWeight: FontWeight.w600,
             ),
-            leading: CircleButtonIcon(icon: Icons.arrow_back_ios, onTap: () {Get.back();},)
-          // IconButton(
-          //   icon: const Icon(Icons.arrow_back, color: Color(0xFFF2F5F8),),
-          //   onPressed: () => Navigator.pop(context),
-          // ),
+          ),
+          leading: CircleButtonIcon(
+            icon: Icons.arrow_back_ios,
+            onTap: () => Get.back(),
+          ),
         ),
       ],
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class SectionContainer extends StatelessWidget {
   final Widget child;
+
   const SectionContainer({Key? key, required this.child}) : super(key: key);
 
   @override

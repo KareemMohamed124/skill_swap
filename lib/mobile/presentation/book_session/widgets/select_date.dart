@@ -68,7 +68,7 @@ class _SelectDateState extends State<SelectDate> {
           ),
           selectedTextStyle: const TextStyle(
             color: Colors.white,
-           // fontWeight: FontWeight.bold,
+            // fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
           todayDecoration: BoxDecoration(

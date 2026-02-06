@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../shared/core/theme/app_palette.dart';
 
 class PriceFilterSection extends StatefulWidget {
@@ -38,9 +39,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           "price_range".tr,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-
         SizedBox(height: width * 0.02),
-
         RangeSlider(
           values: priceRange,
           min: widget.min,
@@ -57,9 +56,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
             widget.onChanged(values.start, values.end);
           },
         ),
-
         SizedBox(height: width * 0.01),
-
         Row(
           children: [
             Expanded(child: priceBox("min".tr, priceRange.start, width)),
@@ -85,20 +82,18 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(
-            horizontal: width * 0.03,
-            vertical: width * 0.02,
+            horizontal: 20,
+            vertical: 20,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
           ),
-          child: FittedBox(
-            child: Text(
-              "\$${value.round()}",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+          child: Text(
+            "\$${value.round()}",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
         ),

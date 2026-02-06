@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/screens/sign_up_screen.dart';
@@ -10,71 +11,91 @@ class StartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
+              minHeight: screenHeight,
             ),
             child: IntrinsicHeight(
               child: Column(
                 children: [
-                  const Spacer(),
+                  Spacer(flex: 2),
 
+                  /// Logo
                   Image.asset(
                     'assets/logo/logoStart.png',
+                    width: screenWidth * 0.5,
+                    height: screenHeight * 0.2,
+                    fit: BoxFit.contain,
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.02),
 
+                  /// Title
                   Text(
                     'Welcome to \nSkillSwap',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 32,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.08, // scalable font
                       fontWeight: FontWeight.bold,
                       color: AppPalette.primary,
                     ),
                   ),
 
-                  const SizedBox(height: 64),
+                  SizedBox(height: screenHeight * 0.08),
 
+                  /// Subtitle
                   Text(
                     'Learn new skills, teach others, and grow together in our collaborative learning community',
                     textAlign: TextAlign.center,
-                    style:  TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.045,
                       height: 1.4,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
 
-                  const Spacer(),
+                  Spacer(flex: 3),
 
-                  CustomButton(
-                    text: 'Get Start',
-                    onPressed: () {
-                      Get.to(SignUpScreen());
-                    },
+                  /// Sign Up Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: screenHeight * 0.07,
+                    child: CustomButton(
+                      text: 'Get Start',
+                      onPressed: () {
+                        Get.to(() => SignUpScreen());
+                      },
+                    ),
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.02),
 
-                  CustomButton(
-                    text: 'I already have an account',
-                    colorButton: Colors.white,
-                    colorText: AppPalette.primary,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
-                      );
-                    },
+                  /// Sign In Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: screenHeight * 0.07,
+                    child: CustomButton(
+                      text: 'I already have an account',
+                      colorButton: Colors.white,
+                      colorText: AppPalette.primary,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignInScreen()),
+                        );
+                      },
+                    ),
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: screenHeight * 0.04),
                 ],
               ),
             ),

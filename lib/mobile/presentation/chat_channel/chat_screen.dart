@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/chat_channel/message_model.dart';
 
-
 class ChatScreen extends StatefulWidget {
   final String channelName;
 
@@ -63,93 +62,73 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
+    /// ✅ MediaQuery
+    final media = MediaQuery.of(context);
+    final screenWidth = media.size.width;
+    final screenHeight = media.size.height;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   elevation: 1,
-      //   title: Row(
-      //     children: [
-      //       CircleAvatar(
-      //         backgroundColor: const Color(0xFF0D035F),
-      //         child: Text(
-      //           widget.channelName[0],
-      //           style: const TextStyle(
-      //             color: Colors.white,
-      //             fontWeight: FontWeight.bold,
-      //           ),
-      //         ),
-      //       ),
-      //       const SizedBox(width: 10),
-      //       Text(
-      //         widget.channelName,
-      //         style: const TextStyle(
-      //           color: Color(0xFF0D035F),
-      //           fontWeight: FontWeight.bold,
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
-
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            SizedBox(height: 16),
-            Row(
-              children: [
-                IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: (){
-                      Get.back();
-                    }
-                ),
-                SizedBox(width: 16),
-                CircleAvatar(
-                  backgroundColor: const Color(0xFF0D035F),
-                  child: Text(
-                    widget.channelName[0],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(screenWidth * 0.04),
+          child: Column(
+            children: [
+              SizedBox(height: screenHeight * 0.02),
+              Row(
+                children: [
+                  IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Get.back();
+                      }),
+                  SizedBox(width: screenWidth * 0.04),
+                  CircleAvatar(
+                    backgroundColor: const Color(0xFF0D035F),
+                    child: Text(
+                      widget.channelName[0],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  widget.channelName,
-                  style: const TextStyle(
-                    color: Color(0xFF0D035F),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.channelName,
+                    style: const TextStyle(
+                        color: Color(0xFF0D035F),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child:
-              messages.isEmpty
-                  ? Center(
-                child: Text(
-                  "No messages yet",
-                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color,),
-                ),
-              )
-                  : ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return _chatBubble(messages[index]);
-                },
+                ],
               ),
-            ),
-            _messageInput(),
-          ],
+              SizedBox(height: screenHeight * 0.02),
+              Expanded(
+                child: messages.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No messages yet",
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: EdgeInsets.all(screenWidth * 0.04),
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          return _chatBubble(messages[index]);
+                        },
+                      ),
+              ),
+              _messageInput(),
+            ],
+          ),
         ),
-      )
+      ),
     );
   }
 
@@ -160,13 +139,14 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: message.isMe ? Color(0xFF0D035F) : Color(0xFFF2F5F8),
+          color:
+              message.isMe ? const Color(0xFF0D035F) : const Color(0xFFF2F5F8),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
           message.text,
           style: TextStyle(
-            color: message.isMe ? Colors.white : Color(0xFF0D035F),
+            color: message.isMe ? Colors.white : const Color(0xFF0D035F),
           ),
         ),
       ),
@@ -174,8 +154,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _messageInput() {
+    final media = MediaQuery.of(context);
+    final screenWidth = media.size.width;
+
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(screenWidth * 0.03),
       child: Row(
         children: [
           Expanded(
@@ -189,14 +172,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   fontWeight: FontWeight.bold,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
                 ),
               ),
             ),
           ),
           const SizedBox(width: 10),
           IconButton(
-            icon: Icon(Icons.send, color: Theme.of(context).textTheme.bodyLarge!.color,),
+            icon: Icon(Icons.send,
+                color: Theme.of(context).textTheme.bodyLarge!.color),
             onPressed: _sendMessage,
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../shared/constants/strings.dart';
 import '../../../../shared/data/models/user/user_model.dart';
 import '../../../../shared/dependency_injection/injection.dart';
@@ -73,15 +74,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-
           Positioned(
-            top: screenHeight * 0.15, // بدل 132
+            top: screenHeight * 0.15,
+            // بدل 132
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
               width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
+              constraints: BoxConstraints(minHeight: screenHeight * 0.85),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(height: screenHeight * 0.01), // بدل 8
                       SizedBox(
-                        height: screenHeight * 0.15, // بدل 128
+                        height: screenHeight * 0.18, // بدل 128
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppData.topUsers.length,
@@ -138,7 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: AppData.nextSessions.length,
                         separatorBuilder: (_, __) =>
-                            SizedBox(height: screenHeight * 0.01), // بدل 8
+                            SizedBox(height: screenHeight * 0.01),
+                        // بدل 8
                         itemBuilder: (context, index) {
                           final s = AppData.nextSessions[index];
                           return NextSessionCard(

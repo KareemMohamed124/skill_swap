@@ -35,21 +35,23 @@ class ProfileTabs extends StatelessWidget {
           ),
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
-
           labelColor: Colors.white,
-          unselectedLabelColor: isDark ? AppPalette.darkTextSecondary : AppPalette.lightTextSecondary,
-
+          unselectedLabelColor: isDark
+              ? AppPalette.darkTextSecondary
+              : AppPalette.lightTextSecondary,
           labelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 10,
           ),
           unselectedLabelStyle: TextStyle(
-            color: isDark ? Colors.white : (isDark ? AppPalette.darkTextSecondary
-                : AppPalette.lightTextSecondary),
+            color: isDark
+                ? Colors.white
+                : (isDark
+                    ? AppPalette.darkTextSecondary
+                    : AppPalette.lightTextSecondary),
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
-
           tabs: tabs.map((title) => Tab(text: title)).toList(),
         ),
       ),

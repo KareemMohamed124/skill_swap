@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'message_model.dart';
 import 'package:get/get.dart';
 
+import 'message_model.dart';
 
 class PrivateChatScreen extends StatefulWidget {
   final String currentUserId;
@@ -67,141 +67,147 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final padding = screenWidth * 0.04;
+    final avatarRadius = screenWidth * 0.06;
+    final fontSizeName = screenWidth * 0.045;
+    final fontSizeMessage = screenWidth * 0.04;
+    final fontSizeTime = screenWidth * 0.035;
+    final inputHeight = screenHeight * 0.065;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   elevation: 1,
-      //   title: Row(
-      //     children: [
-      //       CircleAvatar(
-      //         backgroundColor: const Color(0xFF0D035F),
-      //         child: Text(
-      //           widget.otherUserName[0],
-      //           style: const TextStyle(
-      //             color: Colors.white,
-      //             fontWeight: FontWeight.bold,
-      //           ),
-      //         ),
-      //       ),
-      //       const SizedBox(width: 10),
-      //       Text(
-      //         widget.otherUserName,
-      //         style: const TextStyle(
-      //           color: Color(0xFF0D035F),
-      //           fontWeight: FontWeight.bold,
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       body: Padding(
-        padding: EdgeInsets.all(16) ,
+        padding: EdgeInsets.all(padding),
         child: Column(
           children: [
-            SizedBox(height: 16),
+            SizedBox(height: padding),
             Row(
               children: [
                 IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: (){
-                      Get.back();
-                    }
+                  icon: Icon(Icons.arrow_back, size: screenWidth * 0.06),
+                  onPressed: () {
+                    Get.back();
+                  },
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: screenWidth * 0.04),
                 CircleAvatar(
+                  radius: avatarRadius,
                   backgroundColor: const Color(0xFF0D035F),
                   child: Text(
                     widget.otherUserName[0],
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: fontSizeName,
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: screenWidth * 0.03),
                 Text(
                   widget.otherUserName,
-                  style: const TextStyle(
-                      color: Color(0xFF0D035F),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18
+                  style: TextStyle(
+                    color: const Color(0xFF0D035F),
+                    fontWeight: FontWeight.bold,
+                    fontSize: fontSizeName,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            SizedBox(height: screenHeight * 0.02),
             Expanded(
-              child:
-              messages.isEmpty
+              child: messages.isEmpty
                   ? Center(
-                child: Text(
-                  "No messages yet",
-                  style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color,),
-                ),
-              )
+                      child: Text(
+                        "No messages yet",
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: fontSizeMessage,
+                        ),
+                      ),
+                    )
                   : ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final message = messages[index];
-                  final isMe = message.senderId == widget.currentUserId;
-                  return _chatBubble(message, isMe);
-                },
-              ),
+                      controller: _scrollController,
+                      padding: EdgeInsets.all(padding),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMe = message.senderId == widget.currentUserId;
+                        return _chatBubble(
+                            message, isMe, fontSizeMessage, screenWidth);
+                      },
+                    ),
             ),
-            _messageInput(),
+            _messageInput(
+                screenWidth: screenWidth,
+                fontSizeMessage: fontSizeMessage,
+                inputHeight: inputHeight),
           ],
         ),
-      )
+      ),
     );
   }
 
-  Widget _chatBubble(Message message, bool isMe) {
+  Widget _chatBubble(
+      Message message, bool isMe, double fontSizeMessage, double screenWidth) {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(14),
+        margin: EdgeInsets.symmetric(vertical: screenWidth * 0.015),
+        padding: EdgeInsets.all(screenWidth * 0.035),
         decoration: BoxDecoration(
           color: isMe ? const Color(0xFF0D035F) : const Color(0xFFF2F5F8),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(screenWidth * 0.04),
         ),
         child: Text(
           message.text,
           style: TextStyle(
             color: isMe ? Colors.white : const Color(0xFF0D035F),
+            fontSize: fontSizeMessage,
           ),
         ),
       ),
     );
   }
 
-  Widget _messageInput() {
+  Widget _messageInput({
+    required double screenWidth,
+    required double fontSizeMessage,
+    required double inputHeight,
+  }) {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.symmetric(vertical: screenWidth * 0.02),
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                fillColor: Theme.of(context).cardColor,
-                hintText: "Message...",
-                hintStyle:  TextStyle(
-                  color: Theme.of(context).textTheme.bodyLarge!.color,
-                  fontWeight: FontWeight.bold,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: inputHeight,
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  fillColor: Theme.of(context).cardColor,
+                  hintText: "Message...",
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: fontSizeMessage,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: screenWidth * 0.02),
           IconButton(
-            icon: Icon(Icons.send, color: Theme.of(context).textTheme.bodyLarge!.color,),
+            icon: Icon(
+              Icons.send,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+              size: screenWidth * 0.07,
+            ),
             onPressed: _sendMessage,
           ),
         ],

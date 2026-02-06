@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../pages/all_sessions_page.dart';
 import '../pages/pending_sessions_page.dart';
 import '../pages/requests_sessions_page.dart';
@@ -21,17 +22,18 @@ class _SessionsScreenState extends State<SessionsScreen> {
     PendingSessionsPage(),
     RequestsSessionsPage()
   ];
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-     // backgroundColor: AppColor.whiteColor,
       body: Stack(
         children: [
           Column(
-          children: [
-            SessionsHeader(
+            children: [
+              SessionsHeader(
                 selectedIndex: selected,
                 onSelect: (index) {
                   setState(() {
@@ -40,34 +42,33 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 },
                 title: "sessions".tr,
                 subtitle: "track_upcoming".tr,
-
-            )
-          ],
+              )
+            ],
           ),
           Positioned(
-              top: 164,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                width: double.infinity,
-                constraints: BoxConstraints(minHeight: screenHeight),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
+            top: screenHeight * 0.21,
+            // responsive top position
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              width: double.infinity,
+              constraints: BoxConstraints(minHeight: screenHeight),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft:
+                      Radius.circular(screenWidth * 0.06), // responsive radius
+                  topRight: Radius.circular(screenWidth * 0.06),
                 ),
-                child: SingleChildScrollView(
-                  child: pages[selected],
-                ),
-              )
+              ),
+              child: SingleChildScrollView(
+                child: pages[selected],
+              ),
+            ),
           )
         ],
       ),
     );
   }
 }
-
-
