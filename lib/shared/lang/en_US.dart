@@ -104,6 +104,6 @@ Map<String, String> en = {
   "overview": "Overview",
   "progress_to_mentor": "Progress to Mentor Status",
   "complete_skills_verification": "Complete Skills Verification",
-  "request_help_from_mentor": "Request Help from Mentor",
+  "apply_mentor": "Apply as a Mentor",
   "recent_activity": "Recent Activity",
 };

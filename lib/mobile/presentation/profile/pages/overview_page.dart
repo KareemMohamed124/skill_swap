@@ -158,7 +158,7 @@ class OverviewPage extends StatelessWidget {
                         ),
                         onPressed: () {},
                         child: Text(
-                          "request_help_from_mentor".tr,
+                          "apply_mentor".tr,
                           style: const TextStyle(
                             color: Color(0XFF0D035F),
                             fontWeight: FontWeight.bold,

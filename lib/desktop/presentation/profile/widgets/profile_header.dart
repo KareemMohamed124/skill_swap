@@ -1,10 +1,11 @@
 import 'dart:io';
+
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
+
 import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 
 class ProfileHeader extends StatefulWidget {
   const ProfileHeader({super.key});
@@ -17,25 +18,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   UserModel? user;
 
   @override
-  void initState() {
-    super.initState();
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
+  Future<void> loadLocalUser() async {
     final localUser = await LocalStorage.getUser();
-
     if (mounted && localUser != null) {
       setState(() => user = localUser);
     }
-
-    try {
-      final repo = sl<AuthRepository>();
-      final freshUser = await repo.getProfile();
-      await LocalStorage.saveUser(freshUser);
-
-      if (mounted) setState(() => user = freshUser);
-    } catch (_) {}
   }
 
   @override
@@ -57,16 +44,18 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: Colors.white24,
-                backgroundImage: (hasImage && defaultTargetPlatform != TargetPlatform.windows)
+                backgroundImage: (hasImage &&
+                        defaultTargetPlatform != TargetPlatform.windows)
                     ? FileImage(File(imagePath))
                     : null,
-                child: (!hasImage || defaultTargetPlatform == TargetPlatform.windows)
-                    ? Icon(Icons.person, size: 24, color: Colors.white)
+                child: (!hasImage ||
+                        defaultTargetPlatform == TargetPlatform.windows)
+                    ? const Icon(Icons.person, size: 24, color: Colors.white)
                     : null,
               ),
               const SizedBox(width: 16),
               Row(
-                children:[
+                children: [
                   Text(user?.name ?? 'Kemo',
                       style: const TextStyle(
                         color: Colors.white,
@@ -74,9 +63,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         fontWeight: FontWeight.bold,
                       )),
                   const SizedBox(width: 6),
-                  Icon(Icons.star, color: Colors.yellow, size: 18),
-                  SizedBox(width: 4),
-                  Text('4.9', style: TextStyle(color: Colors.white)),
+                  const Icon(Icons.star, color: Colors.yellow, size: 18),
+                  const SizedBox(width: 4),
+                  const Text('4.9', style: TextStyle(color: Colors.white)),
                 ],
               ),
             ],

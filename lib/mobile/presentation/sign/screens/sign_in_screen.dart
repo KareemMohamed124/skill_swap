@@ -10,7 +10,6 @@ import '../../../../shared/bloc/login_bloc/login_state.dart';
 import '../../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../../shared/data/models/login/login_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 import '../widgets/custom_button.dart';
@@ -80,15 +79,12 @@ class _SignInScreenState extends State<SignInScreen> {
               setState(() => _handleServerError(state));
             } else if (state is LoginSuccessState) {
               await LocalStorage.saveToken(state.data.accessToken);
-              final repo = sl<AuthRepository>();
-              final user = await repo.getProfile();
-              await LocalStorage.saveUser(user);
+
+              Get.offAll(ScreenManager(initialIndex: 0));
 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.data.message)),
               );
-
-              Get.to(ScreenManager(initialIndex: 0));
             }
           },
           builder: (context, state) {

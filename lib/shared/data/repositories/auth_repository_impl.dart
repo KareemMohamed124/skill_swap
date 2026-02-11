@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
-import '../../helper/local_storage.dart';
+
+import '../../domain/repositories/auth_repository.dart';
 import '../models/login/login_error_response.dart';
 import '../models/login/login_request.dart';
 import '../models/login/login_response.dart';
-import '../models/register/register_request.dart';
 import '../models/register/register_error_response.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../models/register/register_request.dart';
 import '../models/register/register_response.dart';
 import '../models/reset_password/reset_password_error_response.dart';
 import '../models/reset_password/reset_password_request.dart';
@@ -13,7 +13,6 @@ import '../models/reset_password/reset_password_response.dart';
 import '../models/send_code/send_code_error_response.dart';
 import '../models/send_code/send_code_request.dart';
 import '../models/send_code/send_code_response.dart';
-import '../models/user/user_model.dart';
 import '../models/verify_code/verify_code_error_response.dart';
 import '../models/verify_code/verify_code_request.dart';
 import '../models/verify_code/verify_code_response.dart';
@@ -48,9 +47,9 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return RegisterFailure(RegisterErrorResponse(message: response.message));
     } on DioException catch (e) {
-      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
-        final error =
-        RegisterErrorResponse.fromJson(e.response!.data);
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = RegisterErrorResponse.fromJson(e.response!.data);
         return RegisterFailure(error);
       }
 
@@ -68,7 +67,6 @@ class AuthRepositoryImpl implements AuthRepository {
         return LoginSuccess(response);
       }
       return LoginFailure(LoginErrorResponse(message: response.message));
-
     } on DioException catch (e) {
       final msg = _getServerErrorMessage(e);
       return LoginFailure(LoginErrorResponse(message: msg));
@@ -112,7 +110,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request) async {
+  Future<ResetPasswordResponse> resetPassword(
+      ResetPasswordRequest request) async {
     try {
       final response = await api.resetPassword(request);
       if (response.message == 'Password Changed Successfully') {
@@ -122,9 +121,9 @@ class AuthRepositoryImpl implements AuthRepository {
         ResetPasswordErrorResponse(message: response.message),
       );
     } on DioException catch (e) {
-      if (e.response?.data != null && e.response!.data is Map<String, dynamic>) {
-        final error =
-        ResetPasswordErrorResponse.fromJson(e.response!.data);
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = ResetPasswordErrorResponse.fromJson(e.response!.data);
         return ResetPasswordFailure(error);
       }
 
@@ -137,25 +136,4 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
-  //
-   @override
-   Future<UserModel> getProfile() async {
-    return await api.getProfile();
-   }
-  //   final token = await LocalStorage.getToken();
-  //   if (token == null) {
-  //     throw Exception("User not logged in");
-  //   }
-  //
-  //   final response = await dio.get(
-  //     "https://skill-swaapp.vercel.app/auth/profile",
-  //     options: Options(
-  //       headers: {
-  //         "Authorization": "Bearer $token",
-  //       },
-  //     ),
-  //   );
-  //
-  //   return UserModel.fromJson(response.data);
-  // }
 }

@@ -1,22 +1,22 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/desktop/presentation/home/pages/next_session_view_all.dart';
 import 'package:skill_swap/desktop/presentation/home/pages/recommended_view_all.dart';
 import 'package:skill_swap/desktop/presentation/home/pages/top_users_view_all.dart';
 import 'package:skill_swap/desktop/presentation/home/widgets/next_session_card.dart';
-import 'package:skill_swap/desktop/presentation/home/widgets/recommended_card.dart' show RecommendedCard;
+import 'package:skill_swap/desktop/presentation/home/widgets/recommended_card.dart'
+    show RecommendedCard;
 import 'package:skill_swap/desktop/presentation/home/widgets/section_header.dart';
 import 'package:skill_swap/desktop/presentation/home/widgets/top_user_card.dart';
 import 'package:skill_swap/main.dart';
+
 import '../../../../shared/constants/strings.dart';
 import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
-
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -28,29 +28,15 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   UserModel? user;
 
-  @override
-  void initState() {
-    super.initState();
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
+  Future<void> loadLocalUser() async {
     final localUser = await LocalStorage.getUser();
     if (mounted && localUser != null) {
       setState(() => user = localUser);
     }
-
-    try {
-      final repo = sl<AuthRepository>();
-      final freshUser = await repo.getProfile();
-      await LocalStorage.saveUser(freshUser);
-      if (mounted) setState(() => user = freshUser);
-    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
-
     final imagePath = user?.imagePath;
     final hasImage = imagePath != null && imagePath.isNotEmpty;
 
@@ -63,60 +49,71 @@ class _HomeContentState extends State<HomeContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade800, width: 1),
-                ),
-              ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.white24,
-                      backgroundImage: (hasImage && defaultTargetPlatform != TargetPlatform.windows)
-                          ? FileImage(File(imagePath))
-                          : null,
-                      child: (!hasImage || defaultTargetPlatform == TargetPlatform.windows)
-                          ? Icon(Icons.person, size: 24, color: Colors.white)
-                          : null,
+                // Header
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade800, width: 1),
                     ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          user?.name != null ? 'Hi, ${user!.name}' : 'Hi, Kemo',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.white24,
+                        backgroundImage: (hasImage &&
+                                defaultTargetPlatform != TargetPlatform.windows)
+                            ? FileImage(File(imagePath))
+                            : null,
+                        child: (!hasImage ||
+                                defaultTargetPlatform == TargetPlatform.windows)
+                            ? const Icon(Icons.person,
+                                size: 24, color: Colors.white)
+                            : null,
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            user?.name != null
+                                ? 'Hi, ${user!.name}'
+                                : 'Hi, Kemo',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'keep_learning'.tr,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white70,
+                          const SizedBox(height: 4),
+                          Text(
+                            'keep_learning'.tr,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white70,
+                                ),
                           ),
-                        ),
-                      ],
-                    )
-                  ],
-                )
-              ),
-                /// Greeting
+                        ],
+                      )
+                    ],
+                  ),
+                ),
 
                 const SizedBox(height: 24),
 
                 /// Top Users
                 SectionHeader(
                   sectionTitle: 'top_users'.tr,
-                  onTop: () => desktopKey.currentState?.openSidePage(
-                      body: TopUsersViewAll()
-                  )
+                  onTop: () => desktopKey.currentState
+                      ?.openSidePage(body: TopUsersViewAll()),
                 ),
                 const SizedBox(height: 16),
 
@@ -124,8 +121,7 @@ class _HomeContentState extends State<HomeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: AppData.topUsers.length,
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     mainAxisSpacing: 24,
                     crossAxisSpacing: 24,
@@ -148,9 +144,8 @@ class _HomeContentState extends State<HomeContent> {
                 /// Next Sessions
                 SectionHeader(
                   sectionTitle: 'your_next_session'.tr,
-                    onTop: () => desktopKey.currentState?.openSidePage(
-                        body: NextSessionViewAll()
-                    )
+                  onTop: () => desktopKey.currentState
+                      ?.openSidePage(body: NextSessionViewAll()),
                 ),
                 const SizedBox(height: 16),
 
@@ -158,8 +153,7 @@ class _HomeContentState extends State<HomeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: AppData.nextSessions.length,
-                  separatorBuilder: (_, __) =>
-                  const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (_, i) {
                     final s = AppData.nextSessions[i];
                     return NextSessionCard(
@@ -177,9 +171,8 @@ class _HomeContentState extends State<HomeContent> {
                 /// Recommended
                 SectionHeader(
                   sectionTitle: 'recommended_for_you'.tr,
-                    onTop: () => desktopKey.currentState?.openSidePage(
-                        body: RecommendedViewAll()
-                    )
+                  onTop: () => desktopKey.currentState
+                      ?.openSidePage(body: RecommendedViewAll()),
                 ),
                 const SizedBox(height: 16),
 
@@ -187,8 +180,7 @@ class _HomeContentState extends State<HomeContent> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: AppData.recommendedMentors.length,
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: 24,
                     crossAxisSpacing: 24,

@@ -41,7 +41,6 @@ class OverviewPage extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
@@ -58,18 +57,18 @@ class OverviewPage extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.filter_center_focus,
-                      color: isDark ? AppPalette.darkTextPrimary : Color(0xFF1B1464),
+                      color: isDark
+                          ? AppPalette.darkTextPrimary
+                          : Color(0xFF1B1464),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       "progress_to_mentor".tr,
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).textTheme.bodyLarge!.color
-
-                    ),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodyLarge!.color),
                     ),
                   ],
                 ),
@@ -84,7 +83,7 @@ class OverviewPage extends StatelessWidget {
                         color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
-                     Text(
+                    Text(
                       "15%",
                       style: TextStyle(
                         fontWeight: FontWeight.normal,
@@ -103,12 +102,10 @@ class OverviewPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children:  [
+                  children: [
                     Text(
                       "Verify skills (2/3 required)",
                       style: TextStyle(
@@ -135,9 +132,7 @@ class OverviewPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 Row(
                   children: [
                     Expanded(
@@ -171,7 +166,7 @@ class OverviewPage extends StatelessWidget {
                         ),
                         onPressed: () {},
                         child: Text(
-                          "request_help_from_mentor".tr,
+                          "apply_mentor".tr,
                           style: const TextStyle(
                             color: Color(0XFF0D035F),
                             fontWeight: FontWeight.bold,
@@ -184,7 +179,6 @@ class OverviewPage extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
@@ -200,22 +194,28 @@ class OverviewPage extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                     Icon(Icons.calendar_month,color: Theme.of(context).textTheme.bodyLarge!.color,),
+                    Icon(
+                      Icons.calendar_month,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       "recent_activity".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).textTheme.bodyLarge!.color,                      ),
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-
-                activityItem(context ,"Completed React assessment", "2 days ago"),
-                activityItem(context, "Helped Sarah with JavaScript", "3 days ago"),
-                activityItem(context, "Joined React community chat", "1 week ago"),
+                activityItem(
+                    context, "Completed React assessment", "2 days ago"),
+                activityItem(
+                    context, "Helped Sarah with JavaScript", "3 days ago"),
+                activityItem(
+                    context, "Joined React community chat", "1 week ago"),
               ],
             ),
           ),
@@ -229,27 +229,47 @@ class OverviewPage extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-           Icon(Icons.circle, size: 10, color: Theme.of(context).textTheme.bodyLarge!.color,),
+          Icon(
+            Icons.circle,
+            size: 10,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+          ),
           const SizedBox(width: 10),
-          Expanded(child: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color,),)),
-          Text(time, style: TextStyle( color: Theme.of(context).textTheme.bodyMedium!.color,))
+          Expanded(
+              child: Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+            ),
+          )),
+          Text(time,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium!.color,
+              ))
         ],
       ),
     );
   }
 
-  Widget mentorInfo({required BuildContext context, required String rate, required String info}) {
+  Widget mentorInfo(
+      {required BuildContext context,
+      required String rate,
+      required String info}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return  Column(
+    return Column(
       children: [
         Text(
           rate,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppPalette.primary),
+          style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : AppPalette.primary),
         ),
         SizedBox(height: 4),
         Text(
           info,
-          style: TextStyle(fontSize: 12, color:  isDark ? Colors.white : AppPalette.primary),
+          style: TextStyle(
+              fontSize: 12, color: isDark ? Colors.white : AppPalette.primary),
         ),
       ],
     );

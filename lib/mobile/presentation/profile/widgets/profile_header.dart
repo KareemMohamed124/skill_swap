@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 
 import '../../../../shared/common_ui/circle_button_icon.dart';
 import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../setting/screens/setting.dart';
 
@@ -22,32 +20,11 @@ class ProfileHeader extends StatefulWidget {
 class _ProfileHeaderState extends State<ProfileHeader> {
   UserModel? user;
 
-  @override
-  void initState() {
-    super.initState();
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
+  Future<void> loadLocalUser() async {
     final localUser = await LocalStorage.getUser();
-
     if (mounted && localUser != null) {
-      setState(() {
-        user = localUser;
-      });
+      setState(() => user = localUser);
     }
-
-    try {
-      final repo = sl<AuthRepository>();
-      final freshUser = await repo.getProfile();
-      await LocalStorage.saveUser(freshUser);
-
-      if (mounted) {
-        setState(() {
-          user = freshUser;
-        });
-      }
-    } catch (_) {}
   }
 
   Widget _buildMetricItem(String value, String label) {

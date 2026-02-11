@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/data/models/user/user_model.dart';
+import '../../../../shared/helper/local_storage.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 
@@ -21,24 +22,28 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController nameController;
   late TextEditingController emailController;
+  late TextEditingController bioController;
+  late TextEditingController skillsController;
 
   UserModel? user;
   bool loading = true;
   File? selectedImage;
 
-  @override
-  void initState() {
-    super.initState();
-    nameController = TextEditingController();
-    emailController = TextEditingController();
-    // loadUser(); // Assuming your method exists
+  Future<void> loadLocalUser() async {
+    final localUser = await LocalStorage.getUser();
+    if (mounted && localUser != null) {
+      setState(() {
+        user = localUser;
+        nameController.text = localUser.name ?? '';
+        emailController.text = localUser.email ?? '';
+        bioController.text = localUser.bio ?? '';
+        skillsController = (localUser.skills ?? '') as TextEditingController;
+        loading = false; // ⬅️ كمان لو فيه بيانات محلية
+      });
+    }
   }
 
-  final bioController = TextEditingController(
-      text:
-          "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
-  final skillsController = TextEditingController(text: "Flutter, Dart");
-
+  /// ===================== PICK IMAGE =====================
   Future<void> pickImage(ImageSource source) async {
     if (defaultTargetPlatform == TargetPlatform.windows &&
         source == ImageSource.camera) {
@@ -50,12 +55,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     try {
       final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: source);
-
+      final image = await picker.pickImage(source: source);
       if (image != null) {
-        setState(() {
-          selectedImage = File(image.path);
-        });
+        setState(() => selectedImage = File(image.path));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,8 +99,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  /// ===================== BUILD =====================
   @override
   Widget build(BuildContext context) {
+    if (loading) return const Center(child: CircularProgressIndicator());
+
     final screenWidth = MediaQuery.of(context).size.width;
     final padding = screenWidth * 0.04;
     final avatarRadius = screenWidth * 0.08;
@@ -113,7 +118,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: EdgeInsets.all(padding),
         child: Column(
           children: [
-            // Profile Picture
+            /// Profile Picture
             containerWrapper(
               context: context,
               child: Column(
@@ -126,19 +131,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       CircleAvatar(
                         radius: avatarRadius,
                         backgroundColor: AppPalette.primary.withOpacity(0.25),
-                        backgroundImage:
-                            (defaultTargetPlatform == TargetPlatform.windows)
-                                ? null
-                                : (selectedImage != null
-                                    ? FileImage(selectedImage!)
-                                    : null),
-                        child: (selectedImage == null ||
-                                defaultTargetPlatform == TargetPlatform.windows)
-                            ? Icon(
-                                Icons.person,
-                                size: avatarRadius,
-                                color: Colors.white,
-                              )
+                        backgroundImage: selectedImage != null
+                            ? FileImage(selectedImage!)
+                            : (user?.imagePath != null &&
+                                    user!.imagePath!.isNotEmpty
+                                ? FileImage(File(user!.imagePath!))
+                                : null),
+                        child: (selectedImage == null &&
+                                (user?.imagePath == null ||
+                                    user!.imagePath!.isEmpty))
+                            ? Icon(Icons.person,
+                                size: avatarRadius, color: Colors.white)
                             : null,
                       ),
                       SizedBox(width: spacing),
@@ -158,7 +161,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 fontSize: fontSizeSmall, color: Colors.grey),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -166,7 +169,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             SizedBox(height: spacing),
 
-            // Personal Information
+            /// Personal Information
             containerWrapper(
               context: context,
               child: Column(
@@ -195,7 +198,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             SizedBox(height: spacing),
 
-            // Account Actions
+            /// Account Actions
             containerWrapper(
               context: context,
               child: Column(
@@ -229,7 +232,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             SizedBox(height: spacing),
 
-            // Account Status
+            /// Account Status
             containerWrapper(
               context: context,
               child: Column(
@@ -249,6 +252,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  /// ===================== WIDGETS =====================
   Widget containerWrapper(
       {required BuildContext context, required Widget child}) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -289,9 +293,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           hintStyle: TextStyle(
               fontSize: fontSize, color: AppPalette.primary.withOpacity(0.25)),
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
     );
@@ -305,10 +307,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(fontSize: fontSize)),
-          Text(
-            value,
-            style: TextStyle(fontSize: fontSize, color: valueColor),
-          ),
+          Text(value, style: TextStyle(fontSize: fontSize, color: valueColor)),
         ],
       ),
     );
@@ -330,18 +329,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         style: ElevatedButton.styleFrom(
           backgroundColor: colorButton,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(fontSize * 0.75),
-          ),
+              borderRadius: BorderRadius.circular(fontSize * 0.75)),
           side: colorButton == Colors.white
               ? const BorderSide(color: Colors.red)
               : null,
         ),
         onPressed: onPressedAction,
         icon: Icon(icon, color: colorIcon, size: fontSize),
-        label: Text(
-          actionText,
-          style: TextStyle(color: colorText, fontSize: fontSize),
-        ),
+        label: Text(actionText,
+            style: TextStyle(color: colorText, fontSize: fontSize)),
       ),
     );
   }

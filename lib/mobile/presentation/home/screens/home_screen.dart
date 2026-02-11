@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 
 import '../../../../shared/constants/strings.dart';
 import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../notification/screens/notification_screen.dart';
 import '../pages/next_session_view_all.dart';
@@ -15,6 +13,7 @@ import '../widgets/next_session_card.dart';
 import '../widgets/recommended_card.dart';
 import '../widgets/section_header.dart';
 import '../widgets/top_user_card.dart';
+import '../widgets/unreal_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,31 +25,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   UserModel? user;
 
-  @override
-  void initState() {
-    super.initState();
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
+  Future<void> loadLocalUser() async {
     final localUser = await LocalStorage.getUser();
     if (mounted && localUser != null) {
       setState(() {
         user = localUser;
       });
     }
-
-    try {
-      final repo = sl<AuthRepository>();
-      final freshUser = await repo.getProfile();
-      await LocalStorage.saveUser(freshUser);
-
-      if (mounted) {
-        setState(() {
-          user = freshUser;
-        });
-      }
-    } catch (_) {}
   }
 
   @override
@@ -76,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Positioned(
             top: screenHeight * 0.15,
-            // بدل 132
             left: 0,
             right: 0,
             bottom: 0,
@@ -86,13 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(screenWidth * 0.06), // بدل 24
-                  topRight: Radius.circular(screenWidth * 0.06), // بدل 24
+                  topLeft: Radius.circular(screenWidth * 0.06),
+                  topRight: Radius.circular(screenWidth * 0.06),
                 ),
               ),
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.04), // بدل 16
+                  padding: EdgeInsets.all(screenWidth * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -103,14 +83,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(TopUsersViewAll());
                         },
                       ),
-                      SizedBox(height: screenHeight * 0.01), // بدل 8
+                      SizedBox(height: screenHeight * 0.01),
                       SizedBox(
-                        height: screenHeight * 0.18, // بدل 128
+                        height: screenHeight * 0.18,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppData.topUsers.length,
                           separatorBuilder: (_, __) =>
-                              SizedBox(width: screenWidth * 0.04), // بدل 16
+                              SizedBox(width: screenWidth * 0.04),
                           itemBuilder: (context, index) {
                             final u = AppData.topUsers[index];
                             return TopUserCard(
@@ -124,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      SizedBox(height: screenHeight * 0.03), // بدل 24
+                      SizedBox(height: screenHeight * 0.03),
 
                       /// Next Session
                       SectionHeader(
@@ -133,14 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(NextSessionViewAll());
                         },
                       ),
-                      SizedBox(height: screenHeight * 0.01), // بدل 8
+                      SizedBox(height: screenHeight * 0.01),
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: AppData.nextSessions.length,
                         separatorBuilder: (_, __) =>
                             SizedBox(height: screenHeight * 0.01),
-                        // بدل 8
                         itemBuilder: (context, index) {
                           final s = AppData.nextSessions[index];
                           return NextSessionCard(
@@ -153,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
 
-                      SizedBox(height: screenHeight * 0.03), // بدل 24
+                      SizedBox(height: screenHeight * 0.03),
 
                       /// Recommended
                       SectionHeader(
@@ -162,14 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           Get.to(RecommendedViewAll());
                         },
                       ),
-                      SizedBox(height: screenHeight * 0.01), // بدل 8
+                      SizedBox(height: screenHeight * 0.01),
                       SizedBox(
-                        height: screenHeight * 0.21, // بدل 180
+                        height: screenHeight * 0.21,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: AppData.recommendedMentors.length,
                           separatorBuilder: (_, __) =>
-                              SizedBox(width: screenWidth * 0.04), // بدل 16
+                              SizedBox(width: screenWidth * 0.04),
                           itemBuilder: (context, index) {
                             final m = AppData.recommendedMentors[index];
                             return RecommendedCard(
@@ -182,6 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                       ),
+                      SizedBox(height: screenHeight * 0.01),
+                      UnrealExperienceCard()
                     ],
                   ),
                 ),

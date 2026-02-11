@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/sign/screens/sign_up_screen.dart';
+
 import '../../../../shared/bloc/login_bloc/login_bloc.dart';
 import '../../../../shared/bloc/login_bloc/login_event.dart';
 import '../../../../shared/bloc/login_bloc/login_state.dart';
@@ -9,7 +10,6 @@ import '../../../../shared/common_ui/header.dart';
 import '../../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../../shared/data/models/login/login_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 import '../widgets/custom_button.dart';
@@ -66,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return BlocProvider(
       create: (_) => sl<LoginBloc>(),
       child: Scaffold(
-      //  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        //  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Stack(
           children: [
             Column(
@@ -99,12 +99,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           });
                         } else if (state is LoginSuccessState) {
                           await LocalStorage.saveToken(state.data.accessToken);
-                          final repo = sl<AuthRepository>();
-                          final user = await repo.getProfile();
-                         await LocalStorage.saveUser(user);
+                          // final userBloc = sl<UserBloc>();
+                          //userBloc.add(GetUserProfile());
+                          //  await LocalStorage.saveUser(user);
                           ScaffoldMessenger.of(
                             context,
-                          ).showSnackBar(SnackBar(content: Text(state.data.message)));
+                          ).showSnackBar(
+                              SnackBar(content: Text(state.data.message)));
                           Get.to(ScreenManager(initialIndex: 0));
                         }
                       },
@@ -118,19 +119,23 @@ class _SignInScreenState extends State<SignInScreen> {
                               Text(
                                 "Welcome Back!",
                                 style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).textTheme.bodyLarge!.color
-                                ),
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .color),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 "Sign in to continue your learning journey",
-                                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color
-                              ),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .color),
                               ),
                               const SizedBox(height: 32),
-
                               CustomTextField(
                                 controller: emailController,
                                 labelText: "Email",
@@ -149,7 +154,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
-
                               CustomTextField(
                                 controller: passwordController,
                                 labelText: "Password",
@@ -168,39 +172,42 @@ class _SignInScreenState extends State<SignInScreen> {
                                   return null;
                                 },
                               ),
-
                               const SizedBox(height: 32),
-
                               CustomButton(
-                                text: state is LoginLoading ? "Logging in..." : "Sign In",
+                                text: state is LoginLoading
+                                    ? "Logging in..."
+                                    : "Sign In",
                                 onPressed: state is LoginLoading
                                     ? null
                                     : () {
-                                  if (formKey.currentState!.validate()) {
-                                    final request = LoginRequest(
-                                      email: emailController.text,
-                                      password: passwordController.text,
-                                    );
+                                        if (formKey.currentState!.validate()) {
+                                          final request = LoginRequest(
+                                            email: emailController.text,
+                                            password: passwordController.text,
+                                          );
 
-                                    context.read<LoginBloc>().add(LoginSubmit(request));
-                                  }
-                                },
+                                          context
+                                              .read<LoginBloc>()
+                                              .add(LoginSubmit(request));
+                                        }
+                                      },
                               ),
-
                               const SizedBox(height: 24),
                               Center(
                                 child: TextButton(
                                   onPressed: () {
                                     Get.to(ForgetPassword());
                                   },
-                                  child:  Text(
+                                  child: Text(
                                     "Forget Password?",
-                                    style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color
-                                  ),
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color),
                                   ),
                                 ),
                               ),
-
                               const SizedBox(height: 32),
                               Center(
                                 child: Row(
@@ -208,8 +215,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                   children: [
                                     Text(
                                       "Don’t have an account? ",
-                                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color
-                                      ),
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color),
                                     ),
                                     GestureDetector(
                                       onTap: () {
@@ -219,8 +229,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                         "Sign Up",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).textTheme.bodyLarge!.color
-                                        ),
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .color),
                                       ),
                                     ),
                                   ],

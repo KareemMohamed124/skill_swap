@@ -1,14 +1,13 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/domain/repositories/auth_repository.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
@@ -23,51 +22,31 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController nameController;
   late TextEditingController emailController;
+  final bioController = TextEditingController(
+      text:
+          "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
+  final skillsController = TextEditingController(text: "Flutter, Dart");
 
   UserModel? user;
   bool loading = true;
-
   File? selectedImage;
 
-  @override
-  void initState() {
-    super.initState();
-    nameController = TextEditingController();
-    emailController = TextEditingController();
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
+  Future<void> loadLocalUser() async {
     final localUser = await LocalStorage.getUser();
-    if (mounted) {
+    if (mounted && localUser != null) {
       setState(() {
         user = localUser;
+        nameController.text = localUser.name ?? '';
+        emailController.text = localUser.email ?? '';
         loading = false;
       });
     }
-
-    try {
-      final repo = sl<AuthRepository>();
-      final freshUser = await repo.getProfile();
-      await LocalStorage.saveUser(freshUser);
-
-      if (mounted) {
-        setState(() {
-          user = freshUser;
-        });
-      }
-    } catch (_) {}
   }
-
-  // Controllers
-  final bioController = TextEditingController(
-      text: "Mobile Flutter Developer focused on fast, scalable app.\nBLoC • APIs • Clean UI");
-  final skillsController = TextEditingController(text: "Flutter, Dart");
 
   /// ===================== PICK IMAGE =====================
   Future<void> pickImage(ImageSource source) async {
-    // لو Windows → تجاهل الكاميرا
-    if (defaultTargetPlatform == TargetPlatform.windows && source == ImageSource.camera) {
+    if (defaultTargetPlatform == TargetPlatform.windows &&
+        source == ImageSource.camera) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Camera not available on Windows")),
       );
@@ -76,12 +55,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     try {
       final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: source);
-
+      final image = await picker.pickImage(source: source);
       if (image != null) {
-        setState(() {
-          selectedImage = File(image.path);
-        });
+        setState(() => selectedImage = File(image.path));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,21 +120,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       CircleAvatar(
                         radius: 30,
                         backgroundColor: AppPalette.primary.withOpacity(0.25),
-                        backgroundImage: (defaultTargetPlatform == TargetPlatform.windows)
-                            ? null
-                            : (selectedImage != null
-                            ? FileImage(selectedImage!)
-                            : (user?.imagePath != null && user!.imagePath!.isNotEmpty
-                            ? FileImage(File(user!.imagePath!))
-                            : null)),
+                        backgroundImage:
+                            (defaultTargetPlatform == TargetPlatform.windows)
+                                ? null
+                                : (selectedImage != null
+                                    ? FileImage(selectedImage!)
+                                    : (user?.imagePath != null &&
+                                            user!.imagePath!.isNotEmpty
+                                        ? FileImage(File(user!.imagePath!))
+                                        : null)),
                         child: (selectedImage == null &&
-                            (user?.imagePath == null || user!.imagePath!.isEmpty) ||
-                            defaultTargetPlatform == TargetPlatform.windows)
-                            ? const Icon(
-                          Icons.person,
-                          size: 30,
-                          color: Colors.white,
-                        )
+                                    (user?.imagePath == null ||
+                                        user!.imagePath!.isEmpty) ||
+                                defaultTargetPlatform == TargetPlatform.windows)
+                            ? const Icon(Icons.person,
+                                size: 30, color: Colors.white)
                             : null,
                       ),
                       const SizedBox(width: 8),
@@ -194,13 +170,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   sectionTitle("personal_information".tr),
                   const SizedBox(height: 8),
                   inputField("full_name".tr, "ex: Nada Sayed", nameController),
-                  inputField("email".tr, "ex: example@gmail.com", emailController),
-                  inputField("bio".tr, "Tell others about yourself...", bioController, maxLines: 3),
+                  inputField(
+                      "email".tr, "ex: example@gmail.com", emailController),
+                  inputField(
+                      "bio".tr, "Tell others about yourself...", bioController,
+                      maxLines: 3),
                   inputField("skills".tr, "Flutter, Dart...", skillsController),
                   const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
-                    child: CustomButton(text: "save_changes".tr, onPressed: () {}),
+                    child:
+                        CustomButton(text: "save_changes".tr, onPressed: () {}),
                   ),
                 ],
               ),
@@ -260,7 +240,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   /// ===================== WIDGETS =====================
-  Widget containerWrapper({required BuildContext context, required Widget child}) {
+  Widget containerWrapper(
+      {required BuildContext context, required Widget child}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -278,12 +259,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: Text(
         title,
         style: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge!.color),
       ),
     );
   }
 
-  Widget inputField(String label, String hint, TextEditingController controller, {int maxLines = 1}) {
+  Widget inputField(String label, String hint, TextEditingController controller,
+      {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
@@ -291,7 +275,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         maxLines: maxLines,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(fontSize: 12, color: AppPalette.primary.withOpacity(0.25)),
+          hintStyle: TextStyle(
+              fontSize: 12, color: AppPalette.primary.withOpacity(0.25)),
           labelText: label,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),

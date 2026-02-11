@@ -17,7 +17,7 @@ dependencies:
   equatable: ^2.0.7
 
   # UI
-  smooth_page_indicator: ^1.1.0
+  smooth_page_indicator: ^2.0.1
   carousel_slider_plus: ^7.1.1
   iconsax_flutter: ^1.0.1
   lottie: ^3.1.0
@@ -29,11 +29,11 @@ dependencies:
 
   # State / Navigation
   get: ^4.6.5
-  get_it: ^8.1.0
+  get_it: ^9.2.0
 
   # Network
   dio: ^5.4.0
-  retrofit: 4.8.0
+  retrofit: ^4.9.2
   json_annotation: ^4.8.1
 
   # Local storage
@@ -42,12 +42,16 @@ dependencies:
   get_storage: ^2.1.1
 
   # Device / Camera
-  image_picker: ^0.8.7+6
+  image_picker: ^1.2.1
   intl_phone_field: ^3.2.0
 
   # AI
   google_generative_ai: ^0.4.7
   flutter_gemini: ^3.0.0
+
+  #Unreal
+  android_intent_plus: ^5.0.2
+  flutter_device_apps: ^0.6.0
 
   # Localization
   flutter_localizations:
@@ -61,10 +65,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   build_runner: ^2.4.8
   json_serializable: ^6.7.1
-  retrofit_generator: 8.1.0
+  retrofit_generator: ^10.2.1
   injectable_generator: ^2.2.0
   injectable: ^2.2.0
   device_preview: ^1.1.0

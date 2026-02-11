@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+
 import '../../mobile/presentation/sign/screens/sign_in_screen.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
@@ -36,9 +37,11 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
 
-  sl.registerFactory<VerifyCodeBloc>(() => VerifyCodeBloc(sl<AuthRepository>()));
+  sl.registerFactory<VerifyCodeBloc>(
+      () => VerifyCodeBloc(sl<AuthRepository>()));
 
-  sl.registerFactory<ResetPasswordBloc>(() => ResetPasswordBloc(sl<AuthRepository>()));
+  sl.registerFactory<ResetPasswordBloc>(
+      () => ResetPasswordBloc(sl<AuthRepository>()));
 
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
 
