@@ -10,12 +10,18 @@ RegisterSuccessResponse _$RegisterSuccessResponseFromJson(
         Map<String, dynamic> json) =>
     RegisterSuccessResponse(
       message: json['message'] as String,
-      id: json['_id'] as String,
+      flag: json['flag'] as bool,
+      id: json['userId'] as String,
+      accessToken: json['access_token'] as String?,
+      refreshToken: json['refresh_token'] as String?,
     );
 
 Map<String, dynamic> _$RegisterSuccessResponseToJson(
         RegisterSuccessResponse instance) =>
     <String, dynamic>{
       'message': instance.message,
-      '_id': instance.id,
+      'flag': instance.flag,
+      'userId': instance.id,
+      'access_token': instance.accessToken,
+      'refresh_token': instance.refreshToken,
     };

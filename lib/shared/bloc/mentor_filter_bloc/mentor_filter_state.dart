@@ -24,14 +24,14 @@ class MentorFilterState extends Equatable {
 
   @override
   List<Object?> get props => [
-    filteredList,
-    minPrice,
-    maxPrice,
-    selectedRate,
-    selectedStatus,
-    selectedTrack,
-    enteredSkill,
-  ];
+        filteredList,
+        minPrice,
+        maxPrice,
+        selectedRate,
+        selectedStatus,
+        selectedTrack,
+        enteredSkill,
+      ];
 
   MentorFilterState copyWith({
     List<MentorModel>? filteredList,

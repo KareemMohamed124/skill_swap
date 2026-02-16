@@ -113,8 +113,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               const SizedBox(height: 16),
 
               /// Status
-              Text("status".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text("status".tr, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               buildChoiceChips<String>(
                 context: context,
@@ -135,8 +134,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               const SizedBox(height: 16),
 
               /// Track
-              Text("track".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text("track".tr, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               buildChoiceChips<String>(
                 context: context,
@@ -157,8 +155,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               const SizedBox(height: 16),
 
               /// Skill
-              Text("skill".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text("skill".tr, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 50),
@@ -172,8 +169,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Theme.of(context).dividerColor),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -194,8 +191,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               const SizedBox(height: 16),
 
               /// Rating
-              Text("rating".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text("rating".tr, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               buildChoiceChips<int>(
                 context: context,
@@ -223,15 +219,15 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                 child: ElevatedButton(
                   onPressed: () {
                     context.read<MentorFilterBloc>().add(
-                      ApplyFiltersEvent(
-                        minPrice: startPrice,
-                        maxPrice: endPrice,
-                        minRate: selectedRate?.toDouble(),
-                        status: selectedStatus,
-                        track: selectedTrack,
-                        skill: enteredSkill,
-                      ),
-                    );
+                          ApplyFiltersEvent(
+                            minPrice: startPrice,
+                            maxPrice: endPrice,
+                            minRate: selectedRate?.toDouble(),
+                            status: selectedStatus,
+                            track: selectedTrack,
+                            skill: enteredSkill,
+                          ),
+                        );
                     //Navigator.pop(context, activeFiltersCount);
                   },
                   style: ElevatedButton.styleFrom(
@@ -272,7 +268,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     final inactiveColor = Theme.of(context).cardColor;
     final textActive = Colors.white;
     final textInactive =
-    isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
+        isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
 
     return Wrap(
       spacing: 8,
@@ -283,21 +279,20 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
         return ChoiceChip(
           label: showIcon
               ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null)
-                Icon(icon,
-                    size: 18,
-                    color: selected ? textActive : textInactive),
-              Text("  $item",
-                  style: TextStyle(
-                      color:
-                      selected ? textActive : textInactive)),
-            ],
-          )
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null)
+                      Icon(icon,
+                          size: 18,
+                          color: selected ? textActive : textInactive),
+                    Text("  $item",
+                        style: TextStyle(
+                            color: selected ? textActive : textInactive)),
+                  ],
+                )
               : Text("$item",
-              style: TextStyle(
-                  color: selected ? textActive : textInactive)),
+                  style:
+                      TextStyle(color: selected ? textActive : textInactive)),
           selected: selected,
           backgroundColor: inactiveColor,
           selectedColor: activeColor,

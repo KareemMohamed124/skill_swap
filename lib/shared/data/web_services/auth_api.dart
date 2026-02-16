@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
 import '../models/login/login_request.dart';
@@ -34,4 +35,16 @@ abstract class AuthApi {
   Future<ResetPasswordSuccessResponse> resetPassword(
     @Body() ResetPasswordRequest body,
   );
+
+  @POST("activation/verify")
+  Future<dynamic> verifyActivation(@Body() Map<String, dynamic> body);
+
+  @POST("activation/resend")
+  Future<dynamic> resendActivation(@Body() Map<String, dynamic> body);
+
+  @POST("logout/")
+  Future<void> logout();
+
+  @DELETE("https://skill-swaapp.vercel.app/user/delete")
+  Future<void> deleteAccount();
 }

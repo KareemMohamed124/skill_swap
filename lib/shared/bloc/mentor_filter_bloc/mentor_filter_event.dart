@@ -13,14 +13,13 @@ class ApplyFiltersEvent extends MentorFilterEvent {
   final String? skill;
   final String? track;
 
-  ApplyFiltersEvent({
-    this.minPrice,
-    this.maxPrice,
-    this.minRate,
-    this.status,
-    this.skill,
-    this.track
-  });
+  ApplyFiltersEvent(
+      {this.minPrice,
+      this.maxPrice,
+      this.minRate,
+      this.status,
+      this.skill,
+      this.track});
 }
 
 class ResetFiltersEvent extends MentorFilterEvent {}
@@ -30,13 +29,8 @@ class SearchMentorEvent extends MentorFilterEvent {
   SearchMentorEvent(this.query);
 }
 
-enum SortType {
-  priceLowToHigh,
-  priceHighToLow,
-  nameAZ,
-  nameZA,
-  rateHigh
-}
+enum SortType { priceLowToHigh, priceHighToLow, nameAZ, nameZA, rateHigh }
+
 class SortMentorEvent extends MentorFilterEvent {
   final SortType type;
   SortMentorEvent(this.type);

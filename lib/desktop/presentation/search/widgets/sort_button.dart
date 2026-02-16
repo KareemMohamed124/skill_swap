@@ -53,13 +53,13 @@ class _SortButtonState extends State<SortButton> {
               isExpanded: true,
               items: items
                   .map((option) => DropdownMenuItem(
-                value: option,
-                child: Text(
-                  option,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ))
+                        value: option,
+                        child: Text(
+                          option,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ))
                   .toList(),
               dropdownStyleData: const DropdownStyleData(
                 offset: Offset(0, -5),
@@ -99,4 +99,3 @@ class _SortButtonState extends State<SortButton> {
     );
   }
 }
-

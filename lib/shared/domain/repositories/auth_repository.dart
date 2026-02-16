@@ -8,6 +8,7 @@ import '../../data/models/send_code/send_code_request.dart';
 import '../../data/models/send_code/send_code_response.dart';
 import '../../data/models/verify_code/verify_code_request.dart';
 import '../../data/models/verify_code/verify_code_response.dart';
+import '../../data/models/delete_account/delete_account_response.dart';
 
 abstract class AuthRepository {
   Future<RegisterResponse> register(RegisterRequest request);
@@ -19,4 +20,12 @@ abstract class AuthRepository {
   Future<VerifyCodeResponse> verifyCode(VerifyCodeRequest request);
 
   Future<ResetPasswordResponse> resetPassword(ResetPasswordRequest request);
+
+  Future<void> logout();
+
+  Future<DeleteAccountResponse> deleteAccount();
+
+  Future<void> verifyActivation(String code);
+
+  Future<void> resendActivation(String email);
 }

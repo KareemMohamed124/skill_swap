@@ -5,6 +5,7 @@ import '../data/models/user/user_model.dart';
 class LocalStorage {
   static const _box = 'appBox';
   static const _tokenKey = 'token';
+  static const _refreshTokenKey = 'refreshToken';
   static const _onboardingKey = 'onboarding';
 
   static Future<void> saveToken(String token) async {
@@ -20,6 +21,22 @@ class LocalStorage {
   static Future<void> clearToken() async {
     final box = await Hive.openBox(_box);
     await box.delete(_tokenKey);
+  }
+
+  static Future<void> saveRefreshToken(String token) async {
+    final box = await Hive.openBox(_box);
+    await box.put(_refreshTokenKey, token);
+  }
+
+  static Future<String?> getRefreshToken() async {
+    final box = await Hive.openBox(_box);
+    return box.get(_refreshTokenKey);
+  }
+
+  static Future<void> clearAllTokens() async {
+    final box = await Hive.openBox(_box);
+    await box.delete(_tokenKey);
+    await box.delete(_refreshTokenKey);
   }
 
   static Future<bool> isLoggedIn() async {

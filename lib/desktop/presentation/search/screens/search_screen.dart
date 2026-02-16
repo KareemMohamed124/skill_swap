@@ -13,7 +13,6 @@ import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_event.dart';
 import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_state.dart';
 
-
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -62,8 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         height: 50,
                         child: TextField(
                           controller: searchTextController,
-                          cursorColor:
-                          isDark ? Colors.white : Colors.black,
+                          cursorColor: isDark ? Colors.white : Colors.black,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
@@ -100,12 +98,11 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: FilterButton(
                               activeFilters: activeFiltersCount,
                               onPressed: () async {
-                                final bloc =
-                                context.read<MentorFilterBloc>();
+                                final bloc = context.read<MentorFilterBloc>();
                                 final state = bloc.state;
 
                                 final activeFilters =
-                                await showModalSideSheet<int>(
+                                    await showModalSideSheet<int>(
                                   context: context,
                                   withCloseControll: false,
                                   barrierColor: const Color(0xFFD6D6D6)
@@ -113,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   width: isDesktop
                                       ? 500
                                       : MediaQuery.of(context).size.width *
-                                      0.85,
+                                          0.85,
                                   body: BlocProvider.value(
                                     value: bloc,
                                     child: MentorFilterSheet(
@@ -142,8 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       /// Mentor List
                       Expanded(
-                        child: BlocBuilder<MentorFilterBloc,
-                            MentorFilterState>(
+                        child: BlocBuilder<MentorFilterBloc, MentorFilterState>(
                           builder: (context, state) {
                             return ListView.builder(
                               padding: EdgeInsets.zero,
@@ -151,18 +147,17 @@ class _SearchScreenState extends State<SearchScreen> {
                               itemBuilder: (context, index) {
                                 final mentor = state.filteredList[index];
                                 return InkWell(
-                                onTap: () {
-    desktopKey.currentState?.openSidePage(
-    body: ProfileMentor(
-    id: mentor.id,
-    name: mentor.name,
-    track: mentor.track,
-    rate: mentor.rate,
-    image: mentor.image,
-    ),
-    rightPanel: BookSession()
-    );
-                                },
+                                  onTap: () {
+                                    desktopKey.currentState?.openSidePage(
+                                        body: ProfileMentor(
+                                          id: mentor.id,
+                                          name: mentor.name,
+                                          track: mentor.track,
+                                          rate: mentor.rate,
+                                          image: mentor.image,
+                                        ),
+                                        rightPanel: BookSession());
+                                  },
                                   child: MentorCard(
                                     image: mentor.image,
                                     name: mentor.name,

@@ -41,11 +41,9 @@ class MentorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               ClipOval(
                 child: Image.asset(
                   image,
@@ -54,14 +52,11 @@ class MentorCard extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-
               SizedBox(width: width * 0.03),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -72,7 +67,6 @@ class MentorCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: width * 0.02,
@@ -97,9 +91,7 @@ class MentorCard extends StatelessWidget {
                         )
                       ],
                     ),
-
                     SizedBox(height: width * 0.015),
-
                     Row(
                       children: [
                         const Icon(Icons.star, size: 18, color: Colors.amber),
@@ -118,9 +110,7 @@ class MentorCard extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: width * 0.02),
-
           Wrap(
             spacing: width * 0.02,
             runSpacing: width * 0.02,

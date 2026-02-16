@@ -56,6 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         title: "Sign Up",
         child: BlocConsumer<RegisterBloc, RegisterState>(
           listener: (context, state) {
+            /// ===== FAILURE =====
             if (state is RegisterFailureState) {
               setState(() {
                 nameError = null;
@@ -63,8 +64,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 passwordError = null;
                 confirmPasswordError = null;
 
-                final errors = state.error.validationErrors;
-                if (errors != null && errors.isNotEmpty) {
+                final errors = state.error.validationErrors ?? [];
+
+                if (errors.isNotEmpty) {
                   for (var err in errors) {
                     switch (err.field) {
                       case "name":
@@ -82,16 +84,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                   }
                 } else {
-                  emailError = state.error.message;
+                  emailError = state.error.message ?? "Registration failed";
                 }
               });
 
               formKey.currentState?.validate();
             }
 
+            /// ===== SUCCESS =====
             if (state is RegisterSuccessState) {
+              final message = state.data?.message ?? "Registered successfully";
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.data.message)),
+                SnackBar(content: Text(message)),
               );
 
               Get.to(
@@ -178,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         if (!RegExp(
                           r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
                         ).hasMatch(value)) {
-                          return "Password must contain at least 8 character, uppercase, lowercase, and a number";
+                          return "Password must contain at least 8 characters, uppercase, lowercase, and a number";
                         }
                         return passwordError;
                       },

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../shared/helper/local_storage.dart';
+import '../../sign/screens/sign_in_screen.dart';
 
 class SignOutButton extends StatelessWidget {
   const SignOutButton({super.key});
@@ -17,7 +21,10 @@ class SignOutButton extends StatelessWidget {
           backgroundColor: Colors.red,
           padding: EdgeInsets.symmetric(vertical: verticalPadding),
         ),
-        onPressed: () {},
+        onPressed: () async {
+          await LocalStorage.clearAllTokens();
+          Get.offAll(() => const SignInScreen());
+        },
         icon: const Icon(Icons.logout),
         label: const Text("Sign Out"),
       ),

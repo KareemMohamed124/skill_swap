@@ -21,7 +21,7 @@ class VerifyScreen extends StatefulWidget {
 
 class _VerifyScreenState extends State<VerifyScreen> {
   bool isResend = false;
-  int secondsRemaining = 40;
+  int secondsRemaining = 900; // 15 دقيقة
   late Timer timer;
   String? codeError;
 
@@ -41,6 +41,12 @@ class _VerifyScreenState extends State<VerifyScreen> {
     });
   }
 
+  String get timerText {
+    final minutes = (secondsRemaining ~/ 60).toString().padLeft(2, '0');
+    final seconds = (secondsRemaining % 60).toString().padLeft(2, '0');
+    return "$minutes:$seconds";
+  }
+
   @override
   void initState() {
     super.initState();
@@ -58,7 +64,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // MediaQuery for screen size
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -198,13 +203,13 @@ class _VerifyScreenState extends State<VerifyScreen> {
                                 },
                           bottomText: isResend
                               ? "Didn't receive the code? "
-                              : "Resend code in 00:${secondsRemaining.toString().padLeft(2, '0')}",
+                              : "Resend code in ${timerText}",
                           bottomActionText: isResend ? 'Resend' : '',
                           onBottomTap: isResend
                               ? () {
                                   setState(() {
                                     isResend = false;
-                                    secondsRemaining = 40;
+                                    secondsRemaining = 900; // 15 دقيقة
                                   });
                                   startTimer();
                                   context

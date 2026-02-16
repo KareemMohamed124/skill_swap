@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../domain/repositories/auth_repository.dart';
+import '../models/delete_account/delete_account_response.dart';
 import '../models/login/login_error_response.dart';
 import '../models/login/login_request.dart';
 import '../models/login/login_response.dart';
@@ -16,6 +17,7 @@ import '../models/send_code/send_code_response.dart';
 import '../models/verify_code/verify_code_error_response.dart';
 import '../models/verify_code/verify_code_request.dart';
 import '../models/verify_code/verify_code_response.dart';
+import '../../helper/local_storage.dart';
 import '../web_services/auth_api.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -23,6 +25,17 @@ class AuthRepositoryImpl implements AuthRepository {
   final Dio dio;
 
   AuthRepositoryImpl({required this.api, required this.dio});
+
+  @override
+  Future<void> logout() async {
+    try {
+      await api.logout();
+    } catch (_) {
+      // Even if the API call fails, clear tokens locally
+    } finally {
+      await LocalStorage.clearAllTokens();
+    }
+  }
 
   String _getServerErrorMessage(DioException e) {
     try {
@@ -42,7 +55,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<RegisterResponse> register(RegisterRequest request) async {
     try {
       final response = await api.register(request);
-      if (response.message == "User Registered Successfully") {
+      if (response.message ==
+          "User Registered Successfully. Please check you email for activation code") {
         return RegisterSuccess(response);
       }
       return RegisterFailure(RegisterErrorResponse(message: response.message));
@@ -55,6 +69,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return RegisterFailure(
         RegisterErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return RegisterFailure(
+        RegisterErrorResponse(message: e.toString()),
       );
     }
   }
@@ -86,6 +104,10 @@ class AuthRepositoryImpl implements AuthRepository {
     } on DioException catch (e) {
       return SendCodeFailure(
         SendCodeErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return SendCodeFailure(
+        SendCodeErrorResponse(message: e.toString()),
       );
     }
   }
@@ -134,6 +156,41 @@ class AuthRepositoryImpl implements AuthRepository {
       return ResetPasswordFailure(
         ResetPasswordErrorResponse(message: e.toString()),
       );
+    }
+  }
+
+  @override
+  Future<DeleteAccountResponse> deleteAccount() async {
+    try {
+      await api.deleteAccount();
+      await LocalStorage.clearAllTokens();
+      return DeleteAccountSuccess();
+    } on DioException catch (e) {
+      return DeleteAccountFailure(_getServerErrorMessage(e));
+    } catch (e) {
+      return DeleteAccountFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<void> verifyActivation(String code) async {
+    try {
+      await api.verifyActivation({'activation_code': code});
+    } on DioException catch (e) {
+      throw _getServerErrorMessage(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<void> resendActivation(String email) async {
+    try {
+      await api.resendActivation({'email': email});
+    } on DioException catch (e) {
+      throw _getServerErrorMessage(e);
+    } catch (e) {
+      throw e.toString();
     }
   }
 }

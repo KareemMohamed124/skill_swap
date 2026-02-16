@@ -2,88 +2,125 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/common_ui/screen_manager/screen_manager.dart';
-import '../../../shared/core/theme/app_palette.dart';
-import '../sign/widgets/custom_button.dart';
 
-class SelectSkills extends StatelessWidget {
-  final String? selectedTrack;
+class SelectSkillsScreen extends StatefulWidget {
+  final String trackName;
+  final List<String> skills;
 
-  const SelectSkills({super.key, this.selectedTrack});
+  const SelectSkillsScreen({
+    super.key,
+    required this.trackName,
+    required this.skills,
+  });
+
+  @override
+  State<SelectSkillsScreen> createState() => _SelectSkillsScreenState();
+}
+
+class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
+  List<String> selectedSkills = [];
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final size = MediaQuery.of(context).size;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.04), // responsive padding
+        padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.05,
+          vertical: size.height * 0.04,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: screenHeight * 0.04),
+            SizedBox(height: size.height * 0.02),
             Text(
-              'Select your skills for ${selectedTrack ?? ''}',
+              "Select your skills",
               style: TextStyle(
-                fontSize: screenWidth * 0.06, // responsive font size
+                fontSize: size.width * 0.065,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
-            SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: size.height * 0.01),
             Text(
-              'Write the skills you’ve mastered in the ${selectedTrack ?? ''} track to help us connect you with the right mentors and opportunities.',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Theme.of(context).textTheme.bodyLarge!.color,
+              "Track: ${widget.trackName}",
+              style: TextStyle(fontSize: size.width * 0.04),
+            ),
+            SizedBox(height: size.height * 0.03),
+
+            /// 🔥 Skills Chips
+            Expanded(
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: size.width * 0.02,
+                  runSpacing: size.height * 0.015,
+                  children: widget.skills.map((skill) {
+                    final isSelected = selectedSkills.contains(skill);
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (isSelected) {
+                            selectedSkills.remove(skill);
+                          } else {
+                            selectedSkills.add(skill);
+                          }
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: size.width * 0.04,
+                          vertical: size.height * 0.012,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xff0D0B5C)
+                              : Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xff0D0B5C)
+                                : Theme.of(context).dividerColor,
+                          ),
+                        ),
+                        child: Text(
+                          skill,
+                          style: TextStyle(
+                            fontSize: size.width * 0.035,
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark ? Colors.white : Colors.black),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-            SizedBox(height: screenHeight * 0.04),
+
+            /// 🔥 Continue Button
             SizedBox(
-              height: screenHeight * 0.45, // responsive height
-              child: TextField(
-                maxLines: null,
-                minLines: 8,
-                decoration: InputDecoration(
-                  fillColor: Theme.of(context).cardColor,
-                  hintText: 'Unity, Python, Unreal Engine...',
-                  hintStyle: TextStyle(
-                    color: const Color(0xFF0D035F).withOpacity(0.25),
-                    fontSize: screenWidth * 0.04,
+              width: double.infinity,
+              height: size.height * 0.065,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Go to ScreenManager using GetX
+                  Get.to(ScreenManager(initialIndex: 0));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff0D0B5C),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                    borderSide: BorderSide(
-                        color: AppPalette.primary, width: screenWidth * 0.003),
-                  ),
+                ),
+                child: const Text(
+                  "Continue",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    text: 'Skip',
-                    onPressed: () {
-                      Get.to(ScreenManager(initialIndex: 0));
-                    },
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.04),
-                Expanded(
-                  child: CustomButton(
-                    text: 'Continue',
-                    onPressed: () {
-                      Get.to(ScreenManager(initialIndex: 0));
-                    },
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: screenHeight * 0.04),
           ],
         ),
       ),

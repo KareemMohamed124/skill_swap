@@ -3,6 +3,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../data/models/register/register_response.dart';
 import 'register_event.dart';
 import 'register_state.dart';
+import '../../helper/local_storage.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final AuthRepository repo;
@@ -15,6 +16,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
       switch (result) {
         case RegisterSuccess s:
+          if (s.data.accessToken != null) {
+            await LocalStorage.saveToken(s.data.accessToken!);
+          }
+          if (s.data.refreshToken != null) {
+            await LocalStorage.saveRefreshToken(s.data.refreshToken!);
+          }
           emit(RegisterSuccessState(s.data));
           break;
 

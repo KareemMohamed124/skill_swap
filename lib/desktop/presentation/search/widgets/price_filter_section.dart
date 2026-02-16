@@ -38,9 +38,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           "price_range".tr,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-
         SizedBox(height: width * 0.02),
-
         RangeSlider(
           values: priceRange,
           min: widget.min,
@@ -57,9 +55,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
             widget.onChanged(values.start, values.end);
           },
         ),
-
         SizedBox(height: width * 0.01),
-
         Row(
           children: [
             Expanded(child: priceBox("min".tr, priceRange.start)),
@@ -82,9 +78,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
             fontSize: 12,
           ),
         ),
-
         SizedBox(height: 4),
-
         Container(
           height: 40,
           alignment: Alignment.centerLeft,
@@ -101,4 +95,5 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         ),
       ],
     );
-  }}
+  }
+}
