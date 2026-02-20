@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 
+import '../models/complete_profile/complete_profile_request.dart';
 import '../models/login/login_request.dart';
 import '../models/login/login_success_response_new.dart';
 import '../models/register/register_request.dart';
@@ -47,4 +48,10 @@ abstract class AuthApi {
 
   @DELETE("https://skill-swaapp.vercel.app/user/delete")
   Future<void> deleteAccount();
+
+  @POST("complete-profile")
+  Future<dynamic> completeProfile(@Body() CompleteProfileRequest body);
+
+  @GET("tracks")
+  Future<dynamic> getTracks();
 }

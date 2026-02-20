@@ -7,6 +7,7 @@ class LocalStorage {
   static const _tokenKey = 'token';
   static const _refreshTokenKey = 'refreshToken';
   static const _onboardingKey = 'onboarding';
+  static const _userIdKey = 'userId';
 
   static Future<void> saveToken(String token) async {
     final box = await Hive.openBox(_box);
@@ -52,6 +53,16 @@ class LocalStorage {
   static Future<bool> isOnboardingSeen() async {
     final box = await Hive.openBox(_box);
     return box.get(_onboardingKey) ?? false;
+  }
+
+  static Future<void> saveUserId(String userId) async {
+    final box = await Hive.openBox(_box);
+    await box.put(_userIdKey, userId);
+  }
+
+  static Future<String?> getUserId() async {
+    final box = await Hive.openBox(_box);
+    return box.get(_userIdKey);
   }
 
   static const _userKey = "user";

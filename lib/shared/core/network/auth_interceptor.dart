@@ -31,6 +31,8 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     final token = await LocalStorage.getToken();
+    print('🟡 [AuthInterceptor] Request: ${options.method} ${options.uri}');
+    print('🟡 [AuthInterceptor] Token present: ${token != null}');
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }

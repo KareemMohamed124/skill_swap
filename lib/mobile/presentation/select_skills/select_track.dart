@@ -1,93 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:skill_swap/mobile/presentation/select_skills/select_skills.dart';
 
-class SelectTrackScreen extends StatefulWidget {
+import '../../../shared/bloc/tracks_cubit/tracks_cubit.dart';
+import '../../../shared/data/models/track/track_model.dart';
+
+/// Local map: track name → list of skills (API only returns id + name)
+const Map<String, List<String>> tracksWithSkillsMap = {
+  "Mobile Development": [
+    "Dart & Flutter",
+    "Java/Kotlin & Android",
+    "Swift & iOS",
+    "Firebase & Backend Services",
+  ],
+  "Frontend Development": [
+    "HTML & CSS",
+    "JavaScript & React",
+    "JavaScript & Angular",
+    "JavaScript & Vue",
+  ],
+  "Backend Development": [
+    "JavaScript & NodeJS",
+    "PHP & Laravel",
+    "Python & Django",
+    "SQL & Database Management",
+  ],
+  "UI/UX Design": [
+    "Figma & UI Design",
+    "Adobe XD & Prototyping",
+    "User Research & UX Strategy",
+  ],
+  "Artificial Intelligence": [
+    "Python & TensorFlow",
+    "Python & PyTorch",
+    "Python & NLP",
+    "Python & Computer Vision",
+  ],
+  "Data Science": [
+    "Python & Pandas",
+    "Python & NumPy",
+    "Python & Data Visualization",
+    "R & Statistical Analysis",
+  ],
+  "Game Development": [
+    "C# & Unity",
+    "C++ & Unreal Engine",
+    "Blender & 3D Design",
+  ],
+  "Cybersecurity": [
+    "Linux & Networking",
+    "Python & Security Automation",
+    "Penetration Testing & OWASP",
+  ],
+  "Cloud Computing": [
+    "Docker & Containerization",
+    "Kubernetes & Orchestration",
+    "AWS & Cloud Services",
+    "CI/CD & DevOps",
+  ],
+  "Software Testing": [
+    "Dart & Flutter Testing",
+    "Java & Selenium",
+    "Automation & Test Frameworks",
+  ],
+};
+
+class SelectTrackScreen extends StatelessWidget {
   const SelectTrackScreen({super.key});
 
   @override
-  State<SelectTrackScreen> createState() => _SelectTrackScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => GetIt.instance<TracksCubit>()..fetchTracks(),
+      child: const _SelectTrackBody(),
+    );
+  }
 }
 
-class _SelectTrackScreenState extends State<SelectTrackScreen> {
-  String? selectedTrack;
+class _SelectTrackBody extends StatefulWidget {
+  const _SelectTrackBody();
 
-  final Map<String, List<String>> tracksWithSkills = {
-    "Mobile Development": [
-      "Flutter",
-      "Dart",
-      "Firebase",
-      "REST API",
-      "State Management",
-      "UI Responsive",
-    ],
-    "Frontend Development": [
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "React",
-      "Responsive Design",
-      "Animations",
-    ],
-    "Backend Development": [
-      "NodeJS",
-      "Laravel",
-      "Django",
-      "SQL",
-      "Authentication",
-      "API Design",
-    ],
-    "UI/UX Design": [
-      "Figma",
-      "Wireframing",
-      "Prototyping",
-      "User Research",
-      "Design System",
-    ],
-    "Artificial Intelligence": [
-      "Python",
-      "TensorFlow",
-      "Deep Learning",
-      "NLP",
-      "Computer Vision",
-    ],
-    "Data Science": [
-      "Pandas",
-      "NumPy",
-      "Data Cleaning",
-      "Visualization",
-      "Statistics",
-    ],
-    "Game Development": [
-      "Unity",
-      "C#",
-      "Level Design",
-      "3D Design",
-      "Physics Simulation",
-      "Animation",
-    ],
-    "Cybersecurity": [
-      "Networking",
-      "Linux",
-      "Penetration Testing",
-      "Cryptography",
-      "OWASP",
-    ],
-    "Cloud Computing": [
-      "Docker",
-      "CI/CD",
-      "Kubernetes",
-      "Monitoring",
-      "Linux Server",
-    ],
-    "Software Testing": [
-      "Unit Testing",
-      "Automation",
-      "Manual Testing",
-      "Test Cases",
-      "Bug Tracking",
-    ],
-  };
+  @override
+  State<_SelectTrackBody> createState() => _SelectTrackBodyState();
+}
+
+class _SelectTrackBodyState extends State<_SelectTrackBody> {
+  TrackModel? selectedTrack;
 
   @override
   Widget build(BuildContext context) {
@@ -113,55 +113,91 @@ class _SelectTrackScreenState extends State<SelectTrackScreen> {
             ),
             SizedBox(height: size.height * 0.01),
             Text(
-              "Choose the skills you already have. This will help us connect you with the right mentors and users.",
+              "Choose the track you already have. This will help us connect you with the right mentors and users.",
               style: TextStyle(fontSize: size.width * 0.035),
             ),
             SizedBox(height: size.height * 0.03),
 
-            /// 🔥 Tracks Chips
+            /// 🔥 Tracks Chips (fetched from API)
             Expanded(
-              child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: size.width * 0.02,
-                  runSpacing: size.height * 0.015,
-                  children: tracksWithSkills.keys.map((track) {
-                    final isSelected = selectedTrack == track;
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedTrack = track;
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: size.width * 0.04,
-                          vertical: size.height * 0.012,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xff0D0B5C)
-                              : Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: isSelected
-                                ? const Color(0xff0D0B5C)
-                                : Theme.of(context).dividerColor,
+              child: BlocBuilder<TracksCubit, TracksState>(
+                builder: (context, state) {
+                  if (state is TracksLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is TracksError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.red),
                           ),
-                        ),
-                        child: Text(
-                          track,
-                          style: TextStyle(
-                            fontSize: size.width * 0.035,
-                            color: isSelected
-                                ? Colors.white
-                                : (isDark ? Colors.white : Colors.black),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () =>
+                                context.read<TracksCubit>().fetchTracks(),
+                            child: const Text("Retry"),
                           ),
-                        ),
+                        ],
                       ),
                     );
-                  }).toList(),
-                ),
+                  }
+                  if (state is TracksLoaded) {
+                    final tracks = state.tracks;
+                    if (tracks.isEmpty) {
+                      return const Center(
+                        child: Text("No tracks available."),
+                      );
+                    }
+                    return SingleChildScrollView(
+                      child: Wrap(
+                        spacing: size.width * 0.02,
+                        runSpacing: size.height * 0.015,
+                        children: tracks.map((track) {
+                          final isSelected = selectedTrack?.id == track.id;
+
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedTrack = track;
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: size.width * 0.04,
+                                vertical: size.height * 0.012,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xff0D0B5C)
+                                    : Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? const Color(0xff0D0B5C)
+                                      : Theme.of(context).dividerColor,
+                                ),
+                              ),
+                              child: Text(
+                                track.name,
+                                style: TextStyle(
+                                  fontSize: size.width * 0.035,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : (isDark ? Colors.white : Colors.black),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
             ),
 
@@ -176,10 +212,15 @@ class _SelectTrackScreenState extends State<SelectTrackScreen> {
                   onPressed: selectedTrack == null
                       ? null
                       : () {
+                          // Look up skills from local map by track name
+                          final skills =
+                              tracksWithSkillsMap[selectedTrack!.name] ?? [];
+
                           Get.to(
                             SelectSkillsScreen(
-                              trackName: selectedTrack!,
-                              skills: tracksWithSkills[selectedTrack!]!,
+                              trackId: selectedTrack!.id,
+                              trackName: selectedTrack!.name,
+                              skills: skills,
                             ),
                           );
                         },

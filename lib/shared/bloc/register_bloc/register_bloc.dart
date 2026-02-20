@@ -16,6 +16,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
       switch (result) {
         case RegisterSuccess s:
+          // Save userId from register response for complete-profile flow
+          await LocalStorage.saveUserId(s.data.id);
           if (s.data.accessToken != null) {
             await LocalStorage.saveToken(s.data.accessToken!);
           }

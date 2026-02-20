@@ -12,8 +12,10 @@ import '../widgets/custom_auth.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
+  final String? password;
 
-  const EmailVerificationScreen({super.key, required this.email});
+  const EmailVerificationScreen(
+      {super.key, required this.email, this.password});
 
   @override
   State<EmailVerificationScreen> createState() =>
@@ -179,9 +181,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             }
 
                             final code = codeDigits.join();
-                            context
-                                .read<ActivationBloc>()
-                                .add(VerifyActivation(code));
+                            context.read<ActivationBloc>().add(VerifyActivation(
+                                code: code,
+                                email: widget.email,
+                                password: widget.password));
                           },
                           bottomText: isResend
                               ? "Didn't receive the code? "

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../bloc/complete_profile_bloc/complete_profile_bloc.dart';
 import '../bloc/delete_account_bloc/delete_account_bloc.dart';
 import '../bloc/activation_bloc/activation_bloc.dart';
 import '../bloc/login_bloc/login_bloc.dart';
@@ -8,6 +9,7 @@ import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
+import '../bloc/tracks_cubit/tracks_cubit.dart';
 import '../bloc/verify_code_bloc/verify_code_bloc.dart';
 import '../constants/strings.dart';
 import '../core/network/auth_interceptor.dart';
@@ -53,4 +55,9 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<ActivationBloc>(
       () => ActivationBloc(sl<AuthRepository>()));
+
+  sl.registerFactory<CompleteProfileBloc>(
+      () => CompleteProfileBloc(sl<AuthRepository>()));
+
+  sl.registerFactory<TracksCubit>(() => TracksCubit(sl<AuthRepository>()));
 }

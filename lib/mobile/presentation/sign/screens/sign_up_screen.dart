@@ -102,6 +102,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Get.to(
                 EmailVerificationScreen(
                   email: emailController.text,
+                  password: passwordController.text,
                 ),
               );
             }
