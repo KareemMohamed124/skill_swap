@@ -1,6 +1,9 @@
 import 'dart:io';
+
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
 import '../../../../shared/core/theme/app_palette.dart';
 
 class CustomHeader extends StatelessWidget {
@@ -25,36 +28,28 @@ class CustomHeader extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      height: screenHeight * 0.2, // بدل 160
+      height: screenHeight * 0.2,
       width: double.infinity,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppPalette.primary,
       ),
       child: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.04), // بدل 16
+        padding: EdgeInsets.all(screenWidth * 0.04),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            /// Avatar
             CircleAvatar(
-              radius: screenWidth * 0.075, // بدل 30
+              radius: screenWidth * 0.075,
               backgroundColor: Theme.of(context).cardColor,
-              backgroundImage: (defaultTargetPlatform == TargetPlatform.windows)
-                  ? null
-                  : (avatarPath != null && avatarPath!.isNotEmpty
-                  ? FileImage(File(avatarPath!))
-                  : null),
-              child: (defaultTargetPlatform == TargetPlatform.windows ||
-                  avatarPath == null || avatarPath!.isEmpty )
-                  ?Icon(
-                Icons.person,
-                size: screenWidth * 0.075,
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-              )
-                  : null,
+              child: ClipOval(
+                child: _buildAvatar(context, screenWidth),
+              ),
             ),
 
-            SizedBox(width: screenWidth * 0.02), // بدل 8
+            SizedBox(width: screenWidth * 0.02),
 
+            /// Name + Subtitle
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -67,11 +62,11 @@ class CustomHeader extends StatelessWidget {
                       name,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: screenWidth * 0.04, // بدل 16
+                        fontSize: screenWidth * 0.04,
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.005), // بدل 4
+                  SizedBox(height: screenHeight * 0.005),
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
@@ -79,7 +74,7 @@ class CustomHeader extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: screenWidth * 0.03, // بدل 12
+                        fontSize: screenWidth * 0.03,
                       ),
                     ),
                   ),
@@ -87,6 +82,7 @@ class CustomHeader extends StatelessWidget {
               ),
             ),
 
+            /// Notification Button
             circleButton(
               context: context,
               icon: Icons.notifications_none,
@@ -99,6 +95,54 @@ class CustomHeader extends StatelessWidget {
     );
   }
 
+  /// -------- Avatar Builder --------
+  Widget _buildAvatar(BuildContext context, double screenWidth) {
+    final radius = screenWidth * 0.075;
+
+    if (avatarPath == null || avatarPath!.isEmpty) {
+      return _placeholderIcon(context, radius);
+    }
+
+    // Network Image
+    if (avatarPath!.startsWith("http")) {
+      return Image.network(
+        avatarPath!,
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _placeholderIcon(context, radius),
+      );
+    }
+
+    // File Image (Not Windows)
+    if (defaultTargetPlatform != TargetPlatform.windows) {
+      return Image.file(
+        File(avatarPath!),
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _placeholderIcon(context, radius),
+      );
+    }
+
+    return _placeholderIcon(context, radius);
+  }
+
+  /// -------- Placeholder --------
+  Widget _placeholderIcon(BuildContext context, double radius) {
+    return Container(
+      width: radius * 2,
+      height: radius * 2,
+      color: Theme.of(context).cardColor,
+      child: Icon(
+        Icons.person,
+        size: radius,
+        color: Theme.of(context).textTheme.bodyLarge!.color,
+      ),
+    );
+  }
+
+  /// -------- Circle Button --------
   Widget circleButton({
     required BuildContext context,
     required IconData icon,
@@ -113,10 +157,10 @@ class CustomHeader extends StatelessWidget {
         customBorder: const CircleBorder(),
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(screenWidth * 0.02), // بدل 8
+          padding: EdgeInsets.all(screenWidth * 0.02),
           child: Icon(
             icon,
-            size: screenWidth * 0.04, // بدل 16
+            size: screenWidth * 0.04,
             color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
         ),

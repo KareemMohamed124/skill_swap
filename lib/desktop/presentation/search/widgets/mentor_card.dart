@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:skill_swap/shared/data/models/user/skill_model.dart';
+
 import '../../../../shared/core/theme/app_palette.dart';
 
 class MentorCard extends StatelessWidget {
   final String image;
   final String name;
-  final String status;
-  final double rate;
+  final String role;
+  final int rate;
   final int hours;
   final double price;
   final String track;
-  final List<String> skills;
+  final List<Skill> skills;
   final String responseTime;
 
   const MentorCard({
     super.key,
     required this.image,
     required this.name,
-    required this.status,
+    required this.role,
     required this.rate,
     required this.hours,
     required this.price,
@@ -76,15 +78,15 @@ class MentorCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: status == "Available"
+                              color: role == "Mentor"
                                   ? Colors.green.withOpacity(.15)
                                   : Colors.blue.withOpacity(.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              status,
+                              role,
                               style: TextStyle(
-                                color: status == "Available"
+                                color: role == "Mentor"
                                     ? Colors.green
                                     : Colors.blue,
                                 fontSize: 12,
@@ -129,7 +131,7 @@ class MentorCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    skill,
+                    skill.skillName,
                     style: TextStyle(
                       fontSize: 11, // أصغر
                       color: isDark

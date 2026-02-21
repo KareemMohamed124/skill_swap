@@ -7,7 +7,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color colorButton;
   final Color colorText;
-  final double? widthButton; // خليتها nullable عشان نقدر نستخدم screenWidth
+  final double? widthButton;
 
   const CustomButton({
     super.key,
@@ -24,9 +24,8 @@ class CustomButton extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return SizedBox(
-      width: widthButton ??
-          screenWidth * 0.8, // لو مفيش width محدد، ناخد 80% من الشاشة
-      height: screenHeight * 0.07, // ارتفاع نسبي للشاشة
+      width: widthButton ?? double.infinity,
+      height: screenHeight * 0.07,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: colorButton,

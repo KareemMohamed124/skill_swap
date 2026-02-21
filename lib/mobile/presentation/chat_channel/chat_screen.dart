@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/chat_channel/message_model.dart';
 
+import '../../../shared/core/theme/app_palette.dart';
+
 class ChatScreen extends StatefulWidget {
   final String channelName;
 
@@ -85,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       }),
                   SizedBox(width: screenWidth * 0.04),
                   CircleAvatar(
-                    backgroundColor: const Color(0xFF0D035F),
+                    backgroundColor: AppPalette.primary,
                     child: Text(
                       widget.channelName[0],
                       style: const TextStyle(
@@ -98,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Text(
                     widget.channelName,
                     style: const TextStyle(
-                        color: Color(0xFF0D035F),
+                        color: AppPalette.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 18),
                   ),

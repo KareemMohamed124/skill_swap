@@ -255,7 +255,9 @@ class SessionDetailsPage extends StatelessWidget {
         trailing: Icon(Icons.arrow_forward_ios,
             size: 16, color: Theme.of(context).textTheme.bodyMedium!.color),
         onTap: () {
-          Get.to(BookSession());
+          Get.to(BookSessionScreen(
+            userId: session.mentorId,
+          ));
         },
       ),
     );

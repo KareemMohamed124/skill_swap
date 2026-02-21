@@ -37,7 +37,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return BlocProvider(
       create: (_) => sl<RegisterBloc>(),
       child: Scaffold(
-       // backgroundColor: AppColor.whiteColor,
+        // backgroundColor: AppColor.whiteColor,
         body: Stack(
           children: [
             Column(
@@ -95,13 +95,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         formKey.currentState?.validate();
                       }
 
-                      if (state is RegisterSuccessState){
+                      if (state is RegisterSuccessState) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(state.data.message)),
                         );
                         Get.to(
                           EmailVerificationScreen(
                             email: emailController.text,
+                            password: passwordController.text,
                           ),
                         );
                       }
@@ -112,19 +113,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                           Text(
+                            Text(
                               "Create Account",
                               style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).textTheme.bodyLarge!.color
-                              ),
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color),
                             ),
                             const SizedBox(height: 4),
-                             Text(
+                            Text(
                               "Join us and start your learning journey today!",
-                              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color
-                             ),
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .color),
                             ),
                             const SizedBox(height: 32),
 
@@ -197,7 +203,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               hintText: "Confirm your password",
                               obscureText: true,
                               validator: (value) {
-                                if (value == null || value.isNotEmpty == false) {
+                                if (value == null ||
+                                    value.isNotEmpty == false) {
                                   return "Confirm password is required";
                                 }
                                 if (value != passwordController.text) {
@@ -215,21 +222,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: state is RegisterLoading
                                   ? null
                                   : () {
-                                if (formKey.currentState!.validate()) {
-                                  context.read<RegisterBloc>().add(
-                                    RegisterSubmit(
-                                      RegisterRequest(
-                                        name: nameController.text,
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                        confirmPassword:
-                                        confirmPasswordController
-                                            .text,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
+                                      if (formKey.currentState!.validate()) {
+                                        context.read<RegisterBloc>().add(
+                                              RegisterSubmit(
+                                                RegisterRequest(
+                                                  name: nameController.text,
+                                                  email: emailController.text,
+                                                  password:
+                                                      passwordController.text,
+                                                  confirmPassword:
+                                                      confirmPasswordController
+                                                          .text,
+                                                ),
+                                              ),
+                                            );
+                                      }
+                                    },
                             ),
                           ],
                         ),

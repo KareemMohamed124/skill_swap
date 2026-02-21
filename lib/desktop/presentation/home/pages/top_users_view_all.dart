@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:skill_swap/desktop/presentation/common/desktop_screen_manager.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
+
 import '../../../../main.dart';
-import '../../../../shared/constants/strings.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -51,11 +50,13 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                 IconButton(
                   onPressed: () {
                     final didGoBack = desktopKey.currentState?.goBack();
-                    if(didGoBack == false) {
+                    if (didGoBack == false) {
                       desktopKey.currentState?.openPage(index: 0);
                     }
                   },
-                  icon:Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodySmall!.color,
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
                 Expanded(
@@ -79,33 +80,50 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: GridView.builder(
-                itemCount: AppData.topUsers.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 24,
-                  crossAxisSpacing: 24,
-                  childAspectRatio: cardAspectRatio,
-                ),
-                itemBuilder: (context, index) {
-                  final user = AppData.topUsers[index];
-                  return MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      child: TopUserCard(
-                        id: user.id,
-                        image: user.image,
-                        name: user.name,
-                        track: user.track,
-                        hours: user.hours,
+              child: BlocBuilder<UsersCubit, UsersState>(
+                builder: (context, state) {
+                  if (state is UsersLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is UsersError) {
+                    return Center(child: Text(state.message));
+                  }
+
+                  if (state is UsersLoaded) {
+                    final usersList = state.users;
+                    return GridView.builder(
+                      itemCount: usersList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 24,
+                        crossAxisSpacing: 24,
+                        childAspectRatio: cardAspectRatio,
                       ),
-                    ),
-                  );
+                      itemBuilder: (context, index) {
+                        final user = usersList[index];
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = index;
+                              });
+                            },
+                            child: TopUserCard(
+                              id: user.id,
+                              image: "",
+                              name: user.name,
+                              track: "Flutter",
+                              hours: "4",
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+
+                  return const SizedBox();
                 },
               ),
             ),

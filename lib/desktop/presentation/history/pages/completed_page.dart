@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/desktop/presentation/history/models/history_model.dart';
 
-import '../../../../shared/constants/strings.dart';
 import '../widgets/history_card.dart';
 
 class CompletedSessionsPage extends StatelessWidget {
@@ -11,7 +10,7 @@ class CompletedSessionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     List<HistoryModel> completedSessions = [
       HistoryModel(
-        id: 1,
+        id: "1",
         name: "Joumana Johnson",
         role: "Web Developer",
         date: "Oct 3, 2025",
@@ -22,7 +21,7 @@ class CompletedSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Joumana Johnson.png",
       ),
       HistoryModel(
-        id: 2,
+        id: "1",
         name: "Lisa Wang",
         role: "UI/UX Developer",
         date: "Sep 26, 2025",
@@ -33,7 +32,7 @@ class CompletedSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Lisa Wang.png",
       ),
       HistoryModel(
-        id: 3,
+        id: "1",
         name: "Marcus Johnson",
         role: "Mobile Developer",
         date: "Sep 15, 2025",
@@ -44,7 +43,7 @@ class CompletedSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Marcus Johnson.png",
       ),
       HistoryModel(
-        id: 4,
+        id: "1",
         name: "Mark Anthony",
         role: "Backend Developer",
         date: "Sep 15, 2025",
@@ -52,11 +51,10 @@ class CompletedSessionsPage extends StatelessWidget {
         duration: "90 min",
         status: "Finished",
         rating: 0,
-        imageUrl:  "assets/images/people_images/Mark Anthony.jpg",
+        imageUrl: "assets/images/people_images/Mark Anthony.jpg",
       ),
-
     ];
-    return  ListView.separated(
+    return ListView.separated(
       //physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: EdgeInsets.zero,

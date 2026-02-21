@@ -15,22 +15,28 @@ class ProfileTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color backgroundColor = Color(0xFFF2F5F8);
-    const Color indicatorColor = Color(0xFF1B1464);
+    const Color indicatorColor = Colors.blue;
     const double borderRadiusValue = 20;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Theme
+              .of(context)
+              .cardColor,
           borderRadius: BorderRadius.circular(borderRadiusValue),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          border: Border.all(color: Theme
+              .of(context)
+              .dividerColor),
         ),
         child: TabBar(
           controller: tabController,
           indicator: BoxDecoration(
-            color: indicatorColor,
+            color: AppPalette.primary,
             borderRadius: BorderRadius.circular(borderRadiusValue - 2),
           ),
           indicatorSize: TabBarIndicatorSize.tab,
@@ -47,8 +53,8 @@ class ProfileTabs extends StatelessWidget {
             color: isDark
                 ? Colors.white
                 : (isDark
-                    ? AppPalette.darkTextSecondary
-                    : AppPalette.lightTextSecondary),
+                ? AppPalette.darkTextSecondary
+                : AppPalette.lightTextSecondary),
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),

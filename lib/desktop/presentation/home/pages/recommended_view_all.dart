@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
+
 import '../../../../main.dart';
-import '../../../../shared/constants/strings.dart';
 import '../widgets/recommended_card.dart';
 
 class RecommendedViewAll extends StatefulWidget {
@@ -48,11 +50,13 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                 IconButton(
                   onPressed: () {
                     final didGoBack = desktopKey.currentState?.goBack();
-                    if(didGoBack == false) {
+                    if (didGoBack == false) {
                       desktopKey.currentState?.openPage(index: 0);
                     }
                   },
-                  icon: Icon(Icons.arrow_back,  color: Theme.of(context).textTheme.bodySmall!.color,
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
                 Expanded(
@@ -76,33 +80,50 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: GridView.builder(
-                itemCount: AppData.recommendedMentors.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 24,
-                  crossAxisSpacing: 24,
-                  childAspectRatio: cardAspectRatio,
-                ),
-                itemBuilder: (context, index) {
-                  final mentor = AppData.recommendedMentors[index];
-                  return MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      child: RecommendedCard(
-                        id: mentor.id,
-                        image: mentor.image,
-                        name: mentor.name,
-                        track: mentor.track,
-                        rating: mentor.stars,
+              child: BlocBuilder<UsersCubit, UsersState>(
+                builder: (context, state) {
+                  if (state is UsersLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is UsersError) {
+                    return Center(child: Text(state.message));
+                  }
+
+                  if (state is UsersLoaded) {
+                    final usersList = state.users;
+                    return GridView.builder(
+                      itemCount: usersList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 24,
+                        crossAxisSpacing: 24,
+                        childAspectRatio: cardAspectRatio,
                       ),
-                    ),
-                  );
+                      itemBuilder: (context, index) {
+                        final mentor = usersList[index];
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = index;
+                              });
+                            },
+                            child: RecommendedCard(
+                              id: mentor.id,
+                              image: "",
+                              name: mentor.name,
+                              track: "Flutter",
+                              rating: 4,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+
+                  return const SizedBox();
                 },
               ),
             ),

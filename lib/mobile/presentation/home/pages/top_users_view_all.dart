@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
-import '../../../../shared/constants/strings.dart';
+import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -28,25 +29,44 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
 
     return BaseScreen(
       title: "Top Users",
-      child: ListView.builder(
-        padding: EdgeInsets.all(padding),
-        itemCount: AppData.topUsers.length,
-        itemBuilder: (context, index) {
-          final user = AppData.topUsers[index];
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedIndex = index;
-              });
-            },
-            child: TopUserCard(
-              id: user.id,
-              image: user.image,
-              name: user.name,
-              track: user.track,
-              hours: user.hours,
-            ),
-          );
+      child: BlocBuilder<UsersCubit, UsersState>(
+        builder: (context, state) {
+          if (state is UsersLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is UsersError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is UsersLoaded) {
+            final usersList = state.users;
+
+            return ListView.builder(
+              padding: EdgeInsets.all(padding),
+              itemCount: usersList.length,
+              itemBuilder: (context, index) {
+                final user = usersList[index];
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  child: TopUserCard(
+                    id: user.id,
+                    image: user.userImage.secureUrl,
+                    name: user.name,
+                    track: "Flutter",
+                    hours: user.helpTotalHours,
+                  ),
+                );
+              },
+            );
+          }
+
+          return const SizedBox();
         },
       ),
     );

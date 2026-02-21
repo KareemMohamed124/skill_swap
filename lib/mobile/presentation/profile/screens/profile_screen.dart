@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/dependency_injection/injection.dart';
 import '../pages/overview_page.dart';
 import '../pages/reviews_page.dart';
 import '../pages/skills_page.dart';
@@ -36,7 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Scaffold(
       body: Stack(
         children: [
-          Column(children: [const ProfileHeader()]),
+          Column(children: [
+            BlocProvider(
+                create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+                child: const ProfileHeader()),
+            //  const ProfileHeader()
+          ]),
           Positioned(
             top: 184,
             left: 0,
@@ -58,18 +66,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                       tabController: _tabController,
                       tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]),
                   Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: const [
-                        OverviewPage(),
-                        SkillsPage(),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.0,
+                    child: BlocProvider(
+                      create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: const [
+                          OverviewPage(),
+                          SkillsPage(),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: ReviewsPage(),
                           ),
-                          child: ReviewsPage(),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

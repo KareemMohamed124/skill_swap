@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:skill_swap/mobile/presentation/game_part/game_section.dart';
+import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
 import '../../../../shared/constants/strings.dart';
-import '../../../../shared/data/models/user/user_model.dart';
-import '../../../../shared/helper/local_storage.dart';
-import '../../notification/screens/notification_screen.dart';
+import '../../../../shared/helper/home_controller.dart';
+import '../../book_session/screens/profile_mentor.dart';
 import '../pages/next_session_view_all.dart';
 import '../pages/recommended_view_all.dart';
 import '../pages/top_users_view_all.dart';
@@ -23,15 +26,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  UserModel? user;
+  final HomeController controller = Get.put(HomeController());
 
-  Future<void> loadLocalUser() async {
-    final localUser = await LocalStorage.getUser();
-    if (mounted && localUser != null) {
-      setState(() {
-        user = localUser;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    context.read<UsersCubit>().fetchUsers();
+    context.read<MyProfileCubit>().fetchMyProfile();
   }
 
   @override
@@ -44,13 +45,31 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Column(
             children: [
-              CustomHeader(
-                name: user?.name != null ? 'Hi, ${user!.name}' : 'Hi, Kemo',
-                subtitle: 'keep_learning'.tr,
-                avatarPath: user?.imagePath ?? '',
-                onIcon1: () {},
-                onIcon2: () {
-                  Get.to(NotificationsScreen());
+              BlocBuilder<MyProfileCubit, MyProfileState>(
+                builder: (context, state) {
+                  String name = "User";
+                  String avatarPath = 'assets/images/placeholder.png';
+
+                  if (state is MyProfileLoaded) {
+                    name = state.profile.name ?? name;
+                    if (state.profile.userImage?.secureUrl?.isNotEmpty ==
+                        true) {
+                      avatarPath = state.profile.userImage!.secureUrl!;
+                    }
+                  }
+
+                  return CustomHeader(
+                    name: 'Hi, $name',
+                    subtitle: 'keep_learning'.tr,
+                    avatarPath: avatarPath,
+                    onIcon1: () {},
+                    onIcon2: () {
+                      //  Get.to(() => const NotificationsScreen());
+                      // Get.to(() => CallPage(
+                      //       callID: 'Test User',
+                      //     ));
+                    },
+                  );
                 },
               ),
             ],
@@ -75,95 +94,307 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(screenWidth * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// Top Users
-                      SectionHeader(
-                        sectionTitle: 'top_users'.tr,
-                        onTop: () {
-                          Get.to(TopUsersViewAll());
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      SizedBox(
-                        height: screenHeight * 0.18,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: AppData.topUsers.length,
-                          separatorBuilder: (_, __) =>
-                              SizedBox(width: screenWidth * 0.04),
-                          itemBuilder: (context, index) {
-                            final u = AppData.topUsers[index];
-                            return TopUserCard(
-                              id: u.id,
-                              image: u.image,
-                              name: u.name,
-                              track: u.track,
-                              hours: u.hours,
-                            );
-                          },
-                        ),
-                      ),
 
-                      SizedBox(height: screenHeight * 0.03),
+                    ///Game
+                    children: controller.showGameFirst.value
+                        ? [
+                            GameSection(),
 
-                      /// Next Session
-                      SectionHeader(
-                        sectionTitle: 'your_next_session'.tr,
-                        onTop: () {
-                          Get.to(NextSessionViewAll());
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: AppData.nextSessions.length,
-                        separatorBuilder: (_, __) =>
+                            SizedBox(height: screenHeight * 0.03),
+
+                            /// Top Users Section
+                            SectionHeader(
+                              sectionTitle: 'top_users'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider.value(
+                                  value: context.read<UsersCubit>(),
+                                  child: TopUsersViewAll(),
+                                ));
+                              },
+                            ),
                             SizedBox(height: screenHeight * 0.01),
-                        itemBuilder: (context, index) {
-                          final s = AppData.nextSessions[index];
-                          return NextSessionCard(
-                            name: s.name,
-                            duration: s.duration,
-                            dateTime: s.dateTime,
-                            startsIn: s.startsIn,
-                            isMentor: s.isMentor,
-                          );
-                        },
-                      ),
+                            SizedBox(
+                              height: screenHeight * 0.18,
+                              child: BlocBuilder<UsersCubit, UsersState>(
+                                builder: (context, state) {
+                                  final usersList =
+                                      state is UsersLoaded ? state.users : [];
 
-                      SizedBox(height: screenHeight * 0.03),
+                                  return ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: usersList.isNotEmpty
+                                        ? usersList.length
+                                        : 5, // 5 placeholders
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(width: screenWidth * 0.04),
+                                    itemBuilder: (context, index) {
+                                      if (usersList.isEmpty) {
+                                        return const TopUserCard(
+                                          isLoading: true,
+                                        );
+                                      }
 
-                      /// Recommended
-                      SectionHeader(
-                        sectionTitle: 'recommended_for_you'.tr,
-                        onTop: () {
-                          Get.to(RecommendedViewAll());
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      SizedBox(
-                        height: screenHeight * 0.21,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: AppData.recommendedMentors.length,
-                          separatorBuilder: (_, __) =>
-                              SizedBox(width: screenWidth * 0.04),
-                          itemBuilder: (context, index) {
-                            final m = AppData.recommendedMentors[index];
-                            return RecommendedCard(
-                              id: m.id,
-                              image: m.image,
-                              name: m.name,
-                              track: m.track,
-                              rating: m.stars,
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
-                      UnrealExperienceCard()
-                    ],
+                                      final u = usersList[index];
+                                      final avatar =
+                                          u.userImage.secureUrl.isNotEmpty
+                                              ? u.userImage.secureUrl
+                                              : '';
+
+                                      return InkWell(
+                                        onTap: () {
+                                          Get.to(ProfileMentor(
+                                            id: u.id,
+                                            name: u.name,
+                                            track: "Flutter",
+                                            rate: u.rate,
+                                            image: avatar,
+                                          ));
+                                        },
+                                        child: TopUserCard(
+                                          id: u.id,
+                                          image: avatar,
+                                          name: u.name,
+                                          track: "Flutter",
+                                          hours: u.helpTotalHours,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+
+                            SizedBox(height: screenHeight * 0.03),
+
+                            /// Next Session Section
+                            SectionHeader(
+                              sectionTitle: 'your_next_session'.tr,
+                              onTop: () {
+                                Get.to(NextSessionViewAll());
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: AppData.nextSessions.length,
+                              separatorBuilder: (_, __) =>
+                                  SizedBox(height: screenHeight * 0.01),
+                              itemBuilder: (context, index) {
+                                final s = AppData.nextSessions[index];
+                                return NextSessionCard(
+                                  name: s.name,
+                                  duration: s.duration,
+                                  dateTime: s.dateTime,
+                                  startsIn: s.startsIn,
+                                  isMentor: s.isMentor,
+                                );
+                              },
+                            ),
+
+                            SizedBox(height: screenHeight * 0.03),
+
+                            /// Recommended Section
+                            SectionHeader(
+                              sectionTitle: 'recommended_for_you'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider.value(
+                                  value: context.read<UsersCubit>(),
+                                  child: RecommendedViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            SizedBox(
+                              height: screenHeight * 0.21,
+                              child: BlocBuilder<UsersCubit, UsersState>(
+                                builder: (context, state) {
+                                  final usersList =
+                                      state is UsersLoaded ? state.users : [];
+
+                                  return ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: usersList.isNotEmpty
+                                        ? usersList.length
+                                        : 5,
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(width: screenWidth * 0.04),
+                                    itemBuilder: (context, index) {
+                                      if (usersList.isEmpty) {
+                                        return const RecommendedCard(
+                                          isLoading: true,
+                                        );
+                                      }
+
+                                      final u = usersList[index];
+                                      final avatar =
+                                          u.userImage.secureUrl.isNotEmpty
+                                              ? u.userImage.secureUrl
+                                              : '';
+
+                                      return RecommendedCard(
+                                        id: u.id,
+                                        image: avatar,
+                                        name: u.name,
+                                        track: "Flutter",
+                                        rating: u.rate,
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+
+                            SizedBox(height: screenHeight * 0.01),
+                            UnrealExperienceCard(),
+                          ]
+                        : [
+                            /// Top Users Section
+                            SectionHeader(
+                              sectionTitle: 'top_users'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider.value(
+                                  value: context.read<UsersCubit>(),
+                                  child: TopUsersViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            SizedBox(
+                              height: screenHeight * 0.18,
+                              child: BlocBuilder<UsersCubit, UsersState>(
+                                builder: (context, state) {
+                                  final usersList =
+                                      state is UsersLoaded ? state.users : [];
+
+                                  return ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: usersList.isNotEmpty
+                                        ? usersList.length
+                                        : 5, // 5 placeholders
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(width: screenWidth * 0.04),
+                                    itemBuilder: (context, index) {
+                                      if (usersList.isEmpty) {
+                                        return const TopUserCard(
+                                          isLoading: true,
+                                        );
+                                      }
+
+                                      final u = usersList[index];
+                                      final avatar =
+                                          u.userImage.secureUrl.isNotEmpty
+                                              ? u.userImage.secureUrl
+                                              : '';
+
+                                      return InkWell(
+                                        onTap: () {
+                                          Get.to(ProfileMentor(
+                                            id: u.id,
+                                            name: u.name,
+                                            track: "Flutter",
+                                            rate: u.rate,
+                                            image: u.userImage.secureUrl,
+                                          ));
+                                        },
+                                        child: TopUserCard(
+                                          id: u.id,
+                                          image: avatar,
+                                          name: u.name,
+                                          track: "Flutter",
+                                          hours: u.helpTotalHours,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+
+                            SizedBox(height: screenHeight * 0.03),
+
+                            /// Next Session Section
+                            SectionHeader(
+                              sectionTitle: 'your_next_session'.tr,
+                              onTop: () {
+                                Get.to(NextSessionViewAll());
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: AppData.nextSessions.length,
+                              separatorBuilder: (_, __) =>
+                                  SizedBox(height: screenHeight * 0.01),
+                              itemBuilder: (context, index) {
+                                final s = AppData.nextSessions[index];
+                                return NextSessionCard(
+                                  name: s.name,
+                                  duration: s.duration,
+                                  dateTime: s.dateTime,
+                                  startsIn: s.startsIn,
+                                  isMentor: s.isMentor,
+                                );
+                              },
+                            ),
+
+                            SizedBox(height: screenHeight * 0.03),
+
+                            /// Recommended Section
+                            SectionHeader(
+                              sectionTitle: 'recommended_for_you'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider.value(
+                                  value: context.read<UsersCubit>(),
+                                  child: RecommendedViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            SizedBox(
+                              height: screenHeight * 0.21,
+                              child: BlocBuilder<UsersCubit, UsersState>(
+                                builder: (context, state) {
+                                  final usersList =
+                                      state is UsersLoaded ? state.users : [];
+
+                                  return ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: usersList.isNotEmpty
+                                        ? usersList.length
+                                        : 5,
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(width: screenWidth * 0.04),
+                                    itemBuilder: (context, index) {
+                                      if (usersList.isEmpty) {
+                                        return const RecommendedCard(
+                                          isLoading: true,
+                                        );
+                                      }
+
+                                      final u = usersList[index];
+                                      final avatar =
+                                          u.userImage.secureUrl.isNotEmpty
+                                              ? u.userImage.secureUrl
+                                              : '';
+
+                                      return RecommendedCard(
+                                        id: u.id,
+                                        image: u.userImage.secureUrl,
+                                        name: u.name,
+                                        track: "Flutter",
+                                        rating: u.rate,
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+
+                            SizedBox(height: screenHeight * 0.01),
+                            GameSection(),
+                          ],
                   ),
                 ),
               ),

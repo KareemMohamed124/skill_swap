@@ -8,13 +8,17 @@ import 'package:skill_swap/desktop/presentation/search/screens/search_screen.dar
 import 'package:skill_swap/desktop/presentation/search/widgets/filterSheet.dart';
 import 'package:skill_swap/desktop/presentation/sessions/screens/sessions_screen.dart';
 import 'package:skill_swap/desktop/presentation/setting/screens/setting.dart';
+import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
+
+import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../shared/dependency_injection/injection.dart';
 import '../home/screens/home_content.dart';
 import 'desktop_scaffold.dart';
 import 'desktop_sidebar.dart';
 
-/// 📝 Helper class to store page state
 class _PageState {
   final Widget body;
   final Widget? rightPanel;
@@ -35,7 +39,6 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   Widget? currentBody;
   Widget? currentRightPanel;
 
-  /// Stack to save history of pages
   final List<_PageState> _history = [];
 
   @override
@@ -44,7 +47,6 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     openPage(index: 0);
   }
 
-  /// Get body based on bottom menu / sidebar index
   Widget getBody(int index) {
     switch (index) {
       case 0:
@@ -53,7 +55,6 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
       case 1:
         return ChatListScreen(
           onChannelSelected: (channel) {
-            // When opening chat, push current state to history
             openSidePage(
               body: getBody(1),
               rightPanel: ChatScreen(channelName: channel),
@@ -63,8 +64,8 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
 
       case 2:
         return BlocProvider(
-          create: (_) => sl<MentorFilterBloc>(),
-          child: SearchScreen(),
+          create: (_) => sl<UserFilterBloc>(),
+          child: const SearchScreen(),
         );
 
       case 3:
@@ -81,7 +82,6 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     }
   }
 
-  /// Default right panels for each index
   final List<Widget?> rightPanels = [
     NotificationDesktopPanel(),
     null,
@@ -89,23 +89,20 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
       create: (_) => sl<MentorFilterBloc>(),
       child: MentorFilterSheet(),
     ),
-    // MentorFilterSheet(),
     null,
     null,
     null
   ];
 
-  /// Open page from sidebar / menu
   void openPage({required int index}) {
     setState(() {
       currentIndex = index;
       currentBody = getBody(index);
       currentRightPanel = rightPanels[index];
-      _history.clear(); // Clear history when navigating main pages
+      _history.clear();
     });
   }
 
-  /// Open side page (like chat or detail) and save current state
   void openSidePage({required Widget body, Widget? rightPanel}) {
     _history.add(_PageState(
       body: currentBody!,
@@ -118,7 +115,6 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     });
   }
 
-  /// Go back to previous page (called by back button)
   bool goBack() {
     if (_history.isNotEmpty) {
       final last = _history.removeLast();
@@ -126,20 +122,31 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         currentBody = last.body;
         currentRightPanel = last.rightPanel;
       });
-      return true; // Successfully went back
+      return true;
     }
-    return false; // No page to go back to
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return DesktopScaffold(
-      sidebar: DesktopSidebar(
-        currentIndex: currentIndex,
-        onItemSelected: (index) => openPage(index: index),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<MyProfileCubit>(
+          create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+        ),
+        BlocProvider<UsersCubit>(
+          create: (_) => sl<UsersCubit>()..fetchUsers(),
+        ),
+        BlocProvider(create: (_) => sl<LogoutBloc>())
+      ],
+      child: DesktopScaffold(
+        sidebar: DesktopSidebar(
+          currentIndex: currentIndex,
+          onItemSelected: (index) => openPage(index: index),
+        ),
+        body: currentBody!,
+        rightPanel: currentRightPanel,
       ),
-      body: currentBody!,
-      rightPanel: currentRightPanel,
     );
   }
 }

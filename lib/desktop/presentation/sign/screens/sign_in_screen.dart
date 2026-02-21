@@ -99,6 +99,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           });
                         } else if (state is LoginSuccessState) {
                           await LocalStorage.saveToken(state.data.accessToken);
+                          await LocalStorage.saveRefreshToken(
+                              state.data.refreshToken);
                           // final userBloc = sl<UserBloc>();
                           //userBloc.add(GetUserProfile());
                           //  await LocalStorage.saveUser(user);

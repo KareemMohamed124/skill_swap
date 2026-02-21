@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
 import '../../../mobile/presentation/chat_channel/chat_list.dart';
 import '../../../mobile/presentation/home/screens/home_screen.dart';
 import '../../../mobile/presentation/profile/screens/profile_screen.dart';
 import '../../../mobile/presentation/search/screens/search_screen.dart';
 import '../../../mobile/presentation/sessions/screens/sessions_screen.dart';
-import '../../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../../bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../dependency_injection/injection.dart';
 import '../custom_bottom_nav.dart';
 
@@ -29,10 +31,17 @@ class _ScreenManagerState extends State<ScreenManager> {
   }
 
   late final List<Widget> screens = [
-    const HomeScreen(),
+    MultiBlocProvider(providers: [
+      BlocProvider<MyProfileCubit>(
+        create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+      ),
+      BlocProvider<UsersCubit>(
+        create: (_) => sl<UsersCubit>()..fetchUsers(),
+      ),
+    ], child: HomeScreen()),
     ChatListScreen(),
     BlocProvider(
-      create: (_) => sl<MentorFilterBloc>(),
+      create: (_) => sl<UserFilterBloc>(),
       child: const SearchScreen(),
     ),
     const SessionsScreen(),
@@ -41,13 +50,11 @@ class _ScreenManagerState extends State<ScreenManager> {
 
   @override
   Widget build(BuildContext context) {
-    // الحصول على حجم الشاشة
     final mediaQuery = MediaQuery.of(context);
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
 
     return Scaffold(
-      // نستخدم SizedBox.expand لضمان ملء المساحة بشكل ديناميكي
       body: SizedBox.expand(
         child: IndexedStack(
           index: currentIndex,

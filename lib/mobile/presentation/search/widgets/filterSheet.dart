@@ -11,7 +11,7 @@ class MentorFilterSheet extends StatefulWidget {
   final double initialMinPrice;
   final double initialMaxPrice;
   final int? initialRate;
-  final String? initialStatus;
+  final String? initialRole;
   final String? initialTrack;
   final String? initialSkill;
 
@@ -20,7 +20,7 @@ class MentorFilterSheet extends StatefulWidget {
     this.initialMinPrice = 20,
     this.initialMaxPrice = 60,
     this.initialRate,
-    this.initialStatus,
+    this.initialRole,
     this.initialTrack,
     this.initialSkill,
   });
@@ -34,7 +34,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
   late double endPrice;
 
   int? selectedRate;
-  String? selectedStatus;
+  String? selectedRole;
   String? selectedTrack;
   String? enteredSkill;
 
@@ -42,7 +42,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
   int activeFiltersCount = 0;
 
-  final List<String> statuses = ["Available"];
+  final List<String> roles = ["Mentor", "Normal"];
   final List<String> tracks = ["Frontend", "Mobile", "AI", "Ui/Ux", "Backend"];
   final List<int> rates = [1, 2, 3, 4, 5];
 
@@ -52,7 +52,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     startPrice = widget.initialMinPrice;
     endPrice = widget.initialMaxPrice;
     selectedRate = widget.initialRate;
-    selectedStatus = widget.initialStatus;
+    selectedRole = widget.initialRole;
     selectedTrack = widget.initialTrack;
     enteredSkill = widget.initialSkill;
 
@@ -60,7 +60,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
     if (startPrice != 20 || endPrice != 60) activeFiltersCount++;
     if (selectedRate != null) activeFiltersCount++;
-    if (selectedStatus != null) activeFiltersCount++;
+    if (selectedRole != null) activeFiltersCount++;
     if (selectedTrack != null) activeFiltersCount++;
     if (enteredSkill != null && enteredSkill!.isNotEmpty) activeFiltersCount++;
   }
@@ -117,21 +117,21 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
               SizedBox(height: screenWidth * 0.04),
 
-              /// Status
-              Text("status".tr, style: Theme.of(context).textTheme.titleMedium),
+              /// Role
+              Text("role".tr, style: Theme.of(context).textTheme.titleMedium),
               SizedBox(height: screenWidth * 0.02),
               buildChoiceChips<String>(
                 context: context,
-                items: statuses,
-                selectedItem: selectedStatus,
+                items: roles,
+                selectedItem: selectedRole,
                 onSelected: (value) {
                   setState(() {
-                    if (selectedStatus == null && value != null) {
+                    if (selectedRole == null && value != null) {
                       activeFiltersCount++;
-                    } else if (selectedStatus != null && value == null) {
+                    } else if (selectedRole != null && value == null) {
                       activeFiltersCount--;
                     }
-                    selectedStatus = value;
+                    selectedRole = value;
                   });
                 },
               ),
@@ -250,7 +250,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                                 minPrice: startPrice,
                                 maxPrice: endPrice,
                                 minRate: selectedRate?.toDouble(),
-                                status: selectedStatus,
+                                role: selectedRole,
                                 track: selectedTrack,
                                 skill: enteredSkill,
                               ),

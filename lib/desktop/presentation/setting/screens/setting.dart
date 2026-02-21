@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+
+import '../../../../shared/bloc/change_password_bloc/change_password_bloc.dart';
+import '../../../../shared/bloc/delete_account_bloc/delete_account_bloc.dart';
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/bloc/logout_bloc/logout_bloc.dart';
+import '../../../../shared/bloc/update_profile_bloc/update_profile_bloc.dart';
+import '../../../../shared/dependency_injection/injection.dart';
 import '../../profile/widgets/profile_tabs.dart';
 import '../pages/account_page.dart';
-
 import '../pages/edit_profile_page.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -12,7 +19,8 @@ class SettingScreen extends StatefulWidget {
   State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> with SingleTickerProviderStateMixin {
+class _SettingScreenState extends State<SettingScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -26,9 +34,9 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     _tabController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -38,28 +46,39 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
         ),
       ),
       body: Center(
-    child: ConstrainedBox(
-    constraints: const BoxConstraints(maxWidth: 900),
-    child: Column(
-    children: [
-    ProfileTabs(
-    tabController: _tabController,
-      tabs: ['edit_profile'.tr, 'preferences'.tr],
-    ),
-    const SizedBox(height: 16),
-    Expanded(
-    child: TabBarView(
-    controller: _tabController,
-    children: const [
-      EditProfilePage(),
-      SettingsPage(),
-    ],
-    ),
-    ),
-    ],
-    ),
-    ),
-    )
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: Column(
+            children: [
+              ProfileTabs(
+                tabController: _tabController,
+                tabs: ['edit_profile'.tr, 'preferences'.tr],
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                            create: (_) =>
+                                sl<MyProfileCubit>()..fetchMyProfile()),
+                        BlocProvider(create: (_) => sl<LogoutBloc>()),
+                        BlocProvider(create: (_) => sl<DeleteAccountBloc>()),
+                        BlocProvider(create: (_) => sl<ChangePasswordBloc>()),
+                        BlocProvider(create: (_) => sl<UpdateProfileBloc>()),
+                      ],
+                      child: const EditProfilePage(),
+                    ),
+                    const SettingsPage(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

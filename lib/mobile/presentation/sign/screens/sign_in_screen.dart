@@ -55,7 +55,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     double titleFontSize = 22;
     double subtitleFontSize = 16;
@@ -76,9 +79,20 @@ class _SignInScreenState extends State<SignInScreen> {
         child: BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) async {
             if (state is LoginFailureState) {
-              setState(() => _handleServerError(state));
+              _handleServerError(state);
+              setState(() {});
+
+              if (emailError == null && passwordError == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             } else if (state is LoginSuccessState) {
               await LocalStorage.saveToken(state.data.accessToken);
+              await LocalStorage.saveRefreshToken(state.data.refreshToken);
 
               Get.offAll(ScreenManager(initialIndex: 0));
 
@@ -159,17 +173,17 @@ class _SignInScreenState extends State<SignInScreen> {
                       onPressed: state is LoginLoading
                           ? null
                           : () {
-                              if (formKey.currentState!.validate()) {
-                                context.read<LoginBloc>().add(
-                                      LoginSubmit(
-                                        LoginRequest(
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                        ),
-                                      ),
-                                    );
-                              }
-                            },
+                        if (formKey.currentState!.validate()) {
+                          context.read<LoginBloc>().add(
+                            LoginSubmit(
+                              LoginRequest(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
 
                     const SizedBox(height: 24),

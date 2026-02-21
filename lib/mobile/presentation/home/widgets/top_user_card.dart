@@ -1,107 +1,124 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../../book_session/screens/profile_mentor.dart';
 
 class TopUserCard extends StatelessWidget {
-  final int id;
-  final String image;
-  final String name;
-  final String track;
-  final String hours;
+  final String? id;
+  final String? image;
+  final String? name;
+  final String? track;
+  final int? hours;
   final double? widthCard;
+  final bool isLoading;
 
   const TopUserCard({
     super.key,
     this.widthCard,
-    required this.id,
-    required this.image,
-    required this.name,
-    required this.track,
-    required this.hours,
+    this.id,
+    this.image,
+    this.name,
+    this.track,
+    this.hours,
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
-    // اجعل الـ width responsive حسب حجم الشاشة أو القيمة اللي اتحطت
     final cardWidth = widthCard ?? screenWidth * 0.35;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () {
-        Get.to(ProfileMentor(
-          id: id,
-          name: name,
-          track: track,
-          rate: 4.8,
-          image: image,
-        ));
-      },
-      child: Container(
+    if (isLoading) {
+      return Container(
         width: cardWidth,
-        padding: EdgeInsets.symmetric(vertical: screenWidth * 0.015),
+        height: cardWidth * 1.2,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Theme.of(context).dividerColor),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: screenWidth * 0.02),
-            ClipOval(
-              child: Image.asset(
-                image,
-                width: cardWidth * 0.25,
-                height: cardWidth * 0.25,
-                fit: BoxFit.cover,
-              ),
+        child: const Center(
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+
+    return Container(
+      width: cardWidth,
+      padding: EdgeInsets.symmetric(vertical: screenWidth * 0.015),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: screenWidth * 0.02),
+
+          /// Avatar أو placeholder
+          ClipOval(
+            child: (image != null && image!.startsWith("http"))
+                ? Image.network(
+                    image!,
+                    width: cardWidth * 0.25,
+                    height: cardWidth * 0.25,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(cardWidth),
+                  )
+                : _buildPlaceholder(cardWidth),
+          ),
+
+          SizedBox(height: screenWidth * 0.02),
+
+          Text(
+            name ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+
+          Text(
+            "${track ?? ''} Developer",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+
+          SizedBox(height: screenWidth * 0.01),
+
+          Container(
+            width: cardWidth * 0.35,
+            height: screenWidth * 0.04,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
-            SizedBox(height: screenWidth * 0.02),
-            FittedBox(
-              fit: BoxFit.scaleDown,
+            child: Center(
               child: Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                "$track Developer",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
-            SizedBox(height: screenWidth * 0.01),
-            Container(
-              width: cardWidth * 0.35,
-              height: screenWidth * 0.04,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Theme.of(context).dividerColor),
-              ),
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    hours,
-                    style: TextStyle(
-                      fontSize: 8,
-                      color: Theme.of(context).textTheme.titleSmall!.color,
-                    ),
-                  ),
+                "$hours" ?? '',
+                style: TextStyle(
+                  fontSize: 8,
+                  color: Theme.of(context).textTheme.titleSmall!.color,
                 ),
               ),
             ),
-            SizedBox(height: screenWidth * 0.02),
-          ],
-        ),
+          ),
+
+          SizedBox(height: screenWidth * 0.02),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(double cardWidth) {
+    return Container(
+      width: cardWidth * 0.25,
+      height: cardWidth * 0.25,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.grey,
+      ),
+      child: const Icon(
+        Icons.person,
+        color: Colors.white,
       ),
     );
   }

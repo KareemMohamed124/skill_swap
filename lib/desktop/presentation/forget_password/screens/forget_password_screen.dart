@@ -24,6 +24,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final formWidth = screenWidth * 0.85; // عرض نسبي
+    final borderRadius = screenWidth * 0.02; // نصف قطر نسبي
+    final fontSizeError = screenWidth * 0.032; // حجم الخط نسبي
+
     return BlocProvider(
       create: (context) => sl<SendCodeBloc>(),
       child: Scaffold(
@@ -33,7 +40,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
           listener: (context, state) {
             if (state is SendCodeFailureState) {
               setState(() {
-                  emailError = state.error.message;
+                emailError = state.error.message;
               });
             }
 
@@ -41,99 +48,123 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.response.message)),
               );
-            Get.to(VerifyScreen(email: emailController.text.trim(),));
+              Get.to(
+                VerifyScreen(email: emailController.text.trim()),
+              );
             }
           },
-
           builder: (context, state) {
-            return CustomAuth(
-              title: 'Forgot Password?',
-              subTitle: "Enter your email and we'll send you a verification code.",
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(minHeight: constraints.maxHeight),
+                    child: CustomAuth(
+                      title: 'Forgot Password?',
+                      subTitle:
+                          "Enter your email and we'll send you a verification code.",
+                      childWidget: Form(
+                        key: formKey,
+                        child: SizedBox(
+                          width: formWidth,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Email Field
+                              TextFormField(
+                                controller: emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  hintText: "Enter Email Address",
+                                  filled: true,
+                                  fillColor:
+                                      const Color(0xFFD6D6D6).withOpacity(0.20),
+                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(borderRadius),
+                                    borderSide: BorderSide(
+                                      color: emailError != null
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(borderRadius),
+                                    borderSide: BorderSide(
+                                      color: emailError != null
+                                          ? Colors.red
+                                          : Colors.grey,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                                onChanged: (_) {
+                                  setState(() {
+                                    emailError = null;
+                                  });
+                                },
+                              ),
 
-              childWidget: Form(
-                key: formKey,
-                child: SizedBox(
-                  width: 329,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Email Field
-                      TextFormField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: "Enter Email Address",
-                          filled: true,
-                          fillColor: Color(0xFFD6D6D6).withValues(alpha: 0.20),
-                          prefixIcon: const Icon(Icons.email_outlined),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: emailError != null ? Colors.red : Colors.grey,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: emailError != null ? Colors.red : Colors.grey,
-                              width: 1.5,
-                            ),
+                              if (emailError != null)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: screenHeight * 0.008),
+                                  child: Text(
+                                    emailError!,
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: fontSizeError),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                        onChanged: (_) {
-                          setState(() {
-                            emailError = null;
-                          });
-                        },
                       ),
+                      buttonText: state is SendCodeLoading
+                          ? "Verification..."
+                          : "Send Verification Code",
+                      onPressed: state is SendCodeLoading
+                          ? null
+                          : () {
+                              String email = emailController.text.trim();
 
-                      if (emailError != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: Text(
-                            emailError!,
-                            style: const TextStyle(color: Colors.red, fontSize: 12),
-                          ),
-                        ),
-                    ],
+                              if (email.isEmpty) {
+                                setState(() {
+                                  emailError = "Please fill out this field.";
+                                });
+                                return;
+                              } else if (!RegExp(
+                                r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                              ).hasMatch(email)) {
+                                setState(() {
+                                  emailError = "Please enter a valid email.";
+                                });
+                                return;
+                              } else {
+                                setState(() {
+                                  emailError = null;
+                                });
+
+                                final request = SendCodeRequest(email: email);
+                                context
+                                    .read<SendCodeBloc>()
+                                    .add(SendVerificationCode(request));
+                              }
+                            },
+                      bottomText: "Remember your password? ",
+                      bottomActionText: "Sign In",
+                      onBottomTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SignInScreen()),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ),
-
-              buttonText:  state is SendCodeLoading
-              ? "Verification..." : "Send Verification Code",
-              onPressed:     state is SendCodeLoading
-              ? null : () {
-                String email = emailController.text.trim();
-
-                if (email.isEmpty || email == null) {
-                  setState(() {
-                    emailError = "Please fill out this field.";
-                  });
-                  return;
-                } else if (!RegExp(
-                  r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
-                ).hasMatch(email)) {
-                  setState(() {
-                    emailError = "Please enter a valid email.";
-                  });
-                  return;
-                } else {
-                  setState(() {
-                    emailError = null;
-                  });
-
-                  final request = SendCodeRequest(email: email);
-                  context.read<SendCodeBloc>().add(SendVerificationCode(request));
-                }
-              },
-
-              bottomText: "Remember your password? ",
-              bottomActionText: "Sign In",
-              onBottomTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()),
                 );
               },
             );

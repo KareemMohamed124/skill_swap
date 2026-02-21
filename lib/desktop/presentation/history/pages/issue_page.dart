@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/desktop/presentation/history/models/history_model.dart';
 
-import '../../../../shared/constants/strings.dart';
 import '../widgets/history_card.dart';
 
 class IssueSessionsPage extends StatelessWidget {
@@ -9,9 +8,9 @@ class IssueSessionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     List<HistoryModel> issueSessions = [
+    List<HistoryModel> issueSessions = [
       HistoryModel(
-        id: 8,
+        id: "1",
         name: "Alex Johnson",
         role: "Flutter Developer",
         date: "Oct 2, 2025",
@@ -23,7 +22,7 @@ class IssueSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Alex Johnson.png",
       ),
       HistoryModel(
-        id: 9,
+        id: "1",
         name: "Kevin Smith",
         role: "AI Basics",
         date: "Sep 30, 2025",
@@ -35,7 +34,7 @@ class IssueSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Kevin Smith.jpg",
       ),
       HistoryModel(
-        id: 10,
+        id: "1",
         name: "Emily Carter",
         role: "Business Strategy",
         date: "Sep 22, 2025",
@@ -48,8 +47,8 @@ class IssueSessionsPage extends StatelessWidget {
       ),
     ];
 
-    return  ListView.separated(
-    //  physics: const NeverScrollableScrollPhysics(),
+    return ListView.separated(
+      //  physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       itemCount: issueSessions.length,

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_api.dart';
+part of 'booking_api.dart';
 
 // dart format off
 
@@ -10,157 +10,126 @@ part of 'auth_api.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
-class _AuthApi implements AuthApi {
-  _AuthApi(this._dio, {this.baseUrl}) {
-    baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
+class _BookingApi implements BookingApi {
+  _BookingApi(this._dio, {this.baseUrl}) {
+    baseUrl ??= 'https://skill-swaapp.vercel.app/';
   }
 
   final Dio _dio;
 
   String? baseUrl;
 
-  // final ParseErrorLogger? errorLogger;
-
   @override
-  Future<RegisterSuccessResponse> register(RegisterRequest body) async {
+  Future<Map<String, dynamic>> bookSession(BookingRequest body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<RegisterSuccessResponse>(
+    final _options = _setStreamType<Map<String, dynamic>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'register/',
+            'booking/',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late RegisterSuccessResponse _value;
-    try {
-      _value = RegisterSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //   errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    return _result.data!;
   }
 
   @override
-  Future<LoginSuccessResponseNew> login(LoginRequest body) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
-    final _options = _setStreamType<LoginSuccessResponseNew>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'login/',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late LoginSuccessResponseNew _value;
-    try {
-      _value = LoginSuccessResponseNew.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      // errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<SendCodeSuccessResponse> sendCode(SendCodeRequest body) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
-    final _options = _setStreamType<SendCodeSuccessResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'password/forgot/',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late SendCodeSuccessResponse _value;
-    try {
-      _value = SendCodeSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      // errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<VerifyCodeSuccessResponse> verifyCode(VerifyCodeRequest body) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
-    final _options = _setStreamType<VerifyCodeSuccessResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'password/verify-code/',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late VerifyCodeSuccessResponse _value;
-    try {
-      _value = VerifyCodeSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<ResetPasswordSuccessResponse> resetPassword(
-    ResetPasswordRequest body,
+  Future<Map<String, dynamic>> statusBookSession(
+    String id,
+    StatusBookingRequest body,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<ResetPasswordSuccessResponse>(
+    final _options = _setStreamType<Map<String, dynamic>>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'password/reset/',
+            'booking/${id}/changeStatus',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ResetPasswordSuccessResponse _value;
-    try {
-      _value = ResetPasswordSuccessResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      //errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    return _result.data!;
+  }
+
+  @override
+  Future<Map<String, dynamic>> cancelBookSession(String id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<Map<String, dynamic>>(
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'booking/${id}/cancel',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    return _result.data!;
+  }
+
+  @override
+  Future<Map<String, dynamic>> updateBookSession(
+    String id,
+    UpdateBookingRequest body,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
+    final _options = _setStreamType<Map<String, dynamic>>(
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'booking/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    return _result.data!;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getAllBookings() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{
+      r'Authorization':
+          'skill-swap eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODc4ZWZmZTMzNWMxNzhhZTllZGRhMSIsInJvbGUiOiJBZG1pbiIsImVtYWlsIjoiY2F0eS1lbWlsQGdtYWlsLmNvbSIsImlhdCI6MTc3MTY5NjE2MywiZXhwIjoxNzcxNzgyNTYzfQ.64Ua4mZD7y-PxiiidrTAu07d9hJhl5l3ZFVDoIDD3Po',
+    };
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<Map<String, dynamic>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'booking',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    return _result.data!;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

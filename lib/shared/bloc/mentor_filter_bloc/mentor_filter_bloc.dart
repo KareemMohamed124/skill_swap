@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../mobile/presentation/search/models/mentor_model.dart';
 import 'mentor_filter_event.dart';
 import 'mentor_filter_state.dart';
@@ -13,8 +14,8 @@ class MentorFilterBloc extends Bloc<MentorFilterEvent, MentorFilterState> {
 
       // Price filter
       data = data
-          .where((m) =>
-      m.price >= event.minPrice! && m.price <= event.maxPrice!)
+          .where(
+              (m) => m.price >= event.minPrice! && m.price <= event.maxPrice!)
           .toList();
 
       // Rate
@@ -23,8 +24,8 @@ class MentorFilterBloc extends Bloc<MentorFilterEvent, MentorFilterState> {
       }
 
       // Status
-      if (event.status != null) {
-        data = data.where((m) => m.status == event.status).toList();
+      if (event.role != null) {
+        data = data.where((m) => m.status == event.role).toList();
       }
 
       // Track
@@ -35,8 +36,8 @@ class MentorFilterBloc extends Bloc<MentorFilterEvent, MentorFilterState> {
       // Skill
       if (event.skill != null && event.skill!.isNotEmpty) {
         data = data
-            .where((m) => m.skills
-            .any((s) => s.toLowerCase().contains(event.skill!.toLowerCase())))
+            .where((m) => m.skills.any(
+                (s) => s.toLowerCase().contains(event.skill!.toLowerCase())))
             .toList();
       }
 
@@ -45,27 +46,14 @@ class MentorFilterBloc extends Bloc<MentorFilterEvent, MentorFilterState> {
         minPrice: event.minPrice,
         maxPrice: event.maxPrice,
         selectedRate: event.minRate?.toInt(),
-        selectedStatus: event.status,
+        selectedRole: event.role,
         selectedTrack: event.track,
         enteredSkill: event.skill,
       ));
     });
 
     on<SearchMentorEvent>((event, emit) {
-      final query = event.query.trim().toLowerCase();
-      if (query.isEmpty) {
-        emit(state.copyWith(filteredList: allMentors));
-        return;
-      }
-
-      final result = allMentors.where((m) {
-        final name = m.name.toLowerCase();
-        final track = m.track.toLowerCase();
-        final skills = m.skills.map((s) => s.toLowerCase()).toList();
-        return name.contains(query) || track.contains(query) || skills.contains(query);
-      }).toList();
-
-      emit(state.copyWith(filteredList: result));
+      emit(state.copyWith(filteredList: []));
     });
 
     on<ResetFiltersEvent>((event, emit) {
@@ -74,7 +62,7 @@ class MentorFilterBloc extends Bloc<MentorFilterEvent, MentorFilterState> {
         minPrice: 20,
         maxPrice: 60,
         selectedRate: null,
-        selectedStatus: null,
+        selectedRole: null,
         selectedTrack: null,
         enteredSkill: null,
       ));
@@ -82,24 +70,24 @@ class MentorFilterBloc extends Bloc<MentorFilterEvent, MentorFilterState> {
     on<SortMentorEvent>((event, emit) {
       final sorted = List<MentorModel>.from(state.filteredList);
 
-      switch(event.type) {
-        case SortType.priceLowToHigh :
+      switch (event.type) {
+        case SortType.priceLowToHigh:
           sorted.sort((a, b) => a.price.compareTo(b.price));
           break;
 
-        case SortType.priceHighToLow :
+        case SortType.priceHighToLow:
           sorted.sort((a, b) => b.price.compareTo(a.price));
           break;
 
-        case SortType.nameAZ :
+        case SortType.nameAZ:
           sorted.sort((a, b) => a.name.compareTo(b.name));
           break;
 
-        case SortType.nameZA :
+        case SortType.nameZA:
           sorted.sort((a, b) => b.name.compareTo(a.name));
           break;
 
-        case SortType.rateHigh :
+        case SortType.rateHigh:
           sorted.sort((a, b) => b.rate.compareTo(a.rate));
           break;
       }

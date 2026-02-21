@@ -25,7 +25,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool directMessages = true;
 
   // App Preferences
-  bool darkMode = false;
+  bool darkMode = true;
   bool soundEffects = true;
   String language = 'English';
 

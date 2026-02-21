@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../shared/core/theme/app_palette.dart';
 import 'message_model.dart';
 
 class PrivateChatScreen extends StatefulWidget {
@@ -95,7 +96,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                 SizedBox(width: screenWidth * 0.04),
                 CircleAvatar(
                   radius: avatarRadius,
-                  backgroundColor: const Color(0xFF0D035F),
+                  backgroundColor: AppPalette.primary,
                   child: Text(
                     widget.otherUserName[0],
                     style: TextStyle(
@@ -109,7 +110,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                 Text(
                   widget.otherUserName,
                   style: TextStyle(
-                    color: const Color(0xFF0D035F),
+                    color: AppPalette.primary,
                     fontWeight: FontWeight.bold,
                     fontSize: fontSizeName,
                   ),

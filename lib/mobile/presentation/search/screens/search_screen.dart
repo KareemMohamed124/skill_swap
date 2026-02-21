@@ -1,13 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_event.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_state.dart';
+import '../../../../desktop/presentation/search/widgets/filterSheet.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
 import '../../book_session/screens/profile_mentor.dart';
-import '../widgets/filterSheet.dart';
 import '../widgets/filter_button.dart';
 import '../widgets/mentor_card.dart';
 import '../widgets/sort_button.dart';
@@ -23,6 +25,14 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isSearched = false;
   TextEditingController searchTextController = TextEditingController();
   int activeFiltersCount = 0;
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    searchTextController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: SizedBox(
                 width: contentWidth,
                 child: Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.04), // نسبية
+                  padding: EdgeInsets.all(screenWidth * 0.04),
                   child: Column(
                     children: [
                       SizedBox(height: screenWidth * 0.02),
@@ -99,11 +109,16 @@ class _SearchScreenState extends State<SearchScreen> {
                                   hintText: "search_placeholder".tr,
                                 ),
                                 onChanged: (searchValue) {
-                                  context
-                                      .read<MentorFilterBloc>()
-                                      .add(SearchMentorEvent(searchValue));
-                                  setState(() {
-                                    isSearched = searchValue.isNotEmpty;
+                                  if (_debounce?.isActive ?? false)
+                                    _debounce!.cancel();
+                                  _debounce = Timer(
+                                      const Duration(milliseconds: 700), () {
+                                    context
+                                        .read<UserFilterBloc>()
+                                        .add(SearchUserEvent(searchValue));
+                                    setState(() {
+                                      isSearched = searchValue.isNotEmpty;
+                                    });
                                   });
                                 },
                               ),
@@ -127,7 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     color: isDark ? Colors.white : Colors.black,
                                     size: isDesktop ? 28 : 24),
                                 onPressed: () async {
-                                  final bloc = context.read<MentorFilterBloc>();
+                                  final bloc = context.read<UserFilterBloc>();
                                   final state = bloc.state;
 
                                   final activeFilters =
@@ -143,7 +158,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         initialMinPrice: state.minPrice,
                                         initialMaxPrice: state.maxPrice,
                                         initialRate: state.selectedRate,
-                                        initialStatus: state.selectedStatus,
+                                        initialRole: state.selectedRole,
                                         initialTrack: state.selectedTrack,
                                         initialSkill: state.enteredSkill,
                                       ),
@@ -173,7 +188,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: FilterButton(
                               activeFilters: activeFiltersCount,
                               onPressed: () async {
-                                final bloc = context.read<MentorFilterBloc>();
+                                final bloc = context.read<UserFilterBloc>();
                                 final state = bloc.state;
 
                                 final activeFilters =
@@ -189,7 +204,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       initialMinPrice: state.minPrice,
                                       initialMaxPrice: state.maxPrice,
                                       initialRate: state.selectedRate,
-                                      initialStatus: state.selectedStatus,
+                                      initialRole: state.selectedRole,
                                       initialTrack: state.selectedTrack,
                                       initialSkill: state.enteredSkill,
                                     ),
@@ -209,35 +224,35 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       SizedBox(height: screenWidth * 0.015),
 
-                      /// Mentor List
+                      /// User List
                       Expanded(
-                        child: BlocBuilder<MentorFilterBloc, MentorFilterState>(
+                        child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
                             return ListView.builder(
                               padding: EdgeInsets.zero,
                               itemCount: state.filteredList.length,
                               itemBuilder: (context, index) {
-                                final mentor = state.filteredList[index];
+                                final user = state.filteredList[index];
                                 return InkWell(
                                   onTap: () {
                                     Get.to(ProfileMentor(
-                                      id: mentor.id,
-                                      name: mentor.name,
-                                      track: mentor.track,
-                                      rate: mentor.rate,
-                                      image: mentor.image,
+                                      id: user.id,
+                                      name: user.name,
+                                      track: "Flutter",
+                                      rate: 4,
+                                      image: user.userImage.secureUrl,
                                     ));
                                   },
                                   child: MentorCard(
-                                    image: mentor.image,
-                                    name: mentor.name,
-                                    status: mentor.status,
-                                    rate: mentor.rate,
-                                    hours: mentor.hours,
-                                    price: mentor.price,
-                                    track: mentor.track,
-                                    skills: mentor.skills,
-                                    responseTime: mentor.responseTime,
+                                    image: user.userImage.secureUrl,
+                                    name: user.name,
+                                    role: user.role,
+                                    rate: 4,
+                                    hours: 5,
+                                    price: 0,
+                                    track: 'flutter',
+                                    skills: user.skills,
+                                    responseTime: "9",
                                   ),
                                 );
                               },

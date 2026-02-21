@@ -1,5 +1,5 @@
 class SessionModel {
-  final int mentorId;
+  final String mentorId;
   final String mentorName;
   final String mentorTrack;
   final String mentorImage;
@@ -8,7 +8,7 @@ class SessionModel {
   final String time;
   final String duration;
   final String notes;
-  final double rating;
+  final int rating;
   final String review;
 
   SessionModel({

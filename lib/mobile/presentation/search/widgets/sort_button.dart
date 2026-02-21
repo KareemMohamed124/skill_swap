@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_event.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 
 class SortButton extends StatefulWidget {
   const SortButton({super.key});
@@ -51,13 +51,13 @@ class _SortButtonState extends State<SortButton> {
           isExpanded: true,
           items: items
               .map((option) => DropdownMenuItem(
-            value: option,
-            child: Text(
-              option,
-              style: Theme.of(context).textTheme.bodyMedium,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ))
+                    value: option,
+                    child: Text(
+                      option,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ))
               .toList(),
           dropdownStyleData: DropdownStyleData(
             offset: const Offset(0, -5),
@@ -76,23 +76,23 @@ class _SortButtonState extends State<SortButton> {
 
             setState(() => selected = value);
 
-            final bloc = context.read<MentorFilterBloc>();
+            final bloc = context.read<UserFilterBloc>();
 
             switch (value) {
               case 'Price: high to low':
-                bloc.add(SortMentorEvent(SortType.priceHighToLow));
+                bloc.add(SortUserEvent(SortType.priceLowToHigh));
                 break;
               case 'Price: low to high':
-                bloc.add(SortMentorEvent(SortType.priceLowToHigh));
+                bloc.add(SortUserEvent(SortType.priceLowToHigh));
                 break;
               case 'Name: A to Z':
-                bloc.add(SortMentorEvent(SortType.nameAZ));
+                bloc.add(SortUserEvent(SortType.nameAZ));
                 break;
               case 'Name: Z to A':
-                bloc.add(SortMentorEvent(SortType.nameZA));
+                bloc.add(SortUserEvent(SortType.nameZA));
                 break;
               case 'Rate: high to low':
-                bloc.add(SortMentorEvent(SortType.rateHigh));
+                bloc.add(SortUserEvent(SortType.rateHigh));
                 break;
             }
           },

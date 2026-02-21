@@ -77,8 +77,8 @@ class CustomBottomNav extends StatelessWidget {
             final isSelected = index == selectedIndex;
 
             final gradientColors = isDark
-                ? [Color(0xFF3B3B70), Color(0xFF0B0A3F)]
-                : [Color(0xFF2D8CFF), Color(0xFF0D035F)];
+                ? [Color(0xFF3B3B70), AppPalette.primary]
+                : [Color(0xFF2D8CFF), AppPalette.primary];
 
             if (isSelected) {
               return GestureDetector(

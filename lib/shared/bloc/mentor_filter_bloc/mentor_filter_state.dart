@@ -8,7 +8,7 @@ class MentorFilterState extends Equatable {
   final double minPrice;
   final double maxPrice;
   final int? selectedRate;
-  final String? selectedStatus;
+  final String? selectedRole;
   final String? selectedTrack;
   final String? enteredSkill;
 
@@ -17,28 +17,28 @@ class MentorFilterState extends Equatable {
     this.minPrice = 20,
     this.maxPrice = 60,
     this.selectedRate,
-    this.selectedStatus,
+    this.selectedRole,
     this.selectedTrack,
     this.enteredSkill,
   });
 
   @override
   List<Object?> get props => [
-    filteredList,
-    minPrice,
-    maxPrice,
-    selectedRate,
-    selectedStatus,
-    selectedTrack,
-    enteredSkill,
-  ];
+        filteredList,
+        minPrice,
+        maxPrice,
+        selectedRate,
+        selectedRole,
+        selectedTrack,
+        enteredSkill,
+      ];
 
   MentorFilterState copyWith({
     List<MentorModel>? filteredList,
     double? minPrice,
     double? maxPrice,
     int? selectedRate,
-    String? selectedStatus,
+    String? selectedRole,
     String? selectedTrack,
     String? enteredSkill,
   }) {
@@ -47,7 +47,7 @@ class MentorFilterState extends Equatable {
       minPrice: minPrice ?? this.minPrice,
       maxPrice: maxPrice ?? this.maxPrice,
       selectedRate: selectedRate ?? this.selectedRate,
-      selectedStatus: selectedStatus ?? this.selectedStatus,
+      selectedRole: selectedRole ?? this.selectedRole,
       selectedTrack: selectedTrack ?? this.selectedTrack,
       enteredSkill: enteredSkill ?? this.enteredSkill,
     );

@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/data/models/user/skill_model.dart';
 
 class MentorCard extends StatelessWidget {
   final String image;
   final String name;
-  final String status;
+  final String role;
   final double rate;
   final int hours;
   final double price;
   final String track;
-  final List<String> skills;
+  final List<Skill> skills;
   final String responseTime;
 
   const MentorCard({
     super.key,
     required this.image,
     required this.name,
-    required this.status,
+    required this.role,
     required this.rate,
     required this.hours,
     required this.price,
@@ -41,27 +43,25 @@ class MentorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               ClipOval(
-                child: Image.asset(
-                  image,
-                  width: width * 0.13,
-                  height: width * 0.13,
-                  fit: BoxFit.cover,
-                ),
+                child: (image != null && image!.startsWith("http"))
+                    ? Image.network(
+                        image!,
+                        width: width * 0.13,
+                        height: width * 0.13,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _buildPlaceholder(width),
+                      )
+                    : _buildPlaceholder(width),
               ),
-
               SizedBox(width: width * 0.03),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -72,24 +72,22 @@ class MentorCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: width * 0.02,
                             vertical: width * 0.01,
                           ),
                           decoration: BoxDecoration(
-                            color: status == "Available"
-                                ? Colors.green.withOpacity(.15)
-                                : Colors.blue.withOpacity(.15),
+                            color: role == "Mentor"
+                                ? Colors.green.withValues(alpha: .15)
+                                : Colors.blue.withValues(alpha: .15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            status,
+                            role,
                             style: TextStyle(
-                              color: status == "Available"
-                                  ? Colors.green
-                                  : Colors.blue,
+                              color:
+                                  role == "Mentor" ? Colors.green : Colors.blue,
                               fontSize: width * 0.028,
                               fontWeight: FontWeight.w600,
                             ),
@@ -97,9 +95,7 @@ class MentorCard extends StatelessWidget {
                         )
                       ],
                     ),
-
                     SizedBox(height: width * 0.015),
-
                     Row(
                       children: [
                         const Icon(Icons.star, size: 18, color: Colors.amber),
@@ -118,9 +114,7 @@ class MentorCard extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: width * 0.02),
-
           Wrap(
             spacing: width * 0.02,
             runSpacing: width * 0.02,
@@ -135,7 +129,7 @@ class MentorCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  skill,
+                  skill.skillName,
                   style: TextStyle(
                     fontSize: width * 0.028,
                     color: isDark
@@ -148,6 +142,21 @@ class MentorCard extends StatelessWidget {
             }).toList(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(double cardWidth) {
+    return Container(
+      width: cardWidth * 0.13,
+      height: cardWidth * 0.13,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.grey,
+      ),
+      child: const Icon(
+        Icons.person,
+        color: Colors.white,
       ),
     );
   }

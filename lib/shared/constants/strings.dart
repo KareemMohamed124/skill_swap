@@ -8,6 +8,7 @@ import '../../mobile/presentation/home/models/top_user.dart';
 import '../../mobile/presentation/notification/models/notification_model.dart';
 import '../../mobile/presentation/search/models/mentor_model.dart';
 import '../../mobile/presentation/sessions/models/session.dart';
+
 class AppData {
   static final List<TopUser> topUsers = [
     TopUser(
@@ -40,26 +41,24 @@ class AppData {
     ),
   ];
 
-  static  List<NextSession> nextSessions = [
+  static List<NextSession> nextSessions = [
     NextSession(
-      image: "assets/images/people_images/Lisa Wang.png",
-      name: "Lisa Wang",
-      dateTime: "Today, 2:00 PM",
-      duration: "1h",
-      startsIn: "Starts in 10m",
-      isMentor: false
-    ),
+        image: "assets/images/people_images/Lisa Wang.png",
+        name: "Lisa Wang",
+        dateTime: "Today, 2:00 PM",
+        duration: "1h",
+        startsIn: "Starts in 10m",
+        isMentor: false),
     NextSession(
-      image: "assets/images/people_images/Liyan Alex.png",
-      name: "Liyan Alex",
-      dateTime: "Today, 6:00 PM",
-      duration: "30m",
-      startsIn: "Starts in 4h",
-      isMentor: true
-    ),
+        image: "assets/images/people_images/Liyan Alex.png",
+        name: "Liyan Alex",
+        dateTime: "Today, 6:00 PM",
+        duration: "30m",
+        startsIn: "Starts in 4h",
+        isMentor: true),
   ];
 
-  static  List<RecommendedMentor> recommendedMentors = [
+  static List<RecommendedMentor> recommendedMentors = [
     RecommendedMentor(
       id: 12,
       image: "assets/images/people_images/Maria Garcia.png",
@@ -83,7 +82,7 @@ class AppData {
     ),
   ];
 
-  static  List<SessionTypeModel> sessionTypes = [
+  static List<SessionTypeModel> sessionTypes = [
     SessionTypeModel(
       icon: Icons.chat_bubble_outline,
       title: "Text Chat",
@@ -93,72 +92,66 @@ class AppData {
       icon: Icons.videocam_outlined,
       title: "Video Call",
       description:
-      "Face-to-face conversation with screen sharing capabilities.",
+          "Face-to-face conversation with screen sharing capabilities.",
     ),
   ];
 
   static List<NotificationModel> notificationCard = [
     NotificationModel(
-      bgColor: Color(0xFFD6D6D6).withValues(alpha: 0.25),
-      borderColor: Color(0xFFD6D6D6),
-      tag: "Reminder",
-      tagColor: Colors.grey,
-      timeAgo: "10 min ago",
-      title: "Reminder: Your mentorship session starts in 30 minutes.",
-      mentorName: "Sarah Johnson",
-      sessionTime: "Nov 25 at 2:00 PM",
-      icon: Icons.notifications_none_outlined
-    ),
+        bgColor: Color(0xFFD6D6D6).withValues(alpha: 0.25),
+        borderColor: Color(0xFFD6D6D6),
+        tag: "Reminder",
+        tagColor: Colors.grey,
+        timeAgo: "10 min ago",
+        title: "Reminder: Your mentorship session starts in 30 minutes.",
+        mentorName: "Sarah Johnson",
+        sessionTime: "Nov 25 at 2:00 PM",
+        icon: Icons.notifications_none_outlined),
     NotificationModel(
-      bgColor: Colors.green.shade50,
-      borderColor: Colors.green.shade200,
-      tag: "Approved",
-      tagColor: Colors.green,
-      timeAgo: "2 hours ago",
-      title: "Your session has been Approved!",
-      mentorName: "Michael Chen",
-      sessionTime: "Nov 25 at 2:00 PM",
-      icon: Icons.check_circle_outline
-    ),
+        bgColor: Colors.green.shade50,
+        borderColor: Colors.green.shade200,
+        tag: "Approved",
+        tagColor: Colors.green,
+        timeAgo: "2 hours ago",
+        title: "Your session has been Approved!",
+        mentorName: "Michael Chen",
+        sessionTime: "Nov 25 at 2:00 PM",
+        icon: Icons.check_circle_outline),
     NotificationModel(
-      bgColor: Colors.blue.shade50,
-      borderColor: Colors.blue.shade200,
-      tag: "Past session",
-      tagColor: Colors.blue,
-      timeAgo: "5 hours ago",
-      title: "Rate your session with the mentor.",
-      mentorName: "Emily Rodriguez",
-      sessionTime: "",
-      icon: Icons.star_border
-    ),
+        bgColor: Colors.blue.shade50,
+        borderColor: Colors.blue.shade200,
+        tag: "Past session",
+        tagColor: Colors.blue,
+        timeAgo: "5 hours ago",
+        title: "Rate your session with the mentor.",
+        mentorName: "Emily Rodriguez",
+        sessionTime: "",
+        icon: Icons.star_border),
     NotificationModel(
-      bgColor: Colors.yellow.shade50,
-      borderColor: Colors.yellow.shade300,
-      tag: "Pending",
-      tagColor: Colors.orange,
-      timeAgo: "1 day ago",
-      title: "Your session request is pending approval.",
-      mentorName: "David Kumar",
-      sessionTime: "Nov 28 at 10:00 AM",
-      icon: Icons.access_time
-    ),
+        bgColor: Colors.yellow.shade50,
+        borderColor: Colors.yellow.shade300,
+        tag: "Pending",
+        tagColor: Colors.orange,
+        timeAgo: "1 day ago",
+        title: "Your session request is pending approval.",
+        mentorName: "David Kumar",
+        sessionTime: "Nov 28 at 10:00 AM",
+        icon: Icons.access_time),
     NotificationModel(
-      bgColor: Colors.red.shade50,
-      borderColor: Colors.red.shade300,
-      tag: "Rejected",
-      tagColor: Colors.red,
-      timeAgo: "2 day ago",
-      title:
-      "Your session request was declined.\nReason: Schedule conflict.",
-      mentorName: "Sarah Johnson",
-      sessionTime: "",
-      icon: Icons.cancel_outlined
-    ),
+        bgColor: Colors.red.shade50,
+        borderColor: Colors.red.shade300,
+        tag: "Rejected",
+        tagColor: Colors.red,
+        timeAgo: "2 day ago",
+        title: "Your session request was declined.\nReason: Schedule conflict.",
+        mentorName: "Sarah Johnson",
+        sessionTime: "",
+        icon: Icons.cancel_outlined),
   ];
 
   static List<MentorModel> mentors = [
     MentorModel(
-      id: 1,
+      id: "1",
       image: "assets/images/people_images/Joumana Johnson.png",
       name: "Joumana Johnson",
       status: "Busy",
@@ -169,9 +162,8 @@ class AppData {
       responseTime: "4 hours",
       track: "Frontend",
     ),
-
     MentorModel(
-      id: 2,
+      id: "1",
       image: "assets/images/people_images/Max Turner.png",
       name: "Max Turner",
       status: "Available",
@@ -182,9 +174,8 @@ class AppData {
       responseTime: "2 hours",
       track: "Mobile",
     ),
-
     MentorModel(
-      id: 3,
+      id: "1",
       image: "assets/images/people_images/Youstina Hazem.png",
       name: "Youstina Hazem",
       status: "Busy",
@@ -195,9 +186,8 @@ class AppData {
       responseTime: "3 hours",
       track: "Ui/Ux",
     ),
-
     MentorModel(
-      id: 4,
+      id: "1",
       image: "assets/images/people_images/Amir Zahir.png",
       name: "Amir Zahir",
       status: "Available",
@@ -208,9 +198,8 @@ class AppData {
       responseTime: "1 hour",
       track: "Frontend",
     ),
-
     MentorModel(
-      id: 5,
+      id: "1",
       image: "assets/images/people_images/Sarah Ali.png",
       name: "Sarah Ali",
       status: "Available",
@@ -221,9 +210,8 @@ class AppData {
       responseTime: "30 minutes",
       track: "Mobile",
     ),
-
     MentorModel(
-      id: 6,
+      id: "1",
       image: "assets/images/people_images/Mohamed Salah.png",
       name: "Mohamed Salah",
       status: "Busy",
@@ -234,9 +222,8 @@ class AppData {
       responseTime: "5 hours",
       track: "Backend",
     ),
-
     MentorModel(
-      id: 7,
+      id: "1",
       image: "assets/images/people_images/Lara Smith.png",
       name: "Lara Smith",
       status: "Available",
@@ -247,9 +234,8 @@ class AppData {
       responseTime: "6 hours",
       track: "Ui/Ux",
     ),
-
     MentorModel(
-      id: 8,
+      id: "1",
       image: "assets/images/people_images/Hazem Tarek.png",
       name: "Hazem Tarek",
       status: "Available",
@@ -260,9 +246,8 @@ class AppData {
       responseTime: "1 hour",
       track: "Backend",
     ),
-
     MentorModel(
-      id: 9,
+      id: "1",
       image: "assets/images/people_images/Emma Jones.png",
       name: "Emma Jones",
       status: "Busy",
@@ -273,9 +258,8 @@ class AppData {
       responseTime: "3 hours",
       track: "Mobile",
     ),
-
     MentorModel(
-      id: 10,
+      id: "1",
       image: "assets/images/people_images/Youssef Samir.png",
       name: "Youssef Samir",
       status: "Available",
@@ -290,184 +274,169 @@ class AppData {
 
   static List<Session> pendingList = [
     Session(
-      id: "1",
-      image: "assets/images/people_images/Marcus Johnson.png",
-      name: "Marcus Johnson",
-      role: "Mentor",
-      type: "Video Call",
-      dateTime: DateTime.now(),
-      price: "25",
-      status: "PendingApproval",
-      timeAgo: ""
-    ),
+        id: "1",
+        image: "assets/images/people_images/Marcus Johnson.png",
+        name: "Marcus Johnson",
+        role: "Mentor",
+        type: "Video Call",
+        dateTime: DateTime.now(),
+        price: "25",
+        status: "PendingApproval",
+        timeAgo: ""),
     Session(
-      id: "2",
-      image: "assets/images/people_images/Sarah Smith.png",
-      name: "Sarah Smith",
-      role: "Mentor",
-      type: "1:1 Session",
-      dateTime: DateTime.now().add(const Duration(days: 1)),
-      price: "30",
-      status: "PendingApproval",
-      timeAgo: ""
-    ),
+        id: "2",
+        image: "assets/images/people_images/Sarah Smith.png",
+        name: "Sarah Smith",
+        role: "Mentor",
+        type: "1:1 Session",
+        dateTime: DateTime.now().add(const Duration(days: 1)),
+        price: "30",
+        status: "PendingApproval",
+        timeAgo: ""),
     Session(
-      id: "3",
-      image: "assets/images/people_images/Alex Brown.png",
-      name: "Alex Brown",
-      role: "Mentor",
-      type: "Video Call",
-      dateTime: DateTime.now().add(const Duration(days: 2)),
-      price: "20",
-      status: "PendingApproval",
-      timeAgo: ""
-    ),
+        id: "3",
+        image: "assets/images/people_images/Alex Brown.png",
+        name: "Alex Brown",
+        role: "Mentor",
+        type: "Video Call",
+        dateTime: DateTime.now().add(const Duration(days: 2)),
+        price: "20",
+        status: "PendingApproval",
+        timeAgo: ""),
   ];
 
   static List<Session> confirmedList = [
     Session(
-      id: "1",
-      image: "assets/images/people_images/Joumana Johnson.png",
-      name: "Joumana Johnson",
-      role: "Mentor",
-      type: "Video Session",
-      dateTime: DateTime(2025, 1, 12, 10, 30),
-      price: "35",
-      status: "Confirmed",
-      timeAgo: ""
-    ),
+        id: "1",
+        image: "assets/images/people_images/Joumana Johnson.png",
+        name: "Joumana Johnson",
+        role: "Mentor",
+        type: "Video Session",
+        dateTime: DateTime(2025, 1, 12, 10, 30),
+        price: "35",
+        status: "Confirmed",
+        timeAgo: ""),
     Session(
-      id: "2",
-      image: "assets/images/people_images/Leo Wong.png",
-      name: "Leo Wong",
-      role: "Software Engineer",
-      type: "Video Call",
-      dateTime: DateTime(2025, 1, 12, 14, 00),
-      price: "40",
-      status: "Confirmed",
-      timeAgo: ""
-    ),
+        id: "2",
+        image: "assets/images/people_images/Leo Wong.png",
+        name: "Leo Wong",
+        role: "Software Engineer",
+        type: "Video Call",
+        dateTime: DateTime(2025, 1, 12, 14, 00),
+        price: "40",
+        status: "Confirmed",
+        timeAgo: ""),
     Session(
-      id: "3",
-      image: "assets/images/people_images/Marcus Johnson.png",
-      name: "Marcus Johnson",
-      role: "Student",
-      type: "1:1 Session",
-      dateTime: DateTime(2025, 1, 13, 11, 00),
-      price: "Free",
-      status: "Live Now",
-      timeAgo: ""
-    ),
+        id: "3",
+        image: "assets/images/people_images/Marcus Johnson.png",
+        name: "Marcus Johnson",
+        role: "Student",
+        type: "1:1 Session",
+        dateTime: DateTime(2025, 1, 13, 11, 00),
+        price: "Free",
+        status: "Live Now",
+        timeAgo: ""),
     Session(
-      id: "4",
-      image: "assets/images/people_images/Sarah Smith.png",
-      name: "Sarah Smith",
-      role: "UI/UX Designer",
-      type: "Video Session",
-      dateTime: DateTime(2025, 1, 13, 16, 30),
-      price: "Free",
-      status: "Live Now",
-      timeAgo: ""
-    ),
+        id: "4",
+        image: "assets/images/people_images/Sarah Smith.png",
+        name: "Sarah Smith",
+        role: "UI/UX Designer",
+        type: "Video Session",
+        dateTime: DateTime(2025, 1, 13, 16, 30),
+        price: "Free",
+        status: "Live Now",
+        timeAgo: ""),
     Session(
-      id: "5",
-      image: "assets/images/people_images/Ahmed Ibrahim.png",
-      name: "Ahmed Ibrahim",
-      role: "Mobile Developer",
-      type: "Video Call",
-      dateTime: DateTime(2025, 1, 14, 12, 00),
-      price: "28",
-      status: "Confirmed",
-      timeAgo: ""
-    ),
+        id: "5",
+        image: "assets/images/people_images/Ahmed Ibrahim.png",
+        name: "Ahmed Ibrahim",
+        role: "Mobile Developer",
+        type: "Video Call",
+        dateTime: DateTime(2025, 1, 14, 12, 00),
+        price: "28",
+        status: "Confirmed",
+        timeAgo: ""),
     Session(
-      id: "6",
-      image: "assets/images/people_images/Mariam Nasser.png",
-      name: "Mariam Nasser",
-      role: "Data Scientist",
-      type: "1:1 Session",
-      dateTime: DateTime(2025, 1, 14, 18, 00),
-      price: "45",
-      status: "Confirmed",
-      timeAgo: ""
-    ),
+        id: "6",
+        image: "assets/images/people_images/Mariam Nasser.png",
+        name: "Mariam Nasser",
+        role: "Data Scientist",
+        type: "1:1 Session",
+        dateTime: DateTime(2025, 1, 14, 18, 00),
+        price: "45",
+        status: "Confirmed",
+        timeAgo: ""),
   ];
 
   static List<Session> requestList = [
     Session(
-      id: "1",
-      image: "assets/images/people_images/Alex Johnson.png",
-      name: "Alex Johnson",
-      role: "React Development",
-      type: "Video Session",
-      dateTime: DateTime(2025, 1, 10, 11, 00),
-      price: "Free",
-      status: "NewRequest",
-      timeAgo: "10 min ago"
-    ),
+        id: "1",
+        image: "assets/images/people_images/Alex Johnson.png",
+        name: "Alex Johnson",
+        role: "React Development",
+        type: "Video Session",
+        dateTime: DateTime(2025, 1, 10, 11, 00),
+        price: "Free",
+        status: "NewRequest",
+        timeAgo: "10 min ago"),
     Session(
-      id: "2",
-      image: "assets/images/people_images/Moritz Garcia.png",
-      name: "Moritz Garcia",
-      role: "System Engineering",
-      type: "Video Call",
-      dateTime: DateTime(2025, 1, 10, 14, 30),
-      price: "Free",
-      status: "NewRequest",
-      timeAgo: "2 hours ago"
-    ),
+        id: "2",
+        image: "assets/images/people_images/Moritz Garcia.png",
+        name: "Moritz Garcia",
+        role: "System Engineering",
+        type: "Video Call",
+        dateTime: DateTime(2025, 1, 10, 14, 30),
+        price: "Free",
+        status: "NewRequest",
+        timeAgo: "2 hours ago"),
     Session(
-      id: "3",
-      image: "assets/images/people_images/Aya Ahmed.png",
-      name: "Aya Ahmed",
-      role: "UI/UX Design",
-      type: "1:1 Session",
-      dateTime: DateTime(2025, 1, 11, 16, 00),
-      price: "Free",
-      status: "NewRequest",
-      timeAgo: "5 hours ago"
-    ),
+        id: "3",
+        image: "assets/images/people_images/Aya Ahmed.png",
+        name: "Aya Ahmed",
+        role: "UI/UX Design",
+        type: "1:1 Session",
+        dateTime: DateTime(2025, 1, 11, 16, 00),
+        price: "Free",
+        status: "NewRequest",
+        timeAgo: "5 hours ago"),
   ];
 
   static List<Session> allList = [
     Session(
-      id: "1",
-      image: "assets/images/people_images/Leo Wong.png",
-      name: "Leo Wong",
-      role: "Software Engineer",
-      type: "Video Call",
-      dateTime: DateTime(2025, 1, 12, 14, 00),
-      price: "40",
-      status: "Confirmed",
-      timeAgo: ""
-    ),
+        id: "1",
+        image: "assets/images/people_images/Leo Wong.png",
+        name: "Leo Wong",
+        role: "Software Engineer",
+        type: "Video Call",
+        dateTime: DateTime(2025, 1, 12, 14, 00),
+        price: "40",
+        status: "Confirmed",
+        timeAgo: ""),
     Session(
-      id: "2",
-      image: "assets/images/people_images/Sarah Smith.png",
-      name: "Sarah Smith",
-      role: "Mentor",
-      type: "Video Session",
-      dateTime: DateTime.now().add(const Duration(days: 1)),
-      price: "30",
-      status: "PendingApproval",
-      timeAgo: ""
-    ),
+        id: "2",
+        image: "assets/images/people_images/Sarah Smith.png",
+        name: "Sarah Smith",
+        role: "Mentor",
+        type: "Video Session",
+        dateTime: DateTime.now().add(const Duration(days: 1)),
+        price: "30",
+        status: "PendingApproval",
+        timeAgo: ""),
     Session(
-      id: "3",
-      image: "assets/images/people_images/Marcus Johnson.png",
-      name: "Marcus Johnson",
-      role: "Student",
-      type: "Video Session",
-      dateTime: DateTime(2025, 1, 13, 11, 00),
-      price: "Free",
-      status: "Live Now",
-      timeAgo: ""
-    ),
+        id: "3",
+        image: "assets/images/people_images/Marcus Johnson.png",
+        name: "Marcus Johnson",
+        role: "Student",
+        type: "Video Session",
+        dateTime: DateTime(2025, 1, 13, 11, 00),
+        price: "Free",
+        status: "Live Now",
+        timeAgo: ""),
   ];
 
- static List<HistoryModel> completedSessions = [
-   HistoryModel(
-     id: 1,
+  static List<HistoryModel> completedSessions = [
+    HistoryModel(
+      id: "1",
       name: "Joumana Johnson",
       role: "Web Developer",
       date: "Oct 3, 2025",
@@ -477,8 +446,8 @@ class AppData {
       rating: 5,
       imageUrl: "assets/images/people_images/Joumana Johnson.png",
     ),
-   HistoryModel(
-     id: 2,
+    HistoryModel(
+      id: "1",
       name: "Lisa Wang",
       role: "UI/UX Developer",
       date: "Sep 26, 2025",
@@ -488,8 +457,8 @@ class AppData {
       rating: 4,
       imageUrl: "assets/images/people_images/Lisa Wang.png",
     ),
-   HistoryModel(
-     id: 3,
+    HistoryModel(
+      id: "1",
       name: "Marcus Johnson",
       role: "Mobile Developer",
       date: "Sep 15, 2025",
@@ -499,99 +468,97 @@ class AppData {
       rating: 0,
       imageUrl: "assets/images/people_images/Marcus Johnson.png",
     ),
-   HistoryModel(
-     id: 4,
-     name: "Mark Anthony",
-     role: "Backend Developer",
-     date: "Sep 15, 2025",
-     time: "5:30 PM",
-     duration: "90 min",
-     status: "Finished",
-     rating: 0,
-     imageUrl:  "assets/images/people_images/Mark Anthony.jpg",
-   ),
+    HistoryModel(
+      id: "1",
+      name: "Mark Anthony",
+      role: "Backend Developer",
+      date: "Sep 15, 2025",
+      time: "5:30 PM",
+      duration: "90 min",
+      status: "Finished",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Mark Anthony.jpg",
+    ),
+  ];
 
- ];
+  static List<HistoryModel> cancelledSessions = [
+    HistoryModel(
+      id: "1",
+      name: "Sarah Adams",
+      role: "Mobile Developer",
+      date: "Oct 1, 2025",
+      time: "3:00 PM",
+      duration: "60 min",
+      status: "Cancelled",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Sarah Adams.jpg",
+    ),
+    HistoryModel(
+      id: "1",
+      name: "Daniel Lee",
+      role: "Data Science",
+      date: "Sep 28, 2025",
+      time: "11:00 AM",
+      duration: "30 min",
+      status: "Cancelled",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Daniel Lee.jpg",
+    ),
+    HistoryModel(
+      id: "1",
+      name: "Mia Fernandez",
+      role: "Web Developer",
+      date: "Sep 20, 2025",
+      time: "6:00 PM",
+      duration: "45 min",
+      status: "Cancelled",
+      rating: 0,
+      imageUrl: "assets/images/people_images/Mia Fernandez.jpg",
+    ),
+  ];
 
- static List<HistoryModel> cancelledSessions = [
-   HistoryModel(
-     id: 5,
-     name: "Sarah Adams",
-     role: "Mobile Developer",
-     date: "Oct 1, 2025",
-     time: "3:00 PM",
-     duration: "60 min",
-     status: "Cancelled",
-     rating: 0,
-     imageUrl: "assets/images/people_images/Sarah Adams.jpg",
-   ),
-   HistoryModel(
-     id: 6,
-     name: "Daniel Lee",
-     role: "Data Science",
-     date: "Sep 28, 2025",
-     time: "11:00 AM",
-     duration: "30 min",
-     status: "Cancelled",
-     rating: 0,
-     imageUrl: "assets/images/people_images/Daniel Lee.jpg",
-   ),
-   HistoryModel(
-     id: 7,
-     name: "Mia Fernandez",
-     role: "Web Developer",
-     date: "Sep 20, 2025",
-     time: "6:00 PM",
-     duration: "45 min",
-     status: "Cancelled",
-     rating: 0,
-     imageUrl: "assets/images/people_images/Mia Fernandez.jpg",
-   ),
- ];
-
- static List<HistoryModel> issueSessions = [
-   HistoryModel(
-     id: 8,
-     name: "Alex Johnson",
-     role: "Flutter Developer",
-     date: "Oct 2, 2025",
-     time: "2:00 PM",
-     duration: "60 min",
-     status: "Rejected",
-     rating: 0,
-     errorMessage: "Schedule conflict",
-     imageUrl: "assets/images/people_images/Alex Johnson.png",
-   ),
-   HistoryModel(
-     id: 9,
-     name: "Kevin Smith",
-     role: "AI Basics",
-     date: "Sep 30, 2025",
-     time: "5:00 PM",
-     duration: "60 min",
-     status: "Rejected",
-     rating: 0,
-     errorMessage: "User unavailable",
-     imageUrl: "assets/images/people_images/Kevin Smith.jpg",
-   ),
-   HistoryModel(
-     id: 10,
-     name: "Emily Carter",
-     role: "Business Strategy",
-     date: "Sep 22, 2025",
-     time: "7:00 PM",
-     duration: "45 min",
-     status: "Rejected",
-     rating: 0,
-     errorMessage: "Technical issue",
-     imageUrl: "assets/images/people_images/Emily Carter.jpg",
-   ),
- ];
+  static List<HistoryModel> issueSessions = [
+    HistoryModel(
+      id: "1",
+      name: "Alex Johnson",
+      role: "Flutter Developer",
+      date: "Oct 2, 2025",
+      time: "2:00 PM",
+      duration: "60 min",
+      status: "Rejected",
+      rating: 0,
+      errorMessage: "Schedule conflict",
+      imageUrl: "assets/images/people_images/Alex Johnson.png",
+    ),
+    HistoryModel(
+      id: "1",
+      name: "Kevin Smith",
+      role: "AI Basics",
+      date: "Sep 30, 2025",
+      time: "5:00 PM",
+      duration: "60 min",
+      status: "Rejected",
+      rating: 0,
+      errorMessage: "User unavailable",
+      imageUrl: "assets/images/people_images/Kevin Smith.jpg",
+    ),
+    HistoryModel(
+      id: "1",
+      name: "Emily Carter",
+      role: "Business Strategy",
+      date: "Sep 22, 2025",
+      time: "7:00 PM",
+      duration: "45 min",
+      status: "Rejected",
+      rating: 0,
+      errorMessage: "Technical issue",
+      imageUrl: "assets/images/people_images/Emily Carter.jpg",
+    ),
+  ];
 
   static List<HistoryModel> receivedReviews = [
-
     HistoryModel(
-      id: 1,
+      id: "1",
       name: "Joumana Johnson",
       role: "Web Developer",
       date: "Oct 5, 2025",
@@ -603,9 +570,8 @@ class AppData {
       reviewComment: "Great mentor! Very clear and helpful.",
       isReviewReceived: true,
     ),
-
     HistoryModel(
-      id: 2,
+      id: "1",
       name: "Lisa Wang",
       role: "UI/UX Developer",
       date: "Sep 29, 2025",
@@ -617,9 +583,8 @@ class AppData {
       reviewComment: "Explained concepts very well.",
       isReviewReceived: true,
     ),
-
     HistoryModel(
-      id: 3,
+      id: "1",
       name: "Marcus Johnson",
       role: "Mobile Developer",
       date: "Sep 15, 2025",
@@ -630,9 +595,8 @@ class AppData {
       imageUrl: "assets/images/people_images/Marcus Johnson.png",
       isReviewReceived: false,
     ),
-
     HistoryModel(
-      id: 4,
+      id: "1",
       name: "Sarah Adams",
       role: "Mobile Developer",
       date: "Oct 1, 2025",
@@ -644,4 +608,4 @@ class AppData {
       isReviewReceived: false,
     ),
   ];
-  }
+}

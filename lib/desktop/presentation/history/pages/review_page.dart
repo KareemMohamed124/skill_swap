@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/desktop/presentation/history/models/history_model.dart';
 
-import '../../../../shared/constants/strings.dart';
 import '../widgets/history_card.dart';
 
 class ReviewSessionsPage extends StatelessWidget {
@@ -10,9 +9,8 @@ class ReviewSessionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<HistoryModel> receivedReviews = [
-
       HistoryModel(
-        id: 1,
+        id: "1",
         name: "Joumana Johnson",
         role: "Web Developer",
         date: "Oct 5, 2025",
@@ -24,9 +22,8 @@ class ReviewSessionsPage extends StatelessWidget {
         reviewComment: "Great mentor! Very clear and helpful.",
         isReviewReceived: true,
       ),
-
       HistoryModel(
-        id: 2,
+        id: "1",
         name: "Lisa Wang",
         role: "UI/UX Developer",
         date: "Sep 29, 2025",
@@ -38,9 +35,8 @@ class ReviewSessionsPage extends StatelessWidget {
         reviewComment: "Explained concepts very well.",
         isReviewReceived: true,
       ),
-
       HistoryModel(
-        id: 3,
+        id: "1",
         name: "Marcus Johnson",
         role: "Mobile Developer",
         date: "Sep 15, 2025",
@@ -51,9 +47,8 @@ class ReviewSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Marcus Johnson.png",
         isReviewReceived: false,
       ),
-
       HistoryModel(
-        id: 4,
+        id: "1",
         name: "Sarah Adams",
         role: "Mobile Developer",
         date: "Oct 1, 2025",
@@ -65,7 +60,7 @@ class ReviewSessionsPage extends StatelessWidget {
         isReviewReceived: false,
       ),
     ];
-    return  ListView.separated(
+    return ListView.separated(
       //  physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: EdgeInsets.zero,

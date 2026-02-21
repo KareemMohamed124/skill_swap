@@ -8,10 +8,14 @@ class OverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
-    // نخلي maxWidth للعناصر الكبيرة زي ال Containers علشان ما يمتدش اكتر من اللازم
     double containerWidth = screenWidth < 600 ? screenWidth : 600;
 
     return SingleChildScrollView(
@@ -26,10 +30,14 @@ class OverviewPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: Theme
+                      .of(context)
+                      .cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-                  border: Border.all(color: Theme.of(context).dividerColor),
+                  border: Border.all(color: Theme
+                      .of(context)
+                      .dividerColor),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +57,11 @@ class OverviewPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            color: Theme
+                                .of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .color,
                           ),
                         ),
                       ],
@@ -64,7 +76,11 @@ class OverviewPage extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color,
                             ),
                           ),
                         ),
@@ -73,7 +89,11 @@ class OverviewPage extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color:
-                                Theme.of(context).textTheme.bodyMedium!.color,
+                            Theme
+                                .of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .color,
                           ),
                         ),
                       ],
@@ -83,7 +103,7 @@ class OverviewPage extends StatelessWidget {
                       height: 10,
                       child: LinearProgressIndicator(
                         value: 0.15,
-                        color: const Color(0xFF1B1464),
+                        color: AppPalette.primary,
                         backgroundColor: const Color(0XFFF2F5F8),
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -98,7 +118,11 @@ class OverviewPage extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color,
                             ),
                           ),
                         ),
@@ -107,7 +131,11 @@ class OverviewPage extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color:
-                                Theme.of(context).textTheme.bodyMedium!.color,
+                            Theme
+                                .of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .color,
                           ),
                         ),
                       ],
@@ -117,7 +145,7 @@ class OverviewPage extends StatelessWidget {
                       height: 10,
                       child: LinearProgressIndicator(
                         value: 0.67,
-                        color: const Color(0xFF1B1464),
+                        color: AppPalette.primary,
                         backgroundColor: const Color(0XFFF2F5F8),
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -127,7 +155,7 @@ class OverviewPage extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1B1464),
+                          backgroundColor: AppPalette.primary,
                           padding: const EdgeInsets.all(14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -151,7 +179,7 @@ class OverviewPage extends StatelessWidget {
                           backgroundColor: const Color(0XFFF2F5F8),
                           padding: const EdgeInsets.all(14),
                           side: const BorderSide(
-                              color: Color(0xFF1B1464), width: 2),
+                              color: AppPalette.primary, width: 2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -160,7 +188,7 @@ class OverviewPage extends StatelessWidget {
                         child: Text(
                           "apply_mentor".tr,
                           style: const TextStyle(
-                            color: Color(0XFF0D035F),
+                            color: AppPalette.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -175,10 +203,14 @@ class OverviewPage extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: Theme
+                      .of(context)
+                      .cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-                  border: Border.all(color: Theme.of(context).dividerColor),
+                  border: Border.all(color: Theme
+                      .of(context)
+                      .dividerColor),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +219,11 @@ class OverviewPage extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.calendar_month,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          color: Theme
+                              .of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .color,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -195,7 +231,11 @@ class OverviewPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            color: Theme
+                                .of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .color,
                           ),
                         ),
                       ],
@@ -225,21 +265,33 @@ class OverviewPage extends StatelessWidget {
           Icon(
             Icons.circle,
             size: 10,
-            color: Theme.of(context).textTheme.bodyLarge!.color,
+            color: Theme
+                .of(context)
+                .textTheme
+                .bodyLarge!
+                .color,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               title,
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyMedium!.color,
+                color: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .color,
               ),
             ),
           ),
           Text(
             time,
             style: TextStyle(
-              color: Theme.of(context).textTheme.bodyMedium!.color,
+              color: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .color,
             ),
           ),
         ],

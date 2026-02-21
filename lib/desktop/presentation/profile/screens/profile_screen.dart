@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/desktop/presentation/profile/widgets/profile_header.dart';
 import 'package:skill_swap/desktop/presentation/profile/widgets/profile_tabs.dart';
+
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/dependency_injection/injection.dart';
 import '../pages/overview_page.dart';
-import '../pages/skills_page.dart';
 import '../pages/reviews_page.dart';
+import '../pages/skills_page.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -36,8 +40,9 @@ class _ProfileScreenState extends State<ProfileScreen>
         constraints: const BoxConstraints(maxWidth: 900),
         child: Column(
           children: [
-            const ProfileHeader(),  // 👈 الهيدر
-           // const SizedBox(height: 24),
+            BlocProvider(
+                create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+                child: const ProfileHeader()), // const SizedBox(height: 24),
             ProfileTabs(
               tabController: _tabController,
               tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr],

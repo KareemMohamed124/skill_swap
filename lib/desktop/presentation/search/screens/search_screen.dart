@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -8,11 +10,12 @@ import 'package:skill_swap/desktop/presentation/search/widgets/filterSheet.dart'
 import 'package:skill_swap/desktop/presentation/search/widgets/filter_button.dart';
 import 'package:skill_swap/desktop/presentation/search/widgets/mentor_card.dart';
 import 'package:skill_swap/desktop/presentation/search/widgets/sort_button.dart';
+
 import '../../../../main.dart';
 import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_event.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_state.dart';
-
+import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -25,6 +28,14 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isSearched = false;
   TextEditingController searchTextController = TextEditingController();
   int activeFiltersCount = 0;
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    searchTextController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         height: 50,
                         child: TextField(
                           controller: searchTextController,
-                          cursorColor:
-                          isDark ? Colors.white : Colors.black,
+                          cursorColor: isDark ? Colors.white : Colors.black,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
@@ -79,11 +89,16 @@ class _SearchScreenState extends State<SearchScreen> {
                             hintText: "search_placeholder".tr,
                           ),
                           onChanged: (searchValue) {
-                            context
-                                .read<MentorFilterBloc>()
-                                .add(SearchMentorEvent(searchValue));
-                            setState(() {
-                              isSearched = searchValue.isNotEmpty;
+                            if (_debounce?.isActive ?? false)
+                              _debounce!.cancel();
+                            _debounce =
+                                Timer(const Duration(milliseconds: 700), () {
+                              context
+                                  .read<UserFilterBloc>()
+                                  .add(SearchUserEvent(searchValue));
+                              setState(() {
+                                isSearched = searchValue.isNotEmpty;
+                              });
                             });
                           },
                         ),
@@ -100,12 +115,11 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: FilterButton(
                               activeFilters: activeFiltersCount,
                               onPressed: () async {
-                                final bloc =
-                                context.read<MentorFilterBloc>();
+                                final bloc = context.read<MentorFilterBloc>();
                                 final state = bloc.state;
 
                                 final activeFilters =
-                                await showModalSideSheet<int>(
+                                    await showModalSideSheet<int>(
                                   context: context,
                                   withCloseControll: false,
                                   barrierColor: const Color(0xFFD6D6D6)
@@ -113,14 +127,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                   width: isDesktop
                                       ? 500
                                       : MediaQuery.of(context).size.width *
-                                      0.85,
+                                          0.85,
                                   body: BlocProvider.value(
                                     value: bloc,
                                     child: MentorFilterSheet(
                                       initialMinPrice: state.minPrice,
                                       initialMaxPrice: state.maxPrice,
                                       initialRate: state.selectedRate,
-                                      initialStatus: state.selectedStatus,
+                                      initialRole: state.selectedRole,
                                       initialTrack: state.selectedTrack,
                                       initialSkill: state.enteredSkill,
                                     ),
@@ -142,8 +156,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                       /// Mentor List
                       Expanded(
-                        child: BlocBuilder<MentorFilterBloc,
-                            MentorFilterState>(
+                        child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
                             return ListView.builder(
                               padding: EdgeInsets.zero,
@@ -151,28 +164,27 @@ class _SearchScreenState extends State<SearchScreen> {
                               itemBuilder: (context, index) {
                                 final mentor = state.filteredList[index];
                                 return InkWell(
-                                onTap: () {
-    desktopKey.currentState?.openSidePage(
-    body: ProfileMentor(
-    id: mentor.id,
-    name: mentor.name,
-    track: mentor.track,
-    rate: mentor.rate,
-    image: mentor.image,
-    ),
-    rightPanel: BookSession()
-    );
-                                },
+                                  onTap: () {
+                                    desktopKey.currentState?.openSidePage(
+                                        body: ProfileMentor(
+                                          id: mentor.id,
+                                          name: mentor.name,
+                                          track: "flutter",
+                                          rate: mentor.rate,
+                                          image: mentor.userImage.secureUrl,
+                                        ),
+                                        rightPanel: BookSession());
+                                  },
                                   child: MentorCard(
-                                    image: mentor.image,
+                                    image: mentor.userImage.secureUrl,
                                     name: mentor.name,
-                                    status: mentor.status,
+                                    role: mentor.role,
                                     rate: mentor.rate,
-                                    hours: mentor.hours,
-                                    price: mentor.price,
-                                    track: mentor.track,
+                                    hours: mentor.helpTotalHours,
+                                    price: 40,
+                                    track: "Flutter",
                                     skills: mentor.skills,
-                                    responseTime: mentor.responseTime,
+                                    responseTime: "4",
                                   ),
                                 );
                               },

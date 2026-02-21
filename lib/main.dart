@@ -21,7 +21,7 @@ import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
 final GlobalKey<DesktopScreenManagerState> desktopKey =
-    GlobalKey<DesktopScreenManagerState>();
+GlobalKey<DesktopScreenManagerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,7 +66,8 @@ void main() async {
     );
   }
 
-  Get.put(ThemeController()..loadSavedTheme());
+  Get.put(ThemeController()
+    ..loadSavedTheme());
 
   // Run App with Device Preview
   runApp(

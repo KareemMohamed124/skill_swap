@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
-import '../../../../shared/constants/strings.dart';
+import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../widgets/recommended_card.dart';
 
 class RecommendedViewAll extends StatefulWidget {
@@ -28,25 +29,36 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
 
     return BaseScreen(
       title: "Recommend for You",
-      child: ListView.builder(
-        padding: EdgeInsets.all(padding),
-        itemCount: AppData.recommendedMentors.length,
-        itemBuilder: (context, index) {
-          final mentor = AppData.recommendedMentors[index];
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedIndex = index;
-              });
-            },
-            child: RecommendedCard(
-              id: mentor.id,
-              image: mentor.image,
-              name: mentor.name,
-              track: mentor.track,
-              rating: mentor.stars,
-            ),
-          );
+      child: BlocBuilder<UsersCubit, UsersState>(
+        builder: (context, state) {
+          if (state is UsersLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is UsersError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is UsersLoaded) {
+            final usersList = state.users;
+
+            return ListView.builder(
+              padding: EdgeInsets.all(padding),
+              itemCount: usersList.length,
+              itemBuilder: (context, index) {
+                final mentor = usersList[index];
+                return RecommendedCard(
+                  id: mentor.id,
+                  image: mentor.userImage.secureUrl,
+                  name: mentor.name,
+                  track: "Flutter",
+                  rating: mentor.rate,
+                );
+              },
+            );
+          }
+
+          return const SizedBox();
         },
       ),
     );

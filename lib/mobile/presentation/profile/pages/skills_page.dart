@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../../skill_verification/quiz_details_screen.dart';
 
 class SkillsPage extends StatelessWidget {
@@ -8,29 +11,40 @@ class SkillsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          skillCard(
-              context: context,
-              title: "JavaScript",
-              proficiency: 0.95,
-              verified: true),
-          const SizedBox(height: 20),
-          skillCard(
-              context: context,
-              title: "React",
-              proficiency: 0.80,
-              verified: false),
-          const SizedBox(height: 20),
-          skillCard(
-              context: context,
-              title: "Flutter",
-              proficiency: 0.70,
-              verified: false),
-        ],
-      ),
+    return BlocBuilder<MyProfileCubit, MyProfileState>(
+      builder: (context, state) {
+        if (state is MyProfileLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is MyProfileError) {
+          return Center(child: Text(state.message));
+        } else if (state is MyProfileLoaded) {
+          final skills = state.profile.skills;
+
+          if (skills.isEmpty) {
+            return const Center(child: Text("No skills found"));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: skills
+                  .map((skill) =>
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: skillCard(
+                      context: context,
+                      title: skill.skillName,
+                      proficiency: (skill.quizScore / 100).clamp(0.0, 1.0),
+                      verified: skill.isVerified,
+                    ),
+                  ))
+                  .toList(),
+            ),
+          );
+        } else {
+          return const SizedBox(); // initial state
+        }
+      },
     );
   }
 
@@ -43,10 +57,14 @@ class SkillsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme
+            .of(context)
+            .cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        border: Border.all(color: Theme.of(context).dividerColor),
+        border: Border.all(color: Theme
+            .of(context)
+            .dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +79,11 @@ class SkillsPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .color,
                     ),
                   ),
                   if (verified)
@@ -76,10 +98,8 @@ class SkillsPage extends StatelessWidget {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: verified ? Colors.green.shade50 : Colors.red.shade50,
@@ -95,20 +115,29 @@ class SkillsPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          // Proficiency
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "Proficiency",
                 style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                  color: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .color,
                 ),
               ),
               Text(
                 "${(proficiency * 100).round()}%",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                  color: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .color,
                 ),
               ),
             ],
@@ -118,12 +147,13 @@ class SkillsPage extends StatelessWidget {
             height: 10,
             child: LinearProgressIndicator(
               value: proficiency,
-              color: const Color(0XFF0D035F),
+              color: AppPalette.primary,
               backgroundColor: const Color(0XFFF2F5F8),
               borderRadius: BorderRadius.circular(10),
             ),
           ),
           const SizedBox(height: 16),
+          // زر الـ Assessment لو مش Verified
           if (!verified)
             SizedBox(
               width: double.infinity,
@@ -131,7 +161,7 @@ class SkillsPage extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   backgroundColor: const Color(0XFFF2F5F8),
                   padding: const EdgeInsets.all(14),
-                  side: const BorderSide(color: Color(0xFF1B1464), width: 2),
+                  side: const BorderSide(color: AppPalette.primary, width: 2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -142,7 +172,7 @@ class SkillsPage extends StatelessWidget {
                 child: const Text(
                   "Take Assessment",
                   style: TextStyle(
-                    color: Color(0XFF0D035F),
+                    color: AppPalette.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

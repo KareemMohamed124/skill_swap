@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/desktop/presentation/history/models/history_model.dart';
 
-import '../../../../shared/constants/strings.dart';
 import '../widgets/history_card.dart';
 
 class CancelSessionsPage extends StatelessWidget {
@@ -11,7 +10,7 @@ class CancelSessionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     List<HistoryModel> cancelledSessions = [
       HistoryModel(
-        id: 5,
+        id: "1",
         name: "Sarah Adams",
         role: "Mobile Developer",
         date: "Oct 1, 2025",
@@ -22,7 +21,7 @@ class CancelSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Sarah Adams.jpg",
       ),
       HistoryModel(
-        id: 6,
+        id: "1",
         name: "Daniel Lee",
         role: "Data Science",
         date: "Sep 28, 2025",
@@ -33,7 +32,7 @@ class CancelSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Daniel Lee.jpg",
       ),
       HistoryModel(
-        id: 7,
+        id: "1",
         name: "Mia Fernandez",
         role: "Web Developer",
         date: "Sep 20, 2025",
@@ -44,7 +43,7 @@ class CancelSessionsPage extends StatelessWidget {
         imageUrl: "assets/images/people_images/Mia Fernandez.jpg",
       ),
     ];
-    return  ListView.separated(
+    return ListView.separated(
       //physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: EdgeInsets.zero,
