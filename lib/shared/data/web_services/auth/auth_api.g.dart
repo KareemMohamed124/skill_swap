@@ -11,13 +11,15 @@ part of 'auth_api.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _AuthApi implements AuthApi {
-  _AuthApi(this._dio, {this.baseUrl}) {
+  _AuthApi(this._dio, {this.baseUrl, this.errorLogger}) {
     baseUrl ??= 'https://skill-swaapp.vercel.app/auth/';
   }
 
   final Dio _dio;
 
   String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
 
   @override
   Future<RegisterSuccessResponse> register(RegisterRequest body) async {
@@ -29,11 +31,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<RegisterSuccessResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'register/',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'register/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -41,6 +43,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = RegisterSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -56,11 +59,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<LoginSuccessResponseNew>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'login/',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'login/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -68,6 +71,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = LoginSuccessResponseNew.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -83,11 +87,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<SendCodeSuccessResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'password/forgot/',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'password/forgot/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -95,6 +99,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = SendCodeSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -110,11 +115,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<VerifyCodeSuccessResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'password/verify-code/',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'password/verify-code/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -122,6 +127,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = VerifyCodeSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -129,7 +135,8 @@ class _AuthApi implements AuthApi {
 
   @override
   Future<ResetPasswordSuccessResponse> resetPassword(
-      ResetPasswordRequest body,) async {
+    ResetPasswordRequest body,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -138,11 +145,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<ResetPasswordSuccessResponse>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'password/reset/',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'password/reset/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -150,6 +157,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = ResetPasswordSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -164,11 +172,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<LogoutResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'logout/',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'logout/',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -176,6 +184,7 @@ class _AuthApi implements AuthApi {
     try {
       _value = LogoutResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -191,11 +200,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'activation/verify',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'activation/verify',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch(_options);
@@ -213,11 +222,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'activation/resend',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'activation/resend',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch(_options);
@@ -235,11 +244,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'complete-profile',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'complete-profile',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch(_options);
@@ -256,11 +265,11 @@ class _AuthApi implements AuthApi {
     final _options = _setStreamType<dynamic>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'tracks',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'tracks',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch(_options);
@@ -282,9 +291,7 @@ class _AuthApi implements AuthApi {
   }
 
   String _combineBaseUrls(String dioBaseUrl, String? baseUrl) {
-    if (baseUrl == null || baseUrl
-        .trim()
-        .isEmpty) {
+    if (baseUrl == null || baseUrl.trim().isEmpty) {
       return dioBaseUrl;
     }
 

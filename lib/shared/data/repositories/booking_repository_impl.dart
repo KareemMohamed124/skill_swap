@@ -5,9 +5,15 @@ import '../models/booking/booking_error_response.dart';
 import '../models/booking/booking_request.dart';
 import '../models/booking/booking_response.dart';
 import '../models/booking/booking_success_response.dart';
+import '../models/booking_details/booking_details_error_response.dart';
+import '../models/booking_details/booking_details_response.dart';
+import '../models/booking_details/booking_details_success_response.dart';
 import '../models/cancel_booking/cancel_booking_error_response.dart';
 import '../models/cancel_booking/cancel_booking_response.dart';
 import '../models/cancel_booking/cancel_booking_success_response.dart';
+import '../models/delete_booking/delete_booking_error_response.dart';
+import '../models/delete_booking/delete_booking_response.dart';
+import '../models/delete_booking/delete_booking_success_response.dart';
 import '../models/status_booking/status_booking_error_response.dart';
 import '../models/status_booking/status_booking_request.dart';
 import '../models/status_booking/status_booking_response.dart';
@@ -41,7 +47,7 @@ class BookingRepositoryImpl extends BookingRepository {
   @override
   Future<BookingResponse> bookSession(BookingRequest request) async {
     try {
-      final response = await api.bookSession(request);
+      final response = await api.bookSession(request) as Map<String, dynamic>;
 
       // بما إن response = Map<String,dynamic>
       if (response['message'] == 'Booking created successfully') {
@@ -74,7 +80,8 @@ class BookingRepositoryImpl extends BookingRepository {
   Future<StatusBookingResponse> statusBookSession(
       String id, StatusBookingRequest request) async {
     try {
-      final response = await api.statusBookSession(id, request);
+      final response =
+          await api.statusBookSession(id, request) as Map<String, dynamic>;
 
       if (response['message'] == 'Booking status updated') {
         return StatusBookingSuccess(
@@ -105,7 +112,7 @@ class BookingRepositoryImpl extends BookingRepository {
   @override
   Future<CancelBookingResponse> cancelBookSession(String id) async {
     try {
-      final response = await api.cancelBookSession(id);
+      final response = await api.cancelBookSession(id) as Map<String, dynamic>;
 
       if (response['message'] == 'Booking cancelled') {
         return CancelBookingSuccess(
@@ -137,7 +144,8 @@ class BookingRepositoryImpl extends BookingRepository {
   Future<UpdateBookingResponse> updateBookSession(
       String id, UpdateBookingRequest request) async {
     try {
-      final response = await api.updateBookSession(id, request);
+      final response =
+          await api.updateBookSession(id, request) as Map<String, dynamic>;
 
       if (response['message'] == 'Booking updated') {
         return UpdateBookingSuccess(
@@ -165,10 +173,59 @@ class BookingRepositoryImpl extends BookingRepository {
     }
   }
 
-// @override
-// Future<GetBookingsResponse> getAllBookings() async {
-//   final response = await api.getAllBookings();
-//   return response
-//   .;
-//  }
+  @override
+  Future<DeleteBookingResponse> deleteBookSession(String id) async {
+    try {
+      final response = await api.deleteBookSession(id) as Map<String, dynamic>;
+
+      if (response['message'] == 'Booking deleted') {
+        return DeleteBookingSuccess(
+          DeleteBookingSuccessResponse.fromJson(response),
+        );
+      }
+
+      return DeleteBookingFailure(
+        DeleteBookingErrorResponse.fromJson(response),
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = DeleteBookingErrorResponse.fromJson(e.response!.data);
+        return DeleteBookingFailure(error);
+      }
+
+      return DeleteBookingFailure(
+        DeleteBookingErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return DeleteBookingFailure(
+        DeleteBookingErrorResponse(message: e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<BookingDetailsResponse> getBookingDetails(String id) async {
+    try {
+      final response = await api.getBookingDetails(id) as Map<String, dynamic>;
+
+      return BookingDetailsSuccess(
+        BookingDetailsSuccessResponse.fromJson(response),
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = BookingDetailsErrorResponse.fromJson(e.response!.data);
+        return BookingDetailsFailure(error);
+      }
+
+      return BookingDetailsFailure(
+        BookingDetailsErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return BookingDetailsFailure(
+        BookingDetailsErrorResponse(message: e.toString()),
+      );
+    }
+  }
 }

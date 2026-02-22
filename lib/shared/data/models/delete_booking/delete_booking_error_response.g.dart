@@ -1,19 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'change_password_success_response.dart';
+part of 'delete_booking_error_response.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ChangePasswordSuccessResponse _$ChangePasswordSuccessResponseFromJson(
+DeleteBookingErrorResponse _$DeleteBookingErrorResponseFromJson(
         Map<String, dynamic> json) =>
-    ChangePasswordSuccessResponse(
+    DeleteBookingErrorResponse(
       message: json['message'] as String,
     );
 
-Map<String, dynamic> _$ChangePasswordSuccessResponseToJson(
-        ChangePasswordSuccessResponse instance) =>
+Map<String, dynamic> _$DeleteBookingErrorResponseToJson(
+        DeleteBookingErrorResponse instance) =>
     <String, dynamic>{
       'message': instance.message,
     };

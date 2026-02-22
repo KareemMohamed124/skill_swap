@@ -1,6 +1,8 @@
 import '../../data/models/booking/booking_request.dart';
 import '../../data/models/booking/booking_response.dart';
+import '../../data/models/booking_details/booking_details_response.dart';
 import '../../data/models/cancel_booking/cancel_booking_response.dart';
+import '../../data/models/delete_booking/delete_booking_response.dart';
 import '../../data/models/status_booking/status_booking_request.dart';
 import '../../data/models/status_booking/status_booking_response.dart';
 import '../../data/models/update_booking/update_booking_request.dart';
@@ -16,6 +18,10 @@ abstract class BookingRepository {
 
   Future<UpdateBookingResponse> updateBookSession(
       String id, UpdateBookingRequest request);
+
+  Future<DeleteBookingResponse> deleteBookSession(String id);
+
+  Future<BookingDetailsResponse> getBookingDetails(String id);
 
 // Future<GetBookingsResponse> getAllBookings();
 }

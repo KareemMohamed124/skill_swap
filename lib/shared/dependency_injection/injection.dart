@@ -9,6 +9,8 @@ import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 import '../bloc/activation_bloc/activation_bloc.dart';
 import '../bloc/book_session/book_session_bloc.dart';
 import '../bloc/cancel_book_bloc/cancel_book_bloc.dart';
+import '../bloc/delete_book_bloc/delete_book_bloc.dart';
+import '../bloc/get_booking_details_bloc/get_booking_details_bloc.dart';
 import '../bloc/complete_profile_bloc/complete_profile_bloc.dart';
 import '../bloc/delete_account_bloc/delete_account_bloc.dart';
 import '../bloc/login_bloc/login_bloc.dart';
@@ -82,6 +84,10 @@ Future<void> initDependencies() async {
       () => CancelBookBloc(sl<BookingRepository>()));
   sl.registerFactory<UpdateBookBloc>(
       () => UpdateBookBloc(sl<BookingRepository>()));
+  sl.registerFactory<DeleteBookBloc>(
+      () => DeleteBookBloc(sl<BookingRepository>()));
+  sl.registerFactory<GetBookingDetailsBloc>(
+      () => GetBookingDetailsBloc(sl<BookingRepository>()));
   sl.registerFactory<UsersCubit>(() => UsersCubit(sl<UserRepository>()));
   sl.registerFactory<ChangePasswordBloc>(
       () => ChangePasswordBloc(sl<UserRepository>()));

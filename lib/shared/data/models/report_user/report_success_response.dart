@@ -1,5 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'report_success_response.g.dart';
 
+@JsonSerializable()
 class ReportSuccessResponse {
   final String message;
 

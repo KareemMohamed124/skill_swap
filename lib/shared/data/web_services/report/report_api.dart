@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:retrofit/http.dart';
+import 'package:retrofit/retrofit.dart';
 
 import '../../models/report_user/report_request.dart';
 import '../../models/report_user/report_success_response.dart';

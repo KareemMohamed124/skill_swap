@@ -1,5 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'change_password_success_response.g.dart';
 
+@JsonSerializable()
 class ChangePasswordSuccessResponse {
   final String message;
 

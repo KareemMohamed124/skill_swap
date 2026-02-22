@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:retrofit/http.dart';
+import 'package:retrofit/retrofit.dart';
 import 'package:skill_swap/shared/data/models/my_profile/profile_response.dart';
 
 import '../../models/change_password/change_password_request.dart';

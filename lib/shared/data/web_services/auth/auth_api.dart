@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:retrofit/http.dart';
+import 'package:retrofit/retrofit.dart';
 
 import '../../models/complete_profile/complete_profile_request.dart';
 import '../../models/login/login_request.dart';
