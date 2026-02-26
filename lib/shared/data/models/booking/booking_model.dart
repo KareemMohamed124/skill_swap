@@ -31,19 +31,30 @@ class Booking {
 
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
-        id: json['_id'],
-        userId: json['userId'],
-        requestedUser: json['requestedUser'],
-        date: DateTime.parse(json['date']),
-        time: json['time'],
-        duration_mins: json['duration_mins'],
-        price: json['price'],
-        bookingCode: json['bookingCode'],
-        status: json['status'],
-        rate: json['rate'] ?? 0,
-        createdAt: DateTime.parse(json['createdAt']),
-        updatedAt: DateTime.parse(json['updatedAt']),
-        v: json['__v']);
+      id: json['_id']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      requestedUser: json['requestedUser']?.toString() ?? '',
+      date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
+      time: json['time']?.toString() ?? '',
+      duration_mins: json['duration_mins'] is int
+          ? json['duration_mins']
+          : int.tryParse(json['duration_mins']?.toString() ?? '') ?? 0,
+      price: json['price'] is int
+          ? json['price']
+          : int.tryParse(json['price']?.toString() ?? '') ?? 0,
+      bookingCode: json['bookingCode']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      rate: json['rate'] is int
+          ? json['rate']
+          : int.tryParse(json['rate']?.toString() ?? '') ?? 0,
+      createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
+          DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt']?.toString() ?? '') ??
+          DateTime.now(),
+      v: json['__v'] is int
+          ? json['__v']
+          : int.tryParse(json['__v']?.toString() ?? '') ?? 0,
+    );
   }
 
   Map<String, dynamic> toJson() {

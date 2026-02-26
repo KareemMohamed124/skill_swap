@@ -52,7 +52,16 @@ class _BookSessionScreenState extends State<BookSessionScreen> {
           if (state is BookSessionSuccess) {
             Get.snackbar('Success', state.success.data.message);
           } else if (state is BookSessionFailure) {
-            Get.snackbar('Error', state.error.error.message);
+            final error = state.error.error;
+            final details = error.validationErrors
+                    ?.map((e) => '${e.field}: ${e.message}')
+                    .join('\n') ??
+                '';
+            Get.snackbar(
+              'Error',
+              details.isNotEmpty ? '${error.message}\n$details' : error.message,
+              duration: const Duration(seconds: 5),
+            );
           }
         },
         builder: (context, state) {

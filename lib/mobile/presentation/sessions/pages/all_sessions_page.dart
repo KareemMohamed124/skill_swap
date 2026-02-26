@@ -30,7 +30,8 @@ class AllSessionsPage extends StatelessWidget {
             itemCount: state.bookings.length,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, index) {
-              return SessionCard(session: state.bookings[index]);
+              return SessionCard(
+                  session: state.bookings[index], currentStatus: "all");
             },
           );
         }

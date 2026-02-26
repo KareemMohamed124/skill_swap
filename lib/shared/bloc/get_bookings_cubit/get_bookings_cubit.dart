@@ -16,7 +16,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
     try {
       final response = await bookingRepository.getAllBookings(status);
 
-      final currentUserId = LocalStorage.getUserId();
+      final currentUserId = await LocalStorage.getUserId();
 
       final sessions = response.bookings.map((booking) {
         final dateTime = DateTime(

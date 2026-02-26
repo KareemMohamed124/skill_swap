@@ -33,7 +33,8 @@ class PendingSessionsPage extends StatelessWidget {
             itemCount: pending.length,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, index) {
-              return SessionCard(session: pending[index]);
+              return SessionCard(
+                  session: pending[index], currentStatus: "pending");
             },
           );
         }

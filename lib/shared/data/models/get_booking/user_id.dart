@@ -11,9 +11,9 @@ class UserBooking {
 
   factory UserBooking.fromJson(Map<String, dynamic> json) {
     return UserBooking(
-      id: json['_id'],
-      name: json['name'],
-      email: json['email'],
+      id: json['_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
     );
   }
 }
