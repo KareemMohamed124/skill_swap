@@ -33,7 +33,7 @@ class ProfileMentorHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final cardWidth = screenWidth * 0.35;
+    final cardWidth = screenWidth * 0.55;
 
     final containerHeight = screenHeight * 0.2;
     final imageSize = screenWidth * 0.12;
@@ -108,7 +108,7 @@ class ProfileMentorHeader extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  "$track Developer • ",
+                                  "$track • ",
                                   style: TextStyle(
                                       fontSize: trackFontSize,
                                       color: Colors.white70),

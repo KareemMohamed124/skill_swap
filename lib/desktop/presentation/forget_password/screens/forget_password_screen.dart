@@ -160,7 +160,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignInScreen()),
+                              builder: (context) => SignInDesktop()),
                         );
                       },
                     ),

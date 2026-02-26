@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../desktop/presentation/sessions/models/session.dart';
 import '../../mobile/presentation/book_session/models/session_type_model.dart';
 import '../../mobile/presentation/history/models/history_model.dart';
 import '../../mobile/presentation/home/models/next_session.dart';
@@ -7,7 +8,6 @@ import '../../mobile/presentation/home/models/recommended_mentor.dart';
 import '../../mobile/presentation/home/models/top_user.dart';
 import '../../mobile/presentation/notification/models/notification_model.dart';
 import '../../mobile/presentation/search/models/mentor_model.dart';
-import '../../mobile/presentation/sessions/models/session.dart';
 
 class AppData {
   static final List<TopUser> topUsers = [

@@ -10,7 +10,6 @@ class ApplyFiltersEvent extends UserFilterEvent {
   final double? maxPrice;
   final double? minRate;
   final String? role;
-  final String? skill;
   final String? track;
 
   ApplyFiltersEvent({
@@ -18,7 +17,6 @@ class ApplyFiltersEvent extends UserFilterEvent {
     this.maxPrice,
     this.minRate,
     this.role,
-    this.skill,
     this.track,
   });
 }
@@ -37,4 +35,26 @@ class SortUserEvent extends UserFilterEvent {
   final SortType type;
 
   SortUserEvent(this.type);
+}
+
+class LoadMoreUsersEvent extends UserFilterEvent {
+  final int page;
+  final int limit;
+  final String? query;
+  final double? minPrice;
+  final double? maxPrice;
+  final double? minRate;
+  final String? role;
+  final String? track;
+
+  LoadMoreUsersEvent({
+    required this.page,
+    this.limit = 10,
+    this.query,
+    this.minPrice,
+    this.maxPrice,
+    this.minRate,
+    this.role,
+    this.track,
+  });
 }

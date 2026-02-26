@@ -48,13 +48,13 @@ class RecommendedCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       onTap: id != null && id!.isNotEmpty
           ? () {
-              Get.to(ProfileMentor(
-                id: id!,
-                name: name ?? '',
-                track: track ?? '',
-                rate: rating ?? 0,
-                image: image ?? '',
-              ));
+              // Get.to(ProfileMentor(
+              //   id: id!,
+              //   name: name ?? '',
+              //   track: track ?? '',
+              //   rate: rating ?? 0,
+              //   image: image ?? '',
+              // ));
             }
           : null,
       child: Container(

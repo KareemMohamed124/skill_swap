@@ -1,74 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../shared/constants/strings.dart';
-import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
 import '../widgets/session_card.dart';
 
-class AllSessionsPage extends StatefulWidget {
+class AllSessionsPage extends StatelessWidget {
   const AllSessionsPage({super.key});
 
   @override
-  State<AllSessionsPage> createState() => _AllSessionsPageState();
-}
-
-class _AllSessionsPageState extends State<AllSessionsPage> {
-  @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return BlocBuilder<GetBookingsCubit, GetBookingsState>(
+      builder: (context, state) {
+        if (state is GetBookingsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return Padding(
-      padding: EdgeInsets.all(screenWidth * 0.04), // responsive padding
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Your Sessions",
-            style: TextStyle(
-              fontSize: screenWidth * 0.045, // responsive font size
-              fontWeight: FontWeight.bold,
-              color: isDark
-                  ? AppPalette.darkTextPrimary
-                  : AppPalette.lightTextPrimary,
-            ),
-          ),
-          SizedBox(height: screenHeight * 0.01), // responsive spacing
-          ListView.separated(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            itemCount: AppData.allList.length,
-            separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.02),
+        if (state is GetBookingsError) {
+          return Center(child: Text(state.message));
+        }
+
+        if (state is GetBookingsLoaded) {
+          if (state.bookings.isEmpty) {
+            return const Center(child: Text("No sessions available"));
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: state.bookings.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, index) {
-              return SessionCard(session: AppData.allList[index]);
+              return SessionCard(session: state.bookings[index]);
             },
-          ),
-          SizedBox(height: screenHeight * 0.03),
-          Text(
-            "Your Request",
-            style: TextStyle(
-              fontSize: screenWidth * 0.04,
-              fontWeight: FontWeight.bold,
-              color: isDark
-                  ? AppPalette.darkTextPrimary
-                  : AppPalette.lightTextPrimary,
-            ),
-          ),
-          SizedBox(height: screenHeight * 0.01),
-          ListView.separated(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            itemCount: AppData.requestList.length,
-            separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.02),
-            itemBuilder: (_, index) {
-              return SessionCard(session: AppData.requestList[index]);
-            },
-          ),
-        ],
-      ),
+          );
+        }
+
+        return const SizedBox();
+      },
     );
   }
 }

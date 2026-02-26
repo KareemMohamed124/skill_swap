@@ -7,7 +7,7 @@ class MentorCard extends StatelessWidget {
   final String image;
   final String name;
   final String role;
-  final double rate;
+  final int rate;
   final int hours;
   final double price;
   final String track;

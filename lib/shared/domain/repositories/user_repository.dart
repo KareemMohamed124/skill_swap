@@ -8,20 +8,24 @@ import '../../data/models/update_profile/update_profile_request.dart';
 import '../../data/models/update_profile/update_profile_response.dart';
 
 abstract class UserRepository {
-  Future<List<UserModel>> getAllUsers();
+  Future<List<UserModel>> getAllUsers({required int page, int limit = 10});
 
   Future<MyProfile> getMyProfile();
 
-  Future<List<UserModel>> searchUsers({String? query});
+  Future<List<UserModel>> searchUsers(
+      {String? query, required int page, int limit = 10});
 
-  Future<List<UserModel>> sortUsers({String? query});
+  Future<List<UserModel>> sortUsers(
+      {String? query, required int page, int limit = 10});
 
   Future<List<UserModel>> filterUsers(
       {String? role,
       String? track,
       int? minRating,
       int? minPrice,
-      int? maxPrice});
+      int? maxPrice,
+      required int page,
+      int limit = 10});
 
   Future<ChangePasswordResponse> changePassword(ChangePasswordRequest request);
 

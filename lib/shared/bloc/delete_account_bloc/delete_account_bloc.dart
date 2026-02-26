@@ -3,6 +3,7 @@ import 'package:skill_swap/shared/bloc/delete_account_bloc/delete_account_event.
 
 import '../../data/models/delete_account/delete_account_response.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../../helper/local_storage.dart';
 import 'delete_account_state.dart';
 
 class DeleteAccountBloc extends Bloc<DeleteAccountEvent, DeleteAccountState> {
@@ -16,6 +17,10 @@ class DeleteAccountBloc extends Bloc<DeleteAccountEvent, DeleteAccountState> {
 
       switch (result) {
         case DeleteAccountSuccess():
+          await LocalStorage.clearAllTokens();
+          await LocalStorage.clearUserId();
+          //await LocalStorage.clearUser();
+          //  sl<MyProfileCubit>().emit(MyProfileInitial());
           emit(DeleteAccountSuccessState());
           break;
 

@@ -11,6 +11,9 @@ import '../bloc/book_session/book_session_bloc.dart';
 import '../bloc/cancel_book_bloc/cancel_book_bloc.dart';
 import '../bloc/complete_profile_bloc/complete_profile_bloc.dart';
 import '../bloc/delete_account_bloc/delete_account_bloc.dart';
+import '../bloc/delete_book_bloc/delete_book_bloc.dart';
+import '../bloc/get_booking_details_bloc/get_booking_details_bloc.dart';
+import '../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../bloc/register_bloc/register_bloc.dart';
@@ -80,8 +83,15 @@ Future<void> initDependencies() async {
       () => StatusBookBloc(sl<BookingRepository>()));
   sl.registerFactory<CancelBookBloc>(
       () => CancelBookBloc(sl<BookingRepository>()));
+
   sl.registerFactory<UpdateBookBloc>(
       () => UpdateBookBloc(sl<BookingRepository>()));
+  sl.registerFactory<DeleteBookBloc>(
+      () => DeleteBookBloc(sl<BookingRepository>()));
+  sl.registerFactory<GetBookingDetailsBloc>(
+      () => GetBookingDetailsBloc(sl<BookingRepository>()));
+  sl.registerFactory<GetBookingsCubit>(
+      () => GetBookingsCubit(sl<BookingRepository>()));
   sl.registerFactory<UsersCubit>(() => UsersCubit(sl<UserRepository>()));
   sl.registerFactory<ChangePasswordBloc>(
       () => ChangePasswordBloc(sl<UserRepository>()));
@@ -106,11 +116,14 @@ Future<void> initDependencies() async {
   // Load users safely
   List<UserModel> users = [];
   try {
-    users = await sl<UserRepository>().getAllUsers();
+    users = await sl<UserRepository>().getAllUsers(page: 1, limit: 10);
   } catch (e) {
     print("Failed to fetch users, using empty list: $e");
   }
 
-  sl.registerFactory<UserFilterBloc>(() =>
-      UserFilterBloc(userRepository: sl<UserRepository>(), allUsers: users));
+  sl.registerFactory<UserFilterBloc>(() => UserFilterBloc(
+      userRepository: sl<UserRepository>(),
+      allUsers: users,
+      limit: 10,
+      initialPage: 1));
 }

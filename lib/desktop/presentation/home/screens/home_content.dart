@@ -14,6 +14,7 @@ import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
 import '../../../../mobile/presentation/home/pages/next_session_view_all.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../../../../shared/constants/strings.dart';
 
 class HomeContent extends StatefulWidget {
@@ -41,7 +42,7 @@ class _HomeContentState extends State<HomeContent> {
         height: 48,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) =>
-        const Icon(Icons.person, size: 48, color: Colors.white),
+            const Icon(Icons.person, size: 48, color: Colors.white),
       );
     }
 
@@ -76,7 +77,7 @@ class _HomeContentState extends State<HomeContent> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom:
-                          BorderSide(color: Colors.grey.shade800, width: 1),
+                              BorderSide(color: Colors.grey.shade800, width: 1),
                         ),
                       ),
                       child: Row(
@@ -94,25 +95,23 @@ class _HomeContentState extends State<HomeContent> {
                             children: [
                               Text(
                                 'Hi, $name',
-                                style: Theme
-                                    .of(context)
+                                style: Theme.of(context)
                                     .textTheme
                                     .headlineSmall
                                     ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'keep_learning'.tr,
-                                style: Theme
-                                    .of(context)
+                                style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
                                     ?.copyWith(
-                                  color: Colors.white70,
-                                ),
+                                      color: Colors.white70,
+                                    ),
                               ),
                             ],
                           )
@@ -124,13 +123,12 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 24),
                 SectionHeader(
                   sectionTitle: 'top_users'.tr,
-                  onTop: () =>
-                      desktopKey.currentState?.openSidePage(
-                        body: BlocProvider.value(
-                          value: context.read<UsersCubit>(),
-                          child: const TopUsersViewAll(),
-                        ),
-                      ),
+                  onTop: () => desktopKey.currentState?.openSidePage(
+                    body: BlocProvider.value(
+                      value: context.read<UsersCubit>(),
+                      child: const TopUsersViewAll(),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 BlocBuilder<UsersCubit, UsersState>(
@@ -143,7 +141,7 @@ class _HomeContentState extends State<HomeContent> {
                         scrollDirection: Axis.horizontal,
                         itemCount: usersList.isNotEmpty ? usersList.length : 5,
                         gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
                           mainAxisSpacing: 24,
                           crossAxisSpacing: 24,
@@ -162,9 +160,16 @@ class _HomeContentState extends State<HomeContent> {
                                 body: ProfileMentor(
                                   id: u.id,
                                   name: u.name,
-                                  track: "Flutter",
+                                  track: u.track.name.isEmpty
+                                      ? "Mobile Development"
+                                      : u.track.name,
                                   rate: u.rate,
                                   image: u.userImage.secureUrl,
+                                  bio: u.profile.bio,
+                                  skills: u.skills,
+                                  hoursAvailable: u.freeHours,
+                                  peopleHelped: u.helpTotalHours,
+                                  hourlyRate: 0,
                                 ),
                               );
                             },
@@ -172,8 +177,10 @@ class _HomeContentState extends State<HomeContent> {
                               id: u.id,
                               image: u.userImage.secureUrl,
                               name: u.name,
-                              track: "Flutter",
-                              hours: "44",
+                              track: u.track.name.isEmpty
+                                  ? "Mobile Development"
+                                  : u.track.name,
+                              hours: u.helpTotalHours,
                             ),
                           );
                         },
@@ -184,10 +191,9 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 40),
                 SectionHeader(
                   sectionTitle: 'your_next_session'.tr,
-                  onTop: () =>
-                      desktopKey.currentState?.openSidePage(
-                        body: const NextSessionViewAll(),
-                      ),
+                  onTop: () => desktopKey.currentState?.openSidePage(
+                    body: const NextSessionViewAll(),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ListView.separated(
@@ -209,13 +215,12 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 40),
                 SectionHeader(
                   sectionTitle: 'recommended_for_you'.tr,
-                  onTop: () =>
-                      desktopKey.currentState?.openSidePage(
-                        body: BlocProvider.value(
-                          value: context.read<UsersCubit>(),
-                          child: const RecommendedViewAll(),
-                        ),
-                      ),
+                  onTop: () => desktopKey.currentState?.openSidePage(
+                    body: BlocProvider.value(
+                      value: context.read<UsersCubit>(),
+                      child: const RecommendedViewAll(),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 BlocBuilder<UsersCubit, UsersState>(
@@ -228,7 +233,7 @@ class _HomeContentState extends State<HomeContent> {
                         scrollDirection: Axis.horizontal,
                         itemCount: usersList.isNotEmpty ? usersList.length : 5,
                         gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
                           mainAxisSpacing: 24,
                           crossAxisSpacing: 24,
@@ -247,9 +252,16 @@ class _HomeContentState extends State<HomeContent> {
                                 body: ProfileMentor(
                                   id: u.id,
                                   name: u.name,
-                                  track: "Flutter",
+                                  track: u.track.name.isEmpty
+                                      ? "Mobile Development"
+                                      : u.track.name,
                                   rate: u.rate,
                                   image: u.userImage.secureUrl,
+                                  bio: u.profile.bio,
+                                  skills: u.skills,
+                                  hoursAvailable: u.freeHours,
+                                  peopleHelped: u.helpTotalHours,
+                                  hourlyRate: 0,
                                 ),
                               );
                             },
@@ -257,8 +269,10 @@ class _HomeContentState extends State<HomeContent> {
                               id: u.id,
                               image: u.userImage.secureUrl,
                               name: u.name,
-                              track: "Flutter",
-                              rating: 4,
+                              track: u.track.name.isEmpty
+                                  ? "Mobile Development"
+                                  : u.track.name,
+                              rating: u.rate,
                             ),
                           );
                         },

@@ -1,6 +1,7 @@
 import 'package:skill_swap/shared/data/models/user/Block_info.dart';
 import 'package:skill_swap/shared/data/models/user/profile_model.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
+import 'package:skill_swap/shared/data/models/user/track_model.dart';
 import 'package:skill_swap/shared/data/models/user/usesr_image.dart';
 import 'package:skill_swap/shared/data/models/user/warnning_model.dart';
 
@@ -16,7 +17,7 @@ class UserModel {
   final UserImage userImage;
   final Profile profile;
   final BlockInfo blockInfo;
-
+  final Track track;
   final List<Skill> skills;
   final List<WarningModel> warnings;
   final int rate;
@@ -34,6 +35,7 @@ class UserModel {
       required this.userImage,
       required this.profile,
       required this.blockInfo,
+      required this.track,
       required this.skills,
       required this.warnings,
       required this.rate,
@@ -52,6 +54,7 @@ class UserModel {
         userImage: UserImage.fromJson(json?['userImage']),
         profile: Profile.fromJson(json?['profile']),
         blockInfo: BlockInfo.fromJson(json?['blockInfo']),
+        track: Track.fromJson(json?['track']),
         skills: (json?['skills'] as List? ?? [])
             .map((e) => Skill.fromJson(e))
             .toList(),
@@ -61,5 +64,26 @@ class UserModel {
         rate: json?['rate'] ?? 0,
         freeHours: json?['freeHours'] ?? 0,
         helpTotalHours: json?['helpTotalHours'] ?? 0);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "_id": id,
+      "name": name,
+      "email": email,
+      "role": role,
+      "isActive": isActive,
+      "confirmEmail": confirmEmail,
+      "warningCount": warningCount,
+      "userImage": userImage.toJson(),
+      "profile": profile.toJson(),
+      "blockInfo": blockInfo.toJson(),
+      "track": track.toJson(),
+      "skills": skills.map((e) => e.toJson()).toList(),
+      "warnings": warnings.map((e) => e.toJson()).toList(),
+      "rate": rate,
+      "freeHours": freeHours,
+      "helpTotalHours": helpTotalHours,
+    };
   }
 }

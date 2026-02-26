@@ -142,7 +142,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     } else if (state is ResetPasswordSuccessState) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(state.data.message)));
-                      Get.to(SignInScreen());
+                      Get.to(SignInDesktop());
                     }
                   },
                   builder: (context, state) {

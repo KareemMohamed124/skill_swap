@@ -22,4 +22,14 @@ class Skill {
       experienceLevel: json?['experienceLevel'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'skillName': skillName,
+      'isVerified': isVerified,
+      'badgeLevel': badgeLevel,
+      'quizScore': quizScore,
+      'experienceLevel': experienceLevel,
+    };
+  }
 }

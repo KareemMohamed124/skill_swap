@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
-
-import '../data/models/user/user_model.dart';
+import 'package:skill_swap/shared/data/models/my_profile/my_profile.dart';
 
 class LocalStorage {
   static const _box = 'appBox';
@@ -8,6 +7,7 @@ class LocalStorage {
   static const _refreshTokenKey = 'refreshToken';
   static const _onboardingKey = 'onboarding';
   static const _userIdKey = 'userId';
+  static const _userKey = "user";
 
   static Future<void> saveToken(String token) async {
     final box = await Hive.openBox(_box);
@@ -45,6 +45,7 @@ class LocalStorage {
     return box.get(_tokenKey) != null;
   }
 
+  // Onboarding
   static Future<void> setOnboardingSeen() async {
     final box = await Hive.openBox(_box);
     await box.put(_onboardingKey, true);
@@ -65,17 +66,25 @@ class LocalStorage {
     return box.get(_userIdKey);
   }
 
-  static const _userKey = "user";
+  static Future<void> clearUserId() async {
+    final box = await Hive.openBox(_box);
+    await box.delete(_userIdKey);
+  }
 
-  // static Future<void> saveUser(UserModel user) async {
-  //   final box = await Hive.openBox(_box);
-  //   await box.put(_userKey, user.toJson());
-  // }
+  static Future<void> saveUser(MyProfile user) async {
+    final box = await Hive.openBox(_box);
+    await box.put(_userKey, user.toJson());
+  }
 
-  static Future<UserModel?> getUser() async {
+  static Future<MyProfile?> getUser() async {
     final box = await Hive.openBox(_box);
     final data = box.get(_userKey);
     if (data == null) return null;
-    return UserModel.fromJson(Map<String, dynamic>.from(data));
+    return MyProfile.fromJson(Map<String, dynamic>.from(data));
+  }
+
+  static Future<void> clearUser() async {
+    final box = await Hive.openBox(_box);
+    await box.delete(_userKey);
   }
 }

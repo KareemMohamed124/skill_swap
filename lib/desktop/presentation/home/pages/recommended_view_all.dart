@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
 import '../../../../main.dart';
+import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../widgets/recommended_card.dart';
 
 class RecommendedViewAll extends StatefulWidget {

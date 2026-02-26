@@ -19,6 +19,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         case LoginSuccess s:
           await LocalStorage.saveToken(s.data.accessToken);
           await LocalStorage.saveRefreshToken(s.data.refreshToken);
+          await LocalStorage.saveUserId(s.data.id);
+          //  await LocalStorage.saveUser(s.data.)
           emit(LoginSuccessState(s.data));
           break;
 

@@ -8,7 +8,7 @@ class UpdateProfileLoading extends UpdateProfileState {}
 
 class UpdateProfileSuccessState extends UpdateProfileState {
   final String success;
-  final MyProfile user;
+  final UpdateUser user;
 
   UpdateProfileSuccessState(this.success, this.user);
 }

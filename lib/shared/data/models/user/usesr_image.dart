@@ -17,4 +17,11 @@ class UserImage {
   factory UserImage.empty() {
     return UserImage(secureUrl: "", publicId: "");
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'secureUrl': secureUrl,
+      'publicId': publicId,
+    };
+  }
 }

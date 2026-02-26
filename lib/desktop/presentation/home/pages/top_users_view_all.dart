@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
 import '../../../../main.dart';
+import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -115,7 +116,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                               image: "",
                               name: user.name,
                               track: "Flutter",
-                              hours: "4",
+                              hours: 4,
                             ),
                           ),
                         );

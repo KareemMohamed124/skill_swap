@@ -8,6 +8,7 @@ import '../../../mobile/presentation/home/screens/home_screen.dart';
 import '../../../mobile/presentation/profile/screens/profile_screen.dart';
 import '../../../mobile/presentation/search/screens/search_screen.dart';
 import '../../../mobile/presentation/sessions/screens/sessions_screen.dart';
+import '../../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../dependency_injection/injection.dart';
 import '../custom_bottom_nav.dart';
@@ -36,7 +37,7 @@ class _ScreenManagerState extends State<ScreenManager> {
         create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
       ),
       BlocProvider<UsersCubit>(
-        create: (_) => sl<UsersCubit>()..fetchUsers(),
+        create: (_) => sl<UsersCubit>(),
       ),
     ], child: HomeScreen()),
     ChatListScreen(),
@@ -44,7 +45,12 @@ class _ScreenManagerState extends State<ScreenManager> {
       create: (_) => sl<UserFilterBloc>(),
       child: const SearchScreen(),
     ),
-    const SessionsScreen(),
+    MultiBlocProvider(providers: [
+      BlocProvider<MyProfileCubit>(
+        create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+      ),
+      BlocProvider(create: (_) => sl<GetBookingsCubit>())
+    ], child: const SessionsScreen()),
     const ProfileScreen(),
   ];
 

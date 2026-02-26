@@ -5,7 +5,7 @@ class TopUserCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final String? hours;
+  final int? hours;
   final double? widthCard;
   final bool isLoading;
 
@@ -76,7 +76,7 @@ class TopUserCard extends StatelessWidget {
               border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Text(
-              hours ?? '',
+              "$hours",
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

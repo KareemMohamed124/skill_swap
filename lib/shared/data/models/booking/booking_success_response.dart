@@ -8,7 +8,7 @@ part 'booking_success_response.g.dart';
 class BookingSuccessResponse {
   final String message;
 
-  @JsonKey(name: 'booking') // ← أهم سطر
+  @JsonKey(name: 'booking')
   final Booking bookSession;
 
   BookingSuccessResponse({

@@ -4,10 +4,9 @@ import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:skill_swap/mobile/presentation/select_skills/select_skills.dart';
 
+import '../../../../shared/core/theme/app_palette.dart';
 import '../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../shared/data/models/track/track_model.dart';
-import '../../../../shared/core/theme/app_palette.dart';
-
 
 /// Local map: track name → list of skills (API only returns id + name)
 const Map<String, List<String>> tracksWithSkillsMap = {
@@ -51,7 +50,7 @@ const Map<String, List<String>> tracksWithSkillsMap = {
     "C++ & Unreal Engine",
     "Blender & 3D Design",
   ],
-  "Cybersecurity": [
+  "CyberSecurity": [
     "Linux & Networking",
     "Python & Security Automation",
     "Penetration Testing & OWASP",
@@ -75,9 +74,7 @@ class SelectTrackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-      GetIt.instance<TracksCubit>()
-        ..fetchTracks(),
+      create: (_) => GetIt.instance<TracksCubit>()..fetchTracks(),
       child: const _SelectTrackBody(),
     );
   }
@@ -95,12 +92,8 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery
-        .of(context)
-        .size;
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Padding(
@@ -181,16 +174,12 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? AppPalette.primary
-                                    : Theme
-                                    .of(context)
-                                    .cardColor,
+                                    : Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(25),
                                 border: Border.all(
                                   color: isSelected
                                       ? AppPalette.primary
-                                      : Theme
-                                      .of(context)
-                                      .dividerColor,
+                                      : Theme.of(context).dividerColor,
                                 ),
                               ),
                               child: Text(
@@ -224,18 +213,18 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                   onPressed: selectedTrack == null
                       ? null
                       : () {
-                    // Look up skills from local map by track name
-                    final skills =
-                        tracksWithSkillsMap[selectedTrack!.name] ?? [];
+                          // Look up skills from local map by track name
+                          final skills =
+                              tracksWithSkillsMap[selectedTrack!.name] ?? [];
 
-                    Get.to(
-                      SelectSkillsScreen(
-                        trackId: selectedTrack!.id,
-                        trackName: selectedTrack!.name,
-                        skills: skills,
-                      ),
-                    );
-                  },
+                          Get.to(
+                            SelectSkillsScreen(
+                              trackId: selectedTrack!.id,
+                              trackName: selectedTrack!.name,
+                              skills: skills,
+                            ),
+                          );
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.primary,
                     shape: RoundedRectangleBorder(

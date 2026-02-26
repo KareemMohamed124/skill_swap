@@ -8,6 +8,7 @@ import 'package:skill_swap/shared/core/theme/app_palette.dart';
 import '../../../mobile/presentation/sign/screens/sign_in_screen.dart';
 import '../../../shared/bloc/logout_bloc/logout_event.dart';
 import '../../../shared/bloc/logout_bloc/logout_state.dart';
+import '../sign/screens/sign_in_screen.dart';
 
 class DesktopSidebar extends StatelessWidget {
   final int currentIndex;
@@ -21,7 +22,9 @@ class DesktopSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     return Container(
       width: 220,
@@ -34,7 +37,7 @@ class DesktopSidebar extends StatelessWidget {
               listener: (context, state) {
                 if (state is LogoutSuccessState) {
                   Get.snackbar('Success', state.success);
-                  Get.offAll(() => const SignInScreen());
+                  Get.offAll(() => const SignInDesktop());
                 } else if (state is LogoutFailureState) {
                   Get.snackbar('Error', state.error);
                 }
@@ -85,8 +88,8 @@ class DesktopSidebar extends StatelessWidget {
                     isAction: true,
                     onAction: () {
                       context.read<LogoutBloc>().add(
-                            LogoutRequested(),
-                          );
+                        LogoutRequested(),
+                      );
                     },
                   ),
                   _item(
@@ -114,8 +117,7 @@ class DesktopSidebar extends StatelessWidget {
     );
   }
 
-  Widget _item(
-    BuildContext context, {
+  Widget _item(BuildContext context, {
     required IconData icon,
     required String title,
     required int index,
@@ -127,14 +129,18 @@ class DesktopSidebar extends StatelessWidget {
     final Color textColor = isAction
         ? Colors.red
         : active
-            ? AppPalette.primary
-            : Theme.of(context).textTheme.bodyMedium!.color!;
+        ? AppPalette.primary
+        : Theme
+        .of(context)
+        .textTheme
+        .bodyMedium!
+        .color!;
 
     final Color? backgroundColor = active
         ? AppPalette.primary.withValues(alpha: 0.15)
         : isAction
-            ? Colors.red.withValues(alpha: 0.08)
-            : null;
+        ? Colors.red.withValues(alpha: 0.08)
+        : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

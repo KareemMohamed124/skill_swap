@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 
-import '../../../../desktop/presentation/search/widgets/filterSheet.dart';
+import '../../../../mobile/presentation/search/widgets/filterSheet.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
@@ -160,7 +160,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         initialRate: state.selectedRate,
                                         initialRole: state.selectedRole,
                                         initialTrack: state.selectedTrack,
-                                        initialSkill: state.enteredSkill,
+                                        //  initialSkill: state.enteredSkill,
                                       ),
                                     ),
                                   );
@@ -206,7 +206,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       initialRate: state.selectedRate,
                                       initialRole: state.selectedRole,
                                       initialTrack: state.selectedTrack,
-                                      initialSkill: state.enteredSkill,
+                                      //initialSkill: state.enteredSkill,
                                     ),
                                   ),
                                 );
@@ -230,31 +230,61 @@ class _SearchScreenState extends State<SearchScreen> {
                           builder: (context, state) {
                             return ListView.builder(
                               padding: EdgeInsets.zero,
-                              itemCount: state.filteredList.length,
+                              itemCount: state.filteredList.length + 1,
                               itemBuilder: (context, index) {
-                                final user = state.filteredList[index];
-                                return InkWell(
-                                  onTap: () {
-                                    Get.to(ProfileMentor(
-                                      id: user.id,
-                                      name: user.name,
-                                      track: "Flutter",
-                                      rate: 4,
+                                if (index < state.filteredList.length) {
+                                  final user = state.filteredList[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      Get.to(ProfileMentor(
+                                        id: user.id,
+                                        name: user.name,
+                                        track: user.track.name,
+                                        rate: user.rate,
+                                        image: user.userImage.secureUrl,
+                                        bio: user.profile.bio,
+                                        skills: user.skills,
+                                        hoursAvailable: user.freeHours,
+                                        peopleHelped: user.helpTotalHours,
+                                        hourlyRate: 0,
+                                      ));
+                                    },
+                                    child: MentorCard(
                                       image: user.userImage.secureUrl,
+                                      name: user.name,
+                                      role: user.role,
+                                      rate: user.rate,
+                                      hours: 5,
+                                      price: 0,
+                                      track: user.track.name,
+                                      skills: user.skills,
+                                      responseTime: "9",
+                                    ),
+                                  );
+                                } else {
+                                  if (!state.isLastPage &&
+                                      !state.isLoadingMore) {
+                                    final bloc = context.read<UserFilterBloc>();
+                                    bloc.add(LoadMoreUsersEvent(
+                                      page: bloc.currentPage + 1,
+                                      limit: bloc.limit,
+                                      query:
+                                          searchTextController.text.isNotEmpty
+                                              ? searchTextController.text
+                                              : null,
+                                      minPrice: state.minPrice?.toDouble(),
+                                      maxPrice: state.maxPrice?.toDouble(),
+                                      minRate: state.selectedRate?.toDouble(),
+                                      role: state.selectedRole,
+                                      track: state.selectedTrack,
                                     ));
-                                  },
-                                  child: MentorCard(
-                                    image: user.userImage.secureUrl,
-                                    name: user.name,
-                                    role: user.role,
-                                    rate: 4,
-                                    hours: 5,
-                                    price: 0,
-                                    track: 'flutter',
-                                    skills: user.skills,
-                                    responseTime: "9",
-                                  ),
-                                );
+                                  }
+                                  return const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  );
+                                }
                               },
                             );
                           },

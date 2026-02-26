@@ -7,25 +7,48 @@ import '../../domain/repositories/user_repository.dart';
 
 class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
   final UserRepository userRepository;
+  final int limit;
 
-  UserFilterBloc({
-    required this.userRepository,
-    required List<UserModel> allUsers,
-  }) : super(UserFilterState(filteredList: allUsers)) {
+  int _currentPage = 1;
+  bool _isLastPage = false;
+  bool _isLoadingMore = false;
+
+  int get currentPage => _currentPage;
+
+  UserFilterBloc(
+      {required this.userRepository,
+      required List<UserModel> allUsers,
+      this.limit = 10,
+      int initialPage = 1})
+      : _currentPage = initialPage,
+        super(UserFilterState(filteredList: allUsers)) {
     on<SearchUserEvent>((event, emit) async {
+      if (_isLoadingMore) return;
+
       emit(state.copyWith(isLoading: true));
 
-      final users = await userRepository.searchUsers(query: event.query);
+      _currentPage = 1;
+      _isLastPage = false;
+
+      final users = await userRepository.searchUsers(
+        query: event.query,
+        page: _currentPage,
+        limit: limit,
+      );
 
       emit(state.copyWith(
         filteredList: users,
         isLoading: false,
-        enteredSkill: event.query,
       ));
     });
 
     on<ApplyFiltersEvent>((event, emit) async {
+      if (_isLoadingMore) return;
+
       emit(state.copyWith(isLoading: true));
+
+      _currentPage = 1;
+      _isLastPage = false;
 
       final users = await userRepository.filterUsers(
         role: event.role,
@@ -33,6 +56,8 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         minRating: event.minRate?.toInt(),
         minPrice: event.minPrice?.toInt(),
         maxPrice: event.maxPrice?.toInt(),
+        page: _currentPage,
+        limit: limit,
       );
 
       emit(state.copyWith(
@@ -43,16 +68,22 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         selectedRate: event.minRate?.toInt(),
         selectedRole: event.role,
         selectedTrack: event.track,
-        enteredSkill: event.skill,
       ));
     });
 
     on<SortUserEvent>((event, emit) async {
+      if (_isLoadingMore) return;
+
       emit(state.copyWith(isLoading: true));
 
-      String sortQuery = _mapSortType(event.type);
+      _currentPage = 1;
+      _isLastPage = false;
 
-      final users = await userRepository.sortUsers(query: sortQuery);
+      final users = await userRepository.sortUsers(
+        query: _mapSortType(event.type),
+        page: _currentPage,
+        limit: limit,
+      );
 
       emit(state.copyWith(
         filteredList: users,
@@ -61,11 +92,66 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
     });
 
     on<ResetFiltersEvent>((event, emit) async {
+      if (_isLoadingMore) return;
+
       emit(state.copyWith(isLoading: true));
 
-      final users = await userRepository.getAllUsers();
+      _currentPage = 1;
+      _isLastPage = false;
+
+      final users =
+          await userRepository.getAllUsers(page: _currentPage, limit: limit);
 
       emit(UserFilterState(filteredList: users));
+    });
+
+    on<LoadMoreUsersEvent>((event, emit) async {
+      if (state.isLastPage || state.isLoadingMore) return;
+
+      emit(state.copyWith(isLoadingMore: true));
+
+      final nextPage = event.page;
+      final limit = event.limit;
+
+      List<UserModel> newUsers = [];
+
+      if (event.query != null && event.query!.isNotEmpty) {
+        // Search
+        newUsers = await userRepository.searchUsers(
+          query: event.query!,
+          page: nextPage,
+          limit: limit,
+        );
+      } else if (event.role != null ||
+          event.track != null ||
+          event.minRate != null ||
+          event.minPrice != null ||
+          event.maxPrice != null) {
+        // Filter
+        newUsers = await userRepository.filterUsers(
+          role: event.role,
+          track: event.track,
+          minRating: event.minRate?.toInt(),
+          minPrice: event.minPrice?.toInt(),
+          maxPrice: event.maxPrice?.toInt(),
+          page: nextPage,
+          limit: limit,
+        );
+      } else {
+        // Load all
+        newUsers = await userRepository.getAllUsers(
+          page: nextPage,
+          limit: limit,
+        );
+      }
+
+      final lastPage = newUsers.length < limit;
+
+      emit(state.copyWith(
+        filteredList: [...state.filteredList, ...newUsers],
+        isLastPage: lastPage,
+        isLoadingMore: false,
+      ));
     });
   }
 

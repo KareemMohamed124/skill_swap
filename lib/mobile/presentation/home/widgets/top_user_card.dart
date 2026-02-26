@@ -76,7 +76,7 @@ class TopUserCard extends StatelessWidget {
           ),
 
           Text(
-            "${track ?? ''} Developer",
+            track ?? "Mobile Development",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleSmall,

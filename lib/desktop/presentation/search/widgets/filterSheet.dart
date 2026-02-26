@@ -13,7 +13,8 @@ class MentorFilterSheet extends StatefulWidget {
   final int? initialRate;
   final String? initialRole;
   final String? initialTrack;
-  final String? initialSkill;
+
+  //final String? initialSkill;
 
   const MentorFilterSheet({
     super.key,
@@ -22,7 +23,7 @@ class MentorFilterSheet extends StatefulWidget {
     this.initialRate,
     this.initialRole,
     this.initialTrack,
-    this.initialSkill,
+    //this.initialSkill,
   });
 
   @override
@@ -36,7 +37,8 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
   int? selectedRate;
   String? selectedRole;
   String? selectedTrack;
-  String? enteredSkill;
+
+  //String? enteredSkill;
 
   late TextEditingController skillController;
 
@@ -54,15 +56,15 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     selectedRate = widget.initialRate;
     selectedRole = widget.initialRole;
     selectedTrack = widget.initialTrack;
-    enteredSkill = widget.initialSkill;
+    //enteredSkill = widget.initialSkill;
 
-    skillController = TextEditingController(text: enteredSkill ?? "");
+    //skillController = TextEditingController(text: enteredSkill ?? "");
 
     if (startPrice != 20 || endPrice != 60) activeFiltersCount++;
     if (selectedRate != null) activeFiltersCount++;
     if (selectedRole != null) activeFiltersCount++;
     if (selectedTrack != null) activeFiltersCount++;
-    if (enteredSkill != null && enteredSkill!.isNotEmpty) activeFiltersCount++;
+    //if (enteredSkill != null && enteredSkill!.isNotEmpty) activeFiltersCount++;
   }
 
   @override
@@ -156,39 +158,39 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               ),
               const SizedBox(height: 16),
 
-              /// Skill
-              Text("skill".tr, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 50),
-                child: TextField(
-                  controller: skillController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
-                    hintText: "enter_skill_name".tr,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      final trimmed = value.trim();
-                      if (enteredSkill == null && trimmed.isNotEmpty)
-                        activeFiltersCount++;
-                      else if (enteredSkill != null && trimmed.isEmpty)
-                        activeFiltersCount--;
-                      enteredSkill = trimmed.isEmpty ? null : trimmed;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
+              // /// Skill
+              // Text("skill".tr, style: Theme.of(context).textTheme.titleMedium),
+              // const SizedBox(height: 8),
+              // ConstrainedBox(
+              //   constraints: const BoxConstraints(minHeight: 50),
+              //   child: TextField(
+              //     controller: skillController,
+              //     decoration: InputDecoration(
+              //       filled: true,
+              //       fillColor: Theme.of(context).cardColor,
+              //       hintText: "enter_skill_name".tr,
+              //       enabledBorder: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //       focusedBorder: OutlineInputBorder(
+              //         borderSide:
+              //             BorderSide(color: Theme.of(context).dividerColor),
+              //         borderRadius: BorderRadius.circular(8),
+              //       ),
+              //     ),
+              //     onChanged: (value) {
+              //       setState(() {
+              //         final trimmed = value.trim();
+              //         if (enteredSkill == null && trimmed.isNotEmpty)
+              //           activeFiltersCount++;
+              //         else if (enteredSkill != null && trimmed.isEmpty)
+              //           activeFiltersCount--;
+              //         enteredSkill = trimmed.isEmpty ? null : trimmed;
+              //       });
+              //     },
+              //   ),
+              // ),
+              // const SizedBox(height: 16),
 
               /// Rating
               Text("rating".tr, style: Theme.of(context).textTheme.titleMedium),
@@ -245,7 +247,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                                 minRate: selectedRate?.toDouble(),
                                 role: selectedRole,
                                 track: selectedTrack,
-                                skill: enteredSkill,
+                                //skill: enteredSkill,
                               ),
                             );
                         Navigator.pop(context, activeFiltersCount);

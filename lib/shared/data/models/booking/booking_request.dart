@@ -4,7 +4,7 @@ part 'booking_request.g.dart';
 
 @JsonSerializable()
 class BookingRequest {
-  final String userId;
+  final String requestedUser;
   final String time;
   final String date;
   final int duration_mins;
@@ -14,7 +14,7 @@ class BookingRequest {
       {required this.time,
       required this.date,
       required this.duration_mins,
-      required this.userId,
+      required this.requestedUser,
       required this.price});
 
   Map<String, dynamic> toJson() => _$BookingRequestToJson(this);

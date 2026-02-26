@@ -1,8 +1,8 @@
-import '../booking/booking_model.dart';
+import 'booking.dart';
 
 class GetBookingsResponse {
   final String message;
-  final List<Booking> bookings;
+  final List<GetBookingModel> bookings;
 
   GetBookingsResponse({
     required this.message,
@@ -12,8 +12,9 @@ class GetBookingsResponse {
   factory GetBookingsResponse.fromJson(Map<String, dynamic> json) {
     return GetBookingsResponse(
       message: json['message'],
-      bookings:
-          (json['bookings'] as List).map((e) => Booking.fromJson(e)).toList(),
+      bookings: (json['bookings'] as List)
+          .map((e) => GetBookingModel.fromJson(e))
+          .toList(),
     );
   }
 }

@@ -26,6 +26,168 @@ import '../../setting/pages/change_password.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 
+const Map<String, List<String>> tracksWithSkillsMap = {
+  "Mobile Development": [
+    "Dart",
+    "Flutter",
+    "Java",
+    "Kotlin",
+    "Android",
+    "Swift",
+    "iOS",
+    "Backend Services",
+    "Firebase",
+    "REST APIs / GraphQL",
+    "Bloc",
+    "Provider",
+    "Riverpod",
+    "Unit Testing",
+    "Widget Testing",
+    "Integration Testing",
+    "CI/CD for Mobile",
+    "UX/UI Basics for Mobile"
+  ],
+  "Frontend Development": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "React",
+    "Angular",
+    "Vue",
+    "TypeScript",
+    "Redux",
+    "MobX",
+    "Pinia",
+    "Responsive Design",
+    "Tailwind",
+    "Bootstrap",
+    "Jest",
+    "Cypress",
+    "Web Performance",
+    "SEO"
+  ],
+  "Backend Development": [
+    "JavaScript",
+    "NodeJS",
+    "Laravel",
+    "Django",
+    "Database Management",
+    "PHP",
+    "Python",
+    "SQL",
+    "REST APIs",
+    "GraphQL",
+    "gRPC",
+    "JWT",
+    "OAuth",
+    "Caching",
+    "Redis",
+    "Message Queues",
+    "Microservices",
+    "Architecture Patterns",
+    "Unit Testing",
+    "Integration Testing"
+  ],
+  "UI/UX Design": [
+    "Figma",
+    "Adobe XD",
+    "User Research",
+    "UI Design",
+    "Prototyping",
+    "UX Strategy",
+    "User Flows",
+    "Wireframes",
+    "Interaction Design",
+    "Accessibility",
+    "WCAG",
+    "Design Systems",
+    "Style Guides"
+  ],
+  "Artificial Intelligence": [
+    "Python",
+    "TensorFlow",
+    "PyTorch",
+    "NLP",
+    "Computer Vision",
+    "Reinforcement Learning",
+    "ML Ops",
+    "Model Deployment",
+    "Data Preprocessing",
+    "Feature Engineering"
+  ],
+  "Data Science": [
+    "Python",
+    "Pandas",
+    "NumPy",
+    "Data Visualization",
+    "R",
+    "Statistical Analysis",
+    "SQL",
+    "Databases for Data",
+    "Machine Learning Basics",
+    "Statistical Modeling",
+    "Hypothesis Testing"
+  ],
+  "Game Development": [
+    "C#",
+    "Unity",
+    "C++",
+    "Unreal Engine",
+    "Blender",
+    "3D Design",
+    "Advanced C++ Techniques",
+    "Advanced C# Techniques",
+    "Physics Systems",
+    "Animation Systems",
+    "Shader Programming",
+    "Multiplayer",
+    "Networking"
+  ],
+  "CyberSecurity": [
+    "Linux",
+    "Networking",
+    "Python",
+    "Security Automation",
+    "Penetration Testing",
+    "OWASP",
+    "Security Protocols",
+    "Malware Analysis",
+    "Incident Response",
+    "Cloud Security"
+  ],
+  "Cloud Computing": [
+    "Docker",
+    "Containerization",
+    "Kubernetes",
+    "Orchestration",
+    "AWS",
+    "Cloud Services",
+    "CI/CD",
+    "DevOps",
+    "Azure",
+    "GCP",
+    "Terraform",
+    "Infrastructure as Code",
+    "Cloud Security",
+    "Monitoring"
+  ],
+  "Software Testing": [
+    "Dart",
+    "Flutter Testing",
+    "Java",
+    "Selenium",
+    "Automation",
+    "Test Frameworks",
+    "API Testing",
+    "Postman",
+    "REST Assured",
+    "Performance Testing",
+    "Load Testing",
+    "JMeter",
+    "Manual Testing Techniques"
+  ],
+};
+
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
 
@@ -40,6 +202,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   File? selectedImage;
   bool controllersFilled = false;
+  List<dynamic> selectedSkills = [];
+  List<dynamic> originalSkills = [];
+  String? userTrack;
+  List<dynamic> selectedSkillsNew = [];
 
   @override
   void initState() {
@@ -56,7 +222,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     bioController.text = profile.profile.bio;
 
     final skillsList = profile.skills ?? [];
-    skillsController.text = skillsList.map((e) => e.skillName).join(', ');
+    selectedSkills = skillsList.map((e) => e.skillName).toList();
+    originalSkills = List.from(selectedSkills);
+    skillsController.text = selectedSkills.join(', ');
+
+    userTrack = profile.track.name;
 
     selectedImage = null;
     controllersFilled = true;
@@ -131,6 +301,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listener: (context, state) {
           if (state is UpdateProfileSuccessState) {
             Get.snackbar('Success', state.success);
+            setState(() {
+              selectedSkillsNew.clear();
+            });
+            final updatedSkills =
+                state.user.skills.map((s) => s.skillName).toList();
+            setState(() {
+              selectedSkills = updatedSkills;
+              skillsController.text = selectedSkills.join(', ');
+            });
+
             context.read<MyProfileCubit>().fetchMyProfile();
             controllersFilled = false;
           } else if (state is UpdateProfileErrorState) {
@@ -145,7 +325,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             if (!controllersFilled && profile != null) {
               fillControllersFromProfile(profile);
             }
-
+            //    controllersFilled = false;
             final avatarRadius = screenWidth * 0.08;
             final fontSizeTitle = screenWidth * 0.045;
             final fontSizeHint = screenWidth * 0.035;
@@ -242,23 +422,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         inputField("bio".tr, "Tell others about yourself...",
                             bioController, fontSizeHint,
                             maxLines: 3, isLoading: isLoading),
-                        inputField("skills".tr, "Flutter, Dart...",
-                            skillsController, fontSizeHint,
-                            isLoading: isLoading),
+                        skillsSection(fontSizeTitle),
                         SizedBox(height: spacing / 2),
                         SizedBox(
                           width: double.infinity,
                           child: CustomButton(
                             text: "save_changes".tr,
                             onPressed: () {
-                              // تحويل النص لـ List<UpdateSkill>
-                              final skillsList = skillsController.text
-                                  .split(',')
-                                  .map((e) => e.trim())
-                                  .where((e) => e.isNotEmpty)
-                                  .map((skillName) =>
-                                      UpdateSkill(skillName: skillName))
-                                  .toList();
+                              final hasSkillsChanged = selectedSkills.length !=
+                                      originalSkills.length ||
+                                  !selectedSkills
+                                      .every((s) => originalSkills.contains(s));
+
+                              final skillsList = selectedSkillsNew.isNotEmpty
+                                  ? selectedSkillsNew
+                                      .map((skillName) =>
+                                          UpdateSkill(skillName: skillName))
+                                      .toList()
+                                  : null;
 
                               final updateRequest = UpdateProfileRequest(
                                 name: nameController.text.trim().isEmpty
@@ -269,7 +450,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ? null
                                       : bioController.text.trim(),
                                 ),
-                                skills: skillsList.isEmpty ? null : skillsList,
+                                skills: skillsList,
                               );
 
                               context
@@ -312,6 +493,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 if (state is LogoutSuccessState) {
                                   Get.snackbar('Success', state.success);
                                   LocalStorage.clearAllTokens();
+                                  LocalStorage.clearUserId();
+                                  LocalStorage.clearUser();
                                   Get.offAll(() => const SignInScreen());
                                 } else if (state is LogoutFailureState) {
                                   Get.snackbar('Error', state.error);
@@ -338,6 +521,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             listener: (context, state) {
                               if (state is DeleteAccountSuccessState) {
                                 LocalStorage.clearAllTokens();
+                                LocalStorage.clearUserId();
+                                LocalStorage.clearUser();
                                 Get.offAll(() => const SignUpScreen());
                               } else if (state is DeleteAccountFailureState) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -531,6 +716,113 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget skillsSection(double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        sectionTitle("skills".tr, fontSize: fontSize),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ...selectedSkillsNew.map((skill) => Chip(
+                  label: Text(skill),
+                  deleteIcon: const Icon(Icons.close, size: 18),
+                  onDeleted: () {
+                    setState(() {
+                      selectedSkillsNew.remove(skill);
+                    });
+                  },
+                )),
+            ActionChip(
+              avatar: const Icon(Icons.add),
+              label: const Text("Add"),
+              onPressed: showSkillsPicker,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void showSkillsPicker() {
+    final trackSkills = tracksWithSkillsMap[userTrack] ?? [];
+
+    List<String> tempSelectedSkills = List.from(selectedSkillsNew);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Select Skills",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: trackSkills.map((skill) {
+                        final isAlreadyMine = selectedSkills.contains(skill);
+                        final isSelectedNew =
+                            tempSelectedSkills.contains(skill);
+
+                        return FilterChip(
+                          label: Text(skill),
+                          selectedShadowColor: AppPalette.primary,
+                          selected: isAlreadyMine || isSelectedNew,
+                          onSelected: isAlreadyMine
+                              ? null
+                              : (selected) {
+                                  setModalState(() {
+                                    if (selected) {
+                                      tempSelectedSkills.add(skill);
+                                    } else {
+                                      tempSelectedSkills.remove(skill);
+                                    }
+                                  });
+                                },
+                          selectedColor: isAlreadyMine ? Colors.grey : null,
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppPalette.primary,
+                            foregroundColor: Colors.white),
+                        child: const Text("Save Skills"),
+                        onPressed: () {
+                          setState(() {
+                            selectedSkillsNew = tempSelectedSkills;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

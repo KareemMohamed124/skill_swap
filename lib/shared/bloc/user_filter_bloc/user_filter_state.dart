@@ -11,18 +11,20 @@ class UserFilterState extends Equatable {
   final int? selectedRate;
   final String? selectedRole;
   final String? selectedTrack;
-  final String? enteredSkill;
 
-  const UserFilterState({
-    required this.filteredList,
-    this.isLoading = false,
-    this.minPrice = 20,
-    this.maxPrice = 60,
-    this.selectedRate,
-    this.selectedRole,
-    this.selectedTrack,
-    this.enteredSkill,
-  });
+  final bool isLastPage;
+  final bool isLoadingMore;
+
+  const UserFilterState(
+      {required this.filteredList,
+      this.isLoading = false,
+      this.minPrice = 20,
+      this.maxPrice = 60,
+      this.selectedRate,
+      this.selectedRole,
+      this.selectedTrack,
+      this.isLastPage = false,
+      this.isLoadingMore = false});
 
   @override
   List<Object?> get props => [
@@ -33,28 +35,29 @@ class UserFilterState extends Equatable {
         selectedRate,
         selectedRole,
         selectedTrack,
-        enteredSkill,
+        isLastPage,
+        isLoadingMore
       ];
 
-  UserFilterState copyWith({
-    List<UserModel>? filteredList,
-    bool? isLoading,
-    double? minPrice,
-    double? maxPrice,
-    int? selectedRate,
-    String? selectedRole,
-    String? selectedTrack,
-    String? enteredSkill,
-  }) {
+  UserFilterState copyWith(
+      {List<UserModel>? filteredList,
+      bool? isLoading,
+      double? minPrice,
+      double? maxPrice,
+      int? selectedRate,
+      String? selectedRole,
+      String? selectedTrack,
+      bool? isLastPage,
+      bool? isLoadingMore}) {
     return UserFilterState(
-      filteredList: filteredList ?? this.filteredList,
-      isLoading: isLoading ?? this.isLoading,
-      minPrice: minPrice ?? this.minPrice,
-      maxPrice: maxPrice ?? this.maxPrice,
-      selectedRate: selectedRate ?? this.selectedRate,
-      selectedRole: selectedRole ?? this.selectedRole,
-      selectedTrack: selectedTrack ?? this.selectedTrack,
-      enteredSkill: enteredSkill ?? this.enteredSkill,
-    );
+        filteredList: filteredList ?? this.filteredList,
+        isLoading: isLoading ?? this.isLoading,
+        minPrice: minPrice ?? this.minPrice,
+        maxPrice: maxPrice ?? this.maxPrice,
+        selectedRate: selectedRate ?? this.selectedRate,
+        selectedRole: selectedRole ?? this.selectedRole,
+        selectedTrack: selectedTrack ?? this.selectedTrack,
+        isLastPage: isLastPage ?? this.isLastPage,
+        isLoadingMore: isLoadingMore ?? this.isLoadingMore);
   }
 }

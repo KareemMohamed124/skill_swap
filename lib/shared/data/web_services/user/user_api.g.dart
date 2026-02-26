@@ -20,9 +20,9 @@ class _UserApi implements UserApi {
   String? baseUrl;
 
   @override
-  Future<UsersResponse> getAllUsers() async {
+  Future<UsersResponse> getAllUsers(int page, int limit) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page, r'limit': limit};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<UsersResponse>(
@@ -72,74 +72,16 @@ class _UserApi implements UserApi {
   }
 
   @override
-  Future<UsersResponse> searchUsers({String? query}) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'search': query};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UsersResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'user/all-users',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UsersResponse _value;
-    try {
-      _value = UsersResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<UsersResponse> sortUsers({String? query}) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'sort': query};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UsersResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'user/all-users',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UsersResponse _value;
-    try {
-      _value = UsersResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<UsersResponse> filterUsers({
-    String? role,
-    String? track,
-    int? minRating,
-    int? minPrice,
-    int? maxPrice,
+  Future<UsersResponse> searchUsers({
+    String? query,
+    int? page,
+    int? limit,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'role': role,
-      r'track': track,
-      r'minRating': minRating,
-      r'minPrice': minPrice,
-      r'maxPrice': maxPrice,
+      r'search': query,
+      r'page': page,
+      r'limit': limit,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -159,19 +101,97 @@ class _UserApi implements UserApi {
     try {
       _value = UsersResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      //errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
   }
 
   @override
-  Future<Map<String, dynamic>> updateProfile(UpdateProfileRequest body) async {
+  Future<UsersResponse> sortUsers(
+      {String? query, int? page, int? limit}) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'sort': query,
+      r'page': page,
+      r'limit': limit,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<UsersResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'user/all-users',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late UsersResponse _value;
+    try {
+      _value = UsersResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      //errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<UsersResponse> filterUsers({
+    String? role,
+    String? track,
+    int? minRating,
+    int? minPrice,
+    int? maxPrice,
+    int? page,
+    int? limit,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'role': role,
+      r'track': track,
+      r'minRating': minRating,
+      r'minPrice': minPrice,
+      r'maxPrice': maxPrice,
+      r'page': page,
+      r'limit': limit,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<UsersResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'user/all-users',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late UsersResponse _value;
+    try {
+      _value = UsersResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      //errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<dynamic> updateProfile(UpdateProfileRequest body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<Map<String, dynamic>>(
+    final _options = _setStreamType<dynamic>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -181,9 +201,9 @@ class _UserApi implements UserApi {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-
-    return _result.data!;
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
   }
 
   @override
@@ -236,6 +256,7 @@ class _UserApi implements UserApi {
     try {
       _value = ChangePasswordSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      // errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;

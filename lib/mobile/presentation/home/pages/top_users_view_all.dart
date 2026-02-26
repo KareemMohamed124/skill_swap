@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
+import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {

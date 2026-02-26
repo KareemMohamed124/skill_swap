@@ -34,7 +34,7 @@ class AuthInterceptor extends Interceptor {
     print('🟡 [AuthInterceptor] Request: ${options.method} ${options.uri}');
     print('🟡 [AuthInterceptor] Token present: ${token != null}');
     if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+      options.headers['Authorization'] = 'skill-swap $token';
     }
     handler.next(options);
   }
@@ -81,7 +81,7 @@ class AuthInterceptor extends Interceptor {
       final response = await _refreshDio.post(
         'https://skill-swaapp.vercel.app/auth/refresh/',
         options: Options(
-          headers: {'Authorization': 'Bearer $refreshToken'},
+          headers: {'Authorization': 'skill-swap $refreshToken'},
         ),
       );
 
@@ -122,7 +122,7 @@ class AuthInterceptor extends Interceptor {
       method: requestOptions.method,
       headers: {
         ...requestOptions.headers,
-        'Authorization': 'Bearer $token',
+        'Authorization': 'skill-swap $token',
       },
     );
 

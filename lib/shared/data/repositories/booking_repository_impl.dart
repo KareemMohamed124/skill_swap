@@ -5,9 +5,16 @@ import '../models/booking/booking_error_response.dart';
 import '../models/booking/booking_request.dart';
 import '../models/booking/booking_response.dart';
 import '../models/booking/booking_success_response.dart';
+import '../models/booking_details/booking_details_error_response.dart';
+import '../models/booking_details/booking_details_response.dart';
+import '../models/booking_details/booking_details_success_response.dart';
 import '../models/cancel_booking/cancel_booking_error_response.dart';
 import '../models/cancel_booking/cancel_booking_response.dart';
 import '../models/cancel_booking/cancel_booking_success_response.dart';
+import '../models/delete_booking/delete_booking_error_response.dart';
+import '../models/delete_booking/delete_booking_response.dart';
+import '../models/delete_booking/delete_booking_success_response.dart';
+import '../models/get_booking/get_booking_response.dart';
 import '../models/status_booking/status_booking_error_response.dart';
 import '../models/status_booking/status_booking_request.dart';
 import '../models/status_booking/status_booking_response.dart';
@@ -165,10 +172,76 @@ class BookingRepositoryImpl extends BookingRepository {
     }
   }
 
-// @override
-// Future<GetBookingsResponse> getAllBookings() async {
-//   final response = await api.getAllBookings();
-//   return response
-//   .;
-//  }
+  @override
+  Future<GetBookingsResponse> getAllBookings(String status) async {
+    try {
+      final response = await api.getAllBookings(status);
+
+      return GetBookingsResponse.fromJson(response);
+    } on DioException catch (e) {
+      final message =
+          e.response?.data != null && e.response!.data is Map<String, dynamic>
+              ? e.response!.data['message']?.toString() ?? 'Server Error'
+              : e.message ?? 'Network Error';
+      throw Exception(message);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<DeleteBookingResponse> deleteBookSession(String id) async {
+    try {
+      final response = await api.deleteBookSession(id) as Map<String, dynamic>;
+
+      if (response['message'] == 'Booking deleted') {
+        return DeleteBookingSuccess(
+          DeleteBookingSuccessResponse.fromJson(response),
+        );
+      }
+
+      return DeleteBookingFailure(
+        DeleteBookingErrorResponse.fromJson(response),
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = DeleteBookingErrorResponse.fromJson(e.response!.data);
+        return DeleteBookingFailure(error);
+      }
+
+      return DeleteBookingFailure(
+        DeleteBookingErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return DeleteBookingFailure(
+        DeleteBookingErrorResponse(message: e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<BookingDetailsResponse> getBookingDetails(String id) async {
+    try {
+      final response = await api.getBookingDetails(id) as Map<String, dynamic>;
+
+      return BookingDetailsSuccess(
+        BookingDetailsSuccessResponse.fromJson(response),
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = BookingDetailsErrorResponse.fromJson(e.response!.data);
+        return BookingDetailsFailure(error);
+      }
+
+      return BookingDetailsFailure(
+        BookingDetailsErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return BookingDetailsFailure(
+        BookingDetailsErrorResponse(message: e.toString()),
+      );
+    }
+  }
 }

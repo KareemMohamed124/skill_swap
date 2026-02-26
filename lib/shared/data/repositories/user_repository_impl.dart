@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:path/path.dart' as p;
 import 'package:skill_swap/shared/data/models/change_password/change_password_request.dart';
 import 'package:skill_swap/shared/data/models/change_password/change_password_response.dart';
@@ -22,13 +21,7 @@ class UserRepositoryImpl extends UserRepository {
 
   Future<List<UserModel>> _excludeMyAccountAndAdmin(
       List<UserModel> users) async {
-    final token = await LocalStorage.getToken();
-    String? myId;
-
-    if (token != null && !JwtDecoder.isExpired(token)) {
-      final decoded = JwtDecoder.decode(token);
-      myId = decoded['_id'];
-    }
+    String? myId = await LocalStorage.getUserId();
 
     return users.where((user) {
       final isMe = user.id == myId;
@@ -38,8 +31,9 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<List<UserModel>> getAllUsers() async {
-    final response = await api.getAllUsers();
+  Future<List<UserModel>> getAllUsers(
+      {required int page, int limit = 10}) async {
+    final response = await api.getAllUsers(page, limit);
     return _excludeMyAccountAndAdmin(response.data.users);
   }
 
@@ -64,12 +58,15 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<List<UserModel>> searchUsers({String? query}) async {
+  Future<List<UserModel>> searchUsers(
+      {String? query, required int page, int limit = 10}) async {
     List<UserModel> users;
     if (query == null || query.isEmpty) {
-      users = await api.getAllUsers().then((res) => res.data.users);
+      users = await api.getAllUsers(page, limit).then((res) => res.data.users);
     } else {
-      users = await api.searchUsers(query: query).then((res) => res.data.users);
+      users = await api
+          .searchUsers(query: query, page: page, limit: limit)
+          .then((res) => res.data.users);
     }
     return _excludeMyAccountAndAdmin(users);
   }
@@ -139,30 +136,35 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<List<UserModel>> filterUsers({
-    String? role,
-    String? track,
-    int? minRating,
-    int? minPrice,
-    int? maxPrice,
-  }) async {
+  Future<List<UserModel>> filterUsers(
+      {String? role,
+      String? track,
+      int? minRating,
+      int? minPrice,
+      int? maxPrice,
+      required page,
+      int limit = 10}) async {
     final response = await api.filterUsers(
-      role: role,
-      track: track,
-      minRating: minRating,
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-    );
+        role: role,
+        track: track,
+        minRating: minRating,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        page: page,
+        limit: limit);
     return _excludeMyAccountAndAdmin(response.data.users);
   }
 
   @override
-  Future<List<UserModel>> sortUsers({String? query}) async {
+  Future<List<UserModel>> sortUsers(
+      {String? query, required int page, int limit = 10}) async {
     List<UserModel> users;
     if (query == null || query.isEmpty) {
-      users = await api.getAllUsers().then((res) => res.data.users);
+      users = await api.getAllUsers(page, limit).then((res) => res.data.users);
     } else {
-      users = await api.sortUsers(query: query).then((res) => res.data.users);
+      users = await api
+          .sortUsers(query: query, page: page, limit: limit)
+          .then((res) => res.data.users);
     }
     return _excludeMyAccountAndAdmin(users);
   }

@@ -73,11 +73,17 @@ class SessionDetailsPage extends StatelessWidget {
                         OutlinedButton.icon(
                           onPressed: () {
                             Get.to(ProfileMentor(
-                                id: session.mentorId,
-                                image: session.mentorImage,
-                                name: session.mentorName,
-                                track: session.mentorTrack,
-                                rate: session.rating));
+                              id: session.mentorId,
+                              image: session.mentorImage,
+                              name: session.mentorName,
+                              track: session.mentorTrack,
+                              rate: session.rating,
+                              bio: session.bio,
+                              skills: session.skills,
+                              hoursAvailable: 0,
+                              peopleHelped: 0,
+                              hourlyRate: 0,
+                            ));
                           },
                           icon: const Icon(Icons.person_outline),
                           label: const Text('View Profile'),

@@ -16,6 +16,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     try {
       final myProfile = await repository.getMyProfile();
+      //LocalStorage.saveUser(myProfile);
       emit(MyProfileLoaded(myProfile));
     } catch (e) {
       emit(MyProfileError(e.toString()));

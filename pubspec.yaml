@@ -26,7 +26,7 @@ dependencies:
   modal_side_sheet: ^0.0.1
   range_slider_flutter: ^0.0.2
   table_calendar: ^3.2.0
-
+  infinite_scroll_pagination: ^5.1.1
   # State / Navigation
   get: ^4.6.5
   get_it: ^9.2.0
@@ -37,7 +37,8 @@ dependencies:
   json_annotation: ^4.8.1
   socket_io_client: ^3.1.4
   jwt_decoder: ^2.0.1
-
+  connectivity_plus: ^6.1.0
+  internet_connection_checker_plus: ^2.7.2
   # Local storage
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -62,7 +63,9 @@ dependencies:
 
   # Splash
   flutter_native_splash: ^2.3.2
-  # zego_uikit_prebuilt_call: ^4.22.3
+  zego_uikit_prebuilt_call: ^4.22.3
+  zego_uikit: ^2.28.44
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:

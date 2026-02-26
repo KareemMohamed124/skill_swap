@@ -1,3 +1,5 @@
+import '../../../../shared/data/models/user/skill_model.dart';
+
 class SessionModel {
   final String mentorId;
   final String mentorName;
@@ -10,18 +12,21 @@ class SessionModel {
   final String notes;
   final int rating;
   final String review;
+  final String bio;
+  final List<Skill> skills;
 
-  SessionModel({
-    required this.mentorId,
-    required this.mentorName,
-    required this.mentorTrack,
-    required this.mentorImage,
-    required this.status,
-    required this.date,
-    required this.time,
-    required this.duration,
-    required this.notes,
-    required this.rating,
-    required this.review,
-  });
+  SessionModel(
+      {required this.mentorId,
+      required this.mentorName,
+      required this.mentorTrack,
+      required this.mentorImage,
+      required this.status,
+      required this.date,
+      required this.time,
+      required this.duration,
+      required this.notes,
+      required this.rating,
+      required this.review,
+      required this.bio,
+      required this.skills});
 }

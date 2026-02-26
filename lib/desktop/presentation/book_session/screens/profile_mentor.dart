@@ -6,6 +6,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../../main.dart';
 import '../../../../shared/bloc/report_bloc/report_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 import '../../../../shared/data/models/report_user/report_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../profile/pages/reviews_page.dart';
@@ -19,15 +20,24 @@ class ProfileMentor extends StatefulWidget {
   final String name;
   final String track;
   final int rate;
+  final String bio;
+  final int hoursAvailable;
+  final int peopleHelped;
+  final int hourlyRate;
+  final List<Skill> skills;
 
-  const ProfileMentor({
-    super.key,
-    required this.id,
-    required this.image,
-    required this.name,
-    required this.track,
-    required this.rate,
-  });
+  const ProfileMentor(
+      {super.key,
+      required this.id,
+      required this.image,
+      required this.name,
+      required this.track,
+      required this.rate,
+      required this.bio,
+      required this.hoursAvailable,
+      required this.peopleHelped,
+      required this.hourlyRate,
+      required this.skills});
 
   @override
   State<ProfileMentor> createState() => _ProfileMentorState();
@@ -332,6 +342,11 @@ class _ProfileMentorState extends State<ProfileMentor> {
                           track: widget.track,
                           rate: widget.rate,
                           image: widget.image,
+                          bio: widget.bio,
+                          skills: widget.skills,
+                          hoursAvailable: widget.hoursAvailable,
+                          peopleHelped: widget.peopleHelped,
+                          hourlyRate: 0,
                         ),
                         rightPanel: PrivateChatScreen(
                           currentUserId: '01',
@@ -354,6 +369,11 @@ class _ProfileMentorState extends State<ProfileMentor> {
                           track: widget.track,
                           rate: widget.rate,
                           image: widget.image,
+                          bio: widget.bio,
+                          skills: widget.skills,
+                          hoursAvailable: widget.hoursAvailable,
+                          peopleHelped: widget.peopleHelped,
+                          hourlyRate: 0,
                         ),
                         rightPanel: const BookSession(),
                       );

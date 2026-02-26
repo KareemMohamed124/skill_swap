@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../pages/all_sessions_page.dart';
 import '../pages/pending_sessions_page.dart';
 import '../pages/requests_sessions_page.dart';
@@ -16,12 +18,26 @@ class SessionsScreen extends StatefulWidget {
 
 class _SessionsScreenState extends State<SessionsScreen> {
   int selected = 0;
-  final pages = [
+
+  final pages = const [
     AllSessionsPage(),
     UpcomingSessionsPage(),
     PendingSessionsPage(),
-    RequestsSessionsPage()
+    RequestsSessionsPage(),
   ];
+
+  String get currentStatus {
+    switch (selected) {
+      case 1:
+        return "accepted";
+      case 2:
+        return "pending";
+      case 3:
+        return "pending";
+      default:
+        return "all";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,37 +52,33 @@ class _SessionsScreenState extends State<SessionsScreen> {
               SessionsHeader(
                 selectedIndex: selected,
                 onSelect: (index) {
-                  setState(() {
-                    selected = index;
-                  });
+                  setState(() => selected = index);
+                  context
+                      .read<GetBookingsCubit>()
+                      .fetchAllBookings(currentStatus);
                 },
                 title: "sessions".tr,
                 subtitle: "track_upcoming".tr,
-              )
+              ),
             ],
           ),
           Positioned(
             top: screenHeight * 0.21,
-            // responsive top position
             bottom: 0,
             left: 0,
             right: 0,
             child: Container(
-              width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.only(
-                  topLeft:
-                      Radius.circular(screenWidth * 0.06), // responsive radius
-                  topRight: Radius.circular(screenWidth * 0.06),
+                width: double.infinity,
+                constraints: BoxConstraints(minHeight: screenHeight),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(screenWidth * 0.06),
+                    topRight: Radius.circular(screenWidth * 0.06),
+                  ),
                 ),
-              ),
-              child: SingleChildScrollView(
-                child: pages[selected],
-              ),
-            ),
-          )
+                child: pages[selected]),
+          ),
         ],
       ),
     );

@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:skill_swap/shared/data/models/my_profile/my_profile.dart';
 
 import '../../data/models/update_profile/update_profile_request.dart';
 import '../../data/models/update_profile/update_profile_response.dart';
+import '../../data/models/update_profile/update_user.dart';
 import '../../domain/repositories/user_repository.dart';
 
 part 'update_profile_event.dart';

@@ -31,4 +31,14 @@ class Profile {
         location: "",
         lastUpdated: "");
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'bio': bio,
+      'skillSummary': skillSummary,
+      'reputationScore': reputationScore,
+      'location': location,
+      'lastUpdated': lastUpdated
+    };
+  }
 }

@@ -61,12 +61,9 @@ class _GameSectionState extends State<GameSection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              "🎮 Challenge",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Text(
+              "Challenge",
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             TextButton.icon(
               onPressed: () {
@@ -78,9 +75,9 @@ class _GameSectionState extends State<GameSection> {
                 );
               },
               icon: const Icon(Icons.emoji_events, color: primaryColor),
-              label: const Text(
+              label: Text(
                 "View Leaderboard",
-                style: TextStyle(color: primaryColor),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             )
           ],
@@ -90,7 +87,7 @@ class _GameSectionState extends State<GameSection> {
 
         /// Carousel
         SizedBox(
-          height: 200,
+          height: 180,
           child: PageView.builder(
             controller: _controller,
             itemCount: images.length,
@@ -113,7 +110,7 @@ class _GameSectionState extends State<GameSection> {
                   boxShadow: [
                     if (isActive)
                       BoxShadow(
-                        color: primaryColor.withOpacity(0.3),
+                        color: primaryColor.withValues(alpha: 0.3),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),

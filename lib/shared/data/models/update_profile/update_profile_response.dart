@@ -1,4 +1,4 @@
-import '../my_profile/my_profile.dart';
+import 'package:skill_swap/shared/data/models/update_profile/update_user.dart';
 
 sealed class UpdateProfileResponse {
   final String message;
@@ -7,7 +7,7 @@ sealed class UpdateProfileResponse {
 }
 
 class UpdateProfileData extends UpdateProfileResponse {
-  final MyProfile user;
+  final UpdateUser user;
 
   const UpdateProfileData({
     required String message,
@@ -17,7 +17,7 @@ class UpdateProfileData extends UpdateProfileResponse {
   factory UpdateProfileData.fromJson(Map<String, dynamic> json) {
     return UpdateProfileData(
       message: json['message'] ?? '',
-      user: MyProfile.fromJson(json['user']),
+      user: UpdateUser.fromJson(json['user']),
     );
   }
 }

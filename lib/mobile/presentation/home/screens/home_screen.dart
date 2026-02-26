@@ -5,9 +5,11 @@ import 'package:skill_swap/mobile/presentation/game_part/game_section.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
+import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../../../../shared/constants/strings.dart';
 import '../../../../shared/helper/home_controller.dart';
 import '../../book_session/screens/profile_mentor.dart';
+import '../../video_call/callID.dart';
 import '../pages/next_session_view_all.dart';
 import '../pages/recommended_view_all.dart';
 import '../pages/top_users_view_all.dart';
@@ -47,11 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               BlocBuilder<MyProfileCubit, MyProfileState>(
                 builder: (context, state) {
+                  String id = "";
                   String name = "User";
                   String avatarPath = 'assets/images/placeholder.png';
 
                   if (state is MyProfileLoaded) {
                     name = state.profile.name ?? name;
+                    id = state.profile.id ?? id;
                     if (state.profile.userImage?.secureUrl?.isNotEmpty ==
                         true) {
                       avatarPath = state.profile.userImage!.secureUrl!;
@@ -65,9 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     onIcon1: () {},
                     onIcon2: () {
                       //  Get.to(() => const NotificationsScreen());
-                      // Get.to(() => CallPage(
-                      //       callID: 'Test User',
-                      //     ));
+                      Get.to(() => CallPage(
+                            callID: 'room',
+                            userID: id,
+                            userName: name,
+                          ));
                     },
                   );
                 },
@@ -113,6 +119,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),
+
+                            /// Top Users
                             SizedBox(
                               height: screenHeight * 0.18,
                               child: BlocBuilder<UsersCubit, UsersState>(
@@ -120,44 +128,65 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final usersList =
                                       state is UsersLoaded ? state.users : [];
 
-                                  return ListView.separated(
+                                  return ListView.builder(
+                                    padding: EdgeInsets.all(8),
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: usersList.isNotEmpty
-                                        ? usersList.length
-                                        : 5, // 5 placeholders
-                                    separatorBuilder: (_, __) =>
-                                        SizedBox(width: screenWidth * 0.04),
+                                    itemCount: state is UsersLoaded &&
+                                            !state.isLastPage
+                                        ? usersList.length + 1
+                                        : usersList.length,
                                     itemBuilder: (context, index) {
-                                      if (usersList.isEmpty) {
-                                        return const TopUserCard(
-                                          isLoading: true,
+                                      if (index < usersList.length) {
+                                        if (usersList.isEmpty) {
+                                          return const TopUserCard(
+                                            isLoading: true,
+                                          );
+                                        }
+                                        final u = usersList[index];
+                                        final avatar =
+                                            u.userImage.secureUrl.isNotEmpty
+                                                ? u.userImage.secureUrl
+                                                : '';
+
+                                        return InkWell(
+                                          onTap: () {
+                                            Get.to(ProfileMentor(
+                                              id: u.id,
+                                              name: u.name,
+                                              track: u.track.name.isEmpty
+                                                  ? "Mobile Development"
+                                                  : u.track.name,
+                                              rate: u.rate,
+                                              image: avatar,
+                                              bio: u.profile.bio,
+                                              skills: u.skills,
+                                              hoursAvailable: u.freeHours,
+                                              peopleHelped: u.helpTotalHours,
+                                              hourlyRate: 0,
+                                            ));
+                                          },
+                                          child: TopUserCard(
+                                            id: u.id,
+                                            image: avatar,
+                                            name: u.name,
+                                            track: u.track.name.isEmpty
+                                                ? "Mobile Development"
+                                                : u.track.name,
+                                            hours: u.helpTotalHours,
+                                          ),
+                                        );
+                                      } else {
+                                        // Loader + fetch next page
+                                        context
+                                            .read<UsersCubit>()
+                                            .fetchNextPage();
+                                        return const Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Center(
+                                              child:
+                                                  CircularProgressIndicator()),
                                         );
                                       }
-
-                                      final u = usersList[index];
-                                      final avatar =
-                                          u.userImage.secureUrl.isNotEmpty
-                                              ? u.userImage.secureUrl
-                                              : '';
-
-                                      return InkWell(
-                                        onTap: () {
-                                          Get.to(ProfileMentor(
-                                            id: u.id,
-                                            name: u.name,
-                                            track: "Flutter",
-                                            rate: u.rate,
-                                            image: avatar,
-                                          ));
-                                        },
-                                        child: TopUserCard(
-                                          id: u.id,
-                                          image: avatar,
-                                          name: u.name,
-                                          track: "Flutter",
-                                          hours: u.helpTotalHours,
-                                        ),
-                                      );
                                     },
                                   );
                                 },
@@ -205,6 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),
+                            // جزء Recommended Section
                             SizedBox(
                               height: screenHeight * 0.21,
                               child: BlocBuilder<UsersCubit, UsersState>(
@@ -212,33 +242,65 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final usersList =
                                       state is UsersLoaded ? state.users : [];
 
-                                  return ListView.separated(
+                                  return ListView.builder(
+                                    padding: EdgeInsets.all(8),
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: usersList.isNotEmpty
-                                        ? usersList.length
-                                        : 5,
-                                    separatorBuilder: (_, __) =>
-                                        SizedBox(width: screenWidth * 0.04),
+                                    itemCount: state is UsersLoaded &&
+                                            !state.isLastPage
+                                        ? usersList.length + 1
+                                        : usersList.length,
                                     itemBuilder: (context, index) {
-                                      if (usersList.isEmpty) {
-                                        return const RecommendedCard(
-                                          isLoading: true,
+                                      if (index < usersList.length) {
+                                        if (usersList.isEmpty) {
+                                          return const RecommendedCard(
+                                            isLoading: true,
+                                          );
+                                        }
+                                        final u = usersList[index];
+                                        final avatar =
+                                            u.userImage.secureUrl.isNotEmpty
+                                                ? u.userImage.secureUrl
+                                                : '';
+
+                                        return InkWell(
+                                          onTap: () {
+                                            Get.to(ProfileMentor(
+                                              id: u.id,
+                                              name: u.name,
+                                              track: u.track.name.isEmpty
+                                                  ? "Mobile Development"
+                                                  : u.track.name,
+                                              rate: u.rate,
+                                              image: avatar,
+                                              bio: u.profile.bio,
+                                              skills: u.skills,
+                                              hoursAvailable: u.freeHours,
+                                              peopleHelped: u.helpTotalHours,
+                                              hourlyRate: 0,
+                                            ));
+                                          },
+                                          child: RecommendedCard(
+                                            id: u.id,
+                                            image: avatar,
+                                            name: u.name,
+                                            track: u.track.name.isEmpty
+                                                ? "Mobile Development"
+                                                : u.track.name,
+                                            rating: u.rate,
+                                          ),
+                                        );
+                                      } else {
+                                        // Loader + fetch next page
+                                        context
+                                            .read<UsersCubit>()
+                                            .fetchNextPage();
+                                        return const Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Center(
+                                              child:
+                                                  CircularProgressIndicator()),
                                         );
                                       }
-
-                                      final u = usersList[index];
-                                      final avatar =
-                                          u.userImage.secureUrl.isNotEmpty
-                                              ? u.userImage.secureUrl
-                                              : '';
-
-                                      return RecommendedCard(
-                                        id: u.id,
-                                        image: avatar,
-                                        name: u.name,
-                                        track: "Flutter",
-                                        rating: u.rate,
-                                      );
                                     },
                                   );
                                 },
@@ -267,44 +329,65 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final usersList =
                                       state is UsersLoaded ? state.users : [];
 
-                                  return ListView.separated(
+                                  return ListView.builder(
+                                    padding: EdgeInsets.all(8),
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: usersList.isNotEmpty
-                                        ? usersList.length
-                                        : 5, // 5 placeholders
-                                    separatorBuilder: (_, __) =>
-                                        SizedBox(width: screenWidth * 0.04),
+                                    itemCount: state is UsersLoaded &&
+                                            !state.isLastPage
+                                        ? usersList.length + 1
+                                        : usersList.length,
                                     itemBuilder: (context, index) {
-                                      if (usersList.isEmpty) {
-                                        return const TopUserCard(
-                                          isLoading: true,
+                                      if (index < usersList.length) {
+                                        if (usersList.isEmpty) {
+                                          return const TopUserCard(
+                                            isLoading: true,
+                                          );
+                                        }
+                                        final u = usersList[index];
+                                        final avatar =
+                                            u.userImage.secureUrl.isNotEmpty
+                                                ? u.userImage.secureUrl
+                                                : '';
+
+                                        return InkWell(
+                                          onTap: () {
+                                            Get.to(ProfileMentor(
+                                              id: u.id,
+                                              name: u.name,
+                                              track: u.track.name.isEmpty
+                                                  ? "Mobile Development"
+                                                  : u.track.name,
+                                              rate: u.rate,
+                                              image: avatar,
+                                              bio: u.profile.bio,
+                                              skills: u.skills,
+                                              hoursAvailable: u.freeHours,
+                                              peopleHelped: u.helpTotalHours,
+                                              hourlyRate: 0,
+                                            ));
+                                          },
+                                          child: TopUserCard(
+                                            id: u.id,
+                                            image: avatar,
+                                            name: u.name,
+                                            track: u.track.name.isEmpty
+                                                ? "Mobile Development"
+                                                : u.track.name,
+                                            hours: u.helpTotalHours,
+                                          ),
+                                        );
+                                      } else {
+                                        // Loader + fetch next page
+                                        context
+                                            .read<UsersCubit>()
+                                            .fetchNextPage();
+                                        return const Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Center(
+                                              child:
+                                                  CircularProgressIndicator()),
                                         );
                                       }
-
-                                      final u = usersList[index];
-                                      final avatar =
-                                          u.userImage.secureUrl.isNotEmpty
-                                              ? u.userImage.secureUrl
-                                              : '';
-
-                                      return InkWell(
-                                        onTap: () {
-                                          Get.to(ProfileMentor(
-                                            id: u.id,
-                                            name: u.name,
-                                            track: "Flutter",
-                                            rate: u.rate,
-                                            image: u.userImage.secureUrl,
-                                          ));
-                                        },
-                                        child: TopUserCard(
-                                          id: u.id,
-                                          image: avatar,
-                                          name: u.name,
-                                          track: "Flutter",
-                                          hours: u.helpTotalHours,
-                                        ),
-                                      );
                                     },
                                   );
                                 },
@@ -359,33 +442,65 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final usersList =
                                       state is UsersLoaded ? state.users : [];
 
-                                  return ListView.separated(
+                                  return ListView.builder(
+                                    padding: EdgeInsets.all(8),
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: usersList.isNotEmpty
-                                        ? usersList.length
-                                        : 5,
-                                    separatorBuilder: (_, __) =>
-                                        SizedBox(width: screenWidth * 0.04),
+                                    itemCount: state is UsersLoaded &&
+                                            !state.isLastPage
+                                        ? usersList.length + 1
+                                        : usersList.length,
                                     itemBuilder: (context, index) {
-                                      if (usersList.isEmpty) {
-                                        return const RecommendedCard(
-                                          isLoading: true,
+                                      if (index < usersList.length) {
+                                        if (usersList.isEmpty) {
+                                          return const RecommendedCard(
+                                            isLoading: true,
+                                          );
+                                        }
+                                        final u = usersList[index];
+                                        final avatar =
+                                            u.userImage.secureUrl.isNotEmpty
+                                                ? u.userImage.secureUrl
+                                                : '';
+
+                                        return InkWell(
+                                          onTap: () {
+                                            Get.to(ProfileMentor(
+                                              id: u.id,
+                                              name: u.name,
+                                              track: u.track.name.isEmpty
+                                                  ? "Mobile Development"
+                                                  : u.track.name,
+                                              rate: u.rate,
+                                              image: avatar,
+                                              bio: u.profile.bio,
+                                              skills: u.skills,
+                                              hoursAvailable: u.freeHours,
+                                              peopleHelped: u.helpTotalHours,
+                                              hourlyRate: 0,
+                                            ));
+                                          },
+                                          child: RecommendedCard(
+                                            id: u.id,
+                                            image: avatar,
+                                            name: u.name,
+                                            track: u.track.name.isEmpty
+                                                ? "Mobile Development"
+                                                : u.track.name,
+                                            rating: u.rate,
+                                          ),
+                                        );
+                                      } else {
+                                        // Loader + fetch next page
+                                        context
+                                            .read<UsersCubit>()
+                                            .fetchNextPage();
+                                        return const Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Center(
+                                              child:
+                                                  CircularProgressIndicator()),
                                         );
                                       }
-
-                                      final u = usersList[index];
-                                      final avatar =
-                                          u.userImage.secureUrl.isNotEmpty
-                                              ? u.userImage.secureUrl
-                                              : '';
-
-                                      return RecommendedCard(
-                                        id: u.id,
-                                        image: u.userImage.secureUrl,
-                                        name: u.name,
-                                        track: "Flutter",
-                                        rating: u.rate,
-                                      );
                                     },
                                   );
                                 },

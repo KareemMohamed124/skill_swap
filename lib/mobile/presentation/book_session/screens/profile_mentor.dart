@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../profile/pages/reviews_page.dart';
@@ -19,15 +20,24 @@ class ProfileMentor extends StatefulWidget {
   final String name;
   final String track;
   final int rate;
+  final String bio;
+  final int hoursAvailable;
+  final int peopleHelped;
+  final int hourlyRate;
+  final List<Skill> skills;
 
-  const ProfileMentor({
-    super.key,
-    required this.id,
-    required this.image,
-    required this.name,
-    required this.track,
-    required this.rate,
-  });
+  const ProfileMentor(
+      {super.key,
+      required this.id,
+      required this.image,
+      required this.name,
+      required this.track,
+      required this.rate,
+      required this.bio,
+      required this.hoursAvailable,
+      required this.peopleHelped,
+      required this.hourlyRate,
+      required this.skills});
 
   @override
   State<ProfileMentor> createState() => _ProfileMentorState();
@@ -127,15 +137,15 @@ class _ProfileMentorState extends State<ProfileMentor> {
                             children: [
                               mentorInfo(
                                   context: context,
-                                  rate: "200",
+                                  rate: "${widget.hoursAvailable}",
                                   info: "hours_available".tr),
                               mentorInfo(
                                   context: context,
-                                  rate: "150",
+                                  rate: "${widget.peopleHelped}",
                                   info: "people_helped".tr),
                               mentorInfo(
                                   context: context,
-                                  rate: "35\$",
+                                  rate: "${widget.hourlyRate}\$",
                                   info: "hourly_rate".tr),
                             ],
                           ),
@@ -147,7 +157,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                             style: Theme.of(context).textTheme.bodyLarge),
                         const SizedBox(height: 8),
                         Text(
-                          "Front-End Developer specializing in building responsive, user-friendly, and accessible web applications. Skilled in React, JavaScript, and modern UI frameworks.",
+                          widget.bio == ""
+                              ? "Tell others about yourself..."
+                              : widget.bio,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -166,7 +178,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children: skills.map((skill) {
+                          children: widget.skills.map((skill) {
                             return Container(
                               padding: EdgeInsets.symmetric(
                                 horizontal: screenWidth * 0.03,
@@ -178,7 +190,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                skill,
+                                skill.skillName,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Theme.of(context)

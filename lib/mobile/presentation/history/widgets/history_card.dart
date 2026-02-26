@@ -267,18 +267,19 @@ class HistoryCard extends StatelessWidget {
               onTap: () {
                 Get.to(SessionDetailsPage(
                   session: SessionModel(
-                    mentorId: data.id,
-                    mentorImage: data.imageUrl,
-                    mentorName: data.name,
-                    mentorTrack: data.role,
-                    status: data.status,
-                    date: DateTime(2025, 10, 6),
-                    time: data.time,
-                    duration: data.duration,
-                    rating: data.rating,
-                    review: 'Great session, learned a lot!',
-                    notes: 'Covered Flutter BLoC basics',
-                  ),
+                      mentorId: data.id,
+                      mentorImage: data.imageUrl,
+                      mentorName: data.name,
+                      mentorTrack: data.role,
+                      status: data.status,
+                      date: DateTime(2025, 10, 6),
+                      time: data.time,
+                      duration: data.duration,
+                      rating: data.rating,
+                      review: 'Great session, learned a lot!',
+                      notes: 'Covered Flutter BLoC basics',
+                      bio: "",
+                      skills: []),
                 ));
               },
               child: Container(

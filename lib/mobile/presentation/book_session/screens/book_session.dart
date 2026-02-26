@@ -190,7 +190,7 @@ class _BookSessionScreenState extends State<BookSessionScreen> {
                                 date: formatDate(selectedDate),
                                 time: convertTo24Hour(selectedTime),
                                 duration_mins: selectedDuration,
-                                userId: widget.userId,
+                                requestedUser: widget.userId,
                                 price: 100,
                               );
 

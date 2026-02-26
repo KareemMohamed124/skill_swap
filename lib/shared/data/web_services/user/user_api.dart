@@ -14,16 +14,23 @@ abstract class UserApi {
   factory UserApi(Dio dio, {String baseUrl}) = _UserApi;
 
   @GET("user/all-users")
-  Future<UsersResponse> getAllUsers();
+  Future<UsersResponse> getAllUsers(
+      @Query("page") int page, @Query("limit") int limit);
 
   @GET("user/profile")
   Future<ProfileResponse> getMyProfile();
 
   @GET("user/all-users")
-  Future<UsersResponse> searchUsers({@Query("search") String? query});
+  Future<UsersResponse> searchUsers(
+      {@Query("search") String? query,
+      @Query("page") int page,
+      @Query("limit") int limit});
 
   @GET("user/all-users")
-  Future<UsersResponse> sortUsers({@Query("sort") String? query});
+  Future<UsersResponse> sortUsers(
+      {@Query("sort") String? query,
+      @Query("page") int page,
+      @Query("limit") int limit});
 
   @GET("user/all-users")
   Future<UsersResponse> filterUsers(
@@ -31,10 +38,12 @@ abstract class UserApi {
       @Query("track") String? track,
       @Query("minRating") int? minRating,
       @Query("minPrice") int? minPrice,
-      @Query("maxPrice") int? maxPrice});
+      @Query("maxPrice") int? maxPrice,
+      @Query("page") int page,
+      @Query("limit") int limit});
 
   @PATCH("user/profile")
-  Future<Map<String, dynamic>> updateProfile(
+  Future<dynamic> updateProfile(
     @Body() UpdateProfileRequest body,
   );
 

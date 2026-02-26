@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
-import 'package:skill_swap/desktop/presentation/book_session/screens/book_session.dart';
 import 'package:skill_swap/desktop/presentation/book_session/screens/profile_mentor.dart';
 import 'package:skill_swap/desktop/presentation/search/widgets/filterSheet.dart';
 import 'package:skill_swap/desktop/presentation/search/widgets/filter_button.dart';
 import 'package:skill_swap/desktop/presentation/search/widgets/mentor_card.dart';
 import 'package:skill_swap/desktop/presentation/search/widgets/sort_button.dart';
 
-import '../../../../main.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
@@ -115,7 +112,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: FilterButton(
                               activeFilters: activeFiltersCount,
                               onPressed: () async {
-                                final bloc = context.read<MentorFilterBloc>();
+                                final bloc = context.read<UserFilterBloc>();
                                 final state = bloc.state;
 
                                 final activeFilters =
@@ -136,7 +133,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       initialRate: state.selectedRate,
                                       initialRole: state.selectedRole,
                                       initialTrack: state.selectedTrack,
-                                      initialSkill: state.enteredSkill,
+                                      //initialSkill: state.enteredSkill,
                                     ),
                                   ),
                                 );
@@ -160,33 +157,61 @@ class _SearchScreenState extends State<SearchScreen> {
                           builder: (context, state) {
                             return ListView.builder(
                               padding: EdgeInsets.zero,
-                              itemCount: state.filteredList.length,
+                              itemCount: state.filteredList.length + 1,
                               itemBuilder: (context, index) {
-                                final mentor = state.filteredList[index];
-                                return InkWell(
-                                  onTap: () {
-                                    desktopKey.currentState?.openSidePage(
-                                        body: ProfileMentor(
-                                          id: mentor.id,
-                                          name: mentor.name,
-                                          track: "flutter",
-                                          rate: mentor.rate,
-                                          image: mentor.userImage.secureUrl,
-                                        ),
-                                        rightPanel: BookSession());
-                                  },
-                                  child: MentorCard(
-                                    image: mentor.userImage.secureUrl,
-                                    name: mentor.name,
-                                    role: mentor.role,
-                                    rate: mentor.rate,
-                                    hours: mentor.helpTotalHours,
-                                    price: 40,
-                                    track: "Flutter",
-                                    skills: mentor.skills,
-                                    responseTime: "4",
-                                  ),
-                                );
+                                if (index < state.filteredList.length) {
+                                  final user = state.filteredList[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      Get.to(ProfileMentor(
+                                        id: user.id,
+                                        name: user.name,
+                                        track: user.track.name,
+                                        rate: user.rate,
+                                        image: user.userImage.secureUrl,
+                                        bio: user.profile.bio,
+                                        skills: user.skills,
+                                        hoursAvailable: user.freeHours,
+                                        peopleHelped: user.helpTotalHours,
+                                        hourlyRate: 0,
+                                      ));
+                                    },
+                                    child: MentorCard(
+                                      image: user.userImage.secureUrl,
+                                      name: user.name,
+                                      role: user.role,
+                                      rate: user.rate,
+                                      hours: 5,
+                                      price: 0,
+                                      track: user.track.name,
+                                      skills: user.skills,
+                                      responseTime: "9",
+                                    ),
+                                  );
+                                } else {
+                                  if (!state.isLastPage &&
+                                      !state.isLoadingMore) {
+                                    final bloc = context.read<UserFilterBloc>();
+                                    bloc.add(LoadMoreUsersEvent(
+                                      page: bloc.currentPage + 1,
+                                      limit: bloc.limit,
+                                      query:
+                                          searchTextController.text.isNotEmpty
+                                              ? searchTextController.text
+                                              : null,
+                                      minPrice: state.minPrice?.toDouble(),
+                                      maxPrice: state.maxPrice?.toDouble(),
+                                      minRate: state.selectedRate?.toDouble(),
+                                      role: state.selectedRole,
+                                      track: state.selectedTrack,
+                                    ));
+                                  }
+                                  return const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  );
+                                }
                               },
                             );
                           },

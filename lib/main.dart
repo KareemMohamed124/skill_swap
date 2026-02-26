@@ -17,11 +17,12 @@ import 'package:skill_swap/shared/helper/local_storage.dart';
 
 import 'desktop/presentation/common/desktop_scaffold.dart';
 import 'desktop/presentation/common/desktop_screen_manager.dart';
+import 'desktop/presentation/sign/screens/sign_in_screen.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
 final GlobalKey<DesktopScreenManagerState> desktopKey =
-GlobalKey<DesktopScreenManagerState>();
+    GlobalKey<DesktopScreenManagerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,17 +58,14 @@ void main() async {
         }
         if (constraints.maxWidth >= 800) {
           // Desktop or large screen
-          return DesktopScaffold(
-            body: DesktopScreenManager(key: desktopKey),
-          );
+          return SignInDesktop();
         }
         return ScreenManager(); // Mobile
       },
     );
   }
 
-  Get.put(ThemeController()
-    ..loadSavedTheme());
+  Get.put(ThemeController()..loadSavedTheme());
 
   // Run App with Device Preview
   runApp(

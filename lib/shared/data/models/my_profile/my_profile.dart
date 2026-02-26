@@ -2,12 +2,14 @@ import 'package:skill_swap/shared/data/models/my_profile/Blocked_me.dart';
 
 import '../user/profile_model.dart';
 import '../user/skill_model.dart';
+import '../user/track_model.dart';
 import '../user/usesr_image.dart';
 
 class MyProfile {
   final UserImage userImage;
   final Profile profile;
   final BlockedMe blockInfo;
+  final Track track;
   final String id;
   final String name;
   final String email;
@@ -32,6 +34,7 @@ class MyProfile {
     required this.userImage,
     required this.profile,
     required this.blockInfo,
+    required this.track,
     required this.id,
     required this.name,
     required this.email,
@@ -61,6 +64,8 @@ class MyProfile {
       profile: json['profile'] != null
           ? Profile.fromJson(json['profile'])
           : Profile.empty(),
+      track:
+          json['track'] != null ? Track.fromJson(json['track']) : Track.empty(),
       blockInfo: json['blockInfo'] != null
           ? BlockedMe.fromJson(json['blockInfo'])
           : BlockedMe.empty(),
@@ -78,12 +83,20 @@ class MyProfile {
       feedbackReceived: json['feedbackReceived'] ?? [],
       mentorSuggestions: json['mentorSuggestions'] ?? [],
       skills: json['skills'] != null
-          ? List<Skill>.from(
-              json['skills'].map((x) => Skill.fromJson(x)),
-            )
+          ? (json['skills'] as List)
+              .map((x) => x is Map<String, dynamic>
+                  ? Skill.fromJson(x)
+                  : Skill(
+                      skillName: x.toString(),
+                      isVerified: false,
+                      badgeLevel: 0,
+                      quizScore: 0,
+                      experienceLevel: '',
+                    ))
+              .toList()
           : [],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
       v: json['__v'] ?? 0,
       warningCount: json['warningCount'] ?? 0,
       warnings: json['warnings'] ?? [],
@@ -92,9 +105,10 @@ class MyProfile {
 
   Map<String, dynamic> toJson() {
     return {
-      'userImage': userImage,
-      'profile': profile,
+      'userImage': userImage.toJson(),
+      'profile': profile.toJson(),
       'blockInfo': blockInfo.toJson(),
+      'track': track.toJson(),
       '_id': id,
       'name': name,
       'email': email,
@@ -108,7 +122,7 @@ class MyProfile {
       'feedbackGiven': feedbackGiven,
       'feedbackReceived': feedbackReceived,
       'mentorSuggestions': mentorSuggestions,
-      'skills': skills,
+      'skills': skills.map((e) => e.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       '__v': v,

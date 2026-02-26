@@ -2,27 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/sign/screens/sign_up_screen.dart';
+import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
+import '../../../../main.dart';
 import '../../../../shared/bloc/login_bloc/login_bloc.dart';
 import '../../../../shared/bloc/login_bloc/login_event.dart';
 import '../../../../shared/bloc/login_bloc/login_state.dart';
-import '../../../../shared/common_ui/header.dart';
-import '../../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../../shared/data/models/login/login_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/local_storage.dart';
+import '../../common/desktop_scaffold.dart';
+import '../../common/desktop_screen_manager.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class SignInDesktop extends StatefulWidget {
+  const SignInDesktop({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<SignInDesktop> createState() => _SignInDesktopState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignInDesktopState extends State<SignInDesktop> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -47,14 +49,8 @@ class _SignInScreenState extends State<SignInScreen> {
     final validationErrors = state.error.validationErrors;
     if (validationErrors != null) {
       for (var err in validationErrors) {
-        switch (err.field) {
-          case "email":
-            emailError = err.message;
-            break;
-          case "password":
-            passwordError = err.message;
-            break;
-        }
+        if (err.field == "email") emailError = err.message;
+        if (err.field == "password") passwordError = err.message;
       }
     }
   }
@@ -63,193 +59,175 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
+    double titleFontSize = 22;
+    double subtitleFontSize = 16;
+    double paddingAll = 16;
+    double spacing = 32;
+
+    if (screenWidth >= 800) {
+      titleFontSize = 28;
+      subtitleFontSize = 18;
+      paddingAll = 24;
+      spacing = 40;
+    }
+
     return BlocProvider(
       create: (_) => sl<LoginBloc>(),
-      child: Scaffold(
-        //  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                const CustomAppBar(title: "Sign In"),
-              ],
-            ),
-            Positioned(
-              top: 80,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: BlocConsumer<LoginBloc, LoginState>(
-                      listener: (context, state) async {
-                        if (state is LoginFailureState) {
-                          setState(() {
-                            _handleServerError(state);
-                          });
-                        } else if (state is LoginSuccessState) {
-                          await LocalStorage.saveToken(state.data.accessToken);
-                          await LocalStorage.saveRefreshToken(
-                              state.data.refreshToken);
-                          // final userBloc = sl<UserBloc>();
-                          //userBloc.add(GetUserProfile());
-                          //  await LocalStorage.saveUser(user);
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(
-                              SnackBar(content: Text(state.data.message)));
-                          Get.to(ScreenManager(initialIndex: 0));
-                        }
-                      },
-                      builder: (context, state) {
-                        return Form(
-                          key: formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 16),
-                              Text(
-                                "Welcome Back!",
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .color),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "Sign in to continue your learning journey",
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .color),
-                              ),
-                              const SizedBox(height: 32),
-                              CustomTextField(
-                                controller: emailController,
-                                labelText: "Email",
-                                hintText: "Enter your email",
-                                errorText: emailError,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Email is required";
-                                  }
-                                  if (!RegExp(
-                                    r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
-                                  ).hasMatch(value)) {
-                                    return "Enter a valid email";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              CustomTextField(
-                                controller: passwordController,
-                                labelText: "Password",
-                                hintText: "Enter your password",
-                                obscureText: true,
-                                errorText: passwordError,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Password is required";
-                                  }
-                                  if (!RegExp(
-                                    r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
-                                  ).hasMatch(value)) {
-                                    return "Password must contain at least 8 character, uppercase, lowercase, and a number";
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 32),
-                              CustomButton(
-                                text: state is LoginLoading
-                                    ? "Logging in..."
-                                    : "Sign In",
-                                onPressed: state is LoginLoading
-                                    ? null
-                                    : () {
-                                        if (formKey.currentState!.validate()) {
-                                          final request = LoginRequest(
-                                            email: emailController.text,
-                                            password: passwordController.text,
-                                          );
+      child: BaseScreen(
+        title: "Sign In",
+        child: BlocConsumer<LoginBloc, LoginState>(
+          listener: (context, state) async {
+            if (state is LoginFailureState) {
+              _handleServerError(state);
+              setState(() {});
 
-                                          context
-                                              .read<LoginBloc>()
-                                              .add(LoginSubmit(request));
-                                        }
-                                      },
-                              ),
-                              const SizedBox(height: 24),
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    Get.to(ForgetPassword());
-                                  },
-                                  child: Text(
-                                    "Forget Password?",
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .color),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Don’t have an account? ",
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .color),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Get.to(SignUpScreen());
-                                      },
-                                      child: Text(
-                                        "Sign Up",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge!
-                                                .color),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+              if (emailError == null && passwordError == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error.message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            } else if (state is LoginSuccessState) {
+              await LocalStorage.saveToken(state.data.accessToken);
+              await LocalStorage.saveRefreshToken(state.data.refreshToken);
+              await LocalStorage.saveUserId(state.data.id);
+              // context.read<MyProfileCubit>().fetchMyProfile();
+              Get.offAll(DesktopScaffold(
+                body: DesktopScreenManager(key: desktopKey),
+              ));
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.data.message)),
+              );
+            }
+          },
+          builder: (context, state) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(paddingAll),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: spacing),
+                    Text(
+                      "Welcome Back!",
+                      style: TextStyle(
+                        fontSize: titleFontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Sign in to continue your learning journey",
+                      style: TextStyle(fontSize: subtitleFontSize),
+                    ),
+                    SizedBox(height: spacing),
+
+                    /// Email
+                    CustomTextField(
+                      controller: emailController,
+                      labelText: "Email",
+                      hintText: "Enter your email",
+                      errorText: emailError,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email is required";
+                        }
+                        if (!RegExp(
+                          r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$",
+                        ).hasMatch(value)) {
+                          return "Enter a valid email";
+                        }
+                        return null;
                       },
                     ),
-                  ),
+
+                    const SizedBox(height: 16),
+
+                    /// Password
+                    CustomTextField(
+                      controller: passwordController,
+                      labelText: "Password",
+                      hintText: "Enter your password",
+                      obscureText: true,
+                      errorText: passwordError,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Password is required";
+                        }
+                        if (!RegExp(
+                          r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+                        ).hasMatch(value)) {
+                          return "Password must contain uppercase, lowercase and number";
+                        }
+                        return null;
+                      },
+                    ),
+
+                    SizedBox(height: spacing),
+
+                    /// Button
+                    CustomButton(
+                      text: state is LoginLoading ? "Logging in..." : "Sign In",
+                      onPressed: state is LoginLoading
+                          ? null
+                          : () {
+                              if (formKey.currentState!.validate()) {
+                                context.read<LoginBloc>().add(
+                                      LoginSubmit(
+                                        LoginRequest(
+                                          email: emailController.text,
+                                          password: passwordController.text,
+                                        ),
+                                      ),
+                                    );
+                              }
+                            },
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Center(
+                      child: TextButton(
+                        onPressed: () => Get.to(ForgetPassword()),
+                        child: Text(
+                          "Forget Password?",
+                          style: TextStyle(fontSize: subtitleFontSize),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don’t have an account? ",
+                          style: TextStyle(fontSize: subtitleFontSize),
+                        ),
+                        GestureDetector(
+                          onTap: () => Get.to(SignUpScreen()),
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              fontSize: subtitleFontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

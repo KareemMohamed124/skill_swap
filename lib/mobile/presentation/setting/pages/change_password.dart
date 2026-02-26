@@ -79,7 +79,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               formKey.currentState?.validate();
             } else if (state is ChangePasswordSuccessState) {
               Get.snackbar('Success', state.success.message);
-              Get.to(SignInScreen());
+              Get.to(SignInDesktop());
             }
           },
           builder: (context, state) {

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/search/widgets/price_filter_section.dart';
 
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
-import '../../../../shared/bloc/mentor_filter_bloc/mentor_filter_event.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 
 class MentorFilterSheet extends StatefulWidget {
@@ -13,7 +13,6 @@ class MentorFilterSheet extends StatefulWidget {
   final int? initialRate;
   final String? initialRole;
   final String? initialTrack;
-  final String? initialSkill;
 
   const MentorFilterSheet({
     super.key,
@@ -22,7 +21,6 @@ class MentorFilterSheet extends StatefulWidget {
     this.initialRate,
     this.initialRole,
     this.initialTrack,
-    this.initialSkill,
   });
 
   @override
@@ -36,14 +34,25 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
   int? selectedRate;
   String? selectedRole;
   String? selectedTrack;
-  String? enteredSkill;
-
-  late TextEditingController skillController;
 
   int activeFiltersCount = 0;
 
   final List<String> roles = ["Mentor", "Normal"];
-  final List<String> tracks = ["Frontend", "Mobile", "AI", "Ui/Ux", "Backend"];
+
+  /// key = value sent to backend
+  /// value = label shown in UI
+  final Map<String, String> tracks = {
+    "Mobile Development": "Mobile",
+    "Frontend Development": "Frontend",
+    "Backend Development": "Backend",
+    "UI/UX Design": "UI/UX",
+    "Artificial Intelligence": "AI",
+    "Data Science": "Data",
+    "Game Development": "Game",
+    "CyberSecurity": "Security",
+    "Cloud Computing": "Cloud",
+  };
+
   final List<int> rates = [1, 2, 3, 4, 5];
 
   @override
@@ -54,34 +63,21 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     selectedRate = widget.initialRate;
     selectedRole = widget.initialRole;
     selectedTrack = widget.initialTrack;
-    enteredSkill = widget.initialSkill;
-
-    skillController = TextEditingController(text: enteredSkill ?? "");
 
     if (startPrice != 20 || endPrice != 60) activeFiltersCount++;
     if (selectedRate != null) activeFiltersCount++;
     if (selectedRole != null) activeFiltersCount++;
     if (selectedTrack != null) activeFiltersCount++;
-    if (enteredSkill != null && enteredSkill!.isNotEmpty) activeFiltersCount++;
-  }
-
-  @override
-  void dispose() {
-    skillController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 900;
-
-    final buttonWidth = isDesktop ? screenWidth * 0.2 : screenWidth * 0.4;
 
     return FractionallySizedBox(
       heightFactor: 0.9,
       child: Container(
-        padding: EdgeInsets.all(screenWidth * 0.04), // responsive padding
+        padding: EdgeInsets.all(screenWidth * 0.04),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: const BorderRadius.only(
@@ -143,7 +139,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               SizedBox(height: screenWidth * 0.02),
               buildChoiceChips<String>(
                 context: context,
-                items: tracks,
+                items: tracks.keys.toList(),
                 selectedItem: selectedTrack,
                 onSelected: (value) {
                   setState(() {
@@ -155,42 +151,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                     selectedTrack = value;
                   });
                 },
-              ),
-
-              SizedBox(height: screenWidth * 0.04),
-
-              /// Skill
-              Text("skill".tr, style: Theme.of(context).textTheme.titleMedium),
-              SizedBox(height: screenWidth * 0.02),
-              ConstrainedBox(
-                constraints: BoxConstraints(minHeight: 50),
-                child: TextField(
-                  controller: skillController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).cardColor,
-                    hintText: "enter_skill_name".tr,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      final trimmed = value.trim();
-                      if (enteredSkill == null && trimmed.isNotEmpty) {
-                        activeFiltersCount++;
-                      } else if (enteredSkill != null && trimmed.isEmpty) {
-                        activeFiltersCount--;
-                      }
-                      enteredSkill = trimmed.isEmpty ? null : trimmed;
-                    });
-                  },
-                ),
+                labelBuilder: (item) => tracks[item]!,
               ),
 
               SizedBox(height: screenWidth * 0.04),
@@ -218,21 +179,15 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
               SizedBox(height: screenWidth * 0.08),
 
-              /// Buttons
-              Wrap(
-                spacing: screenWidth * 0.03,
-                runSpacing: screenWidth * 0.03,
-                alignment: WrapAlignment.spaceBetween,
+              /// Buttons (side by side responsive)
+              Row(
                 children: [
-                  SizedBox(
-                    width: buttonWidth,
+                  Expanded(
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).cardColor,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.06,
-                            vertical: screenWidth * 0.03),
+                        padding: EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -241,27 +196,24 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                           style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ),
-                  SizedBox(
-                    width: buttonWidth,
+                  SizedBox(width: 12),
+                  Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        context.read<MentorFilterBloc>().add(
+                        context.read<UserFilterBloc>().add(
                               ApplyFiltersEvent(
                                 minPrice: startPrice,
                                 maxPrice: endPrice,
                                 minRate: selectedRate?.toDouble(),
                                 role: selectedRole,
                                 track: selectedTrack,
-                                skill: enteredSkill,
                               ),
                             );
                         Navigator.pop(context, activeFiltersCount);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.primary,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.06,
-                            vertical: screenWidth * 0.03),
+                        padding: EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -291,6 +243,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     required Function(T?) onSelected,
     bool showIcon = false,
     IconData? icon,
+    String Function(T)? labelBuilder,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -305,6 +258,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
       runSpacing: 8,
       children: items.map((item) {
         final selected = selectedItem == item;
+        final label = labelBuilder?.call(item) ?? "$item";
 
         return ChoiceChip(
           label: showIcon
@@ -315,12 +269,12 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                       Icon(icon,
                           size: 18,
                           color: selected ? textActive : textInactive),
-                    Text("  $item",
+                    Text("  $label",
                         style: TextStyle(
                             color: selected ? textActive : textInactive)),
                   ],
                 )
-              : Text("$item",
+              : Text(label,
                   style:
                       TextStyle(color: selected ? textActive : textInactive)),
           selected: selected,
