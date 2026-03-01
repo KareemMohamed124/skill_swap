@@ -2,22 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/game_part/game_section.dart';
+import 'package:skill_swap/mobile/presentation/home/widgets/next_session_section.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
-import '../../../../shared/bloc/get_users_cubit/users_state.dart';
-import '../../../../shared/constants/strings.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/helper/home_controller.dart';
-import '../../book_session/screens/profile_mentor.dart';
-import '../../video_call/callID.dart';
-import '../pages/next_session_view_all.dart';
+import '../../notification/screens/notification_screen.dart';
 import '../pages/recommended_view_all.dart';
 import '../pages/top_users_view_all.dart';
 import '../widgets/custom_header.dart';
-import '../widgets/next_session_card.dart';
-import '../widgets/recommended_card.dart';
+import '../widgets/recommended_section.dart';
 import '../widgets/section_header.dart';
-import '../widgets/top_user_card.dart';
+import '../widgets/top_users_section.dart';
 import '../widgets/unreal_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,11 +27,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final HomeController controller = Get.put(HomeController());
 
+  final ScrollController _topUsersController = ScrollController();
+  final ScrollController _recommendedController = ScrollController();
+
   @override
   void initState() {
     super.initState();
-    context.read<UsersCubit>().fetchUsers();
+
     context.read<MyProfileCubit>().fetchMyProfile();
+    context.read<GetBookingsCubit>().fetchTodayNextSessions();
+  }
+
+  @override
+  void dispose() {
+    _topUsersController.dispose();
+    _recommendedController.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,12 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     avatarPath: avatarPath,
                     onIcon1: () {},
                     onIcon2: () {
-                      //  Get.to(() => const NotificationsScreen());
-                      Get.to(() => CallPage(
-                            callID: 'room',
-                            userID: id,
-                            userName: name,
-                          ));
+                      Get.to(() => const NotificationsScreen());
                     },
                   );
                 },
@@ -100,15 +103,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(screenWidth * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
-                    ///Game
                     children: controller.showGameFirst.value
                         ? [
                             GameSection(),
-
                             SizedBox(height: screenHeight * 0.03),
-
-                            /// Top Users Section
                             SectionHeader(
                               sectionTitle: 'top_users'.tr,
                               onTop: () {
@@ -119,111 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),
-
-                            /// Top Users
-                            SizedBox(
-                              height: screenHeight * 0.18,
-                              child: BlocBuilder<UsersCubit, UsersState>(
-                                builder: (context, state) {
-                                  final usersList =
-                                      state is UsersLoaded ? state.users : [];
-
-                                  return ListView.builder(
-                                    padding: EdgeInsets.all(8),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: state is UsersLoaded &&
-                                            !state.isLastPage
-                                        ? usersList.length + 1
-                                        : usersList.length,
-                                    itemBuilder: (context, index) {
-                                      if (index < usersList.length) {
-                                        if (usersList.isEmpty) {
-                                          return const TopUserCard(
-                                            isLoading: true,
-                                          );
-                                        }
-                                        final u = usersList[index];
-                                        final avatar =
-                                            u.userImage.secureUrl.isNotEmpty
-                                                ? u.userImage.secureUrl
-                                                : '';
-
-                                        return InkWell(
-                                          onTap: () {
-                                            Get.to(ProfileMentor(
-                                              id: u.id,
-                                              name: u.name,
-                                              track: u.track.name.isEmpty
-                                                  ? "Mobile Development"
-                                                  : u.track.name,
-                                              rate: u.rate,
-                                              image: avatar,
-                                              bio: u.profile.bio,
-                                              skills: u.skills,
-                                              hoursAvailable: u.freeHours,
-                                              peopleHelped: u.helpTotalHours,
-                                              hourlyRate: 0,
-                                            ));
-                                          },
-                                          child: TopUserCard(
-                                            id: u.id,
-                                            image: avatar,
-                                            name: u.name,
-                                            track: u.track.name.isEmpty
-                                                ? "Mobile Development"
-                                                : u.track.name,
-                                            hours: u.helpTotalHours,
-                                          ),
-                                        );
-                                      } else {
-                                        // Loader + fetch next page
-                                        context
-                                            .read<UsersCubit>()
-                                            .fetchNextPage();
-                                        return const Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-
+                            TopUsersSection(),
                             SizedBox(height: screenHeight * 0.03),
-
-                            /// Next Session Section
-                            SectionHeader(
-                              sectionTitle: 'your_next_session'.tr,
-                              onTop: () {
-                                Get.to(NextSessionViewAll());
-                              },
-                            ),
-                            SizedBox(height: screenHeight * 0.01),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: AppData.nextSessions.length,
-                              separatorBuilder: (_, __) =>
-                                  SizedBox(height: screenHeight * 0.01),
-                              itemBuilder: (context, index) {
-                                final s = AppData.nextSessions[index];
-                                return NextSessionCard(
-                                  name: s.name,
-                                  duration: s.duration,
-                                  dateTime: s.dateTime,
-                                  startsIn: s.startsIn,
-                                  isMentor: s.isMentor,
-                                );
-                              },
-                            ),
-
+                            NextSessionSection(),
                             SizedBox(height: screenHeight * 0.03),
-
-                            /// Recommended Section
                             SectionHeader(
                               sectionTitle: 'recommended_for_you'.tr,
                               onTop: () {
@@ -234,84 +131,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),
-                            // جزء Recommended Section
-                            SizedBox(
-                              height: screenHeight * 0.21,
-                              child: BlocBuilder<UsersCubit, UsersState>(
-                                builder: (context, state) {
-                                  final usersList =
-                                      state is UsersLoaded ? state.users : [];
-
-                                  return ListView.builder(
-                                    padding: EdgeInsets.all(8),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: state is UsersLoaded &&
-                                            !state.isLastPage
-                                        ? usersList.length + 1
-                                        : usersList.length,
-                                    itemBuilder: (context, index) {
-                                      if (index < usersList.length) {
-                                        if (usersList.isEmpty) {
-                                          return const RecommendedCard(
-                                            isLoading: true,
-                                          );
-                                        }
-                                        final u = usersList[index];
-                                        final avatar =
-                                            u.userImage.secureUrl.isNotEmpty
-                                                ? u.userImage.secureUrl
-                                                : '';
-
-                                        return InkWell(
-                                          onTap: () {
-                                            Get.to(ProfileMentor(
-                                              id: u.id,
-                                              name: u.name,
-                                              track: u.track.name.isEmpty
-                                                  ? "Mobile Development"
-                                                  : u.track.name,
-                                              rate: u.rate,
-                                              image: avatar,
-                                              bio: u.profile.bio,
-                                              skills: u.skills,
-                                              hoursAvailable: u.freeHours,
-                                              peopleHelped: u.helpTotalHours,
-                                              hourlyRate: 0,
-                                            ));
-                                          },
-                                          child: RecommendedCard(
-                                            id: u.id,
-                                            image: avatar,
-                                            name: u.name,
-                                            track: u.track.name.isEmpty
-                                                ? "Mobile Development"
-                                                : u.track.name,
-                                            rating: u.rate,
-                                          ),
-                                        );
-                                      } else {
-                                        // Loader + fetch next page
-                                        context
-                                            .read<UsersCubit>()
-                                            .fetchNextPage();
-                                        return const Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-
+                            RecommendedSection(),
                             SizedBox(height: screenHeight * 0.01),
                             UnrealExperienceCard(),
                           ]
                         : [
-                            /// Top Users Section
                             SectionHeader(
                               sectionTitle: 'top_users'.tr,
                               onTop: () {
@@ -322,109 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),
-                            SizedBox(
-                              height: screenHeight * 0.18,
-                              child: BlocBuilder<UsersCubit, UsersState>(
-                                builder: (context, state) {
-                                  final usersList =
-                                      state is UsersLoaded ? state.users : [];
-
-                                  return ListView.builder(
-                                    padding: EdgeInsets.all(8),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: state is UsersLoaded &&
-                                            !state.isLastPage
-                                        ? usersList.length + 1
-                                        : usersList.length,
-                                    itemBuilder: (context, index) {
-                                      if (index < usersList.length) {
-                                        if (usersList.isEmpty) {
-                                          return const TopUserCard(
-                                            isLoading: true,
-                                          );
-                                        }
-                                        final u = usersList[index];
-                                        final avatar =
-                                            u.userImage.secureUrl.isNotEmpty
-                                                ? u.userImage.secureUrl
-                                                : '';
-
-                                        return InkWell(
-                                          onTap: () {
-                                            Get.to(ProfileMentor(
-                                              id: u.id,
-                                              name: u.name,
-                                              track: u.track.name.isEmpty
-                                                  ? "Mobile Development"
-                                                  : u.track.name,
-                                              rate: u.rate,
-                                              image: avatar,
-                                              bio: u.profile.bio,
-                                              skills: u.skills,
-                                              hoursAvailable: u.freeHours,
-                                              peopleHelped: u.helpTotalHours,
-                                              hourlyRate: 0,
-                                            ));
-                                          },
-                                          child: TopUserCard(
-                                            id: u.id,
-                                            image: avatar,
-                                            name: u.name,
-                                            track: u.track.name.isEmpty
-                                                ? "Mobile Development"
-                                                : u.track.name,
-                                            hours: u.helpTotalHours,
-                                          ),
-                                        );
-                                      } else {
-                                        // Loader + fetch next page
-                                        context
-                                            .read<UsersCubit>()
-                                            .fetchNextPage();
-                                        return const Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-
+                            TopUsersSection(),
                             SizedBox(height: screenHeight * 0.03),
-
-                            /// Next Session Section
-                            SectionHeader(
-                              sectionTitle: 'your_next_session'.tr,
-                              onTop: () {
-                                Get.to(NextSessionViewAll());
-                              },
-                            ),
-                            SizedBox(height: screenHeight * 0.01),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: AppData.nextSessions.length,
-                              separatorBuilder: (_, __) =>
-                                  SizedBox(height: screenHeight * 0.01),
-                              itemBuilder: (context, index) {
-                                final s = AppData.nextSessions[index];
-                                return NextSessionCard(
-                                  name: s.name,
-                                  duration: s.duration,
-                                  dateTime: s.dateTime,
-                                  startsIn: s.startsIn,
-                                  isMentor: s.isMentor,
-                                );
-                              },
-                            ),
-
+                            NextSessionSection(),
                             SizedBox(height: screenHeight * 0.03),
-
-                            /// Recommended Section
                             SectionHeader(
                               sectionTitle: 'recommended_for_you'.tr,
                               onTop: () {
@@ -435,79 +160,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),
-                            SizedBox(
-                              height: screenHeight * 0.21,
-                              child: BlocBuilder<UsersCubit, UsersState>(
-                                builder: (context, state) {
-                                  final usersList =
-                                      state is UsersLoaded ? state.users : [];
-
-                                  return ListView.builder(
-                                    padding: EdgeInsets.all(8),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: state is UsersLoaded &&
-                                            !state.isLastPage
-                                        ? usersList.length + 1
-                                        : usersList.length,
-                                    itemBuilder: (context, index) {
-                                      if (index < usersList.length) {
-                                        if (usersList.isEmpty) {
-                                          return const RecommendedCard(
-                                            isLoading: true,
-                                          );
-                                        }
-                                        final u = usersList[index];
-                                        final avatar =
-                                            u.userImage.secureUrl.isNotEmpty
-                                                ? u.userImage.secureUrl
-                                                : '';
-
-                                        return InkWell(
-                                          onTap: () {
-                                            Get.to(ProfileMentor(
-                                              id: u.id,
-                                              name: u.name,
-                                              track: u.track.name.isEmpty
-                                                  ? "Mobile Development"
-                                                  : u.track.name,
-                                              rate: u.rate,
-                                              image: avatar,
-                                              bio: u.profile.bio,
-                                              skills: u.skills,
-                                              hoursAvailable: u.freeHours,
-                                              peopleHelped: u.helpTotalHours,
-                                              hourlyRate: 0,
-                                            ));
-                                          },
-                                          child: RecommendedCard(
-                                            id: u.id,
-                                            image: avatar,
-                                            name: u.name,
-                                            track: u.track.name.isEmpty
-                                                ? "Mobile Development"
-                                                : u.track.name,
-                                            rating: u.rate,
-                                          ),
-                                        );
-                                      } else {
-                                        // Loader + fetch next page
-                                        context
-                                            .read<UsersCubit>()
-                                            .fetchNextPage();
-                                        return const Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-
+                            RecommendedSection(),
                             SizedBox(height: screenHeight * 0.01),
+                            // UnrealExperienceCard(),
+                            // SizedBox(height: screenHeight * 0.03),
                             GameSection(),
                           ],
                   ),

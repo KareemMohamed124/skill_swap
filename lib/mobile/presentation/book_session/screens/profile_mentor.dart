@@ -3,11 +3,15 @@ import 'dart:io';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:skill_swap/shared/bloc/book_session/book_session_bloc.dart';
+import 'package:skill_swap/shared/bloc/book_session/book_session_event.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/dependency_injection/injection.dart';
 import '../../profile/pages/reviews_page.dart';
 import '../../prv_chat/private_chat_screen.dart';
 import '../../sign/widgets/custom_button.dart';
@@ -251,8 +255,15 @@ class _ProfileMentorState extends State<ProfileMentor> {
               child: CustomButton(
                 text: "session_details".tr,
                 onPressed: () {
-                  Get.to(BookSessionScreen(
-                    userId: widget.id,
+                  Get.to(BlocProvider(
+                    create: (_) => sl<ActiveBookingBloc>()
+                      ..add(LoadMyBookingWithMentor(widget.id)),
+                    child: BookSessionScreen(
+                      userId: widget.id,
+                      bookingId: null,
+                      userName: widget.name,
+                      price: widget.hourlyRate,
+                    ),
                   ));
                 },
               ),

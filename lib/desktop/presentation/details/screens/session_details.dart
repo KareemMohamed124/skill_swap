@@ -77,7 +77,7 @@ class SessionDetailsPage extends StatelessWidget {
                       OutlinedButton.icon(
                         onPressed: () {
                           desktopKey.currentState?.openSidePage(
-                              body: ProfileMentor(
+                              body: ProfileMentorDesktop(
                                 id: session.mentorId,
                                 image: session.mentorImage,
                                 name: session.mentorName,
@@ -89,7 +89,11 @@ class SessionDetailsPage extends StatelessWidget {
                                 hourlyRate: 0,
                                 skills: [],
                               ),
-                              rightPanel: BookSession());
+                              rightPanel: BookSessionDesktop(
+                                userId: session.mentorId,
+                                userName: session.mentorName,
+                                price: 0,
+                              ));
                         },
                         icon: const Icon(Icons.person_outline),
                         label: const Text('View Profile'),
@@ -272,7 +276,7 @@ class SessionDetailsPage extends StatelessWidget {
             size: 16, color: Theme.of(context).textTheme.bodyMedium!.color),
         onTap: () {
           desktopKey.currentState?.openSidePage(
-              body: ProfileMentor(
+              body: ProfileMentorDesktop(
                 id: session.mentorId,
                 image: session.mentorImage,
                 name: session.mentorName,
@@ -284,7 +288,11 @@ class SessionDetailsPage extends StatelessWidget {
                 hourlyRate: 0,
                 skills: [],
               ),
-              rightPanel: BookSession());
+              rightPanel: BookSessionDesktop(
+                userId: session.mentorId,
+                userName: session.mentorName,
+                price: 0,
+              ));
         },
       ),
     );

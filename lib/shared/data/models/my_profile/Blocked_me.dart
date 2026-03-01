@@ -1,5 +1,5 @@
 class BlockedMe {
-  final DateTime? blockedUntil;
+  final String? blockedUntil;
   final String blockReason;
   final bool isBlocked;
 
@@ -11,9 +11,7 @@ class BlockedMe {
 
   factory BlockedMe.fromJson(Map<String, dynamic> json) {
     return BlockedMe(
-      blockedUntil: json['blockedUntil'] != null
-          ? DateTime.parse(json['blockedUntil'])
-          : null,
+      blockedUntil: json['blockedUntil'] ?? '',
       blockReason: json['blockReason'] ?? '',
       isBlocked: json['isBlocked'] ?? false,
     );
@@ -21,7 +19,7 @@ class BlockedMe {
 
   Map<String, dynamic> toJson() {
     return {
-      'blockedUntil': blockedUntil?.toIso8601String(),
+      'blockedUntil': blockedUntil,
       'blockReason': blockReason,
       'isBlocked': isBlocked,
     };

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../shared/core/theme/app_palette.dart';
 
 class NextSessionCard extends StatelessWidget {
@@ -7,6 +8,7 @@ class NextSessionCard extends StatelessWidget {
   final String dateTime;
   final String duration;
   final bool isMentor;
+  final int remainingMinutes;
 
   const NextSessionCard({
     super.key,
@@ -14,6 +16,7 @@ class NextSessionCard extends StatelessWidget {
     required this.startsIn,
     required this.dateTime,
     required this.duration,
+    required this.remainingMinutes,
     this.isMentor = true,
   });
 
@@ -52,12 +55,8 @@ class NextSessionCard extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    isMentor
-                        ? AppPalette.primary
-                        : Colors.purple,
-                    (isMentor
-                        ? AppPalette.primary
-                        : Colors.purple)
+                    isMentor ? AppPalette.primary : Colors.purple,
+                    (isMentor ? AppPalette.primary : Colors.purple)
                         .withOpacity(0.3),
                   ],
                 ),
@@ -111,7 +110,9 @@ class NextSessionCard extends StatelessWidget {
                           startsIn,
                           style: TextStyle(
                             fontSize: screenWidth * 0.03, // بدل 12
-                            color: Colors.red,
+                            color: remainingMinutes < 60
+                                ? Colors.red
+                                : AppPalette.primary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

@@ -163,7 +163,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   final user = state.filteredList[index];
                                   return InkWell(
                                     onTap: () {
-                                      Get.to(ProfileMentor(
+                                      Get.to(ProfileMentorDesktop(
                                         id: user.id,
                                         name: user.name,
                                         track: user.track.name,

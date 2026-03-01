@@ -86,7 +86,7 @@ Widget selectStatus({
   required Function(int) onSelect,
 }) {
   final List<String> statusList = [
-    "All",
+    // "All",
     "Accepted",
     "Pending",
     "Request",

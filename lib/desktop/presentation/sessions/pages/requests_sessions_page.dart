@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../shared/constants/strings.dart';
-import '../models/session.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
 import '../widgets/session_card.dart';
 
 class RequestsSessionsPage extends StatelessWidget {
@@ -8,52 +10,37 @@ class RequestsSessionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     List<Session> requestList = [
-      Session(
-          id: "1",
-          image: "assets/images/people_images/Alex Johnson.png",
-          name: "Alex Johnson",
-          role: "React Development",
-          type: "Video Session",
-          dateTime: DateTime(2025, 1, 10, 11, 00),
-          price: "Free",
-          status: "NewRequest",
-          timeAgo: "10 min ago"
-      ),
-      Session(
-          id: "2",
-          image: "assets/images/people_images/Moritz Garcia.png",
-          name: "Moritz Garcia",
-          role: "System Engineering",
-          type: "Video Call",
-          dateTime: DateTime(2025, 1, 10, 14, 30),
-          price: "Free",
-          status: "NewRequest",
-          timeAgo: "2 hours ago"
-      ),
-      Session(
-          id: "3",
-          image: "assets/images/people_images/Aya Ahmed.png",
-          name: "Aya Ahmed",
-          role: "UI/UX Design",
-          type: "1:1 Session",
-          dateTime: DateTime(2025, 1, 11, 16, 00),
-          price: "Free",
-          status: "NewRequest",
-          timeAgo: "5 hours ago"
-      ),
-    ];
+    return BlocBuilder<GetBookingsCubit, GetBookingsState>(
+      builder: (context, state) {
+        if (state is GetBookingsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(16),
-      itemCount: requestList.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
-      itemBuilder: (_, index) {
-        return SessionCard(session: requestList[index]);
+        if (state is GetBookingsError) {
+          return Center(child: Text(state.message));
+        }
+
+        if (state is GetBookingsLoaded) {
+          final requests =
+              state.bookings.where((s) => s.rawStatus == "requested").toList();
+
+          if (requests.isEmpty) {
+            return const Center(child: Text("No requests"));
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: requests.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (_, index) {
+              return SessionCard(
+                  session: requests[index], currentStatus: "pending");
+            },
+          );
+        }
+
+        return const SizedBox();
       },
     );
-
   }
 }

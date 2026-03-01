@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
-import '../pages/all_sessions_page.dart';
 import '../pages/pending_sessions_page.dart';
 import '../pages/requests_sessions_page.dart';
 import '../pages/upcoming_sessions_page.dart';
@@ -20,7 +19,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
   int selected = 0;
 
   final pages = const [
-    AllSessionsPage(),
     UpcomingSessionsPage(),
     PendingSessionsPage(),
     RequestsSessionsPage(),
@@ -28,14 +26,14 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   String get currentStatus {
     switch (selected) {
-      case 1:
+      case 0:
         return "accepted";
+      case 1:
+        return "pending";
       case 2:
         return "pending";
-      case 3:
-        return "pending";
       default:
-        return "all";
+        return "accepted";
     }
   }
 

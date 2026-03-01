@@ -157,7 +157,7 @@ class _HomeContentState extends State<HomeContent> {
                           return InkWell(
                             onTap: () {
                               desktopKey.currentState?.openSidePage(
-                                body: ProfileMentor(
+                                body: ProfileMentorDesktop(
                                   id: u.id,
                                   name: u.name,
                                   track: u.track.name.isEmpty
@@ -249,7 +249,7 @@ class _HomeContentState extends State<HomeContent> {
                           return InkWell(
                             onTap: () {
                               desktopKey.currentState?.openSidePage(
-                                body: ProfileMentor(
+                                body: ProfileMentorDesktop(
                                   id: u.id,
                                   name: u.name,
                                   track: u.track.name.isEmpty

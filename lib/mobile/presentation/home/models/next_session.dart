@@ -5,24 +5,25 @@ class NextSession {
   final String duration;
   final String startsIn;
   final bool isMentor;
+  final int remainingMinutes;
 
-  NextSession({
-    required this.image,
-    required this.name,
-    required this.dateTime,
-    required this.duration,
-    required this.startsIn,
-    this.isMentor = true,
-  });
+  NextSession(
+      {required this.image,
+      required this.name,
+      required this.dateTime,
+      required this.duration,
+      required this.startsIn,
+      this.isMentor = true,
+      required this.remainingMinutes});
 
   factory NextSession.fromJson(Map<String, dynamic> json) {
     return NextSession(
-      image: json['image'] ?? '',
-      name: json['name'],
-      dateTime: json['date_time'],
-      duration: json['duration'],
-      startsIn: json['starts_in'],
-      isMentor: json['is_mentor'] ?? true,
-    );
+        image: json['image'] ?? '',
+        name: json['name'],
+        dateTime: json['date_time'],
+        duration: json['duration'],
+        startsIn: json['starts_in'],
+        isMentor: json['is_mentor'] ?? true,
+        remainingMinutes: json['remainingMinutes']);
   }
 }

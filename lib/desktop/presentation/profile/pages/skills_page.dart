@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/main.dart';
 
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../skill_verification/quiz_details_screen.dart';
 
 class SkillsPage extends StatelessWidget {
@@ -9,17 +10,43 @@ class SkillsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          skillCard(context: context, title: "JavaScript", proficiency: 0.95, verified: true),
-          const SizedBox(height: 20),
-          skillCard(context: context, title: "React", proficiency: 0.80, verified: false),
-          const SizedBox(height: 20),
-          skillCard(context: context, title: "Flutter", proficiency: 0.70, verified: false),
-        ],
-      ),
+    return BlocBuilder<MyProfileCubit, MyProfileState>(
+      builder: (context, state) {
+        if (state is MyProfileLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is MyProfileError) {
+          return Center(child: Text(state.message));
+        }
+
+        if (state is MyProfileLoaded) {
+          final skills = state.profile.skills;
+
+          if (skills.isEmpty) {
+            return const Center(child: Text("No skills found"));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: skills.map((skill) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: skillCard(
+                    context: context,
+                    title: skill.skillName,
+                    proficiency: (skill.quizScore / 100).clamp(0.0, 1.0),
+                    verified: skill.isVerified,
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        }
+
+        return const SizedBox();
+      },
     );
   }
 
@@ -87,10 +114,18 @@ class SkillsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-               Text("Proficiency", style: TextStyle( color: Theme.of(context).textTheme.bodyMedium!.color,),),
+              Text(
+                "Proficiency",
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
               Text(
                 "${(proficiency * 100).round()}%",
-                style: TextStyle(fontWeight: FontWeight.bold,  color: Theme.of(context).textTheme.bodyMedium!.color,),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
               ),
             ],
           ),
@@ -118,8 +153,9 @@ class SkillsPage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  desktopKey.currentState?.openSidePage(body: QuizDetailsScreen(skillName: title));
-                //  Get.to(() => QuizDetailsScreen(skillName: title));
+                  desktopKey.currentState?.openSidePage(
+                    body: QuizDetailsScreen(skillName: title),
+                  );
                 },
                 child: const Text(
                   "Take Assessment",

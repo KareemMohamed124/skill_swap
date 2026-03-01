@@ -263,6 +263,8 @@ class SessionDetailsPage extends StatelessWidget {
         onTap: () {
           Get.to(BookSessionScreen(
             userId: session.mentorId,
+            userName: session.mentorName,
+            price: 100,
           ));
         },
       ),

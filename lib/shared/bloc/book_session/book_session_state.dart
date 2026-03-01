@@ -1,20 +1,25 @@
-part of 'book_session_bloc.dart';
+import '../../data/models/booking/booking_model.dart';
 
-@immutable
-sealed class BookSessionState {}
+sealed class ActiveBookingState {}
 
-final class BookSessionInitial extends BookSessionState {}
+class BookingIdle extends ActiveBookingState {} // مفيش أي booking
 
-final class BookSessionLoading extends BookSessionState {}
+class BookingLoading extends ActiveBookingState {} // loading لأي عملية
 
-final class BookSessionSuccess extends BookSessionState {
-  final BookingSuccess success;
+class BookingLoaded extends ActiveBookingState {
+  final Booking booking;
 
-  BookSessionSuccess({required this.success});
+  BookingLoaded(this.booking);
 }
 
-final class BookSessionFailure extends BookSessionState {
-  final BookingFailure error;
+class BookingError extends ActiveBookingState {
+  final String message;
 
-  BookSessionFailure({required this.error});
+  BookingError(this.message);
+}
+
+class BookingCreatedSuccess extends ActiveBookingState {
+  final Booking booking;
+
+  BookingCreatedSuccess(this.booking);
 }

@@ -39,6 +39,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
             dateTime: session.dateTime,
             startsIn: session.startsIn,
             isMentor: session.isMentor,
+            remainingMinutes: session.remainingMinutes,
           );
         },
       ),

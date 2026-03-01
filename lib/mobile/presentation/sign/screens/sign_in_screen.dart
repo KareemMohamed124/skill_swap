@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/sign/screens/sign_up_screen.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/login_bloc/login_bloc.dart';
 import '../../../../shared/bloc/login_bloc/login_event.dart';
 import '../../../../shared/bloc/login_bloc/login_state.dart';
@@ -91,7 +92,7 @@ class _SignInScreenState extends State<SignInScreen> {
               await LocalStorage.saveToken(state.data.accessToken);
               await LocalStorage.saveRefreshToken(state.data.refreshToken);
               await LocalStorage.saveUserId(state.data.id);
-              // context.read<MyProfileCubit>().fetchMyProfile();
+              sl<MyProfileCubit>().refreshProfile();
               Get.offAll(ScreenManager(initialIndex: 0));
 
               ScaffoldMessenger.of(context).showSnackBar(

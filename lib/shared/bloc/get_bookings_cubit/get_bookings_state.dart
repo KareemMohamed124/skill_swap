@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../mobile/presentation/home/models/next_session.dart';
 import '../../../mobile/presentation/sessions/models/session.dart';
 
 abstract class GetBookingsState extends Equatable {
@@ -29,4 +30,15 @@ class GetBookingsError extends GetBookingsState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class GetTodaySessionsLoading extends GetBookingsState {}
+
+class GetTodaySessionsLoaded extends GetBookingsState {
+  final List<NextSession> sessions;
+
+  const GetTodaySessionsLoaded({required this.sessions});
+
+  @override
+  List<Object?> get props => [sessions];
 }

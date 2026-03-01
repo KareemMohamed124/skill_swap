@@ -15,7 +15,7 @@ class UpdateUser {
   final UserImage userImage;
   final Profile profile;
   final BlockInfo blockInfo;
-  final List<Skill> skills;
+  final List<SkillModel> skills;
   final List<dynamic> challenges;
   final List<dynamic> messages;
   final List<dynamic> reports;
@@ -82,7 +82,8 @@ class UpdateUser {
         userImage: UserImage.fromJson(json['userImage']),
         profile: Profile.fromJson(json['profile']),
         blockInfo: BlockInfo.fromJson(json['blockInfo']),
-        skills: List<Skill>.from(json['skills'].map((x) => Skill.fromJson(x))),
+        skills: List<SkillModel>.from(
+            json['skills'].map((x) => SkillModel.fromJson(x))),
         challenges: json['challenges'] ?? [],
         messages: json['messages'] ?? [],
         reports: json['reports'] ?? [],
@@ -155,7 +156,7 @@ class Profile {
   final String bio;
   final String skillSummary;
   final int reputationScore;
-  final DateTime lastUpdated;
+  final String lastUpdated;
 
   Profile({
     required this.bio,
@@ -168,14 +169,14 @@ class Profile {
         bio: json['bio'],
         skillSummary: json['skillSummary'],
         reputationScore: json['reputationScore'],
-        lastUpdated: DateTime.parse(json['lastUpdated']),
+        lastUpdated: (json['lastUpdated']),
       );
 
   Map<String, dynamic> toJson() => {
         'bio': bio,
         'skillSummary': skillSummary,
         'reputationScore': reputationScore,
-        'lastUpdated': lastUpdated.toIso8601String(),
+        'lastUpdated': lastUpdated,
       };
 }
 
@@ -200,21 +201,21 @@ class BlockInfo {
       };
 }
 
-class Skill {
+class SkillModel {
   final String skillName;
   final bool isVerified;
   final int quizScore;
   final String id;
   final DateTime addedAt;
 
-  Skill(
+  SkillModel(
       {required this.skillName,
       required this.isVerified,
       required this.quizScore,
       required this.id,
       required this.addedAt});
 
-  factory Skill.fromJson(Map<String, dynamic> json) => Skill(
+  factory SkillModel.fromJson(Map<String, dynamic> json) => SkillModel(
         skillName: json['skillName'],
         isVerified: json['isVerified'],
         quizScore: json['quizScore'],

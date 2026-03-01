@@ -301,18 +301,61 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listener: (context, state) {
           if (state is UpdateProfileSuccessState) {
             Get.snackbar('Success', state.success);
+
             setState(() {
               selectedSkillsNew.clear();
-            });
-            final updatedSkills =
-                state.user.skills.map((s) => s.skillName).toList();
-            setState(() {
-              selectedSkills = updatedSkills;
+              selectedSkills =
+                  state.user.skills.map((s) => s.skillName).toList();
               skillsController.text = selectedSkills.join(', ');
+              nameController.text = state.user.name ?? '';
+              bioController.text = state.user.profile.bio ?? '';
+              controllersFilled = false;
             });
 
-            context.read<MyProfileCubit>().fetchMyProfile();
-            controllersFilled = false;
+            // final updatedProfile = MyProfile(
+            //   id: state.user.id,
+            //   name: state.user.name,
+            //   email: state.user.email,
+            //   isActive: state.user.isActive,
+            //   role: state.user.role,
+            //   freeHours: state.user.freeHours,
+            //   helpTotalHours: state.user.helpTotalHours,
+            //   messages: state.user.messages,
+            //   reports: state.user.reports,
+            //   requests: state.user.requests,
+            //   feedbackGiven: state.user.feedbackGiven,
+            //   feedbackReceived: state.user.feedbackReceived,
+            //   mentorSuggestions: state.user.mentorSuggestions,
+            //   skills: state.user.skills,
+            //   createdAt: state.user.createdAt,
+            //   updatedAt: state.user.updatedAt,
+            //   v: state.user.v,
+            //   warningCount: state.user.warningCount,
+            //   warnings: state.user.warnings,
+            //   userImage: UserImage(
+            //     secureUrl: state.user.userImage.secureUrl,
+            //     publicId: state.user.userImage.publicId,
+            //   ),
+            //   profile: Profile(
+            //     bio: state.user.profile.bio,
+            //     skillSummary: state.user.profile.skillSummary,
+            //     reputationScore: state.user.profile.reputationScore,
+            //     lastUpdated: state.user.profile.lastUpdated,
+            //     location: '',
+            //   ),
+            //   track: Track(
+            //     name: state.user.track.name,
+            //     id: state.user.track.id,
+            //     slug: state.user.track.slug,
+            //   ),
+            //   blockInfo: BlockedMe(
+            //     isBlocked: state.user.blockInfo.isBlocked,
+            //     blockedUntil: state.user.blockInfo.blockedUntil,
+            //     blockReason: state.user.blockInfo.blockReason,
+            //   ),
+            // );
+
+            context.read<MyProfileCubit>().refreshProfile();
           } else if (state is UpdateProfileErrorState) {
             Get.snackbar('Error', state.error);
           }

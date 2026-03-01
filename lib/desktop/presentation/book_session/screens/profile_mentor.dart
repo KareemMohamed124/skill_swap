@@ -14,7 +14,7 @@ import '../../prv_chat/private_chat_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 import 'book_session.dart';
 
-class ProfileMentor extends StatefulWidget {
+class ProfileMentorDesktop extends StatefulWidget {
   final String id;
   final String image;
   final String name;
@@ -26,37 +26,25 @@ class ProfileMentor extends StatefulWidget {
   final int hourlyRate;
   final List<Skill> skills;
 
-  const ProfileMentor(
-      {super.key,
-      required this.id,
-      required this.image,
-      required this.name,
-      required this.track,
-      required this.rate,
-      required this.bio,
-      required this.hoursAvailable,
-      required this.peopleHelped,
-      required this.hourlyRate,
-      required this.skills});
+  const ProfileMentorDesktop({
+    super.key,
+    required this.id,
+    required this.image,
+    required this.name,
+    required this.track,
+    required this.rate,
+    required this.bio,
+    required this.hoursAvailable,
+    required this.peopleHelped,
+    required this.hourlyRate,
+    required this.skills,
+  });
 
   @override
-  State<ProfileMentor> createState() => _ProfileMentorState();
+  State<ProfileMentorDesktop> createState() => _ProfileMentorDesktopState();
 }
 
-class _ProfileMentorState extends State<ProfileMentor> {
-  final List<String> skills = [
-    "Node.js",
-    "Html",
-    "JavaScript",
-    "TypeScript",
-    "Responsive Design",
-    "React",
-    "Css",
-    "Testing",
-    "Web Services API",
-    "C++",
-  ];
-
+class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -67,10 +55,12 @@ class _ProfileMentorState extends State<ProfileMentor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /// Report Bloc
             BlocProvider(
               create: (_) => sl<ReportBloc>(),
               child: Stack(
                 children: [
+                  /// Header Row: Back button + Avatar + Name/Track/Rate
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -96,8 +86,8 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(widget.name,
                                 style: const TextStyle(
@@ -125,6 +115,8 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       ),
                     ],
                   ),
+
+                  /// Report Button BlocListener
                   BlocListener<ReportBloc, ReportState>(
                     listener: (context, state) {
                       if (state is ReportSuccessState) {
@@ -252,6 +244,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
 
             const SizedBox(height: 16),
 
+            /// Mentor Info Stats
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
@@ -263,12 +256,16 @@ class _ProfileMentorState extends State<ProfileMentor> {
                 children: [
                   mentorInfo(
                       context: context,
-                      rate: "200",
+                      rate: "${widget.hoursAvailable}",
                       info: "hours_available".tr),
                   mentorInfo(
-                      context: context, rate: "150", info: "people_helped".tr),
+                      context: context,
+                      rate: "${widget.peopleHelped}",
+                      info: "people_helped".tr),
                   mentorInfo(
-                      context: context, rate: "35\$", info: "hourly_rate".tr),
+                      context: context,
+                      rate: "${widget.hourlyRate}\$",
+                      info: "hourly_rate".tr),
                 ],
               ),
             ),
@@ -277,7 +274,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
             Text("about".tr, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 8),
             Text(
-              "Front-End Developer specializing in building responsive, user-friendly, and accessible web applications. Skilled in React, JavaScript, and modern UI frameworks.",
+              widget.bio.isEmpty ? "Tell others about yourself..." : widget.bio,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -294,7 +291,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: skills
+              children: widget.skills
                   .map((skill) => Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
@@ -302,7 +299,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                           color: const Color(0xFFD6D6D6).withAlpha(64),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(skill,
+                        child: Text(skill.skillName,
                             style: TextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context)
@@ -314,9 +311,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                   .toList(),
             ),
             const SizedBox(height: 16),
-
             Text("reviews".tr, style: Theme.of(context).textTheme.bodyLarge),
-
             const SizedBox(height: 8),
             ReviewsPage(),
             const SizedBox(height: 16),
@@ -336,18 +331,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                     icon: Icon(Iconsax.message, color: AppPalette.primary),
                     onPressed: () {
                       desktopKey.currentState?.openSidePage(
-                        body: ProfileMentor(
-                          id: widget.id,
-                          name: widget.name,
-                          track: widget.track,
-                          rate: widget.rate,
-                          image: widget.image,
-                          bio: widget.bio,
-                          skills: widget.skills,
-                          hoursAvailable: widget.hoursAvailable,
-                          peopleHelped: widget.peopleHelped,
-                          hourlyRate: 0,
-                        ),
+                        body: widget,
                         rightPanel: PrivateChatScreen(
                           currentUserId: '01',
                           otherUserId: widget.id,
@@ -363,25 +347,19 @@ class _ProfileMentorState extends State<ProfileMentor> {
                     text: "session_details".tr,
                     onPressed: () {
                       desktopKey.currentState?.openSidePage(
-                        body: ProfileMentor(
-                          id: widget.id,
-                          name: widget.name,
-                          track: widget.track,
-                          rate: widget.rate,
-                          image: widget.image,
-                          bio: widget.bio,
-                          skills: widget.skills,
-                          hoursAvailable: widget.hoursAvailable,
-                          peopleHelped: widget.peopleHelped,
-                          hourlyRate: 0,
+                        body: widget,
+                        rightPanel: BookSessionDesktop(
+                          userId: widget.id,
+                          bookingId: null,
+                          userName: widget.name,
+                          price: widget.hourlyRate,
                         ),
-                        rightPanel: const BookSession(),
                       );
                     },
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -389,10 +367,11 @@ class _ProfileMentorState extends State<ProfileMentor> {
   }
 }
 
-Widget mentorInfo(
-    {required BuildContext context,
-    required String rate,
-    required String info}) {
+Widget mentorInfo({
+  required BuildContext context,
+  required String rate,
+  required String info,
+}) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   return Column(
     children: [

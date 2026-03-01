@@ -10,6 +10,7 @@ import 'package:skill_swap/desktop/presentation/sessions/screens/sessions_screen
 import 'package:skill_swap/desktop/presentation/setting/screens/setting.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
 
+import '../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
@@ -137,6 +138,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         BlocProvider<UsersCubit>(
           create: (_) => sl<UsersCubit>(),
         ),
+        BlocProvider<GetBookingsCubit>(create: (_) => sl<GetBookingsCubit>()),
         BlocProvider(create: (_) => sl<LogoutBloc>())
       ],
       child: DesktopScaffold(

@@ -1,20 +1,26 @@
 part of 'status_book_bloc.dart';
 
 @immutable
-sealed class StatusBookState {}
+abstract class StatusBookState {}
 
-final class StatusBookInitial extends StatusBookState {}
+class StatusBookInitial extends StatusBookState {}
 
-final class StatusBookLoading extends StatusBookState {}
+class StatusBookLoadingForSession extends StatusBookState {
+  final String id;
 
-final class StatusBookSuccess extends StatusBookState {
-  final StatusBookingSuccess success;
-
-  StatusBookSuccess({required this.success});
+  StatusBookLoadingForSession({required this.id});
 }
 
-final class StatusBookFailure extends StatusBookState {
-  final StatusBookingFailure error;
+class StatusBookSuccess extends StatusBookState {
+  final StatusBookingSuccess success;
+  final String sessionId;
 
-  StatusBookFailure({required this.error});
+  StatusBookSuccess({required this.success, required this.sessionId});
+}
+
+class StatusBookFailure extends StatusBookState {
+  final StatusBookingErrorResponse error; // بدل StatusBookingFailure
+  final String sessionId;
+
+  StatusBookFailure({required this.error, required this.sessionId});
 }

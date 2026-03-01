@@ -5,18 +5,40 @@ import '../../../../shared/core/theme/app_palette.dart';
 
 class SelectDate extends StatefulWidget {
   final Function(DateTime) onSelect;
-  const SelectDate({super.key, required this.onSelect});
+  final DateTime? initialDate;
+
+  const SelectDate({super.key, required this.onSelect, this.initialDate});
 
   @override
   State<SelectDate> createState() => _SelectDateState();
 }
 
 class _SelectDateState extends State<SelectDate> {
-  DateTime today = DateTime.now();
+  late DateTime selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDay = widget.initialDate ?? DateTime.now();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onSelect(selectedDay);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant SelectDate oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialDate != null &&
+        widget.initialDate != oldWidget.initialDate) {
+      setState(() {
+        selectedDay = widget.initialDate!;
+      });
+    }
+  }
 
   void onDaySelected(DateTime day, DateTime focusDay) {
     setState(() {
-      today = day;
+      selectedDay = day;
     });
     widget.onSelect(day);
   }
@@ -34,7 +56,6 @@ class _SelectDateState extends State<SelectDate> {
         locale: "en_US",
         rowHeight: 32,
         daysOfWeekHeight: 16,
-
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
@@ -46,8 +67,7 @@ class _SelectDateState extends State<SelectDate> {
           leftChevronIcon: Icon(Icons.chevron_left, size: 20),
           rightChevronIcon: Icon(Icons.chevron_right, size: 20),
         ),
-
-        daysOfWeekStyle:  DaysOfWeekStyle(
+        daysOfWeekStyle: DaysOfWeekStyle(
           weekdayStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -59,7 +79,6 @@ class _SelectDateState extends State<SelectDate> {
             color: Theme.of(context).textTheme.bodyMedium!.color,
           ),
         ),
-
         calendarStyle: CalendarStyle(
           isTodayHighlighted: true,
           selectedDecoration: BoxDecoration(
@@ -68,11 +87,10 @@ class _SelectDateState extends State<SelectDate> {
           ),
           selectedTextStyle: const TextStyle(
             color: Colors.white,
-            // fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
           todayDecoration: BoxDecoration(
-            color: AppPalette.primary.withValues(alpha: 0.3),
+            color: AppPalette.primary.withOpacity(0.3),
             shape: BoxShape.circle,
           ),
           todayTextStyle: TextStyle(
@@ -100,12 +118,10 @@ class _SelectDateState extends State<SelectDate> {
           cellAlignment: Alignment.center,
           tablePadding: const EdgeInsets.only(top: 4),
         ),
-
         availableGestures: AvailableGestures.all,
         onDaySelected: onDaySelected,
-        selectedDayPredicate: (day) => isSameDay(day, today),
-        focusedDay: today,
-
+        selectedDayPredicate: (day) => isSameDay(day, selectedDay),
+        focusedDay: selectedDay,
         firstDay: DateTime.now(),
         lastDay: DateTime.utc(2030, 3, 14),
       ),

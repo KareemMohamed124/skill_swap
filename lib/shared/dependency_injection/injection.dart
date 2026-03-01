@@ -47,7 +47,6 @@ Future<void> initDependencies() async {
   final dio = Dio();
   sl.registerLazySingleton<Dio>(() => dio);
 
-  // Auth Interceptor — handles token attachment + auto-refresh
   dio.interceptors.add(AuthInterceptor(dio));
 
   // APIs
@@ -77,8 +76,8 @@ Future<void> initDependencies() async {
       () => VerifyCodeBloc(sl<AuthRepository>()));
   sl.registerFactory<ResetPasswordBloc>(
       () => ResetPasswordBloc(sl<AuthRepository>()));
-  sl.registerFactory<BookSessionBloc>(
-      () => BookSessionBloc(sl<BookingRepository>()));
+  sl.registerFactory<ActiveBookingBloc>(
+      () => ActiveBookingBloc(sl<BookingRepository>()));
   sl.registerFactory<StatusBookBloc>(
       () => StatusBookBloc(sl<BookingRepository>()));
   sl.registerFactory<CancelBookBloc>(
@@ -90,15 +89,18 @@ Future<void> initDependencies() async {
       () => DeleteBookBloc(sl<BookingRepository>()));
   sl.registerFactory<GetBookingDetailsBloc>(
       () => GetBookingDetailsBloc(sl<BookingRepository>()));
-  sl.registerFactory<GetBookingsCubit>(
+
+  sl.registerLazySingleton<GetBookingsCubit>(
       () => GetBookingsCubit(sl<BookingRepository>()));
+
   sl.registerFactory<UsersCubit>(() => UsersCubit(sl<UserRepository>()));
+
   sl.registerFactory<ChangePasswordBloc>(
       () => ChangePasswordBloc(sl<UserRepository>()));
   sl.registerFactory<UpdateProfileBloc>(
       () => UpdateProfileBloc(sl<UserRepository>()));
   sl.registerFactory<ReportBloc>(() => ReportBloc(sl<ReportRepository>()));
-  sl.registerLazySingleton<MyProfileCubit>(
+  sl.registerFactory<MyProfileCubit>(
     () => MyProfileCubit(sl<UserRepository>()),
   );
   sl.registerFactory<LogoutBloc>(() => LogoutBloc(sl<AuthRepository>()));

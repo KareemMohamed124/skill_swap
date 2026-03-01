@@ -1,10 +1,35 @@
-part of 'book_session_bloc.dart';
+import '../../data/models/booking/booking_request.dart';
+import '../../data/models/update_booking/update_booking_request.dart';
 
-@immutable
-sealed class BookSessionEvent {}
+sealed class ActiveBookingEvent {}
 
-class BookSession extends BookSessionEvent {
+class CreateBooking extends ActiveBookingEvent {
   final BookingRequest request;
 
-  BookSession({required this.request});
+  CreateBooking(this.request);
+}
+
+class UpdateBooking extends ActiveBookingEvent {
+  final String id;
+  final UpdateBookingRequest request;
+
+  UpdateBooking(this.id, this.request);
+}
+
+class CancelBooking extends ActiveBookingEvent {
+  final String id;
+
+  CancelBooking(this.id);
+}
+
+class LoadBookingDetails extends ActiveBookingEvent {
+  final String id;
+
+  LoadBookingDetails(this.id);
+}
+
+class LoadMyBookingWithMentor extends ActiveBookingEvent {
+  final String mentorId;
+
+  LoadMyBookingWithMentor(this.mentorId);
 }

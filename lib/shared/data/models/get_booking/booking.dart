@@ -1,9 +1,11 @@
 import 'package:skill_swap/shared/data/models/get_booking/user_id.dart';
 
+import '../../../core/utils/id_normalizer.dart';
+
 class GetBookingModel {
   final String id;
-  final UserBooking userId;
-  final UserBooking requestedUser;
+  final UserBooking studentId;
+  final UserBooking instructorId;
 
   final DateTime date;
   final String time;
@@ -18,8 +20,8 @@ class GetBookingModel {
 
   GetBookingModel(
       {required this.id,
-      required this.userId,
-      required this.requestedUser,
+      required this.studentId,
+      required this.instructorId,
       required this.date,
       required this.time,
       required this.durationMins,
@@ -33,9 +35,9 @@ class GetBookingModel {
 
   factory GetBookingModel.fromJson(Map<String, dynamic> json) {
     return GetBookingModel(
-        id: json['_id'],
-        userId: UserBooking.fromJson(json['userId']),
-        requestedUser: UserBooking.fromJson(json['requestedUser']),
+        id: IdNormalizer.normalize(json['_id']),
+        studentId: UserBooking.fromJson(json['studentId']),
+        instructorId: UserBooking.fromJson(json['instructorId']),
         date: DateTime.parse(json['date']),
         time: json['time'],
         durationMins: json['duration_mins'],

@@ -1,57 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/desktop/presentation/sessions/models/session.dart';
-import 'package:skill_swap/desktop/presentation/sessions/widgets/session_card.dart';
-import 'package:skill_swap/shared/constants/strings.dart' ;
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
+import '../widgets/session_card.dart';
 
 class PendingSessionsPage extends StatelessWidget {
   const PendingSessionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-   List<Session> pendingList = [
-      Session(
-          id: "1",
-          image: "assets/images/people_images/Marcus Johnson.png",
-          name: "Marcus Johnson",
-          role: "Mentor",
-          type: "Video Call",
-          dateTime: DateTime.now(),
-          price: "25",
-          status: "PendingApproval",
-          timeAgo: ""
-      ),
-      Session(
-          id: "2",
-          image: "assets/images/people_images/Sarah Smith.png",
-          name: "Sarah Smith",
-          role: "Mentor",
-          type: "1:1 Session",
-          dateTime: DateTime.now().add(const Duration(days: 1)),
-          price: "30",
-          status: "PendingApproval",
-          timeAgo: ""
-      ),
-      Session(
-          id: "3",
-          image: "assets/images/people_images/Alex Brown.png",
-          name: "Alex Brown",
-          role: "Mentor",
-          type: "Video Call",
-          dateTime: DateTime.now().add(const Duration(days: 2)),
-          price: "20",
-          status: "PendingApproval",
-          timeAgo: ""
-      ),
-    ];
+    return BlocBuilder<GetBookingsCubit, GetBookingsState>(
+      builder: (context, state) {
+        if (state is GetBookingsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return  ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(16),
-      itemCount: pendingList.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
-      itemBuilder: (_, index) {
-        return SessionCard(session: pendingList[index]);
+        if (state is GetBookingsError) {
+          return Center(child: Text(state.message));
+        }
+
+        if (state is GetBookingsLoaded) {
+          final pending =
+              state.bookings.where((s) => s.rawStatus == "pending").toList();
+
+          if (pending.isEmpty) {
+            return const Center(child: Text("No pending sessions"));
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: pending.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (_, index) {
+              return SessionCard(
+                  session: pending[index], currentStatus: "pending");
+            },
+          );
+        }
+
+        return const SizedBox();
       },
     );
   }

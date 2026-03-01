@@ -1,18 +1,20 @@
 class SessionModel {
   final String sessionId;
-  final String userId;
+  final String instructorId;
   final String image;
   final String name;
   final String role;
   final DateTime dateTime;
-  final String price;
+  final int price;
   final String status;
   final String rawStatus;
-  final String timeAgo;
+  final DateTime timeAgo;
+
+  // final DateTime createAt;
 
   SessionModel(
       {required this.sessionId,
-      required this.userId,
+      required this.instructorId,
       required this.image,
       required this.name,
       required this.role,

@@ -4,7 +4,13 @@ import '../../../../shared/core/theme/app_palette.dart';
 
 class DurationSelector extends StatefulWidget {
   final Function(int) onSelect;
-  const DurationSelector({super.key, required this.onSelect});
+  final int? initialValue;
+
+  const DurationSelector({
+    super.key,
+    required this.onSelect,
+    this.initialValue,
+  });
 
   @override
   State<DurationSelector> createState() => _DurationSelectorState();
@@ -12,26 +18,44 @@ class DurationSelector extends StatefulWidget {
 
 class _DurationSelectorState extends State<DurationSelector> {
   final List<int> durations = [30, 45, 60, 90, 120];
+  late int selectedDuration;
 
-  int selectedDuration = 60;
+  @override
+  void initState() {
+    super.initState();
+    selectedDuration = widget.initialValue ?? 60;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onSelect(selectedDuration);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant DurationSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != null &&
+        widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        selectedDuration = widget.initialValue!;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal, // 👈 اسكرول عرضي
+      scrollDirection: Axis.horizontal,
       child: Row(
         children: durations.map((duration) {
           final bool isSelected = duration == selectedDuration;
 
           return Padding(
-            padding: const EdgeInsets.only(right: 8), // 👈 المسافة بين البوكسات
+            padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  selectedDuration = duration;
-                });
+                setState(() => selectedDuration = duration);
                 widget.onSelect(duration);
               },
               child: Container(
@@ -58,8 +82,8 @@ class _DurationSelectorState extends State<DurationSelector> {
                         color: isSelected
                             ? Colors.white
                             : (isDark
-                            ? AppPalette.darkTextSecondary
-                            : AppPalette.lightTextSecondary),
+                                ? AppPalette.darkTextSecondary
+                                : AppPalette.lightTextSecondary),
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -70,8 +94,8 @@ class _DurationSelectorState extends State<DurationSelector> {
                         color: isSelected
                             ? Colors.white
                             : (isDark
-                            ? AppPalette.darkTextSecondary
-                            : AppPalette.lightTextSecondary),
+                                ? AppPalette.darkTextSecondary
+                                : AppPalette.lightTextSecondary),
                         fontSize: 12,
                       ),
                     ),

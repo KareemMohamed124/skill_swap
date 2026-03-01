@@ -16,7 +16,6 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     try {
       final myProfile = await repository.getMyProfile();
-      //LocalStorage.saveUser(myProfile);
       emit(MyProfileLoaded(myProfile));
     } catch (e) {
       emit(MyProfileError(e.toString()));
@@ -25,5 +24,18 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   void setProfile(MyProfile profile) {
     emit(MyProfileLoaded(profile));
+  }
+
+  /// Clears the current profile state and resets to initial.
+  /// Call this during logout to avoid old data persisting.
+  void clearProfile() {
+    emit(MyProfileInitial());
+  }
+
+  /// Refreshes the profile by clearing first then fetching new data.
+  /// Optional: Use this after login if you want a clean refresh.
+  void refreshProfile() async {
+    clearProfile(); // Clean first
+    fetchMyProfile(); // Then fetch new
   }
 }
