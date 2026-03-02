@@ -14,6 +14,7 @@ class UsersCubit extends Cubit<UsersState> {
   bool _isLoadingMore = false;
 
   final List<UserModel> _users = [];
+  final Set<String> _userIds = {};
 
   Future<void> fetchUsers({bool reset = false}) async {
     if (_isLoadingMore) return;
@@ -21,6 +22,7 @@ class UsersCubit extends Cubit<UsersState> {
     if (reset) {
       _currentPage = 1;
       _users.clear();
+      _userIds.clear();
       _isLastPage = false;
       emit(UsersLoading());
     }
@@ -39,8 +41,9 @@ class UsersCubit extends Cubit<UsersState> {
         limit: 10,
       );
 
-      _users.addAll(newUsers);
-      _isLastPage = newUsers.length < 10;
+      final uniqueNewUsers = newUsers.where((u) => _userIds.add(u.id)).toList();
+      _users.addAll(uniqueNewUsers);
+      _isLastPage = newUsers.isEmpty;
       _isLoadingMore = false;
 
       emit(UsersLoaded(

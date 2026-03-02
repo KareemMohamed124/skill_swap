@@ -15,6 +15,32 @@ class RecommendedViewAll extends StatefulWidget {
 
 class _RecommendedViewAllState extends State<RecommendedViewAll> {
   int? selectedIndex = 1;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    final cubit = context.read<UsersCubit>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+      if (!state.isLoadingMore && !state.isLastPage) {
+        cubit.fetchNextPage();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +119,13 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
 
                   if (state is UsersLoaded) {
                     final usersList = state.users;
+                    final itemCount = state.isLastPage
+                        ? usersList.length
+                        : usersList.length + 1;
+
                     return GridView.builder(
-                      itemCount: usersList.length,
+                      controller: _scrollController,
+                      itemCount: itemCount,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
                         mainAxisSpacing: 24,
@@ -102,6 +133,11 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                         childAspectRatio: cardAspectRatio,
                       ),
                       itemBuilder: (context, index) {
+                        if (index >= usersList.length) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
                         final mentor = usersList[index];
                         return MouseRegion(
                           cursor: SystemMouseCursors.click,
@@ -113,10 +149,10 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                             },
                             child: RecommendedCard(
                               id: mentor.id,
-                              image: "",
+                              image: mentor.userImage.secureUrl,
                               name: mentor.name,
                               track: "Flutter",
-                              rating: 4,
+                              rating: mentor.rate,
                             ),
                           ),
                         );

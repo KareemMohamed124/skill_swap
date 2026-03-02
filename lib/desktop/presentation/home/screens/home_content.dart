@@ -16,6 +16,7 @@ import '../../../../mobile/presentation/home/pages/next_session_view_all.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../../../../shared/constants/strings.dart';
+import '../../../../shared/dependency_injection/injection.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -25,9 +26,43 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
+  final ScrollController _topUsersScrollController = ScrollController();
+  final ScrollController _recommendedScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
+    _topUsersScrollController.addListener(_topUsersScrollListener);
+    _recommendedScrollController.addListener(_recommendedScrollListener);
+  }
+
+  void _topUsersScrollListener() {
+    _handleScroll(_topUsersScrollController);
+  }
+
+  void _recommendedScrollListener() {
+    _handleScroll(_recommendedScrollController);
+  }
+
+  void _handleScroll(ScrollController controller) {
+    final cubit = context.read<UsersCubit>();
+    if (controller.position.pixels >=
+            controller.position.maxScrollExtent - 150 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+      if (!state.isLoadingMore && !state.isLastPage) {
+        cubit.fetchNextPage();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _topUsersScrollController.removeListener(_topUsersScrollListener);
+    _topUsersScrollController.dispose();
+    _recommendedScrollController.removeListener(_recommendedScrollListener);
+    _recommendedScrollController.dispose();
+    super.dispose();
   }
 
   Widget _buildAvatar(String? imagePath) {
@@ -124,8 +159,8 @@ class _HomeContentState extends State<HomeContent> {
                 SectionHeader(
                   sectionTitle: 'top_users'.tr,
                   onTop: () => desktopKey.currentState?.openSidePage(
-                    body: BlocProvider.value(
-                      value: context.read<UsersCubit>(),
+                    body: BlocProvider(
+                      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
                       child: const TopUsersViewAll(),
                     ),
                   ),
@@ -134,12 +169,19 @@ class _HomeContentState extends State<HomeContent> {
                 BlocBuilder<UsersCubit, UsersState>(
                   builder: (context, state) {
                     final usersList = state is UsersLoaded ? state.users : [];
+                    final isLastPage =
+                        state is UsersLoaded ? state.isLastPage : false;
 
                     return SizedBox(
                       height: 150,
                       child: GridView.builder(
+                        controller: _topUsersScrollController,
                         scrollDirection: Axis.horizontal,
-                        itemCount: usersList.isNotEmpty ? usersList.length : 5,
+                        itemCount: usersList.isNotEmpty
+                            ? (isLastPage
+                                ? usersList.length
+                                : usersList.length + 1)
+                            : 5,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
@@ -150,6 +192,13 @@ class _HomeContentState extends State<HomeContent> {
                         itemBuilder: (context, index) {
                           if (usersList.isEmpty) {
                             return const TopUserCard(isLoading: true);
+                          }
+
+                          if (index >= usersList.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 32),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
                           }
 
                           final u = usersList[index];
@@ -216,8 +265,8 @@ class _HomeContentState extends State<HomeContent> {
                 SectionHeader(
                   sectionTitle: 'recommended_for_you'.tr,
                   onTop: () => desktopKey.currentState?.openSidePage(
-                    body: BlocProvider.value(
-                      value: context.read<UsersCubit>(),
+                    body: BlocProvider(
+                      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
                       child: const RecommendedViewAll(),
                     ),
                   ),
@@ -226,12 +275,19 @@ class _HomeContentState extends State<HomeContent> {
                 BlocBuilder<UsersCubit, UsersState>(
                   builder: (context, state) {
                     final usersList = state is UsersLoaded ? state.users : [];
+                    final isLastPage =
+                        state is UsersLoaded ? state.isLastPage : false;
 
                     return SizedBox(
                       height: 170,
                       child: GridView.builder(
+                        controller: _recommendedScrollController,
                         scrollDirection: Axis.horizontal,
-                        itemCount: usersList.isNotEmpty ? usersList.length : 5,
+                        itemCount: usersList.isNotEmpty
+                            ? (isLastPage
+                                ? usersList.length
+                                : usersList.length + 1)
+                            : 5,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
@@ -242,6 +298,13 @@ class _HomeContentState extends State<HomeContent> {
                         itemBuilder: (context, index) {
                           if (usersList.isEmpty) {
                             return const RecommendedCard(isLoading: true);
+                          }
+
+                          if (index >= usersList.length) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 32),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
                           }
 
                           final u = usersList[index];

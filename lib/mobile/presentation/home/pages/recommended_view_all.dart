@@ -15,6 +15,32 @@ class RecommendedViewAll extends StatefulWidget {
 
 class _RecommendedViewAllState extends State<RecommendedViewAll> {
   int? selectedIndex = 1;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    final cubit = context.read<UsersCubit>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+      if (!state.isLoadingMore && !state.isLastPage) {
+        cubit.fetchNextPage();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +70,18 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
             final usersList = state.users;
 
             return ListView.builder(
+              controller: _scrollController,
               padding: EdgeInsets.all(padding),
-              itemCount: usersList.length,
+              itemCount:
+                  state.isLastPage ? usersList.length : usersList.length + 1,
               itemBuilder: (context, index) {
+                if (index >= usersList.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
                 final mentor = usersList[index];
                 return RecommendedCard(
                   id: mentor.id,

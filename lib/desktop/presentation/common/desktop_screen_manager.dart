@@ -136,7 +136,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
           create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
         ),
         BlocProvider<UsersCubit>(
-          create: (_) => sl<UsersCubit>(),
+          create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
         ),
         BlocProvider<GetBookingsCubit>(create: (_) => sl<GetBookingsCubit>()),
         BlocProvider(create: (_) => sl<LogoutBloc>())

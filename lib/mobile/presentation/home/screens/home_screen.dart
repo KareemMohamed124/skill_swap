@@ -6,6 +6,8 @@ import 'package:skill_swap/mobile/presentation/home/widgets/next_session_section
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
+import '../../../../shared/dependency_injection/injection.dart';
+
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/helper/home_controller.dart';
 import '../../notification/screens/notification_screen.dart';
@@ -110,8 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             SectionHeader(
                               sectionTitle: 'top_users'.tr,
                               onTop: () {
-                                Get.to(BlocProvider.value(
-                                  value: context.read<UsersCubit>(),
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
                                   child: TopUsersViewAll(),
                                 ));
                               },
@@ -124,8 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             SectionHeader(
                               sectionTitle: 'recommended_for_you'.tr,
                               onTop: () {
-                                Get.to(BlocProvider.value(
-                                  value: context.read<UsersCubit>(),
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
                                   child: RecommendedViewAll(),
                                 ));
                               },
@@ -139,8 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             SectionHeader(
                               sectionTitle: 'top_users'.tr,
                               onTop: () {
-                                Get.to(BlocProvider.value(
-                                  value: context.read<UsersCubit>(),
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
                                   child: TopUsersViewAll(),
                                 ));
                               },
@@ -153,8 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             SectionHeader(
                               sectionTitle: 'recommended_for_you'.tr,
                               onTop: () {
-                                Get.to(BlocProvider.value(
-                                  value: context.read<UsersCubit>(),
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
                                   child: RecommendedViewAll(),
                                 ));
                               },
