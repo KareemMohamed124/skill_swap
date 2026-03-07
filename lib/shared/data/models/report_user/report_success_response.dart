@@ -1,5 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'report_success_response.g.dart';
 
+@JsonSerializable()
 class ReportSuccessResponse {
   final String message;
 
@@ -8,5 +11,6 @@ class ReportSuccessResponse {
   factory ReportSuccessResponse.fromJson(Map<String, dynamic> json) =>
       _$ReportSuccessResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ReportSuccessResponseToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$ReportSuccessResponseToJson(this);
 }

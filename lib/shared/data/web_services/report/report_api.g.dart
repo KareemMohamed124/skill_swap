@@ -11,13 +11,15 @@ part of 'report_api.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _ReportApi implements ReportApi {
-  _ReportApi(this._dio, {this.baseUrl}) {
+  _ReportApi(this._dio, {this.baseUrl, this.errorLogger}) {
     baseUrl ??= 'https://skill-swaapp.vercel.app/';
   }
 
   final Dio _dio;
 
   String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
 
   @override
   Future<ReportSuccessResponse> report(ReportRequest body) async {
@@ -41,6 +43,7 @@ class _ReportApi implements ReportApi {
     try {
       _value = ReportSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;

@@ -1,6 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:skill_swap/shared/bloc/change_password_bloc/change_password_bloc.dart';
+import 'package:skill_swap/shared/bloc/private_chat/private_chat_list_cubit.dart';
+import 'package:skill_swap/shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import 'package:skill_swap/shared/core/network/pusher_service.dart';
+import 'package:skill_swap/shared/data/repositories/chat_repository_impl.dart';
+import 'package:skill_swap/shared/data/web_services/chat/chat_api_service.dart';
+import 'package:skill_swap/shared/domain/repositories/chat_repository.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
@@ -16,6 +22,7 @@ import '../bloc/get_booking_details_bloc/get_booking_details_bloc.dart';
 import '../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../bloc/pay_booking_bloc/pay_booking_bloc.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
@@ -55,6 +62,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<UserApi>(() => UserApi(sl<Dio>()));
   sl.registerLazySingleton<ReportApi>(() => ReportApi(sl<Dio>()));
 
+  // Chat API & Pusher
+  sl.registerLazySingleton<ChatApiService>(() => ChatApiService(sl<Dio>()));
+  sl.registerLazySingleton<PusherService>(() => PusherService());
+
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(api: sl<AuthApi>(), dio: sl<Dio>()));
@@ -67,6 +78,9 @@ Future<void> initDependencies() async {
 
   sl.registerLazySingleton<ReportRepository>(
       () => ReportRepositoryImpl(api: sl<ReportApi>(), dio: sl<Dio>()));
+
+  sl.registerLazySingleton<ChatRepository>(
+      () => ChatRepositoryImpl(api: sl<ChatApiService>()));
 
   // Blocs
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
@@ -82,6 +96,8 @@ Future<void> initDependencies() async {
       () => StatusBookBloc(sl<BookingRepository>()));
   sl.registerFactory<CancelBookBloc>(
       () => CancelBookBloc(sl<BookingRepository>()));
+  sl.registerFactory<PayBookingBloc>(
+      () => PayBookingBloc(sl<BookingRepository>()));
 
   sl.registerFactory<UpdateBookBloc>(
       () => UpdateBookBloc(sl<BookingRepository>()));
@@ -114,6 +130,14 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<TracksCubit>(() => TracksCubit(sl<AuthRepository>()));
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
+
+  // Chat Cubits
+  sl.registerFactory<PrivateChatListCubit>(() => PrivateChatListCubit(
+      chatRepository: sl<ChatRepository>(),
+      pusherService: sl<PusherService>()));
+  sl.registerFactory<PrivateChatMessagesCubit>(() => PrivateChatMessagesCubit(
+      chatRepository: sl<ChatRepository>(),
+      pusherService: sl<PusherService>()));
 
   // Load users safely
   List<UserModel> users = [];

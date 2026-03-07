@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../prv_chat/private_chat_list_screen.dart';
 import 'chat_screen.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -94,6 +95,59 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.025),
+              // Private Messages Section
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PrivateChatListScreen(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.04,
+                    vertical: screenHeight * 0.018,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1A1A2E)
+                        : const Color(0xFFE6E7FF),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                    border: Border.all(
+                      color: const Color(0xFF0D035F),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.chat_bubble_outline,
+                        color: Color(0xFF0D035F),
+                      ),
+                      SizedBox(width: screenWidth * 0.03),
+                      Expanded(
+                        child: Text(
+                          'Private Messages',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: const Color(0xFF0D035F),
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF0D035F),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.02),
               Row(
                 children: [
                   Icon(

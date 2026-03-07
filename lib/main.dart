@@ -14,6 +14,7 @@ import 'package:skill_swap/shared/core/theme/theme_controller.dart';
 import 'package:skill_swap/shared/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/shared/dependency_injection/injection.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
+import 'package:skill_swap/shared/core/network/pusher_service.dart';
 
 import 'desktop/presentation/common/desktop_scaffold.dart';
 import 'desktop/presentation/common/desktop_screen_manager.dart';
@@ -43,6 +44,14 @@ void main() async {
 
   final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
   final isLogged = await LocalStorage.isLoggedIn();
+
+  // Initialize Pusher for logged-in users
+  if (isLogged) {
+    final userId = await LocalStorage.getUserId();
+    if (userId != null) {
+      sl<PusherService>().init(userId: userId);
+    }
+  }
 
   Widget startScreen;
 

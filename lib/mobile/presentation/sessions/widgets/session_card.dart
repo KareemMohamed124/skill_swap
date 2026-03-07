@@ -9,10 +9,12 @@ import 'package:intl/intl.dart';
 import '../../../../shared/bloc/book_session/book_session_bloc.dart';
 import '../../../../shared/bloc/book_session/book_session_event.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/pay_booking_bloc/pay_booking_bloc.dart';
 import '../../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
 import '../../../../shared/data/models/status_booking/status_booking_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../book_session/screens/book_session.dart';
+import '../../payment/payment_webview_screen.dart';
 import '../../video_call/callID.dart';
 import '../models/session.dart';
 
@@ -384,23 +386,81 @@ class _SessionCardState extends State<SessionCard> {
                     ),
                   ),
                 )
+              else if (isAccepted && widget.session.price > 0)
+                BlocProvider(
+                  create: (_) => sl<PayBookingBloc>(),
+                  child: BlocConsumer<PayBookingBloc, PayBookingState>(
+                    listener: (context, state) {
+                      if (state is PayBookingSuccessState) {
+                        Get.to(() => PaymentWebViewScreen(
+                              checkoutUrl: state.checkoutUrl,
+                              successUrl: state.successUrl,
+                              cancelUrl: state.cancelUrl,
+                            ));
+                      } else if (state is PayBookingFailureState) {
+                        Get.snackbar(
+                          'Payment Error',
+                          state.error,
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red.withOpacity(0.9),
+                          colorText: Colors.white,
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      final isPayLoading = state is PayBookingLoading;
+                      return GestureDetector(
+                        onTap: isPayLoading
+                            ? null
+                            : () {
+                                context.read<PayBookingBloc>().add(
+                                      PayBookingRequested(
+                                        bookingId: widget.session.sessionId,
+                                      ),
+                                    );
+                              },
+                        child: Container(
+                          height: screenWidth * 0.11,
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.03),
+                          ),
+                          child: isPayLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  "pay_now".tr,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: screenWidth * 0.035,
+                                  ),
+                                ),
+                        ),
+                      );
+                    },
+                  ),
+                )
               else
                 Container(
                   height: screenWidth * 0.11,
                   width: double.infinity,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isPending
-                        ? Colors.grey.shade300
-                        : (isAccepted
-                            ? Theme.of(context).primaryColor
-                            : Colors.green),
+                    color: isPending ? Colors.grey.shade300 : Colors.green,
                     borderRadius: BorderRadius.circular(screenWidth * 0.03),
                   ),
                   child: Text(
-                    isPending
-                        ? "pending_approval".tr
-                        : (isAccepted ? "pay_now".tr : "join_now".tr),
+                    isPending ? "pending_approval".tr : "join_now".tr,
                     style: TextStyle(
                       color: isPending ? Colors.black : Colors.white,
                       fontWeight: FontWeight.w600,

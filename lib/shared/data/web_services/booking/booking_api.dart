@@ -3,6 +3,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:skill_swap/shared/data/models/booking/booking_response.dart';
 
 import '../../models/booking/booking_request.dart';
+import '../../models/pay_booking/pay_booking_request.dart';
 import '../../models/status_booking/status_booking_request.dart';
 import '../../models/update_booking/update_booking_request.dart';
 
@@ -46,4 +47,10 @@ abstract class BookingApi {
 
   @GET("booking/user")
   Future<dynamic> getAllBookings(@Query('status') String status);
+
+  @POST("booking/{id}/pay")
+  Future<dynamic> payBooking(
+    @Path("id") String id,
+    @Body() PayBookingRequest body,
+  );
 }
