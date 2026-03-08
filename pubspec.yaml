@@ -35,10 +35,11 @@ dependencies:
   dio: ^5.4.0
   retrofit: ^4.9.2
   json_annotation: ^4.8.1
-  socket_io_client: ^3.1.4
   jwt_decoder: ^2.0.1
   connectivity_plus: ^6.1.0
+  pusher_channels_flutter: ^2.4.0
   internet_connection_checker_plus: ^2.7.2
+  webview_flutter: ^4.10.0
   # Local storage
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -53,7 +54,7 @@ dependencies:
   flutter_gemini: ^3.0.0
 
   #Unreal
-  android_intent_plus: ^5.0.2
+  #android_intent_plus: ^5.0.2
   flutter_device_apps: ^0.6.0
 
   # Localization
@@ -103,6 +104,5 @@ flutter_native_splash:
 
   web: true
 
-# لو حابة تضمن النسخ الموبايل فقط للكاميرا
 dependency_overrides:
   image_picker_for_web: ^2.1.1

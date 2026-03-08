@@ -1,10 +1,12 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/common_ui/screen_manager/screen_manager.dart';
 import 'package:skill_swap/shared/core/localization/app_translation.dart';
 import 'package:skill_swap/shared/core/localization/language_controller.dart';
@@ -15,7 +17,6 @@ import 'package:skill_swap/shared/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/shared/dependency_injection/injection.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
 
-import 'desktop/presentation/common/desktop_scaffold.dart';
 import 'desktop/presentation/common/desktop_screen_manager.dart';
 import 'desktop/presentation/sign/screens/sign_in_screen.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
@@ -70,7 +71,7 @@ void main() async {
   // Run App with Device Preview
   runApp(
     DevicePreview(
-      enabled: true, // خليها false للـ release
+      enabled: true,
       builder: (context) => MyApp(startScreen: startScreen),
     ),
   );
@@ -87,20 +88,23 @@ class MyApp extends StatelessWidget {
 
     return GetBuilder<ThemeController>(
       builder: (controller) {
-        return GetMaterialApp(
-          useInheritedMediaQuery: true,
-          // مهم للـ Device Preview
-          builder: DevicePreview.appBuilder,
-          // مهم للـ Device Preview
-          title: 'SkillSwap',
-          debugShowCheckedModeBanner: false,
-          theme: lightTheme,
-          darkTheme: darkTheme,
-          themeMode: controller.themeMode,
-          translations: AppTranslation(),
-          locale: langController.initialLanguage,
-          fallbackLocale: const Locale("en", "US"),
-          home: startScreen,
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<MyProfileCubit>()..fetchMyProfile()),
+          ],
+          child: GetMaterialApp(
+            useInheritedMediaQuery: true,
+            builder: DevicePreview.appBuilder,
+            title: 'SkillSwap',
+            debugShowCheckedModeBanner: false,
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: controller.themeMode,
+            translations: AppTranslation(),
+            locale: langController.initialLanguage,
+            fallbackLocale: const Locale("en", "US"),
+            home: startScreen,
+          ),
         );
       },
     );

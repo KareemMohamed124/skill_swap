@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
-import '../../../../shared/constants/strings.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../widgets/next_session_card.dart';
 
 class NextSessionViewAll extends StatefulWidget {
@@ -26,23 +29,49 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
       padding = 24;
     }
 
-    return BaseScreen(
-      title: "Next Sessions",
-      child: ListView.builder(
-        padding: EdgeInsets.all(padding),
-        itemCount: AppData.nextSessions.length,
-        itemBuilder: (context, index) {
-          final session = AppData.nextSessions[index];
-          return NextSessionCard(
-            name: session.name,
-            duration: session.duration,
-            dateTime: session.dateTime,
-            startsIn: session.startsIn,
-            isMentor: session.isMentor,
-            remainingMinutes: session.remainingMinutes,
+    return BlocBuilder<GetBookingsCubit, GetBookingsState>(
+      builder: (context, state) {
+        if (state is GetTodaySessionsLoading) {
+          return const Center(
+              child: CircularProgressIndicator(
+            color: AppPalette.primary,
+          ));
+        }
+
+        if (state is GetTodaySessionsLoaded) {
+          if (state.sessions.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return BaseScreen(
+            title: 'Next Sessions',
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: state.sessions.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final s = state.sessions[index];
+
+                return NextSessionCard(
+                  name: s.name,
+                  duration: s.duration,
+                  dateTime: s.dateTime,
+                  startsIn: s.startsIn,
+                  isMentor: s.isMentor,
+                  remainingMinutes: s.remainingMinutes,
+                );
+              },
+            ),
           );
-        },
-      ),
+        }
+
+        if (state is GetBookingsError) {
+          return const SizedBox.shrink();
+        }
+
+        return const SizedBox.shrink();
+      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -15,6 +16,32 @@ class TopUsersViewAll extends StatefulWidget {
 
 class _TopUsersViewAllState extends State<TopUsersViewAll> {
   int? selectedIndex = 1;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    final cubit = context.read<UsersCubit>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+      if (!state.isLoadingMore && !state.isLastPage) {
+        cubit.fetchNextPage();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +70,26 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
           if (state is UsersLoaded) {
             final usersList = state.users;
 
-            return ListView.builder(
+            return GridView.builder(
+              controller: _scrollController,
               padding: EdgeInsets.all(padding),
-              itemCount: usersList.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.55),
+              itemCount:
+                  state.isLastPage ? usersList.length : usersList.length + 1,
               itemBuilder: (context, index) {
+                if (index >= usersList.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: AppPalette.primary)),
+                  );
+                }
+
                 final user = usersList[index];
 
                 return GestureDetector(
@@ -59,7 +102,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                     id: user.id,
                     image: user.userImage.secureUrl,
                     name: user.name,
-                    track: "Flutter",
+                    track: user.track.name ?? "Mobile Development",
                     hours: user.helpTotalHours,
                   ),
                 );

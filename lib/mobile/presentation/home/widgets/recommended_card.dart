@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../shared/core/theme/app_palette.dart';
+
 class RecommendedCard extends StatelessWidget {
   final String? id;
   final String? image;
@@ -40,7 +42,8 @@ class RecommendedCard extends StatelessWidget {
           border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: const Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: CircularProgressIndicator(
+              color: AppPalette.primary, strokeWidth: 2),
         ),
       );
     }

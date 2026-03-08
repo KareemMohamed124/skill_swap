@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:skill_swap/shared/data/models/my_profile/Blocked_me.dart';
 
 import '../user/profile_model.dart';
@@ -5,7 +6,7 @@ import '../user/skill_model.dart';
 import '../user/track_model.dart';
 import '../user/usesr_image.dart';
 
-class MyProfile {
+class MyProfile extends Equatable {
   final UserImage userImage;
   final Profile profile;
   final BlockedMe blockInfo;
@@ -55,6 +56,33 @@ class MyProfile {
     required this.warningCount,
     required this.warnings,
   });
+
+  @override
+  List<Object?> get props => [
+        userImage,
+        profile,
+        blockInfo,
+        track,
+        id,
+        name,
+        email,
+        isActive,
+        role,
+        freeHours,
+        helpTotalHours,
+        messages,
+        reports,
+        requests,
+        feedbackGiven,
+        feedbackReceived,
+        mentorSuggestions,
+        skills,
+        createdAt,
+        updatedAt,
+        v,
+        warningCount,
+        warnings,
+      ];
 
   factory MyProfile.fromJson(Map<String, dynamic> json) {
     return MyProfile(

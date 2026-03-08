@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../widgets/session_card.dart';
 
 class RequestsSessionsPage extends StatelessWidget {
@@ -13,7 +14,10 @@ class RequestsSessionsPage extends StatelessWidget {
     return BlocBuilder<GetBookingsCubit, GetBookingsState>(
       builder: (context, state) {
         if (state is GetBookingsLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: CircularProgressIndicator(
+            color: AppPalette.primary,
+          ));
         }
 
         if (state is GetBookingsError) {

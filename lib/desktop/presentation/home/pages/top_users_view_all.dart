@@ -15,6 +15,32 @@ class TopUsersViewAll extends StatefulWidget {
 
 class _TopUsersViewAllState extends State<TopUsersViewAll> {
   int? selectedIndex = 1;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    final cubit = context.read<UsersCubit>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+      if (!state.isLoadingMore && !state.isLastPage) {
+        cubit.fetchNextPage();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +119,13 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
 
                   if (state is UsersLoaded) {
                     final usersList = state.users;
+                    final itemCount = state.isLastPage
+                        ? usersList.length
+                        : usersList.length + 1;
+
                     return GridView.builder(
-                      itemCount: usersList.length,
+                      controller: _scrollController,
+                      itemCount: itemCount,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
                         mainAxisSpacing: 24,
@@ -102,6 +133,11 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                         childAspectRatio: cardAspectRatio,
                       ),
                       itemBuilder: (context, index) {
+                        if (index >= usersList.length) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
                         final user = usersList[index];
                         return MouseRegion(
                           cursor: SystemMouseCursors.click,
@@ -113,10 +149,10 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                             },
                             child: TopUserCard(
                               id: user.id,
-                              image: "",
+                              image: user.userImage.secureUrl,
                               name: user.name,
                               track: "Flutter",
-                              hours: 4,
+                              hours: user.helpTotalHours,
                             ),
                           ),
                         );

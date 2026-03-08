@@ -312,49 +312,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controllersFilled = false;
             });
 
-            // final updatedProfile = MyProfile(
-            //   id: state.user.id,
-            //   name: state.user.name,
-            //   email: state.user.email,
-            //   isActive: state.user.isActive,
-            //   role: state.user.role,
-            //   freeHours: state.user.freeHours,
-            //   helpTotalHours: state.user.helpTotalHours,
-            //   messages: state.user.messages,
-            //   reports: state.user.reports,
-            //   requests: state.user.requests,
-            //   feedbackGiven: state.user.feedbackGiven,
-            //   feedbackReceived: state.user.feedbackReceived,
-            //   mentorSuggestions: state.user.mentorSuggestions,
-            //   skills: state.user.skills,
-            //   createdAt: state.user.createdAt,
-            //   updatedAt: state.user.updatedAt,
-            //   v: state.user.v,
-            //   warningCount: state.user.warningCount,
-            //   warnings: state.user.warnings,
-            //   userImage: UserImage(
-            //     secureUrl: state.user.userImage.secureUrl,
-            //     publicId: state.user.userImage.publicId,
-            //   ),
-            //   profile: Profile(
-            //     bio: state.user.profile.bio,
-            //     skillSummary: state.user.profile.skillSummary,
-            //     reputationScore: state.user.profile.reputationScore,
-            //     lastUpdated: state.user.profile.lastUpdated,
-            //     location: '',
-            //   ),
-            //   track: Track(
-            //     name: state.user.track.name,
-            //     id: state.user.track.id,
-            //     slug: state.user.track.slug,
-            //   ),
-            //   blockInfo: BlockedMe(
-            //     isBlocked: state.user.blockInfo.isBlocked,
-            //     blockedUntil: state.user.blockInfo.blockedUntil,
-            //     blockReason: state.user.blockInfo.blockReason,
-            //   ),
-            // );
-
             context.read<MyProfileCubit>().refreshProfile();
           } else if (state is UpdateProfileErrorState) {
             Get.snackbar('Error', state.error);
@@ -528,70 +485,63 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           fontSize: 16,
                         ),
                         SizedBox(height: spacing / 2),
-                        BlocProvider(
-                          create: (_) => sl<LogoutBloc>(),
-                          child: Builder(builder: (context) {
-                            return BlocListener<LogoutBloc, LogoutState>(
-                              listener: (context, state) {
-                                if (state is LogoutSuccessState) {
-                                  Get.snackbar('Success', state.success);
-                                  LocalStorage.clearAllTokens();
-                                  LocalStorage.clearUserId();
-                                  LocalStorage.clearUser();
-                                  Get.offAll(() => const SignInScreen());
-                                } else if (state is LogoutFailureState) {
-                                  Get.snackbar('Error', state.error);
-                                }
-                              },
-                              child: actionButton(
-                                onPressedAction: () =>
-                                    _showLogoutConfirmation(context),
-                                colorButton: Colors.white,
-                                icon: Icons.logout,
-                                colorIcon: Colors.red,
-                                actionText: "sign_out".tr,
-                                colorText: Colors.red,
-                                fontSize: 16,
-                              ),
-                            );
-                          }),
-                        ),
-                        SizedBox(height: spacing / 2),
-                        BlocProvider(
-                          create: (_) => sl<DeleteAccountBloc>(),
-                          child: BlocListener<DeleteAccountBloc,
-                              DeleteAccountState>(
-                            listener: (context, state) {
-                              if (state is DeleteAccountSuccessState) {
-                                LocalStorage.clearAllTokens();
-                                LocalStorage.clearUserId();
-                                LocalStorage.clearUser();
-                                Get.offAll(() => const SignUpScreen());
-                              } else if (state is DeleteAccountFailureState) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(state.message),
-                                      backgroundColor: Colors.red),
-                                );
-                              }
-                            },
-                            child: BlocBuilder<DeleteAccountBloc,
-                                DeleteAccountState>(
-                              builder: (context, state) {
-                                return actionButton(
-                                  onPressedAction: () =>
-                                      _showDeleteConfirmation(context),
-                                  colorButton: Colors.red,
-                                  icon: Icons.delete,
-                                  colorIcon: Colors.white,
-                                  actionText: "delete_account".tr,
-                                  colorText: Colors.white,
-                                  fontSize: fontSizeTitle,
-                                );
-                              },
-                            ),
+                        BlocListener<LogoutBloc, LogoutState>(
+                          listener: (context, state) {
+                            if (state is LogoutSuccessState) {
+                              Get.snackbar('Success', state.success);
+                              //          LocalStorage.clearAllTokens();
+                              //        LocalStorage.clearUserId();
+                              //      LocalStorage.clearUser();
+                              //    sl<MyProfileCubit>().clearProfile();
+                              Get.offAll(() => const SignInScreen());
+                            } else if (state is LogoutFailureState) {
+                              Get.snackbar('Error', state.error);
+                            }
+                          },
+                          child: actionButton(
+                            onPressedAction: () =>
+                                _showLogoutConfirmation(context),
+                            colorButton: Colors.white,
+                            icon: Icons.logout,
+                            colorIcon: Colors.red,
+                            actionText: "sign_out".tr,
+                            colorText: Colors.red,
+                            fontSize: 16,
                           ),
                         ),
+                        SizedBox(height: spacing / 2),
+                        BlocListener<DeleteAccountBloc, DeleteAccountState>(
+                          listener: (context, state) {
+                            if (state is DeleteAccountSuccessState) {
+                              //LocalStorage.clearAllTokens();
+                              // LocalStorage.clearUserId();
+                              //LocalStorage.clearUser();
+                              //sl<MyProfileCubit>().clearProfile();
+                              Get.offAll(() => const SignUpScreen());
+                            } else if (state is DeleteAccountFailureState) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(state.message),
+                                    backgroundColor: Colors.red),
+                              );
+                            }
+                          },
+                          child: BlocBuilder<DeleteAccountBloc,
+                              DeleteAccountState>(
+                            builder: (context, state) {
+                              return actionButton(
+                                onPressedAction: () =>
+                                    _showDeleteConfirmation(context),
+                                colorButton: Colors.red,
+                                icon: Icons.delete,
+                                colorIcon: Colors.white,
+                                actionText: "delete_account".tr,
+                                colorText: Colors.white,
+                                fontSize: fontSizeTitle,
+                              );
+                            },
+                          ),
+                        )
                       ],
                     ),
                   ),

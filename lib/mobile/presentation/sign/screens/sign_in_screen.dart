@@ -11,7 +11,6 @@ import '../../../../shared/bloc/login_bloc/login_state.dart';
 import '../../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../../shared/data/models/login/login_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
-import '../../../../shared/helper/local_storage.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -89,10 +88,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 );
               }
             } else if (state is LoginSuccessState) {
-              await LocalStorage.saveToken(state.data.accessToken);
-              await LocalStorage.saveRefreshToken(state.data.refreshToken);
-              await LocalStorage.saveUserId(state.data.id);
-              sl<MyProfileCubit>().refreshProfile();
+              // await LocalStorage.saveToken(state.data.accessToken);
+              //  await LocalStorage.saveRefreshToken(state.data.refreshToken);
+              //await LocalStorage.saveUserId(state.data.id);
+              context.read<MyProfileCubit>().fetchMyProfile();
               Get.offAll(ScreenManager(initialIndex: 0));
 
               ScaffoldMessenger.of(context).showSnackBar(

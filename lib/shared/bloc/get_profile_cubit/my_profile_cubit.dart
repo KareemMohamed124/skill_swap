@@ -1,3 +1,4 @@
+// my_profile_cubit.dart
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:skill_swap/shared/data/models/my_profile/my_profile.dart';
@@ -12,30 +13,30 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   MyProfileCubit(this.repository) : super(MyProfileInitial());
 
   void fetchMyProfile() async {
+    if (isClosed) return;
     emit(MyProfileLoading());
 
     try {
       final myProfile = await repository.getMyProfile();
+      if (isClosed) return;
       emit(MyProfileLoaded(myProfile));
     } catch (e) {
+      if (isClosed) return;
       emit(MyProfileError(e.toString()));
     }
   }
 
   void setProfile(MyProfile profile) {
-    emit(MyProfileLoaded(profile));
+    if (!isClosed) emit(MyProfileLoaded(profile));
   }
 
-  /// Clears the current profile state and resets to initial.
-  /// Call this during logout to avoid old data persisting.
   void clearProfile() {
-    emit(MyProfileInitial());
+    if (!isClosed) emit(MyProfileInitial());
   }
 
-  /// Refreshes the profile by clearing first then fetching new data.
-  /// Optional: Use this after login if you want a clean refresh.
   void refreshProfile() async {
-    clearProfile(); // Clean first
-    fetchMyProfile(); // Then fetch new
+    if (isClosed) return;
+    clearProfile();
+    fetchMyProfile();
   }
 }

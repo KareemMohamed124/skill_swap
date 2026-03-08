@@ -44,4 +44,7 @@ flutter {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    // Force correct Pusher Java Client version
+    implementation("com.pusher:pusher-java-client:2.2.5")
 }

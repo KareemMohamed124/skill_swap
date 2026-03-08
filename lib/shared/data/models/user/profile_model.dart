@@ -1,4 +1,6 @@
-class Profile {
+import 'package:equatable/equatable.dart';
+
+class Profile extends Equatable {
   final String bio;
   final String skillSummary;
   final int reputationScore;
@@ -12,6 +14,15 @@ class Profile {
     required this.location,
     required this.lastUpdated,
   });
+
+  @override
+  List<Object?> get props => [
+        bio,
+        skillSummary,
+        reputationScore,
+        location,
+        lastUpdated,
+      ];
 
   factory Profile.fromJson(Map<String, dynamic>? json) {
     return Profile(

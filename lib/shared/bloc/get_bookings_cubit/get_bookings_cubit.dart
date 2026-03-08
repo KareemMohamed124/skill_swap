@@ -38,16 +38,18 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             : booking.status;
 
         return SessionModel(
-          sessionId: booking.id,
-          instructorId: otherUser.id,
-          name: otherUser.name,
-          role: otherUser.role,
-          image: otherUser.userImage,
-          dateTime: dateTime,
-          price: booking.price,
-          status: displayStatus,
-          rawStatus: displayStatus,
-          timeAgo: booking.createdAt,
+            sessionId: booking.id,
+            bookingCode: booking.bookingCode,
+            instructorId: otherUser.id,
+            name: otherUser.name,
+            role: otherUser.role,
+            image: otherUser.userImage.secureUrl,
+            dateTime: dateTime,
+            price: booking.price,
+            status: displayStatus,
+            rawStatus: displayStatus,
+            timeAgo: booking.createdAt,
+            isStudent: isMeSender
         );
       }).toList();
 
@@ -86,9 +88,13 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             tagColor = Colors.green;
             icon = Icons.check_circle_outline;
             if (dateTime.isAfter(now) &&
-                dateTime.difference(now).inMinutes <= 30) {
+                dateTime
+                    .difference(now)
+                    .inMinutes <= 30) {
               title =
-                  "Reminder: Your mentorship session starts in ${dateTime.difference(now).inMinutes} minutes.";
+              "Reminder: Your mentorship session starts in ${dateTime
+                  .difference(now)
+                  .inMinutes} minutes.";
             } else {
               title = "Your session has been Approved!";
             }
@@ -124,7 +130,8 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
           title: title,
           mentorName: otherUser.name,
           sessionTime:
-              "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
+          "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(
+              dateTime)}",
           icon: icon,
           dateTime: dateTime,
         );

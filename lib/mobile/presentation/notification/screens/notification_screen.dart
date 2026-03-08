@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
 import '../../../../shared/common_ui/base_screen.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../models/notification_model.dart';
 import '../widgets/notification_card.dart';
@@ -29,7 +30,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     getBookingsCubit = sl<GetBookingsCubit>();
     getBookingsCubit.fetchAllBookings("all");
 
-    // تحديث الوقت كل 30 ثانية
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       if (mounted) setState(() {});
     });
@@ -41,14 +41,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     super.dispose();
   }
 
-  String _formatTimeAgo(DateTime dateTime) {
+  String formatTimeDifference(DateTime dateTime) {
     final now = DateTime.now();
-    final diff = now.difference(dateTime);
+    final diff = dateTime.difference(now);
 
-    if (diff.inSeconds < 60) return "${diff.inSeconds}s ago";
-    if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
-    if (diff.inHours < 24) return "${diff.inHours}h ago";
-    return "${diff.inDays}d ago";
+    if (diff.isNegative) {
+      final pastDiff = now.difference(dateTime);
+      if (pastDiff.inDays > 0) return "${pastDiff.inDays}d ago";
+      if (pastDiff.inHours > 0) return "${pastDiff.inHours}h ago";
+      if (pastDiff.inMinutes > 0) return "${pastDiff.inMinutes}m ago";
+      return "${pastDiff.inSeconds}s ago";
+    } else {
+      if (diff.inDays > 0) return "in ${diff.inDays}d";
+      if (diff.inHours > 0)
+        return "in ${diff.inHours}h ${diff.inMinutes % 60}m";
+      if (diff.inMinutes > 0) return "in ${diff.inMinutes}m";
+      return "in ${diff.inSeconds}s";
+    }
   }
 
   @override
@@ -61,7 +70,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         bloc: getBookingsCubit,
         builder: (context, state) {
           if (state is GetBookingsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(
+              color: AppPalette.primary,
+            ));
           }
 
           if (state is GetBookingsError) {
@@ -72,7 +84,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             final now = DateTime.now();
 
             final notifications = state.bookings.map((session) {
-              // بناء DateTime من date + time
               final dateTime = session.dateTime;
 
               Color tagColor;
@@ -120,17 +131,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 borderColor: tagColor,
                 tag: tag,
                 tagColor: tagColor,
-                timeAgo: _formatTimeAgo(dateTime),
+                timeAgo: formatTimeDifference(dateTime),
                 title: title,
                 mentorName: session.name,
                 sessionTime:
                     "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
                 icon: icon,
-                dateTime: dateTime, // مهم للترتيب
+                dateTime: dateTime,
               );
             }).toList();
 
-            // ترتيب من الأحدث للأقدم
             notifications.sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
             return ListView.builder(

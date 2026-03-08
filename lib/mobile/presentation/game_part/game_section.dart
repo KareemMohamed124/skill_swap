@@ -62,8 +62,8 @@ class _GameSectionState extends State<GameSection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Challenge",
-              style: Theme.of(context).textTheme.bodySmall,
+              "🎮 Challenge",
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             TextButton.icon(
               onPressed: () {
@@ -77,7 +77,7 @@ class _GameSectionState extends State<GameSection> {
               icon: const Icon(Icons.emoji_events, color: primaryColor),
               label: Text(
                 "View Leaderboard",
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             )
           ],

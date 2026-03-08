@@ -16,28 +16,37 @@ import '../bloc/get_booking_details_bloc/get_booking_details_bloc.dart';
 import '../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../bloc/pay_booking_bloc/pay_booking_bloc.dart';
+import '../bloc/private_chat/private_chat_list_cubit.dart';
+import '../bloc/private_chat/private_chat_messages_cubit.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
 import '../bloc/status_book_bloc/status_book_bloc.dart';
+import '../bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../bloc/track_cubit/track_cubit.dart';
+import '../bloc/tracks_bloc/tracks_bloc.dart';
 import '../bloc/update_book_bloc/update_book_bloc.dart';
 import '../bloc/update_profile_bloc/update_profile_bloc.dart';
 import '../bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../bloc/verify_code_bloc/verify_code_bloc.dart';
 import '../constants/strings.dart';
 import '../core/network/auth_interceptor.dart';
+import '../core/network/pusher_service.dart';
 import '../data/models/user/user_model.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../data/repositories/booking_repository_impl.dart';
+import '../data/repositories/chat_repository_impl.dart';
 import '../data/repositories/report_repository_impl.dart';
 import '../data/repositories/user_repository_impl.dart';
 import '../data/web_services/auth/auth_api.dart';
 import '../data/web_services/booking/booking_api.dart';
+import '../data/web_services/chat/chat_api_service.dart';
 import '../data/web_services/report/report_api.dart';
 import '../data/web_services/user/user_api.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../domain/repositories/chat_repository.dart';
 import '../domain/repositories/report_repository.dart';
 import '../domain/repositories/user_repository.dart';
 
@@ -55,6 +64,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<UserApi>(() => UserApi(sl<Dio>()));
   sl.registerLazySingleton<ReportApi>(() => ReportApi(sl<Dio>()));
 
+  // Chat API & Pusher
+  sl.registerLazySingleton<ChatApiService>(() => ChatApiService(sl<Dio>()));
+  sl.registerLazySingleton<PusherService>(() => PusherService());
+
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(api: sl<AuthApi>(), dio: sl<Dio>()));
@@ -67,6 +80,9 @@ Future<void> initDependencies() async {
 
   sl.registerLazySingleton<ReportRepository>(
       () => ReportRepositoryImpl(api: sl<ReportApi>(), dio: sl<Dio>()));
+
+  sl.registerLazySingleton<ChatRepository>(
+      () => ChatRepositoryImpl(api: sl<ChatApiService>()));
 
   // Blocs
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
@@ -82,7 +98,8 @@ Future<void> initDependencies() async {
       () => StatusBookBloc(sl<BookingRepository>()));
   sl.registerFactory<CancelBookBloc>(
       () => CancelBookBloc(sl<BookingRepository>()));
-
+  sl.registerFactory<SubmitReviewBloc>(
+      () => SubmitReviewBloc(sl<BookingRepository>()));
   sl.registerFactory<UpdateBookBloc>(
       () => UpdateBookBloc(sl<BookingRepository>()));
   sl.registerFactory<DeleteBookBloc>(
@@ -100,7 +117,7 @@ Future<void> initDependencies() async {
   sl.registerFactory<UpdateProfileBloc>(
       () => UpdateProfileBloc(sl<UserRepository>()));
   sl.registerFactory<ReportBloc>(() => ReportBloc(sl<ReportRepository>()));
-  sl.registerFactory<MyProfileCubit>(
+  sl.registerLazySingleton<MyProfileCubit>(
     () => MyProfileCubit(sl<UserRepository>()),
   );
   sl.registerFactory<LogoutBloc>(() => LogoutBloc(sl<AuthRepository>()));
@@ -114,6 +131,20 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<TracksCubit>(() => TracksCubit(sl<AuthRepository>()));
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
+  sl.registerFactory<PayBookingBloc>(
+      () => PayBookingBloc(sl<BookingRepository>()));
+
+  sl.registerFactory<TracksBloc>(
+    () => TracksBloc(sl<ChatRepository>()),
+  );
+
+  // Chat Cubits
+  sl.registerFactory<PrivateChatListCubit>(() => PrivateChatListCubit(
+      chatRepository: sl<ChatRepository>(),
+      pusherService: sl<PusherService>()));
+  sl.registerFactory<PrivateChatMessagesCubit>(() => PrivateChatMessagesCubit(
+      chatRepository: sl<ChatRepository>(),
+      pusherService: sl<PusherService>()));
 
   // Load users safely
   List<UserModel> users = [];

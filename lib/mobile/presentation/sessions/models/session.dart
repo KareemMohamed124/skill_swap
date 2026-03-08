@@ -9,18 +9,22 @@ class SessionModel {
   final String status;
   final String rawStatus;
   final DateTime timeAgo;
+  final String bookingCode;
+  final bool isStudent;
 
   // final DateTime createAt;
 
-  SessionModel(
-      {required this.sessionId,
-      required this.instructorId,
-      required this.image,
-      required this.name,
-      required this.role,
-      required this.dateTime,
-      required this.price,
-      required this.status,
-      required this.rawStatus,
-      required this.timeAgo});
+  SessionModel({required this.sessionId,
+    required this.instructorId,
+    required this.image,
+    required this.name,
+    required this.role,
+    required this.dateTime,
+    required this.price,
+    required this.status,
+    required this.rawStatus,
+    required this.timeAgo,
+    required this.bookingCode,
+    required this.isStudent
+  });
 }

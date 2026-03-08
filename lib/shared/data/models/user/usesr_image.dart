@@ -1,4 +1,6 @@
-class UserImage {
+import 'package:equatable/equatable.dart';
+
+class UserImage extends Equatable {
   final String secureUrl;
   final String? publicId;
 
@@ -6,6 +8,12 @@ class UserImage {
     required this.secureUrl,
     this.publicId,
   });
+
+  @override
+  List<Object?> get props => [
+        secureUrl,
+        publicId,
+      ];
 
   factory UserImage.fromJson(Map<String, dynamic>? json) {
     return UserImage(

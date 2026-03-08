@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
 import '../../../../main.dart';
+import '../../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
 import '../../../../shared/bloc/report_bloc/report_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
-import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 import '../../../../shared/data/models/report_user/report_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/domain/repositories/chat_repository.dart';
 import '../../profile/pages/reviews_page.dart';
 import '../../prv_chat/private_chat_screen.dart';
 import '../../sign/widgets/custom_button.dart';
@@ -329,15 +331,25 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                   ),
                   child: IconButton(
                     icon: Icon(Iconsax.message, color: AppPalette.primary),
-                    onPressed: () {
-                      desktopKey.currentState?.openSidePage(
-                        body: widget,
-                        rightPanel: PrivateChatScreen(
-                          currentUserId: '01',
-                          otherUserId: widget.id,
-                          otherUserName: widget.name,
-                        ),
-                      );
+                    onPressed: () async {
+                      try {
+                        final chatRepo = sl<ChatRepository>();
+                        final chatId =
+                            await chatRepo.createOrGetPrivateChat(widget.id);
+                        desktopKey.currentState?.openSidePage(
+                          body: widget,
+                          rightPanel: BlocProvider(
+                            create: (_) =>
+                                sl<PrivateChatMessagesCubit>()..init(chatId),
+                            child: PrivateChatScreen(
+                              chatId: chatId,
+                              partnerName: widget.name,
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        Get.snackbar('Error', 'Failed to open chat: $e');
+                      }
                     },
                   ),
                 ),

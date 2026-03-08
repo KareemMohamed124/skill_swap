@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/shared/bloc/change_password_bloc/change_password_bloc.dart';
 import 'package:skill_swap/shared/bloc/delete_account_bloc/delete_account_bloc.dart';
-import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../../../shared/bloc/logout_bloc/logout_bloc.dart';
@@ -52,9 +51,9 @@ class _SettingScreenState extends State<SettingScreen>
                 children: [
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider(
-                          create: (_) =>
-                              sl<MyProfileCubit>()..fetchMyProfile()),
+                      // BlocProvider(
+                      //     create: (_) =>
+                      //         sl<MyProfileCubit>()..fetchMyProfile()),
                       BlocProvider(create: (_) => sl<LogoutBloc>()),
                       BlocProvider(create: (_) => sl<DeleteAccountBloc>()),
                       BlocProvider(create: (_) => sl<ChangePasswordBloc>()),

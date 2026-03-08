@@ -106,17 +106,15 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
     });
 
     on<LoadMoreUsersEvent>((event, emit) async {
-      if (state.isLastPage || state.isLoadingMore) return;
+      if (_isLastPage || _isLoadingMore) return;
 
+      _isLoadingMore = true;
       emit(state.copyWith(isLoadingMore: true));
 
-      final nextPage = event.page;
-      final limit = event.limit;
-
+      final nextPage = _currentPage + 1;
       List<UserModel> newUsers = [];
 
       if (event.query != null && event.query!.isNotEmpty) {
-        // Search
         newUsers = await userRepository.searchUsers(
           query: event.query!,
           page: nextPage,
@@ -127,7 +125,6 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
           event.minRate != null ||
           event.minPrice != null ||
           event.maxPrice != null) {
-        // Filter
         newUsers = await userRepository.filterUsers(
           role: event.role,
           track: event.track,
@@ -138,18 +135,22 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
           limit: limit,
         );
       } else {
-        // Load all
         newUsers = await userRepository.getAllUsers(
           page: nextPage,
           limit: limit,
         );
       }
 
-      final lastPage = newUsers.length < limit;
+      _isLastPage = newUsers.length < limit;
+      _currentPage = nextPage;
 
+      final allUsers = [...state.filteredList, ...newUsers];
+      final uniqueUsers = {for (var u in allUsers) u.id: u}.values.toList();
+
+      _isLoadingMore = false;
       emit(state.copyWith(
-        filteredList: [...state.filteredList, ...newUsers],
-        isLastPage: lastPage,
+        filteredList: uniqueUsers,
+        isLastPage: _isLastPage,
         isLoadingMore: false,
       ));
     });

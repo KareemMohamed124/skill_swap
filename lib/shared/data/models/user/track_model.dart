@@ -1,4 +1,6 @@
-class Track {
+import 'package:equatable/equatable.dart';
+
+class Track extends Equatable {
   final String id;
   final String name;
   final String slug;
@@ -8,6 +10,9 @@ class Track {
     required this.name,
     required this.slug,
   });
+
+  @override
+  List<Object?> get props => [id, name, slug];
 
   factory Track.fromJson(Map<String, dynamic>? json) {
     return Track(

@@ -6,11 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../mobile/presentation/payment/payment_webview_screen.dart';
 import '../../../../mobile/presentation/sessions/models/session.dart';
 import '../../../../mobile/presentation/video_call/callID.dart';
 import '../../../../shared/bloc/book_session/book_session_bloc.dart';
 import '../../../../shared/bloc/book_session/book_session_event.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/pay_booking_bloc/pay_booking_bloc.dart';
 import '../../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
 import '../../../../shared/data/models/status_booking/status_booking_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
@@ -153,7 +155,10 @@ class _SessionCardState extends State<SessionCard> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final cardWidth = screenWidth * 0.35;
 
     final bloc = context.read<StatusBookBloc>();
@@ -180,7 +185,8 @@ class _SessionCardState extends State<SessionCard> {
           Get.to(
             BlocProvider(
               create: (_) =>
-                  sl<ActiveBookingBloc>()..add(LoadBookingDetails(bookingId)),
+              sl<ActiveBookingBloc>()
+                ..add(LoadBookingDetails(bookingId)),
               child: BookSessionDesktop(
                 userId: widget.session.instructorId,
                 bookingId: bookingId,
@@ -193,9 +199,13 @@ class _SessionCardState extends State<SessionCard> {
         child: Container(
           padding: EdgeInsets.all(screenWidth * 0.04),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Theme
+                .of(context)
+                .cardColor,
             borderRadius: BorderRadius.circular(screenWidth * 0.04),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            border: Border.all(color: Theme
+                .of(context)
+                .dividerColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,16 +219,25 @@ class _SessionCardState extends State<SessionCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(widget.session.name,
-                            style: Theme.of(context).textTheme.titleMedium),
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .titleMedium),
                         Text(widget.session.role,
-                            style: Theme.of(context).textTheme.bodySmall),
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .bodySmall),
                       ],
                     ),
                   ),
                   if (isRequested)
                     Text(
                       timeAgoFromServer(widget.session.timeAgo),
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodySmall,
                     )
                   else
                     Container(
@@ -256,7 +275,8 @@ class _SessionCardState extends State<SessionCard> {
                 context: context,
                 icon: Icons.calendar_today_outlined,
                 data:
-                    "${widget.session.dateTime.day}/${widget.session.dateTime.month}/${widget.session.dateTime.year}",
+                "${widget.session.dateTime.day}/${widget.session.dateTime
+                    .month}/${widget.session.dateTime.year}",
                 screenWidth: screenWidth,
               ),
               SizedBox(height: screenWidth * 0.02),
@@ -278,38 +298,38 @@ class _SessionCardState extends State<SessionCard> {
                         onPressed: isLoading
                             ? null
                             : () {
-                                context.read<StatusBookBloc>().add(
-                                      StatusBookSession(
-                                        id: widget.session.sessionId,
-                                        request: StatusBookingRequest(
-                                            status: "accepted"),
-                                      ),
-                                    );
-                              },
+                          context.read<StatusBookBloc>().add(
+                            StatusBookSession(
+                              id: widget.session.sessionId,
+                              request: StatusBookingRequest(
+                                  status: "accepted"),
+                            ),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(screenWidth * 0.02),
+                            BorderRadius.circular(screenWidth * 0.02),
                           ),
                         ),
                         child: isLoading
                             ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                             : Text(
-                                "Accept",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: screenWidth * 0.035,
-                                ),
-                              ),
+                          "Accept",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: screenWidth * 0.035,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(width: screenWidth * 0.03),
@@ -318,97 +338,166 @@ class _SessionCardState extends State<SessionCard> {
                         onPressed: isLoading
                             ? null
                             : () {
-                                context.read<StatusBookBloc>().add(
-                                      StatusBookSession(
-                                        id: widget.session.sessionId,
-                                        request: StatusBookingRequest(
-                                            status: "rejected"),
-                                      ),
-                                    );
-                              },
+                          context.read<StatusBookBloc>().add(
+                            StatusBookSession(
+                              id: widget.session.sessionId,
+                              request: StatusBookingRequest(
+                                  status: "rejected"),
+                            ),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
                           side: const BorderSide(color: Colors.red),
                           shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(screenWidth * 0.02),
+                            BorderRadius.circular(screenWidth * 0.02),
                           ),
                         ),
                         child: isLoading
                             ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.red,
-                                ),
-                              )
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.red,
+                          ),
+                        )
                             : Text(
-                                "Decline",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: screenWidth * 0.035,
-                                ),
-                              ),
+                          "Decline",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: screenWidth * 0.035,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 )
-              else if (isAccepted && widget.session.price == 0)
-                GestureDetector(
-                  onTap: _timeRemaining.inSeconds <= 0
-                      ? () {
-                          Get.to(() => CallPage(
-                                callID: 'room',
-                                userID: widget.session.instructorId,
-                                userName: widget.session.name,
-                              ));
-                        }
-                      : null,
-                  child: Container(
-                    height: screenWidth * 0.11,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                    ),
-                    child: Text(
-                      _timeRemaining.inSeconds > 0
-                          ? "Session starts in ${_formatDuration(_timeRemaining)}"
-                          : "Live now",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: screenWidth * 0.035,
+              else
+                if (isAccepted && widget.session.price == 0)
+                  GestureDetector(
+                    onTap: _timeRemaining.inSeconds <= 0
+                        ? () {
+                      Get.to(() =>
+                          CallPage(
+                            // callID: 'room',
+                            // userID: widget.session.instructorId,
+                            // userName: widget.session.name,
+                            // isStudent: widget.session.isStudent,
+                            session: widget.session,
+                          ));
+                    }
+                        : null,
+                    child: Container(
+                      height: screenWidth * 0.11,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Theme
+                            .of(context)
+                            .primaryColor,
+                        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                      ),
+                      child: Text(
+                        _timeRemaining.inSeconds > 0
+                            ? "Session starts in ${_formatDuration(
+                            _timeRemaining)}"
+                            : "Live now",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: screenWidth * 0.035,
+                        ),
                       ),
                     ),
-                  ),
-                )
-              else
-                Container(
-                  height: screenWidth * 0.11,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isPending
-                        ? Colors.grey.shade300
-                        : (isAccepted
-                            ? Theme.of(context).primaryColor
-                            : Colors.green),
-                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                  ),
-                  child: Text(
-                    isPending
-                        ? "pending_approval".tr
-                        : (isAccepted ? "pay_now".tr : "join_now".tr),
-                    style: TextStyle(
-                      color: isPending ? Colors.black : Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: screenWidth * 0.035,
+                  )
+                else
+                  if (isAccepted && widget.session.price > 0)
+                    BlocProvider(
+                      create: (_) => sl<PayBookingBloc>(),
+                      child: BlocConsumer<PayBookingBloc, PayBookingState>(
+                        listener: (context, state) {
+                          if (state is PayBookingSuccessState) {
+                            Get.to(() =>
+                                PaymentWebViewScreen(
+                                  checkoutUrl: state.checkoutUrl,
+                                  successUrl: state.successUrl,
+                                  cancelUrl: state.cancelUrl,
+                                ));
+                          } else if (state is PayBookingFailureState) {
+                            Get.snackbar(
+                              'Payment Error',
+                              state.error,
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red.withOpacity(0.9),
+                              colorText: Colors.white,
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          final isPayLoading = state is PayBookingLoading;
+                          return GestureDetector(
+                            onTap: isPayLoading
+                                ? null
+                                : () {
+                              context.read<PayBookingBloc>().add(
+                                PayBookingRequested(
+                                  bookingId: widget.session.sessionId,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: screenWidth * 0.11,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Theme
+                                    .of(context)
+                                    .primaryColor,
+                                borderRadius:
+                                BorderRadius.circular(screenWidth * 0.03),
+                              ),
+                              child: isPayLoading
+                                  ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                                  : Text(
+                                "pay_now".tr,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: screenWidth * 0.035,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    Container(
+                      height: screenWidth * 0.11,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isPending ? Colors.grey.shade300 : Colors.green,
+                        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                      ),
+                      child: Text(
+                        isPending ? "pending_approval".tr : "join_now".tr,
+                        style: TextStyle(
+                          color: isPending ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: screenWidth * 0.035,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -423,7 +512,11 @@ Widget iconText({
   required String data,
   required double screenWidth,
 }) {
-  final textColor = Theme.of(context).textTheme.bodyMedium!.color;
+  final textColor = Theme
+      .of(context)
+      .textTheme
+      .bodyMedium!
+      .color;
 
   return Row(
     children: [
@@ -434,10 +527,14 @@ Widget iconText({
       Flexible(
         child: Text(
           data,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: screenWidth * 0.035,
-                color: data == "Free" ? Colors.green : null,
-              ),
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(
+            fontSize: screenWidth * 0.035,
+            color: data == "Free" ? Colors.green : null,
+          ),
         ),
       ),
     ],

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import '../../../shared/bloc/private_chat/private_chat_messages_state.dart';
 import '../../../shared/core/theme/app_palette.dart';
-import 'message_model.dart';
+import '../../../shared/data/models/chat/chat_models.dart';
 
 class PrivateChatScreen extends StatefulWidget {
-  final String currentUserId;
-  final String otherUserId;
-  final String otherUserName;
+  final String chatId;
+  final String partnerName;
+  final String? partnerImage;
 
   const PrivateChatScreen({
     super.key,
-    required this.currentUserId,
-    required this.otherUserId,
-    required this.otherUserName,
+    required this.chatId,
+    required this.partnerName,
+    this.partnerImage,
   });
 
   @override
@@ -24,32 +27,26 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  static Map<String, List<Message>> privateChats = {};
-
-  String get chatId {
-    final ids = [widget.currentUserId, widget.otherUserId]..sort();
-    return ids.join("_");
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
   }
 
-  List<Message> get messages => privateChats[chatId] ?? [];
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
-  void _sendMessage() {
-    if (_controller.text.trim().isEmpty) return;
-
-    privateChats.putIfAbsent(chatId, () => []);
-
-    setState(() {
-      privateChats[chatId]!.add(
-        Message(
-          senderId: widget.currentUserId,
-          text: _controller.text.trim(),
-          time: DateTime.now(),
-        ),
-      );
-    });
-
-    _controller.clear();
-    _scrollToBottom();
+  void _onScroll() {
+    // Load more when scrolled near the top (for older messages)
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels <=
+            _scrollController.position.minScrollExtent + 100) {
+      context.read<PrivateChatMessagesCubit>().loadMore();
+    }
   }
 
   void _scrollToBottom() {
@@ -64,10 +61,15 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     });
   }
 
+  void _sendMessage() {
+    if (_controller.text.trim().isEmpty) return;
+    context.read<PrivateChatMessagesCubit>().sendMessage(_controller.text);
+    _controller.clear();
+    _scrollToBottom();
+  }
+
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -75,98 +77,183 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     final avatarRadius = screenWidth * 0.06;
     final fontSizeName = screenWidth * 0.045;
     final fontSizeMessage = screenWidth * 0.04;
-    final fontSizeTime = screenWidth * 0.035;
     final inputHeight = screenHeight * 0.065;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Padding(
-        padding: EdgeInsets.all(padding),
-        child: Column(
-          children: [
-            SizedBox(height: padding),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back, size: screenWidth * 0.06),
-                  onPressed: () {
-                    Get.back();
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(padding),
+          child: Column(
+            children: [
+              SizedBox(height: padding),
+              // Header
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, size: screenWidth * 0.06),
+                    onPressed: () => Get.back(),
+                  ),
+                  SizedBox(width: screenWidth * 0.04),
+                  CircleAvatar(
+                    radius: avatarRadius,
+                    backgroundColor: AppPalette.primary,
+                    backgroundImage: widget.partnerImage != null &&
+                            widget.partnerImage!.isNotEmpty
+                        ? NetworkImage(widget.partnerImage!)
+                        : null,
+                    child: widget.partnerImage == null ||
+                            widget.partnerImage!.isEmpty
+                        ? Text(
+                            widget.partnerName.isNotEmpty
+                                ? widget.partnerName[0].toUpperCase()
+                                : '?',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: fontSizeName,
+                            ),
+                          )
+                        : null,
+                  ),
+                  SizedBox(width: screenWidth * 0.03),
+                  Expanded(
+                    child: Text(
+                      widget.partnerName,
+                      style: TextStyle(
+                        color: AppPalette.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: fontSizeName,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: screenHeight * 0.02),
+              // Messages
+              Expanded(
+                child: BlocConsumer<PrivateChatMessagesCubit,
+                    PrivateChatMessagesState>(
+                  listener: (context, state) {
+                    if (state is PrivateChatMessagesLoaded) {
+                      // Auto scroll to bottom on new messages
+                      _scrollToBottom();
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is PrivateChatMessagesLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (state is PrivateChatMessagesError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Failed to load messages',
+                              style: TextStyle(fontSize: fontSizeMessage),
+                            ),
+                            SizedBox(height: screenHeight * 0.02),
+                            ElevatedButton(
+                              onPressed: () => context
+                                  .read<PrivateChatMessagesCubit>()
+                                  .loadMessages(),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    if (state is PrivateChatMessagesLoaded) {
+                      if (state.messages.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No messages yet',
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge!.color,
+                              fontSize: fontSizeMessage,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final currentUserId = context
+                          .read<PrivateChatMessagesCubit>()
+                          .currentUserId;
+
+                      return Column(
+                        children: [
+                          if (state.isLoadingMore)
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                          Expanded(
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              padding: EdgeInsets.all(padding),
+                              itemCount: state.messages.length,
+                              itemBuilder: (context, index) {
+                                final message = state.messages[index];
+                                final isMe = message.senderId == currentUserId;
+                                return _chatBubble(
+                                  message,
+                                  isMe,
+                                  fontSizeMessage,
+                                  screenWidth,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return const SizedBox.shrink();
                   },
                 ),
-                SizedBox(width: screenWidth * 0.04),
-                CircleAvatar(
-                  radius: avatarRadius,
-                  backgroundColor: AppPalette.primary,
-                  child: Text(
-                    widget.otherUserName[0],
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: fontSizeName,
-                    ),
-                  ),
-                ),
-                SizedBox(width: screenWidth * 0.03),
-                Text(
-                  widget.otherUserName,
-                  style: TextStyle(
-                    color: AppPalette.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: fontSizeName,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: screenHeight * 0.02),
-            Expanded(
-              child: messages.isEmpty
-                  ? Center(
-                      child: Text(
-                        "No messages yet",
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                          fontSize: fontSizeMessage,
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.all(padding),
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        final message = messages[index];
-                        final isMe = message.senderId == widget.currentUserId;
-                        return _chatBubble(
-                            message, isMe, fontSizeMessage, screenWidth);
-                      },
-                    ),
-            ),
-            _messageInput(
+              ),
+              // Input
+              _messageInput(
                 screenWidth: screenWidth,
                 fontSizeMessage: fontSizeMessage,
-                inputHeight: inputHeight),
-          ],
+                inputHeight: inputHeight,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _chatBubble(
-      Message message, bool isMe, double fontSizeMessage, double screenWidth) {
+  Widget _chatBubble(ChatMessageModel message, bool isMe,
+      double fontSizeMessage, double screenWidth) {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: screenWidth * 0.015),
-        padding: EdgeInsets.all(screenWidth * 0.035),
-        decoration: BoxDecoration(
-          color: isMe ? const Color(0xFF0D035F) : const Color(0xFFF2F5F8),
-          borderRadius: BorderRadius.circular(screenWidth * 0.04),
-        ),
-        child: Text(
-          message.text,
-          style: TextStyle(
-            color: isMe ? Colors.white : const Color(0xFF0D035F),
-            fontSize: fontSizeMessage,
+      child: Opacity(
+        opacity: message.isPending ? 0.6 : 1.0,
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: screenWidth * 0.015),
+          padding: EdgeInsets.all(screenWidth * 0.035),
+          decoration: BoxDecoration(
+            color: isMe ? const Color(0xFF0D035F) : const Color(0xFFF2F5F8),
+            borderRadius: BorderRadius.circular(screenWidth * 0.04),
+          ),
+          child: Text(
+            message.content,
+            style: TextStyle(
+              color: isMe ? Colors.white : const Color(0xFF0D035F),
+              fontSize: fontSizeMessage,
+            ),
           ),
         ),
       ),
@@ -187,6 +274,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
               height: inputHeight,
               child: TextField(
                 controller: _controller,
+                onSubmitted: (_) => _sendMessage(),
                 decoration: InputDecoration(
                   fillColor: Theme.of(context).cardColor,
                   hintText: "Message...",

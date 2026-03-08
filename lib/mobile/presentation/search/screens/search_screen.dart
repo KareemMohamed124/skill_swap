@@ -9,6 +9,7 @@ import '../../../../mobile/presentation/search/widgets/filterSheet.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../../book_session/screens/profile_mentor.dart';
 import '../widgets/filter_button.dart';
 import '../widgets/mentor_card.dart';
@@ -26,11 +27,41 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchTextController = TextEditingController();
   int activeFiltersCount = 0;
   Timer? _debounce;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    final bloc = context.read<UserFilterBloc>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !bloc.state.isLastPage &&
+        !bloc.state.isLoadingMore) {
+      bloc.add(LoadMoreUsersEvent(
+        page: bloc.currentPage + 1,
+        limit: bloc.limit,
+        query: searchTextController.text.isNotEmpty
+            ? searchTextController.text
+            : null,
+        minPrice: bloc.state.minPrice?.toDouble(),
+        maxPrice: bloc.state.maxPrice?.toDouble(),
+        minRate: bloc.state.selectedRate?.toDouble(),
+        role: bloc.state.selectedRole,
+        track: bloc.state.selectedTrack,
+      ));
+    }
+  }
 
   @override
   void dispose() {
     searchTextController.dispose();
     _debounce?.cancel();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -160,7 +191,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                         initialRate: state.selectedRate,
                                         initialRole: state.selectedRole,
                                         initialTrack: state.selectedTrack,
-                                        //  initialSkill: state.enteredSkill,
                                       ),
                                     ),
                                   );
@@ -206,7 +236,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                       initialRate: state.selectedRate,
                                       initialRole: state.selectedRole,
                                       initialTrack: state.selectedTrack,
-                                      //initialSkill: state.enteredSkill,
                                     ),
                                   ),
                                 );
@@ -229,8 +258,10 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
                             return ListView.builder(
+                              controller: _scrollController,
                               padding: EdgeInsets.zero,
-                              itemCount: state.filteredList.length + 1,
+                              itemCount: state.filteredList.length +
+                                  (state.isLastPage ? 0 : 1),
                               itemBuilder: (context, index) {
                                 if (index < state.filteredList.length) {
                                   final user = state.filteredList[index];
@@ -262,27 +293,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                   );
                                 } else {
-                                  if (!state.isLastPage &&
-                                      !state.isLoadingMore) {
-                                    final bloc = context.read<UserFilterBloc>();
-                                    bloc.add(LoadMoreUsersEvent(
-                                      page: bloc.currentPage + 1,
-                                      limit: bloc.limit,
-                                      query:
-                                          searchTextController.text.isNotEmpty
-                                              ? searchTextController.text
-                                              : null,
-                                      minPrice: state.minPrice?.toDouble(),
-                                      maxPrice: state.maxPrice?.toDouble(),
-                                      minRate: state.selectedRate?.toDouble(),
-                                      role: state.selectedRole,
-                                      track: state.selectedTrack,
-                                    ));
-                                  }
-                                  return const Padding(
+                                  return Padding(
                                     padding: EdgeInsets.all(16.0),
                                     child: Center(
-                                        child: CircularProgressIndicator()),
+                                        child: CircularProgressIndicator(
+                                      color: AppPalette.primary,
+                                    )),
                                   );
                                 }
                               },

@@ -15,10 +15,17 @@ import '../models/delete_booking/delete_booking_error_response.dart';
 import '../models/delete_booking/delete_booking_response.dart';
 import '../models/delete_booking/delete_booking_success_response.dart';
 import '../models/get_booking/get_booking_response.dart';
+import '../models/pay_booking/pay_booking_error_response.dart';
+import '../models/pay_booking/pay_booking_request.dart';
+import '../models/pay_booking/pay_booking_response.dart';
+import '../models/pay_booking/pay_booking_success_response.dart';
 import '../models/status_booking/status_booking_error_response.dart';
 import '../models/status_booking/status_booking_request.dart';
 import '../models/status_booking/status_booking_response.dart';
 import '../models/status_booking/status_booking_success_response.dart';
+import '../models/submit_review/submit_review_error_response.dart';
+import '../models/submit_review/submit_review_request.dart';
+import '../models/submit_review/submit_review_response.dart';
 import '../models/update_booking/update_booking_error_response.dart';
 import '../models/update_booking/update_booking_request.dart';
 import '../models/update_booking/update_booking_response.dart';
@@ -242,6 +249,60 @@ class BookingRepositoryImpl extends BookingRepository {
       return BookingDetailsFailure(
         BookingDetailsErrorResponse(message: e.toString()),
       );
+    }
+  }
+
+  @override
+  Future<PayBookingResponse> payBooking(
+      String id, PayBookingRequest request) async {
+    try {
+      final response = await api.payBooking(id, request);
+
+      if (response['checkoutUrl'] != null) {
+        return PayBookingSuccess(
+          PayBookingSuccessResponse.fromJson(response),
+        );
+      }
+
+      return PayBookingFailure(
+        PayBookingErrorResponse.fromJson(response),
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = PayBookingErrorResponse.fromJson(e.response!.data);
+        return PayBookingFailure(error);
+      }
+
+      return PayBookingFailure(
+        PayBookingErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return PayBookingFailure(
+        PayBookingErrorResponse(message: e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<SubmitReviewResponse> submitReview(
+      String id, SubmitReviewRequest request) async {
+    try {
+      final response = await api.submitReview(id, request);
+      if (response.message == "Booking completed and review submitted") {
+        return SubmitReviewSuccess(success: response);
+      }
+      return SubmitReviewFailure(
+          error: SubmitReviewErrorResponse(message: response.message));
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = SubmitReviewErrorResponse.fromJson(e.response!.data);
+        return SubmitReviewFailure(error: error);
+      }
+
+      return SubmitReviewFailure(
+          error: SubmitReviewErrorResponse(message: _getServerErrorMessage(e)));
     }
   }
 }

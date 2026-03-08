@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../pages/next_session_view_all.dart';
 import 'next_session_card.dart';
 import 'section_header.dart';
@@ -16,7 +17,10 @@ class NextSessionSection extends StatelessWidget {
     return BlocBuilder<GetBookingsCubit, GetBookingsState>(
       builder: (context, state) {
         if (state is GetTodaySessionsLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+              child: CircularProgressIndicator(
+            color: AppPalette.primary,
+          ));
         }
 
         if (state is GetTodaySessionsLoaded) {

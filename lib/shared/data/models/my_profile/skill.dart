@@ -1,4 +1,6 @@
-class Skill {
+import 'package:equatable/equatable.dart';
+
+class Skill extends Equatable {
   final String skillName;
   final bool isVerified;
   final int quizScore;
@@ -12,6 +14,9 @@ class Skill {
       required String id,
       required this.addedAt})
       : _id = id;
+
+  @override
+  List<Object?> get props => [skillName, isVerified, _id, quizScore, addedAt];
 
   factory Skill.fromJson(Map<String, dynamic> json) {
     return Skill(

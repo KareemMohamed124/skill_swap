@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
 import '../../../../mobile/presentation/home/widgets/top_user_card.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
+import '../../book_session/screens/profile_mentor.dart';
 
 class TopUsersSection extends StatelessWidget {
   const TopUsersSection({super.key});
@@ -81,20 +84,38 @@ class _TopUsersListState extends State<_TopUsersList> {
               itemBuilder: (context, index) {
                 if (index < state.users.length) {
                   final u = state.users[index];
-                  return TopUserCard(
-                    id: u.id,
-                    image: u.userImage.secureUrl,
-                    name: u.name,
-                    track: u.track.name.isEmpty
-                        ? "Mobile Development"
-                        : u.track.name,
-                    hours: u.helpTotalHours,
+                  return InkWell(
+                    onTap: () {
+                      Get.to(ProfileMentor(
+                        id: u.id,
+                        name: u.name,
+                        track: u.track.name,
+                        rate: u.rate,
+                        image: u.userImage.secureUrl,
+                        bio: u.profile.bio,
+                        skills: u.skills,
+                        hoursAvailable: u.freeHours,
+                        peopleHelped: u.helpTotalHours,
+                        hourlyRate: 0,
+                      ));
+                    },
+                    child: TopUserCard(
+                      id: u.id,
+                      image: u.userImage.secureUrl,
+                      name: u.name,
+                      track: u.track.name.isEmpty
+                          ? "Mobile Development"
+                          : u.track.name,
+                      hours: u.helpTotalHours,
+                    ),
                   );
                 } else {
-                  // Loader عند نهاية القائمة
                   return const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 32),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: AppPalette.primary,
+                    )),
                   );
                 }
               },
