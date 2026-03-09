@@ -7,14 +7,14 @@ import '../../../mobile/presentation/home/screens/home_screen.dart';
 import '../../../mobile/presentation/profile/screens/profile_screen.dart';
 import '../../../mobile/presentation/search/screens/search_screen.dart';
 import '../../../mobile/presentation/sessions/screens/sessions_screen.dart';
-import '../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
 import '../../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../bloc/status_book_bloc/status_book_bloc.dart';
-import '../../bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../../bloc/tracks_bloc/tracks_bloc.dart';
 import '../../bloc/tracks_bloc/tracks_event.dart';
 import '../../bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../core/network/pusher_service.dart';
 import '../../dependency_injection/injection.dart';
+import '../../helper/local_storage.dart';
 import '../custom_bottom_nav.dart';
 
 class ScreenManager extends StatefulWidget {
@@ -33,6 +33,14 @@ class _ScreenManagerState extends State<ScreenManager> {
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
+    _initPusher();
+  }
+
+  Future<void> _initPusher() async {
+    final userId = await LocalStorage.getUserId();
+    if (userId != null && userId.isNotEmpty) {
+      await sl<PusherService>().init(userId: userId);
+    }
   }
 
   late final List<Widget> screens = [
@@ -45,14 +53,10 @@ class _ScreenManagerState extends State<ScreenManager> {
       ),
       BlocProvider<GetBookingsCubit>(create: (_) => sl<GetBookingsCubit>())
     ], child: HomeScreen()),
-    MultiBlocProvider(providers: [
-      BlocProvider(
-        create: (_) =>
-        sl<TracksBloc>()
-          ..add(LoadTracksEvent()),
-      ),
-      BlocProvider(create: (_) => sl<PrivateChatMessagesCubit>())
-    ], child: ChatListScreen()),
+    BlocProvider(
+      create: (_) => sl<TracksBloc>()..add(LoadTracksEvent()),
+      child: ChatListScreen(),
+    ),
     BlocProvider(
       create: (_) => sl<UserFilterBloc>(),
       child: const SearchScreen(),

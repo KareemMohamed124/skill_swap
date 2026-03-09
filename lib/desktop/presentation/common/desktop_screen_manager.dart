@@ -14,8 +14,12 @@ import '../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../../../shared/bloc/tracks_bloc/tracks_bloc.dart';
+import '../../../shared/bloc/tracks_bloc/tracks_event.dart';
 import '../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../../shared/core/network/pusher_service.dart';
 import '../../../shared/dependency_injection/injection.dart';
+import '../../../shared/helper/local_storage.dart';
 import '../home/screens/home_content.dart';
 import 'desktop_scaffold.dart';
 import 'desktop_sidebar.dart';
@@ -46,6 +50,14 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   void initState() {
     super.initState();
     openPage(index: 0);
+    _initPusher();
+  }
+
+  Future<void> _initPusher() async {
+    final userId = await LocalStorage.getUserId();
+    if (userId != null && userId.isNotEmpty) {
+      await sl<PusherService>().init(userId: userId);
+    }
   }
 
   Widget getBody(int index) {
@@ -54,13 +66,34 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         return HomeContent();
 
       case 1:
-        return ChatListScreen(
-          onChannelSelected: (channel) {
-            openSidePage(
-              body: getBody(1),
-              rightPanel: ChatScreen(channelName: channel),
-            );
-          },
+        return BlocProvider(
+          create: (_) => sl<TracksBloc>()..add(LoadTracksEvent()),
+          child: ChatListScreen(
+            onChannelSelected: (chatId, channelName) {
+              openSidePage(
+                body: BlocProvider(
+                  create: (_) => sl<TracksBloc>()..add(LoadTracksEvent()),
+                  child: ChatListScreen(
+                    selectedChannel: channelName,
+                    onChannelSelected: (cId, cName) {
+                      setState(() {
+                        currentRightPanel = ChatScreen(
+                          key: ValueKey(cId),
+                          chatId: cId,
+                          channelName: cName,
+                        );
+                      });
+                    },
+                  ),
+                ),
+                rightPanel: ChatScreen(
+                  key: ValueKey(chatId),
+                  chatId: chatId,
+                  channelName: channelName,
+                ),
+              );
+            },
+          ),
         );
 
       case 2:
