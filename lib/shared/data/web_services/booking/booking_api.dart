@@ -59,4 +59,9 @@ abstract class BookingApi {
     @Path("id") String id,
     @Body() SubmitReviewRequest body,
   );
+
+  @PATCH("booking/{id}/join")
+  Future<dynamic> joinSession(
+    @Path("id") String id,
+  );
 }

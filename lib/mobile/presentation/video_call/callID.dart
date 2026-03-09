@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:skill_swap/mobile/presentation/video_call/rateSession.dart';
 import 'package:zego_uikit/zego_uikit.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
+import '../../../shared/bloc/submit_review_bloc/submit_review_bloc.dart';
+import '../../../shared/dependency_injection/injection.dart';
 import '../../../shared/helper/local_storage.dart';
 import '../sessions/models/session.dart';
 import 'LiveKeys.dart';
@@ -64,8 +67,10 @@ class _CallPageState extends State<CallPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          RateSessionScreen(session: widget.session),
+                      builder: (_) => BlocProvider(
+                        create: (_) => sl<SubmitReviewBloc>(),
+                        child: RateSessionScreen(session: widget.session),
+                      ),
                     ),
                   );
                 }

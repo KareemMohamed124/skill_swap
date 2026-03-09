@@ -1,25 +1,26 @@
+import '../../data/models/public_chat/join_response.dart';
 import '../../data/models/public_chat/track_model.dart';
 
 abstract class TracksState {}
 
-class TracksInitial extends TracksState {}
+class JoinTracksInitial extends TracksState {}
 
-class TracksLoading extends TracksState {}
+class JoinTracksLoading extends TracksState {}
 
-class TracksLoaded extends TracksState {
+class JoinTracksLoaded extends TracksState {
   final List<ListTracksModel> tracks;
 
-  TracksLoaded(this.tracks);
+  JoinTracksLoaded(this.tracks);
 }
 
-class TracksError extends TracksState {
-  final String message;
+final class JoinTracksSuccess extends TracksState {
+  final JoinTrackSuccess success;
 
-  TracksError(this.message);
+  JoinTracksSuccess({required this.success});
 }
 
-class JoinTrackSuccess extends TracksState {
-  final String message;
+final class JoinTracksError extends TracksState {
+  final JoinTrackFailure error;
 
-  JoinTrackSuccess(this.message);
+  JoinTracksError({required this.error});
 }

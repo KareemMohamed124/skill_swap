@@ -1,15 +1,16 @@
-class JoinResponse {
-  String? message;
+import 'join_track_error_response.dart';
+import 'join_track_success_response.dart';
 
-  JoinResponse({this.message});
+sealed class JoinTrackResponse {}
 
-  JoinResponse.fromJson(Map<String, dynamic> json) {
-    message = json['message'];
-  }
+class JoinTrackSuccess extends JoinTrackResponse {
+  final JoinTrackSuccessResponse success;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-    };
-  }
+  JoinTrackSuccess(this.success);
+}
+
+class JoinTrackFailure extends JoinTrackResponse {
+  final JoinTrackErrorResponse error;
+
+  JoinTrackFailure(this.error);
 }

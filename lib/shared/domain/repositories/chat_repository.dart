@@ -16,5 +16,5 @@ abstract class ChatRepository {
 
   Future<TracksResponse> getTracks();
 
-  Future<JoinResponse> joinTrack(String trackId);
+  Future<JoinTrackResponse> joinTrack(String trackId);
 }

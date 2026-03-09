@@ -38,9 +38,23 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<GetBookingsCubit>().fetchAllBookings("accepted");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Scaffold(
       body: Stack(
@@ -69,7 +83,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 width: double.infinity,
                 constraints: BoxConstraints(minHeight: screenHeight),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
+                  color: Theme
+                      .of(context)
+                      .scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(screenWidth * 0.06),
                     topRight: Radius.circular(screenWidth * 0.06),

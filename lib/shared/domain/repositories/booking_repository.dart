@@ -1,3 +1,5 @@
+import 'package:skill_swap/shared/data/models/join_session/join_session_response.dart';
+
 import '../../data/models/booking/booking_request.dart';
 import '../../data/models/booking/booking_response.dart';
 import '../../data/models/booking_details/booking_details_response.dart';
@@ -34,4 +36,8 @@ abstract class BookingRepository {
 
   Future<SubmitReviewResponse> submitReview(
       String id, SubmitReviewRequest body);
+
+  Future<JoinSessionResponse> joinSession(
+    String id,
+  );
 }

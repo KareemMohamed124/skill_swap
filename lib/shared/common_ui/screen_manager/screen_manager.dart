@@ -47,7 +47,9 @@ class _ScreenManagerState extends State<ScreenManager> {
     ], child: HomeScreen()),
     MultiBlocProvider(providers: [
       BlocProvider(
-        create: (_) => sl<TracksBloc>()..add(LoadTracksEvent()),
+        create: (_) =>
+        sl<TracksBloc>()
+          ..add(LoadTracksEvent()),
       ),
       BlocProvider(create: (_) => sl<PrivateChatMessagesCubit>())
     ], child: ChatListScreen()),
@@ -61,7 +63,7 @@ class _ScreenManagerState extends State<ScreenManager> {
       // ),
       BlocProvider(create: (_) => sl<GetBookingsCubit>()),
       BlocProvider(create: (_) => sl<StatusBookBloc>()),
-      BlocProvider(create: (_) => sl<SubmitReviewBloc>()),
+      //BlocProvider(create: (_) => sl<SubmitReviewBloc>()),
     ], child: const SessionsScreen()),
     const ProfileScreen(),
   ];

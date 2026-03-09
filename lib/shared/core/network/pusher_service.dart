@@ -85,6 +85,9 @@ class PusherService {
   void _handleEvent(PusherEvent event) {
     if (event.data == null) return;
 
+    /// only listen to message events
+    if (event.eventName != "new-message") return;
+
     try {
       final data = jsonDecode(event.data!);
 
@@ -93,7 +96,6 @@ class PusherService {
       );
 
       onNewMessage?.call(data);
-      onChatListUpdated?.call(data);
     } catch (e) {
       print('❌ parse error $e');
     }

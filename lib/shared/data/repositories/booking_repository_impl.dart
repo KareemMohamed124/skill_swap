@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:skill_swap/shared/data/models/join_session/join_session_response.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
 import '../models/booking/booking_error_response.dart';
@@ -303,6 +304,27 @@ class BookingRepositoryImpl extends BookingRepository {
 
       return SubmitReviewFailure(
           error: SubmitReviewErrorResponse(message: _getServerErrorMessage(e)));
+    }
+  }
+
+  String _extractError(DioException e) {
+    try {
+      final data = e.response?.data;
+      if (data is Map && data['message'] != null) {
+        return data['message'].toString();
+      }
+      if (data is String) return data;
+    } catch (_) {}
+    return e.message ?? 'Network Error';
+  }
+
+  @override
+  Future<JoinSessionResponse> joinSession(String id) async {
+    try {
+      final response = await api.joinSession(id);
+      return JoinSessionResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
     }
   }
 }

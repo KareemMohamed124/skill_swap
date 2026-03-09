@@ -5,6 +5,8 @@ import '../../domain/repositories/chat_repository.dart';
 import '../../helper/local_storage.dart';
 import '../models/chat/chat_models.dart';
 import '../models/public_chat/join_response.dart';
+import '../models/public_chat/join_track_error_response.dart';
+import '../models/public_chat/join_track_success_response.dart';
 import '../web_services/chat/chat_api_service.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -92,7 +94,6 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  @override
   Future<TracksResponse> getTracks() async {
     try {
       final response = await api.getTracks();
@@ -103,12 +104,41 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<JoinResponse> joinTrack(String trackId) async {
+  Future<JoinTrackResponse> joinTrack(String trackId) async {
     try {
       final response = await api.joinTrack(trackId);
-      return JoinResponse.fromJson(response);
+
+      return JoinTrackSuccess(
+        JoinTrackSuccessResponse.fromJson(response),
+      );
     } on DioException catch (e) {
-      throw _extractError(e);
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = JoinTrackErrorResponse.fromJson(e.response!.data);
+        return JoinTrackFailure(error);
+      }
+
+      return JoinTrackFailure(
+        JoinTrackErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return JoinTrackFailure(
+        JoinTrackErrorResponse(message: e.toString()),
+      );
     }
+  }
+
+  String _getServerErrorMessage(DioException e) {
+    try {
+      final data = e.response?.data;
+      if (data != null) {
+        if (data is Map && data['message'] != null) {
+          return data['message'].toString();
+        } else if (data is String) {
+          return data;
+        }
+      }
+    } catch (_) {}
+    return e.message ?? "Network Error";
   }
 }
