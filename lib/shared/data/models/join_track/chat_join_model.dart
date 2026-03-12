@@ -1,6 +1,6 @@
 import '../../../core/utils/id_normalizer.dart';
 
-class Chat {
+class ChatJoinModel {
   final String id;
   final String type;
   final List<dynamic> participants;
@@ -11,7 +11,7 @@ class Chat {
   final DateTime updatedAt;
   final int v;
 
-  Chat(
+  ChatJoinModel(
       {required this.id,
       required this.type,
       required this.participants,
@@ -22,8 +22,8 @@ class Chat {
       required this.updatedAt,
       required this.v});
 
-  factory Chat.fromJson(Map<String, dynamic> json) {
-    return Chat(
+  factory ChatJoinModel.fromJson(Map<String, dynamic> json) {
+    return ChatJoinModel(
       id: IdNormalizer.normalize(json['_id']),
       type: json['type'],
       participants: json['participants'],

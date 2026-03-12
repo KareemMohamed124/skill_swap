@@ -19,6 +19,8 @@ import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../bloc/pay_booking_bloc/pay_booking_bloc.dart';
 import '../bloc/private_chat/private_chat_list_cubit.dart';
 import '../bloc/private_chat/private_chat_messages_cubit.dart';
+import '../bloc/public_chat/public_chat_bloc.dart';
+import '../bloc/public_chat/public_chat_messages_cubit.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
@@ -70,81 +72,89 @@ Future<void> initDependencies() async {
 
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(api: sl<AuthApi>(), dio: sl<Dio>()));
+          () => AuthRepositoryImpl(api: sl<AuthApi>(), dio: sl<Dio>()));
 
   sl.registerLazySingleton<BookingRepository>(
-      () => BookingRepositoryImpl(api: sl<BookingApi>(), dio: sl<Dio>()));
+          () => BookingRepositoryImpl(api: sl<BookingApi>(), dio: sl<Dio>()));
 
   sl.registerLazySingleton<UserRepository>(
-      () => UserRepositoryImpl(api: sl<UserApi>(), dio: sl<Dio>()));
+          () => UserRepositoryImpl(api: sl<UserApi>(), dio: sl<Dio>()));
 
   sl.registerLazySingleton<ReportRepository>(
-      () => ReportRepositoryImpl(api: sl<ReportApi>(), dio: sl<Dio>()));
+          () => ReportRepositoryImpl(api: sl<ReportApi>(), dio: sl<Dio>()));
 
   sl.registerLazySingleton<ChatRepository>(
-      () => ChatRepositoryImpl(api: sl<ChatApiService>()));
+          () => ChatRepositoryImpl(api: sl<ChatApiService>()));
 
   // Blocs
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
   sl.registerFactory<LoginBloc>(() => LoginBloc(sl<AuthRepository>()));
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
   sl.registerFactory<VerifyCodeBloc>(
-      () => VerifyCodeBloc(sl<AuthRepository>()));
+          () => VerifyCodeBloc(sl<AuthRepository>()));
   sl.registerFactory<ResetPasswordBloc>(
-      () => ResetPasswordBloc(sl<AuthRepository>()));
+          () => ResetPasswordBloc(sl<AuthRepository>()));
   sl.registerFactory<ActiveBookingBloc>(
-      () => ActiveBookingBloc(sl<BookingRepository>()));
+          () => ActiveBookingBloc(sl<BookingRepository>()));
   sl.registerFactory<StatusBookBloc>(
-      () => StatusBookBloc(sl<BookingRepository>()));
+          () => StatusBookBloc(sl<BookingRepository>()));
   sl.registerFactory<CancelBookBloc>(
-      () => CancelBookBloc(sl<BookingRepository>()));
+          () => CancelBookBloc(sl<BookingRepository>()));
   sl.registerFactory<SubmitReviewBloc>(
-      () => SubmitReviewBloc(sl<BookingRepository>()));
+          () => SubmitReviewBloc(sl<BookingRepository>()));
   sl.registerFactory<UpdateBookBloc>(
-      () => UpdateBookBloc(sl<BookingRepository>()));
+          () => UpdateBookBloc(sl<BookingRepository>()));
   sl.registerFactory<DeleteBookBloc>(
-      () => DeleteBookBloc(sl<BookingRepository>()));
+          () => DeleteBookBloc(sl<BookingRepository>()));
   sl.registerFactory<GetBookingDetailsBloc>(
-      () => GetBookingDetailsBloc(sl<BookingRepository>()));
+          () => GetBookingDetailsBloc(sl<BookingRepository>()));
 
-  sl.registerLazySingleton<GetBookingsCubit>(
-      () => GetBookingsCubit(sl<BookingRepository>()));
-
+  sl.registerFactory<GetBookingsCubit>(
+          () => GetBookingsCubit(sl<BookingRepository>()));
+  sl.registerFactory<PublicChatBloc>(
+          () => PublicChatBloc(sl<ChatRepository>(), sl<PusherService>()));
   sl.registerFactory<UsersCubit>(() => UsersCubit(sl<UserRepository>()));
 
   sl.registerFactory<ChangePasswordBloc>(
-      () => ChangePasswordBloc(sl<UserRepository>()));
+          () => ChangePasswordBloc(sl<UserRepository>()));
   sl.registerFactory<UpdateProfileBloc>(
-      () => UpdateProfileBloc(sl<UserRepository>()));
+          () => UpdateProfileBloc(sl<UserRepository>()));
   sl.registerFactory<ReportBloc>(() => ReportBloc(sl<ReportRepository>()));
   sl.registerLazySingleton<MyProfileCubit>(
-    () => MyProfileCubit(sl<UserRepository>()),
+        () => MyProfileCubit(sl<UserRepository>()),
   );
   sl.registerFactory<LogoutBloc>(() => LogoutBloc(sl<AuthRepository>()));
   sl.registerFactory<DeleteAccountBloc>(
-      () => DeleteAccountBloc(sl<UserRepository>()));
+          () => DeleteAccountBloc(sl<UserRepository>()));
   sl.registerFactory<ActivationBloc>(
-      () => ActivationBloc(sl<AuthRepository>()));
+          () => ActivationBloc(sl<AuthRepository>()));
 
   sl.registerFactory<CompleteProfileBloc>(
-      () => CompleteProfileBloc(sl<AuthRepository>()));
+          () => CompleteProfileBloc(sl<AuthRepository>()));
 
   sl.registerFactory<TracksCubit>(() => TracksCubit(sl<AuthRepository>()));
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
   sl.registerFactory<PayBookingBloc>(
-      () => PayBookingBloc(sl<BookingRepository>()));
+          () => PayBookingBloc(sl<BookingRepository>()));
 
   sl.registerFactory<TracksBloc>(
-    () => TracksBloc(sl<ChatRepository>()),
+        () => TracksBloc(sl<ChatRepository>()),
   );
 
   // Chat Cubits
-  sl.registerFactory<PrivateChatListCubit>(() => PrivateChatListCubit(
-      chatRepository: sl<ChatRepository>(),
-      pusherService: sl<PusherService>()));
-  sl.registerFactory<PrivateChatMessagesCubit>(() => PrivateChatMessagesCubit(
-      chatRepository: sl<ChatRepository>(),
-      pusherService: sl<PusherService>()));
+  sl.registerFactory<PrivateChatListCubit>(() =>
+      PrivateChatListCubit(
+          chatRepository: sl<ChatRepository>(),
+          pusherService: sl<PusherService>()));
+  sl.registerFactory<PrivateChatMessagesCubit>(() =>
+      PrivateChatMessagesCubit(
+          chatRepository: sl<ChatRepository>(),
+          pusherService: sl<PusherService>()));
+
+  sl.registerFactory<PublicChatMessagesCubit>(() =>
+      PublicChatMessagesCubit(
+          chatRepository: sl<ChatRepository>(),
+          pusherService: sl<PusherService>()));
 
   // Load users safely
   List<UserModel> users = [];
@@ -154,9 +164,10 @@ Future<void> initDependencies() async {
     print("Failed to fetch users, using empty list: $e");
   }
 
-  sl.registerFactory<UserFilterBloc>(() => UserFilterBloc(
-      userRepository: sl<UserRepository>(),
-      allUsers: users,
-      limit: 10,
-      initialPage: 1));
+  sl.registerFactory<UserFilterBloc>(() =>
+      UserFilterBloc(
+          userRepository: sl<UserRepository>(),
+          allUsers: users,
+          limit: 10,
+          initialPage: 1));
 }

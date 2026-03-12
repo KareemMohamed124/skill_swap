@@ -1,12 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:skill_swap/shared/data/models/public_chat/tracks_response.dart';
+import 'package:skill_swap/shared/data/models/join_track/tracks_response.dart';
+import 'package:skill_swap/shared/data/models/public_chat/chat_response_model.dart';
+import 'package:skill_swap/shared/data/models/public_chat/get_history_messages.dart';
+import 'package:skill_swap/shared/data/models/public_chat/send_message_response.dart';
 
 import '../../domain/repositories/chat_repository.dart';
 import '../../helper/local_storage.dart';
 import '../models/chat/chat_models.dart';
-import '../models/public_chat/join_response.dart';
-import '../models/public_chat/join_track_error_response.dart';
-import '../models/public_chat/join_track_success_response.dart';
+import '../models/join_track/join_response.dart';
+import '../models/join_track/join_track_error_response.dart';
+import '../models/join_track/join_track_success_response.dart';
 import '../web_services/chat/chat_api_service.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -140,5 +143,80 @@ class ChatRepositoryImpl implements ChatRepository {
       }
     } catch (_) {}
     return e.message ?? "Network Error";
+  }
+
+  @override
+  Future<ChatResponseModel> getMyChatsPublic() async {
+    try {
+      final response = await api.getMyChatsPublic();
+
+      final currentUserId = await LocalStorage.getUserId();
+
+      final chatResponse = ChatResponseModel.fromJson({
+        "message": "Done",
+        "chats": response,
+      });
+
+      final myTrackChats = chatResponse.chats.where((chat) {
+        if (chat.type != "track") return false;
+
+        final isParticipant = chat.participants.any(
+          (p) => p.id == currentUserId,
+        );
+
+        return isParticipant;
+      }).toList();
+
+      return ChatResponseModel(
+        message: chatResponse.message,
+        chats: myTrackChats,
+      );
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<ChatHistoryResponse> getHistoryMessages(String chatId,
+      {int page = 1, int limit = 20}) async {
+    try {
+      final response =
+          await api.getHistoryMessages(chatId, page: page, limit: limit);
+
+      final messagesJson =
+          response['messages'] ?? response['data'] ?? response['docs'] ?? [];
+
+      final messages = <ChatMessage>[];
+      if (messagesJson is List) {
+        for (var item in messagesJson) {
+          if (item is Map<String, dynamic>) {
+            messages.add(ChatMessage.fromJson(item));
+          }
+        }
+      }
+
+      return ChatHistoryResponse(
+        message: response['message']?.toString() ?? 'Done',
+        userId: response['userId']?.toString() ?? '',
+        messages: messages,
+        total: response['total'] ?? messages.length,
+        page: response['page'] ?? page,
+        totalPages: response['totalPages'] ?? 1,
+      );
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<SendMessageResponse> sendMessagePublic(
+      String chatId, String content, String type) async {
+    try {
+      final response = await api.sendMessagePublic(chatId, content, type);
+
+      return SendMessageResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
   }
 }

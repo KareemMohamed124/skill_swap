@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skill_swap/shared/data/models/public_chat/join_response.dart';
-import 'package:skill_swap/shared/data/models/public_chat/join_track_error_response.dart';
+import 'package:skill_swap/shared/data/models/join_track/join_response.dart';
+import 'package:skill_swap/shared/data/models/join_track/join_track_error_response.dart';
 
 import '../../domain/repositories/chat_repository.dart';
 import 'tracks_event.dart';

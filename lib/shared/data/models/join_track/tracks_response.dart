@@ -1,4 +1,4 @@
-import '../public_chat/track_model.dart';
+import '../join_track/track_model.dart';
 
 class TracksResponse {
   String? message;

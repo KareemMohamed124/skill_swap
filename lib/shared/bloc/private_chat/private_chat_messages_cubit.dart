@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 
 import '../../../shared/core/network/pusher_service.dart';
@@ -17,6 +19,8 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
   List<ChatMessageModel> _messages = [];
   bool _hasMore = true;
 
+  StreamSubscription<Map<String, dynamic>>? _messageSubscription;
+
   PrivateChatMessagesCubit({
     required this.chatRepository,
     required this.pusherService,
@@ -34,9 +38,20 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
     _messages = [];
     _hasMore = true;
 
+    // Cancel any previous subscription
+    await _messageSubscription?.cancel();
+
+    // Init Pusher Service
+    if (_currentUserId != null) {
+      await pusherService.init(userId: _currentUserId!);
+    }
+
     // Subscribe to Pusher for this chat
     pusherService.subscribeToChatChannel(chatId);
-    pusherService.onNewMessage = _onPusherNewMessage;
+
+    // Listen to message stream (broadcast stream allows multiple listeners)
+    _messageSubscription =
+        pusherService.messageStream.listen(_onPusherNewMessage);
 
     await loadMessages();
   }
@@ -155,6 +170,8 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
 
   /// Handle incoming Pusher message
   void _onPusherNewMessage(Map<String, dynamic> data) {
+    if (isClosed) return;
+
     try {
       // Parse the incoming message
       final messageData = data['message'] is Map<String, dynamic>
@@ -166,7 +183,7 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
           messageData['chatId']?.toString() ??
           '';
 
-      if (messageChatId != _chatId && !messageChatId.isEmpty) return;
+      if (messageChatId != _chatId && messageChatId.isNotEmpty) return;
 
       final newMessage = ChatMessageModel.fromJson(messageData);
 
@@ -196,10 +213,10 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
 
   @override
   Future<void> close() {
+    _messageSubscription?.cancel();
     if (_chatId != null) {
       pusherService.unsubscribeFromChatChannel(_chatId!);
     }
-    pusherService.onNewMessage = null;
     return super.close();
   }
 }

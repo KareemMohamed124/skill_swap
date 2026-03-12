@@ -17,8 +17,8 @@ class PrivateChatModel {
     this.unreadCount = 0,
   });
 
-  factory PrivateChatModel.fromJson(Map<String, dynamic> json,
-      String currentUserId) {
+  factory PrivateChatModel.fromJson(
+      Map<String, dynamic> json, String currentUserId) {
     // Determine which participant is the partner
     final participants = json['participants'] as List<dynamic>? ?? [];
     Map<String, dynamic>? partner;
@@ -46,7 +46,7 @@ class PrivateChatModel {
     return PrivateChatModel(
       id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
       partnerId:
-      partner?['_id']?.toString() ?? partner?['id']?.toString() ?? '',
+          partner?['_id']?.toString() ?? partner?['id']?.toString() ?? '',
       partnerName: partner?['name']?.toString() ?? 'Unknown',
       partnerImage: partner?['userImage']?.toString(),
       lastMessage: lastMessageText,
@@ -94,14 +94,19 @@ class ChatMessageModel {
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
-    final sender = json['sender'];
     String senderId = '';
     String? senderName;
-    if (sender is Map<String, dynamic>) {
-      senderId = sender['_id']?.toString() ?? sender['id']?.toString() ?? '';
-      senderName = sender['name']?.toString();
-    } else if (sender is String) {
-      senderId = sender;
+
+    if (json['sender'] is Map) {
+      senderId = json['sender']['_id']?.toString() ??
+          json['sender']['id']?.toString() ??
+          '';
+
+      senderName = json['sender']['name'];
+    } else if (json['sender'] is String) {
+      senderId = json['sender'];
+    } else if (json['senderId'] != null) {
+      senderId = json['senderId'].toString();
     }
 
     return ChatMessageModel(
@@ -111,9 +116,11 @@ class ChatMessageModel {
       senderName: senderName,
       content: json['content']?.toString() ?? '',
       type: json['type']?.toString() ?? 'text',
-      createdAt: DateTime.tryParse(json['createdAt']?.toString() ??
-          json['timestamp']?.toString() ??
-          '') ??
+      createdAt: DateTime.tryParse(
+            json['createdAt']?.toString() ??
+                json['timestamp']?.toString() ??
+                '',
+          ) ??
           DateTime.now(),
     );
   }

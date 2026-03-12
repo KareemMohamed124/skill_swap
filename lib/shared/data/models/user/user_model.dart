@@ -23,6 +23,9 @@ class UserModel {
   final int rate;
   final int freeHours;
   final int helpTotalHours;
+  final int wallet;
+  final int totalScore;
+  final int numberOfReviews;
 
   UserModel(
       {required this.id,
@@ -40,30 +43,51 @@ class UserModel {
       required this.warnings,
       required this.rate,
       required this.freeHours,
-      required this.helpTotalHours});
+      required this.helpTotalHours,
+      required this.wallet,
+      required this.totalScore,
+      required this.numberOfReviews});
 
   factory UserModel.fromJson(Map<String, dynamic>? json) {
+    double parseDouble(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is int) return value.toDouble();
+      if (value is double) return value;
+      return double.tryParse(value.toString()) ?? 0.0;
+    }
+
+    int parseInt(dynamic value) {
+      if (value == null) return 0;
+      if (value is int) return value;
+      if (value is double) return value.toInt();
+      return int.tryParse(value.toString()) ?? 0;
+    }
+
     return UserModel(
-        id: json?['_id'] ?? '',
-        name: json?['name'] ?? '',
-        email: json?['email'] ?? '',
-        role: json?['role'] ?? '',
-        isActive: json?['isActive'] ?? false,
-        confirmEmail: json?['confirmEmail'] ?? false,
-        warningCount: json?['warningCount'] ?? 0,
-        userImage: UserImage.fromJson(json?['userImage']),
-        profile: Profile.fromJson(json?['profile']),
-        blockInfo: BlockInfo.fromJson(json?['blockInfo']),
-        track: Track.fromJson(json?['track']),
-        skills: (json?['skills'] as List? ?? [])
-            .map((e) => Skill.fromJson(e))
-            .toList(),
-        warnings: (json?['warnings'] as List? ?? [])
-            .map((e) => WarningModel.fromJson(e))
-            .toList(),
-        rate: json?['rate'] ?? 0,
-        freeHours: json?['freeHours'] ?? 0,
-        helpTotalHours: json?['helpTotalHours'] ?? 0);
+      id: json?['_id'] ?? '',
+      name: json?['name'] ?? '',
+      email: json?['email'] ?? '',
+      role: json?['role'] ?? '',
+      isActive: json?['isActive'] ?? false,
+      confirmEmail: json?['confirmEmail'] ?? false,
+      warningCount: parseInt(json?['warningCount']),
+      userImage: UserImage.fromJson(json?['userImage']),
+      profile: Profile.fromJson(json?['profile']),
+      blockInfo: BlockInfo.fromJson(json?['blockInfo']),
+      track: Track.fromJson(json?['track']),
+      skills: (json?['skills'] as List? ?? [])
+          .map((e) => Skill.fromJson(e))
+          .toList(),
+      warnings: (json?['warnings'] as List? ?? [])
+          .map((e) => WarningModel.fromJson(e))
+          .toList(),
+      rate: parseInt(json?['rate']),
+      freeHours: parseInt(json?['freeHours']),
+      helpTotalHours: parseInt(json?['helpTotalHours']),
+      wallet: parseInt(json?['wallet']),
+      totalScore: parseInt(json?['totalScore']),
+      numberOfReviews: parseInt(json?['numberOfReviews']),
+    );
   }
 
   Map<String, dynamic> toJson() {

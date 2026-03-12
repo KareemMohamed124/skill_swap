@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:skill_swap/mobile/presentation/video_call/rateSession.dart';
 import 'package:zego_uikit/zego_uikit.dart';
@@ -7,7 +8,6 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 import '../../../shared/bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../../../shared/dependency_injection/injection.dart';
-import '../../../shared/helper/local_storage.dart';
 import '../sessions/models/session.dart';
 import 'LiveKeys.dart';
 
@@ -22,18 +22,11 @@ class CallPage extends StatefulWidget {
 
 class _CallPageState extends State<CallPage> {
   bool isFullscreen = true;
-  String? currentUserId;
-  final Map<String, String> userAvatars = {};
 
   @override
   void initState() {
     super.initState();
     requestPermissions();
-    getCurrentUser();
-
-    if (widget.session.image != null) {
-      userAvatars[widget.session.instructorId] = widget.session.image!;
-    }
   }
 
   Future<void> requestPermissions() async {
@@ -42,10 +35,6 @@ class _CallPageState extends State<CallPage> {
       Permission.microphone,
       Permission.bluetoothConnect,
     ].request();
-  }
-
-  Future<void> getCurrentUser() async {
-    currentUserId = await LocalStorage.getUserId();
   }
 
   @override
@@ -63,41 +52,29 @@ class _CallPageState extends State<CallPage> {
               onCallEnd: (event, defaultAction) {
                 defaultAction();
 
-                if (widget.session.isStudent) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                        create: (_) => sl<SubmitReviewBloc>(),
-                        child: RateSessionScreen(session: widget.session),
-                      ),
-                    ),
-                  );
-                }
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!mounted) return;
+
+                  if (widget.session.isStudent) {
+                    Get.offAll(BlocProvider(
+                      create: (_) => sl<SubmitReviewBloc>(),
+                      child: RateSessionScreen(session: widget.session),
+                    ));
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) => BlocProvider(
+                    //       create: (_) => sl<SubmitReviewBloc>(),
+                    //       child: RateSessionScreen(session: widget.session),
+                    //     ),
+                    //   ),
+                    // );
+                  }
+                });
               },
             ),
             config: ZegoUIKitPrebuiltCallConfig.groupVideoCall()
               ..avatarBuilder = (context, size, user, extraInfo) {
-                final avatarUrl = userAvatars[user?.id] ?? "";
-
-                if (avatarUrl.isNotEmpty) {
-                  return Container(
-                    width: size.width,
-                    height: size.height,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 2,
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(avatarUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                }
-
                 final firstLetter =
                     user?.name.characters.first.toUpperCase() ?? '?';
 
@@ -152,12 +129,6 @@ class _CallPageState extends State<CallPage> {
             builder: (context, snapshot) {
               final remoteUsers = ZegoUIKit().getRemoteUsers();
 
-              for (var user in remoteUsers) {
-                if (!userAvatars.containsKey(user.id)) {
-                  userAvatars[user.id] = widget.session.image ?? "";
-                }
-              }
-
               if (remoteUsers.isEmpty) {
                 return _buildWaitingUI(
                   widget.session.name,
@@ -203,8 +174,7 @@ class _CallPageState extends State<CallPage> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Waiting for $name ',
-                textAlign: TextAlign.center,
+                'Waiting for $name',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -214,11 +184,9 @@ class _CallPageState extends State<CallPage> {
               const SizedBox(height: 8),
               const Text(
                 'Connecting video call...',
-                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                  color: Colors.white70,
+                  fontSize: 16,
                 ),
               ),
             ],

@@ -65,10 +65,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.35;
 
     return BlocListener<SubmitReviewBloc, SubmitReviewState>(
@@ -107,7 +104,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                     const Text(
                       "Session Summary",
                       style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -132,16 +129,13 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                       context: context,
                       icon: Icons.calendar_today_outlined,
                       data:
-                      "${widget.session.dateTime.day}/${widget.session.dateTime
-                          .month}/${widget.session.dateTime.year}",
+                          "${widget.session.dateTime.day}/${widget.session.dateTime.month}/${widget.session.dateTime.year}",
                       screenWidth: screenWidth,
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
-
               _buildCard(
                 child: Column(
                   children: [
@@ -177,9 +171,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
-
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,8 +186,9 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                       maxLines: 4,
                       decoration: InputDecoration(
                         hintText: "Tell us about your experience...",
+                        hintStyle: Theme.of(context).textTheme.bodyMedium,
                         filled: true,
-                        fillColor: Colors.grey.shade100,
+                        fillColor: Theme.of(context).cardColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -205,9 +198,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               BlocBuilder<SubmitReviewBloc, SubmitReviewState>(
                 builder: (context, state) {
                   return ElevatedButton(
@@ -219,34 +210,32 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                       ),
                     ),
                     onPressed:
-                    selectedRating == 0 || state is SubmitReviewLoading
-                        ? null
-                        : () {
-                      final request = SubmitReviewRequest(
-                        rate: selectedRating,
-                        review: commentController.text,
-                      );
+                        selectedRating == 0 || state is SubmitReviewLoading
+                            ? null
+                            : () {
+                                final request = SubmitReviewRequest(
+                                  rate: selectedRating,
+                                  review: commentController.text,
+                                );
 
-                      context.read<SubmitReviewBloc>().add(
-                        ConfirmSubmit(
-                            id: widget.session.sessionId,
-                            request: request),
-                      );
-                    },
+                                context.read<SubmitReviewBloc>().add(
+                                      ConfirmSubmit(
+                                          id: widget.session.sessionId,
+                                          request: request),
+                                    );
+                              },
                     child: state is SubmitReviewLoading
                         ? const CircularProgressIndicator(
-                      color: Colors.white,
-                    )
+                            color: Colors.white,
+                          )
                         : const Text(
-                      "Submit Feedback",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                            "Submit Feedback",
+                            style: TextStyle(fontSize: 16),
+                          ),
                   );
                 },
               ),
-
               const SizedBox(height: 12),
-
               const Center(
                 child: Text(
                   "Please rate the session before submitting",

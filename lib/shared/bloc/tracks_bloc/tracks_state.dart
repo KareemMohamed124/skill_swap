@@ -1,5 +1,5 @@
-import '../../data/models/public_chat/join_response.dart';
-import '../../data/models/public_chat/track_model.dart';
+import '../../data/models/join_track/join_response.dart';
+import '../../data/models/join_track/track_model.dart';
 
 abstract class TracksState {}
 

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
-import '../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
-import '../../../shared/bloc/private_chat/private_chat_messages_state.dart';
+import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
+import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/dependency_injection/injection.dart';
+import 'message_bubble.dart';
+
+enum ChatType { private, public }
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -21,16 +25,16 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late PrivateChatMessagesCubit _chatCubit;
-
+  late PublicChatMessagesCubit _chatCubit;
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-
-    _chatCubit = sl<PrivateChatMessagesCubit>()..init(widget.chatId);
+    // Inject proper Cubit (Private or Public)
+    _chatCubit = sl<PublicChatMessagesCubit>();
+    _chatCubit.init(widget.chatId);
   }
 
   void _sendMessage() {
@@ -39,56 +43,65 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _chatCubit.sendMessage(text);
     _controller.clear();
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   Widget _buildMessageList(List messages) {
     return ListView.builder(
       controller: _scrollController,
+      reverse: false,
       padding: const EdgeInsets.all(12),
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
+        final isMe = message.senderId.id == _chatCubit.currentUserId;
 
-        final isMe =
-            message.senderId.toString() == _chatCubit.currentUserId.toString();
-
-        return Align(
-          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isMe ? AppPalette.primary : Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              message.content ?? "",
-              style: TextStyle(
-                color: isMe ? Colors.white : Colors.black,
-              ),
-            ),
-          ),
+        return MessageBubble(
+            message: message,
+            isMe: isMe,
+            senderName: "User",
+            senderImage: null
+          //message.senderId.UserImage.secureUrl,
         );
       },
     );
   }
 
-  Widget _buildInput() {
+  Widget _messageInput() {
     return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: "Type message...",
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: "Message...",
+                  fillColor: Theme
+                      .of(context)
+                      .cardColor,
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 onSubmitted: (_) => _sendMessage(),
               ),
             ),
+            const SizedBox(width: 10),
             IconButton(
               icon: Icon(Icons.send, color: AppPalette.primary),
               onPressed: _sendMessage,
@@ -109,35 +122,70 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+
     return BlocProvider.value(
       value: _chatCubit,
       child: Scaffold(
+        backgroundColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor,
         appBar: AppBar(
-          title: Text(widget.channelName),
+          backgroundColor: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Get.back(),
+          ),
+          title: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppPalette.primary,
+                child: Text(
+                  widget.channelName[0],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                widget.channelName,
+                style: const TextStyle(
+                  color: AppPalette.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          ),
         ),
         body: Column(
           children: [
             Expanded(
-              child: BlocBuilder<PrivateChatMessagesCubit,
-                  PrivateChatMessagesState>(
+              child:
+              BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
                 builder: (context, state) {
-                  if (state is PrivateChatMessagesLoading) {
+                  if (state is PublicChatMessagesLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (state is PrivateChatMessagesLoaded) {
-                    if (state.messages.isEmpty) {
-                      return const Center(child: Text("No messages"));
-                    }
-
+                  if (state is PublicChatMessagesLoaded) {
                     return _buildMessageList(state.messages);
+                  }
+
+                  if (state is PublicChatMessagesError) {
+                    return Center(child: Text(state.message));
                   }
 
                   return const SizedBox();
                 },
               ),
             ),
-            _buildInput(),
+            _messageInput(),
           ],
         ),
       ),

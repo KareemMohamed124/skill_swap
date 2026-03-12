@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import '../../models/public_chat/chat_response_model.dart';
+
 /// Plain Dio-based chat API service (no Retrofit code generation needed).
 class ChatApiService {
   final Dio _dio;
@@ -52,6 +54,22 @@ class ChatApiService {
         : <String, dynamic>{};
   }
 
+  /// GET /chat/{chatId}/messages?page=X&limit=Y
+  Future<Map<String, dynamic>> getHistoryMessages(
+    String chatId, {
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final response = await _dio.get(
+      '$_baseUrl/chat/$chatId/messages',
+      queryParameters: {'page': page, 'limit': limit},
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
+
   /// POST /chat/{chatId}/message — Send a message
   Future<Map<String, dynamic>> sendMessage(
     String chatId,
@@ -66,6 +84,29 @@ class ChatApiService {
     return response.data is Map<String, dynamic>
         ? response.data
         : <String, dynamic>{};
+  }
+
+  /// POST /chat/{chatId}/message — Send a message
+  Future<Map<String, dynamic>> sendMessagePublic(
+    String chatId,
+    String content,
+    String type,
+  ) async {
+    final response = await _dio.post(
+      '$_baseUrl/chat/$chatId/message',
+      data: {'content': content, 'type': type},
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
+
+  /// GET /chat/my-chats — Fetch user's public chats
+  Future<ChatResponseModel> getMyChatsPublic() async {
+    final response = await _dio.get('$_baseUrl/chat/my-chats');
+
+    return ChatResponseModel.fromJson(response.data);
   }
 
   /// GET /chat/tracks — Get all tracks

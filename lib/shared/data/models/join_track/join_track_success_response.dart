@@ -1,8 +1,8 @@
-import 'chat_model.dart';
+import 'chat_join_model.dart';
 
 class JoinTrackSuccessResponse {
   final String message;
-  final Chat chatDetails;
+  final ChatJoinModel chatDetails;
 
   JoinTrackSuccessResponse({
     required this.message,
@@ -12,7 +12,7 @@ class JoinTrackSuccessResponse {
   factory JoinTrackSuccessResponse.fromJson(Map<String, dynamic> json) {
     return JoinTrackSuccessResponse(
       message: json['message'] ?? '',
-      chatDetails: Chat.fromJson(json['chat'] as Map<String, dynamic>),
+      chatDetails: ChatJoinModel.fromJson(json['chat'] as Map<String, dynamic>),
     );
   }
 }
