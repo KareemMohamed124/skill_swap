@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:skill_swap/shared/data/models/join_track/tracks_response.dart';
-import 'package:skill_swap/shared/data/models/public_chat/chat_response_model.dart';
 import 'package:skill_swap/shared/data/models/public_chat/get_history_messages.dart';
 import 'package:skill_swap/shared/data/models/public_chat/send_message_response.dart';
 
@@ -10,6 +9,7 @@ import '../models/chat/chat_models.dart';
 import '../models/join_track/join_response.dart';
 import '../models/join_track/join_track_error_response.dart';
 import '../models/join_track/join_track_success_response.dart';
+import '../models/public_chat/get_chat_model.dart';
 import '../web_services/chat/chat_api_service.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -27,8 +27,8 @@ class ChatRepositoryImpl implements ChatRepository {
           response['chatId']?.toString() ??
           (response['chat'] is Map
               ? (response['chat']['_id']?.toString() ??
-                  response['chat']['id']?.toString() ??
-                  '')
+              response['chat']['id']?.toString() ??
+              '')
               : '');
     } on DioException catch (e) {
       throw _extractError(e);
@@ -42,7 +42,8 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await api.getMyChats();
       return response
           .where((item) => item is Map<String, dynamic>)
-          .map((item) => PrivateChatModel.fromJson(
+          .map((item) =>
+          PrivateChatModel.fromJson(
               item as Map<String, dynamic>, currentUserId))
           .toList();
     } on DioException catch (e) {
@@ -61,7 +62,7 @@ class ChatRepositoryImpl implements ChatRepository {
         return messages
             .where((item) => item is Map<String, dynamic>)
             .map((item) =>
-                ChatMessageModel.fromJson(item as Map<String, dynamic>))
+            ChatMessageModel.fromJson(item as Map<String, dynamic>))
             .toList();
       }
       return [];
@@ -71,8 +72,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<ChatMessageModel> sendMessage(
-      String chatId, String content, String type) async {
+  Future<ChatMessageModel> sendMessage(String chatId, String content,
+      String type) async {
     try {
       final response = await api.sendMessage(chatId, content, type);
       // The response may wrap the message in a key
@@ -146,34 +147,18 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<ChatResponseModel> getMyChatsPublic() async {
-    try {
-      final response = await api.getMyChatsPublic();
+  Future<List<GetChatModel>> getJoinedTrackChats() async {
+    final response = await api.getMyChatsPublic();
+    final currentUserId = await LocalStorage.getUserId();
 
-      final currentUserId = await LocalStorage.getUserId();
+    final chats = (response as List)
+        .map((e) => GetChatModel.fromJson(e))
+        .where((chat) =>
+    chat.type == "track" &&
+        chat.participants.any((p) => p.id == currentUserId))
+        .toList();
 
-      final chatResponse = ChatResponseModel.fromJson({
-        "message": "Done",
-        "chats": response,
-      });
-
-      final myTrackChats = chatResponse.chats.where((chat) {
-        if (chat.type != "track") return false;
-
-        final isParticipant = chat.participants.any(
-          (p) => p.id == currentUserId,
-        );
-
-        return isParticipant;
-      }).toList();
-
-      return ChatResponseModel(
-        message: chatResponse.message,
-        chats: myTrackChats,
-      );
-    } on DioException catch (e) {
-      throw _extractError(e);
-    }
+    return chats;
   }
 
   @override
@@ -181,7 +166,7 @@ class ChatRepositoryImpl implements ChatRepository {
       {int page = 1, int limit = 20}) async {
     try {
       final response =
-          await api.getHistoryMessages(chatId, page: page, limit: limit);
+      await api.getHistoryMessages(chatId, page: page, limit: limit);
 
       final messagesJson =
           response['messages'] ?? response['data'] ?? response['docs'] ?? [];
@@ -209,8 +194,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<SendMessageResponse> sendMessagePublic(
-      String chatId, String content, String type) async {
+  Future<SendMessageResponse> sendMessagePublic(String chatId, String content,
+      String type) async {
     try {
       final response = await api.sendMessagePublic(chatId, content, type);
 

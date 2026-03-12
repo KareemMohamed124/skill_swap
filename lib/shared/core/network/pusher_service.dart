@@ -20,10 +20,7 @@ class PusherService {
   bool _isConnected = false;
   bool _isConnecting = false;
 
-  bool get isConnected => _isConnected;
-
   final List<String> _pendingSubscriptions = [];
-
   Completer<void>? _connectionCompleter;
 
   static const int _maxReconnectAttempts = 5;
@@ -31,6 +28,7 @@ class PusherService {
   int _reconnectAttempts = 0;
   Timer? _reconnectTimer;
 
+  // ================= INIT CONNECTION =================
   Future<void> init({required String userId}) async {
     if (_isConnected || _isConnecting) return;
 
@@ -43,7 +41,6 @@ class PusherService {
         apiKey: _appKey,
         cluster: _cluster,
         onConnectionStateChange: (current, previous) {
-          print('🔌 [Pusher] state: $previous -> $current');
           _handleConnectionStateChange(current.toString(), previous.toString());
         },
         onError: (message, code, error) {
@@ -60,7 +57,6 @@ class PusherService {
       _reconnectAttempts = 0;
 
       _subscribeToUserChannel(userId);
-
       await _processPendingSubscriptions();
 
       if (!_connectionCompleter!.isCompleted) {
@@ -83,6 +79,7 @@ class PusherService {
     return _connectionCompleter?.future ?? Future.value();
   }
 
+  // ================= CONNECTION STATE HANDLER =================
   void _handleConnectionStateChange(String current, String previous) {
     final lowerCurrent = current.toLowerCase();
 
@@ -157,96 +154,87 @@ class PusherService {
     }
   }
 
+  // ================= USER CHANNEL =================
   void _subscribeToUserChannel(String userId) async {
     final channelName = 'user-$userId';
-
     if (_subscribedChannels.containsKey(channelName)) return;
 
     await _pusher.subscribe(channelName: channelName);
-
     _subscribedChannels[channelName] = true;
-
     print('📡 [Pusher] Subscribed to $channelName');
   }
 
-  Future<void> subscribeToChatChannel(String chatId) async {
-    final channelName = 'private-chat-$chatId';
-
-    if (_subscribedChannels.containsKey(channelName)) return;
-
-    if (!_isConnected) {
-      if (!_pendingSubscriptions.contains(channelName)) {
-        _pendingSubscriptions.add(channelName);
-      }
-      return;
+  // ================= CHAT CHANNELS =================
+  Future<void> subscribeToChat({
+    required String chatId,
+    required String currentUserId,
+    bool isPrivate = false,
+    String? partnerId,
+  }) async {
+    String channelName;
+    if (isPrivate) {
+      if (partnerId == null)
+        throw Exception("partnerId required for private chat");
+      final ids = [currentUserId, partnerId]..sort();
+      channelName = 'private_${ids[0]}_${ids[1]}';
+    } else {
+      // هنا الاسم متطابق مع الباك
+      channelName = chatId;
     }
 
-    await _pusher.subscribe(channelName: channelName);
+    if (!_subscribedChannels.containsKey(channelName)) {
+      if (!_isConnected) {
+        if (!_pendingSubscriptions.contains(channelName))
+          _pendingSubscriptions.add(channelName);
+        return;
+      }
 
-    _subscribedChannels[channelName] = true;
-
-    print('📡 [Pusher] Subscribed to $channelName');
+      await _pusher.subscribe(channelName: channelName);
+      _subscribedChannels[channelName] = true;
+      print('📡 [Pusher] Subscribed to $channelName');
+    }
   }
 
-  Future<void> subscribeToPublicChatChannel(String chatId) async {
-    final channelName = 'chat-$chatId-messages';
-
-    if (_subscribedChannels.containsKey(channelName)) return;
-
-    if (!_isConnected) {
-      if (!_pendingSubscriptions.contains(channelName)) {
-        _pendingSubscriptions.add(channelName);
-      }
-      return;
+  Future<void> unsubscribeFromChat(String chatId,
+      {bool isPrivate = false,
+      String? partnerId,
+      required String currentUserId}) async {
+    String channelName;
+    if (isPrivate) {
+      if (partnerId == null) return;
+      final ids = [currentUserId, partnerId]..sort();
+      channelName = 'private_${ids[0]}_${ids[1]}';
+    } else {
+      channelName = chatId; // نفس الاسم
     }
 
-    await _pusher.subscribe(channelName: channelName);
+    _pendingSubscriptions.remove(channelName);
 
-    _subscribedChannels[channelName] = true;
-
-    print('📡 [Pusher] Subscribed to $channelName');
-  }
-
-  Future<void> unsubscribeFromChatChannel(String chatId) async {
-    final channels = [
-      'private-chat-$chatId',
-      'chat-$chatId-messages',
-    ];
-
-    for (final channelName in channels) {
-      _pendingSubscriptions.remove(channelName);
-
-      if (!_subscribedChannels.containsKey(channelName)) continue;
-
+    if (_subscribedChannels.containsKey(channelName)) {
       await _pusher.unsubscribe(channelName: channelName);
-
       _subscribedChannels.remove(channelName);
-
       print('📡 [Pusher] Unsubscribed from $channelName');
     }
   }
 
+  // ================= EVENT HANDLER =================
   void _handleEvent(PusherEvent event) {
     if (event.data == null) return;
-
     if (event.eventName != 'receive_message') return;
 
     try {
       final data = jsonDecode(event.data!);
+      data['_pusherChannel'] = event.channelName;
+      _messageController.add(data);
 
       print(
-        '📨 [Pusher] Event: ${event.eventName} channel: ${event.channelName}',
-      );
-
-      if (data is Map<String, dynamic>) {
-        data['_pusherChannel'] = event.channelName;
-        _messageController.add(data);
-      }
+          '📨 [Pusher] Event: ${event.eventName} channel: ${event.channelName} data: $data');
     } catch (e) {
       print('❌ [Pusher] parse error $e');
     }
   }
 
+  // ================= DISCONNECT =================
   Future<void> disconnect() async {
     _reconnectTimer?.cancel();
     _pendingSubscriptions.clear();
@@ -272,3 +260,6 @@ class PusherService {
     _messageController.close();
   }
 }
+
+// Singleton instance
+final pusherService = PusherService();

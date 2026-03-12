@@ -10,6 +10,7 @@ import '../../../shared/bloc/tracks_bloc/tracks_bloc.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_event.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_state.dart';
 import '../../../shared/core/theme/app_palette.dart';
+import '../../../shared/data/models/public_chat/get_chat_model.dart';
 import '../../../shared/dependency_injection/injection.dart';
 import '../../../shared/helper/local_storage.dart';
 import 'chat_screen.dart';
@@ -46,13 +47,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => sl<PublicChatMessagesCubit>()),
-              ],
-              child: ChatScreen(chatId: chatId, channelName: channel),
-            ),
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<PublicChatMessagesCubit>()),
+          ],
+          child: ChatScreen(chatId: chatId, channelName: channel),
+        ),
       ),
     );
     context.read<TracksBloc>().add(LoadTracksEvent());
@@ -64,9 +64,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     final media = MediaQuery.of(context);
     final screenWidth = media.size.width;
     final screenHeight = media.size.height;
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return MultiBlocListener(
       listeners: [
@@ -93,13 +91,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
           automaticallyImplyLeading: false,
           title: const Text("Channels"),
@@ -109,7 +103,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
             padding: EdgeInsets.all(screenWidth * 0.04),
             child: Column(
               children: [
-
                 /// Search bar
                 TextField(
                   onChanged: (value) {
@@ -121,16 +114,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     hintText: "Search".tr,
                     prefixIcon: Icon(
                       Icons.search,
-                      color: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .color,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                     filled: true,
-                    fillColor: Theme
-                        .of(context)
-                        .cardColor,
+                    fillColor: Theme.of(context).cardColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(screenWidth * 0.03),
                       borderSide: BorderSide.none,
@@ -150,9 +137,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       if (trackState is JoinTracksLoaded) {
                         final tracks = trackState.tracks;
                         final publicChatState =
-                            context
-                                .watch<PublicChatBloc>()
-                                .state;
+                            context.watch<PublicChatBloc>().state;
                         final publicChats = publicChatState is PublicChatsLoaded
                             ? publicChatState.chats.chats
                             : <dynamic>[];
@@ -160,7 +145,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         // Apply search filter
                         final filteredTracks = tracks
                             .where((track) =>
-                            track.name!.toLowerCase().contains(searchQuery))
+                                track.name!.toLowerCase().contains(searchQuery))
                             .toList();
 
                         return ListView.builder(
@@ -170,11 +155,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                             // Find the chat for this track
                             final chat =
-                            publicChats.cast<dynamic?>().firstWhere(
-                                  (c) =>
-                              c != null && c.trackId?._id == track.id,
-                              orElse: () => null,
-                            );
+                                publicChats.cast<GetChatModel?>().firstWhere(
+                                      (c) =>
+                                          c != null && c.track?.id == track.id,
+                                      orElse: () => null,
+                                    );
 
                             // Determine if user joined
                             bool isJoined = false;
@@ -182,13 +167,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                             if (chat != null) {
                               final isParticipant = chat.participants.any(
-                                    (p) =>
-                                p._id == currentUserId,
+                                (p) => p.id == currentUserId,
                               );
 
                               if (isParticipant) {
                                 isJoined = true;
-                                chatId = chat._id;
+                                chatId = chat.id;
                               }
                             }
 
@@ -210,21 +194,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? (isDark
-                                    ? const Color(0xFF8F94FF)
-                                    : const Color(0xFFE6E7FF))
-                                    : Theme
-                                    .of(context)
-                                    .cardColor,
+                                        ? const Color(0xFF8F94FF)
+                                        : const Color(0xFFE6E7FF))
+                                    : Theme.of(context).cardColor,
                                 border: Border.all(
                                   color: isSelected
                                       ? AppPalette.primary
-                                      : Theme
-                                      .of(context)
-                                      .dividerColor,
+                                      : Theme.of(context).dividerColor,
                                   width: 2,
                                 ),
                                 borderRadius:
-                                BorderRadius.circular(screenWidth * 0.03),
+                                    BorderRadius.circular(screenWidth * 0.03),
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(

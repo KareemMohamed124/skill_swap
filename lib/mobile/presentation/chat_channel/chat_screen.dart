@@ -50,7 +50,8 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          //  _scrollController.position.maxScrollExtent,
+          0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -60,23 +61,37 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList(List messages) {
     return ListView.builder(
-      controller: _scrollController,
-      reverse: false,
-      padding: const EdgeInsets.all(12),
-      itemCount: messages.length,
-      itemBuilder: (context, index) {
-        final message = messages[index];
-        final isMe = message.senderId.id == _chatCubit.currentUserId;
+        controller: _scrollController,
+        reverse: true,
+        padding: const EdgeInsets.all(12),
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final message = messages[index];
+          final isMe = message.senderId.id == _chatCubit.currentUserId;
 
-        return MessageBubble(
+          bool showAvatar = true;
+          bool showName = true;
+
+          if (index > 0) {
+            final previousMessage = messages[index - 1];
+
+            if (previousMessage.senderId.id == message.senderId.id) {
+              showAvatar = false;
+              showName = false;
+            }
+          }
+
+          return MessageBubble(
             message: message,
             isMe: isMe,
             senderName: "User",
-            senderImage: null
-          //message.senderId.UserImage.secureUrl,
-        );
-      },
-    );
+            senderImage: message.senderId.userImage.secureUrl,
+            // ? message.senderId.userImage.secureUrl
+            // : null,
+            showAvatar: showAvatar,
+            showName: showName,
+          );
+        });
   }
 
   Widget _messageInput() {
@@ -90,9 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: "Message...",
-                  fillColor: Theme
-                      .of(context)
-                      .cardColor,
+                  fillColor: Theme.of(context).cardColor,
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -127,13 +140,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return BlocProvider.value(
       value: _chatCubit,
       child: Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -167,7 +176,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child:
-              BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
+                  BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
                 builder: (context, state) {
                   if (state is PublicChatMessagesLoading) {
                     return const Center(child: CircularProgressIndicator());

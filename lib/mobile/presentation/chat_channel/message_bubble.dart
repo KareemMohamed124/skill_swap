@@ -9,6 +9,8 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
   final String? senderName;
   final String? senderImage;
+  final bool showAvatar;
+  final bool showName;
   final bool isTyping;
 
   const MessageBubble({
@@ -17,6 +19,8 @@ class MessageBubble extends StatelessWidget {
     required this.isMe,
     this.senderName,
     this.senderImage,
+    this.showAvatar = true,
+    this.showName = true,
     this.isTyping = false,
   });
 
@@ -51,78 +55,76 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bubbleColor = isMe ? AppPalette.primary : Colors.grey[300];
+    final Color bubbleColor = isMe ? AppPalette.primary : Colors.grey.shade300;
+
     final textColor = isMe ? Colors.white : Colors.black87;
     final time = _formatTime(message.createdAt);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment:
             isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          /// صورة المرسل (لو مش أنا)
-          if (!isMe) ...[
-            _buildAvatar(),
-            const SizedBox(width: 8),
-          ],
+          /// avatar
+          if (!isMe)
+            Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: showAvatar ? _buildAvatar() : const SizedBox(width: 32),
+            ),
 
-          /// الرسالة
-          Column(
-            crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              /// اسم المرسل
-              if (!isMe)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    senderName ?? "User",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-
-              /// البابل
-              Container(
+          Flexible(
+            child: IntrinsicWidth(
+              stepWidth: 0.1,
+              child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: 10,
+                  vertical: 6,
                 ),
-                constraints: const BoxConstraints(maxWidth: 260),
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
                 decoration: BoxDecoration(
                   color: bubbleColor,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    /// النص
+                    if (!isMe && showName)
+                      Text(
+                        senderName ?? "User",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    if (!isMe && showName) const SizedBox(height: 3),
                     isTyping
                         ? const TypingIndicator()
                         : Text(
                             message.content ?? message['text'] ?? '',
                             style: TextStyle(color: textColor),
+                            softWrap: true,
                           ),
-
-                    const SizedBox(height: 4),
-
-                    /// الوقت
-                    Text(
-                      time,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: isMe ? Colors.white70 : Colors.black54,
+                    const SizedBox(height: 3),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        time,
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: isMe ? Colors.white70 : Colors.black54,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),

@@ -47,7 +47,8 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
     }
 
     // Subscribe to Pusher for this chat
-    pusherService.subscribeToChatChannel(chatId);
+    pusherService.subscribeToChat(
+        chatId: chatId, currentUserId: _currentUserId!, isPrivate: true);
 
     // Listen to message stream (broadcast stream allows multiple listeners)
     _messageSubscription =
@@ -211,12 +212,12 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
     }
   }
 
-  @override
-  Future<void> close() {
-    _messageSubscription?.cancel();
-    if (_chatId != null) {
-      pusherService.unsubscribeFromChatChannel(_chatId!);
-    }
-    return super.close();
-  }
+// @override
+// Future<void> close() {
+//   _messageSubscription?.cancel();
+//   if (_chatId != null) {
+//     pusherService.unsubscribeFromChatChannel(_chatId!);
+//   }
+//   return super.close();
+// }
 }
