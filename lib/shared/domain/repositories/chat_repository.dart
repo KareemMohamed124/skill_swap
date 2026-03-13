@@ -11,7 +11,7 @@ abstract class ChatRepository {
 
   Future<List<PrivateChatModel>> getMyChats();
 
-  Future<List<GetChatModel>> getJoinedTrackChats();
+  Future<List<GetChatModel>> getPublicChats();
 
   Future<List<ChatMessageModel>> getMessages(String chatId,
       {int page = 1, int limit = 20});

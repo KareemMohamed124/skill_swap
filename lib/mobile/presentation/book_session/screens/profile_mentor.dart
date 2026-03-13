@@ -10,7 +10,7 @@ import 'package:skill_swap/shared/bloc/book_session/book_session_bloc.dart';
 import 'package:skill_swap/shared/bloc/book_session/book_session_event.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
-import '../../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import '../../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/chat_repository.dart';
@@ -248,11 +248,13 @@ class _ProfileMentorState extends State<ProfileMentor> {
                         await chatRepo.createOrGetPrivateChat(widget.id);
                     Get.to(
                       BlocProvider(
-                        create: (_) =>
-                            sl<PrivateChatMessagesCubit>()..init(chatId),
+                        create: (_) => sl<PublicChatMessagesCubit>()
+                          ..init(chatId, partnerId: widget.id, isPrivate: true),
                         child: PrivateChatScreen(
                           chatId: chatId,
                           partnerName: widget.name,
+                          partnerId: widget.id,
+                          partnerImage: widget.image,
                         ),
                       ),
                     );

@@ -162,20 +162,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     );
 
                             // Determine if user joined
-                            bool isJoined = false;
-                            String? chatId;
-
-                            if (chat != null) {
-                              final isParticipant = chat.participants.any(
-                                (p) => p.id == currentUserId,
-                              );
-
-                              if (isParticipant) {
-                                isJoined = true;
-                                chatId = chat.id;
-                              }
-                            }
-
+                            bool isJoined =
+                                chat?.isJoined(currentUserId ?? "") ?? false;
+                            String? chatId = chat?.id;
                             // Check local joined map
                             if (joinedChats.containsKey(track.id)) {
                               isJoined = true;

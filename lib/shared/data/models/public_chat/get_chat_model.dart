@@ -13,6 +13,10 @@ class GetChatModel {
   final String createdAt;
   final String updatedAt;
 
+  bool isJoined(String currentUserId) {
+    return participants.any((p) => p.id.trim() == currentUserId.trim());
+  }
+
   GetChatModel({
     required this.id,
     required this.type,

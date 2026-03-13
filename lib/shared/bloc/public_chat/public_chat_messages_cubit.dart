@@ -16,6 +16,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   String? _chatId;
   String? _currentUserId;
 
+  bool _isPrivate = false;
+  String? _partnerId;
+
   int _currentPage = 1;
   static const int _pageLimit = 20;
 
@@ -33,8 +36,15 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   String? get currentUserId => _currentUserId;
 
-  Future<void> init(String chatId) async {
+  Future<void> init(
+    String chatId, {
+    bool isPrivate = false,
+    String? partnerId,
+  }) async {
     _chatId = chatId;
+    _isPrivate = isPrivate;
+    _partnerId = partnerId;
+
     _currentUserId = await LocalStorage.getUserId();
 
     _currentPage = 1;
@@ -51,7 +61,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     await pusherService.subscribeToChat(
       chatId: chatId,
       currentUserId: _currentUserId!,
-      isPrivate: false,
+      isPrivate: _isPrivate,
+      partnerId: _partnerId,
     );
 
     _messageSubscription =
@@ -86,7 +97,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   Future<void> sendMessage(String content) async {
     if (_chatId == null || content.trim().isEmpty) return;
+
     await pusherService.whenConnected;
+
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
 
     final optimisticMessage = ChatMessage(
@@ -131,6 +144,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       );
 
       final index = _messages.indexWhere((m) => m.id == tempId);
+
       if (index != -1) {
         _messages[index] = serverMessage;
       } else {
@@ -143,12 +157,15 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       ));
     } catch (e) {
       _messages.removeWhere((m) => m.id == tempId);
+
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
         hasMore: _hasMore,
       ));
     }
   }
+
+  // ================= PUSHER MESSAGE =================
 
   void _onPusherNewMessage(Map<String, dynamic> data) {
     if (isClosed) return;
@@ -159,6 +176,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
           : data;
 
       final messageChatId = messageData['chatId']?.toString() ?? '';
+
       if (messageChatId != _chatId) return;
 
       final senderData = messageData['senderData'] ?? {};
@@ -174,6 +192,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
           userImageUrl = oldMessage.senderId.userImage.secureUrl;
         } catch (_) {}
       }
+
       final newMessage = ChatMessage(
         id: messageData['id']?.toString() ?? DateTime.now().toString(),
         chatId: messageChatId,
@@ -194,8 +213,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       if (_messages.any((m) => m.id == newMessage.id)) return;
 
-      // _messages.add(newMessage);
       _messages.add(newMessage);
+
       _messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
       emit(PublicChatMessagesLoaded(
@@ -206,14 +225,22 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       print('❌ error handling pusher message $e');
     }
   }
-// @override
-// Future<void> close() {
-//   _messageSubscription?.cancel();
-//
-//   if (_chatId != null) {
-//     pusherService.unsubscribeFromChatChannel(_chatId!);
-//   }
-//
-//   return super.close();
-// }
+
+  // ================= CLOSE =================
+
+  @override
+  Future<void> close() {
+    _messageSubscription?.cancel();
+
+    if (_chatId != null && _currentUserId != null) {
+      pusherService.unsubscribeFromChat(
+        _chatId!,
+        isPrivate: _isPrivate,
+        partnerId: _partnerId,
+        currentUserId: _currentUserId!,
+      );
+    }
+
+    return super.close();
+  }
 }

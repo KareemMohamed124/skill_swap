@@ -197,9 +197,11 @@ class _PrivateChatListBody extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (_) => BlocProvider(
-                create: (_) => sl<PrivateChatMessagesCubit>()..init(chat.id),
+                create: (_) => sl<PrivateChatMessagesCubit>()
+                  ..init(chat.id, partnerId: chat.partnerId),
                 child: PrivateChatScreen(
                   chatId: chat.id,
+                  partnerId: chat.partnerId,
                   partnerName: chat.partnerName,
                   partnerImage: chat.partnerImage,
                 ),

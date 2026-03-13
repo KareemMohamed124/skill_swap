@@ -8,8 +8,6 @@ import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/dependency_injection/injection.dart';
 import 'message_bubble.dart';
 
-enum ChatType { private, public }
-
 class ChatScreen extends StatefulWidget {
   final String chatId;
   final String channelName;
@@ -32,9 +30,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Inject proper Cubit (Private or Public)
     _chatCubit = sl<PublicChatMessagesCubit>();
-    _chatCubit.init(widget.chatId);
+    _chatCubit.init(widget.chatId, isPrivate: false);
   }
 
   void _sendMessage() {
@@ -85,9 +82,10 @@ class _ChatScreenState extends State<ChatScreen> {
             message: message,
             isMe: isMe,
             senderName: "User",
-            senderImage: message.senderId.userImage.secureUrl,
-            // ? message.senderId.userImage.secureUrl
-            // : null,
+            senderImage:
+                message.senderId.userImage?.secureUrl?.isNotEmpty == true
+                    ? message.senderId.userImage!.secureUrl
+                    : null,
             showAvatar: showAvatar,
             showName: showName,
           );

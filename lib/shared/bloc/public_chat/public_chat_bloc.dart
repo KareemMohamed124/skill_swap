@@ -23,7 +23,7 @@ class PublicChatBloc extends Bloc<PublicChatEvent, PublicChatState> {
     emit(PublicChatsLoading());
 
     try {
-      final chats = await repository.getJoinedTrackChats();
+      final chats = await repository.getPublicChats();
 
       emit(PublicChatsLoaded(
         ChatResponseModel(
