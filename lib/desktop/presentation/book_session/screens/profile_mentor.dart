@@ -340,7 +340,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                           body: widget,
                           rightPanel: BlocProvider(
                             create: (_) =>
-                                sl<PrivateChatMessagesCubit>()..init(chatId),
+                                sl<PrivateChatMessagesCubit>()..init(chatId, partnerId: widget.id),
                             child: PrivateChatScreen(
                               chatId: chatId,
                               partnerName: widget.name,

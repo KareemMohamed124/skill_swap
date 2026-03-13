@@ -14,8 +14,11 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
 
   String? _chatId;
   String? _currentUserId;
+  String? _partnerId;
+
   int _currentPage = 1;
   static const int _pageLimit = 20;
+
   List<ChatMessageModel> _messages = [];
   bool _hasMore = true;
 
@@ -30,27 +33,29 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
 
   String? get currentUserId => _currentUserId;
 
-  /// Initialize the cubit for a given chat
-  Future<void> init(String chatId) async {
+  Future<void> init(String chatId, {String? partnerId}) async {
     _chatId = chatId;
+    _partnerId = partnerId;
     _currentUserId = await LocalStorage.getUserId();
+
     _currentPage = 1;
     _messages = [];
     _hasMore = true;
 
-    // Cancel any previous subscription
     await _messageSubscription?.cancel();
 
-    // Init Pusher Service
     if (_currentUserId != null) {
       await pusherService.init(userId: _currentUserId!);
+      await pusherService.whenConnected;
     }
 
-    // Subscribe to Pusher for this chat
-    pusherService.subscribeToChat(
-        chatId: chatId, currentUserId: _currentUserId!, isPrivate: true);
+    await pusherService.subscribeToChat(
+      chatId: chatId,
+      currentUserId: _currentUserId!,
+      isPrivate: true,
+      partnerId: _partnerId,
+    );
 
-    // Listen to message stream (broadcast stream allows multiple listeners)
     _messageSubscription =
         pusherService.messageStream.listen(_onPusherNewMessage);
 
@@ -84,7 +89,7 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
     final currentState = state;
     if (currentState is PrivateChatMessagesLoaded &&
         currentState.isLoadingMore) {
-      return; // Already loading more
+      return;
     }
 
     if (currentState is PrivateChatMessagesLoaded) {
@@ -103,7 +108,6 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
         _hasMore = false;
       } else {
         _hasMore = olderMessages.length >= _pageLimit;
-        // Prepend older messages (they come newest-first from API, reverse for display)
         _messages = [...olderMessages.reversed, ..._messages];
       }
 
@@ -113,7 +117,7 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
         isLoadingMore: false,
       ));
     } catch (e) {
-      _currentPage--; // Revert page increment on failure
+      _currentPage--;
       if (currentState is PrivateChatMessagesLoaded) {
         emit(currentState.copyWith(isLoadingMore: false));
       }
@@ -123,6 +127,7 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
   /// Send a message with optimistic UI update
   Future<void> sendMessage(String content) async {
     if (_chatId == null || content.trim().isEmpty) return;
+    await pusherService.whenConnected;
 
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
     final optimisticMessage = ChatMessageModel(
@@ -135,7 +140,6 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
       isPending: true,
     );
 
-    // Add optimistic message immediately
     _messages.add(optimisticMessage);
     emit(PrivateChatMessagesLoaded(
       messages: List.from(_messages),
@@ -149,10 +153,11 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
         'text',
       );
 
-      // Replace optimistic message with server message
       final index = _messages.indexWhere((m) => m.id == tempId);
       if (index != -1) {
         _messages[index] = serverMessage;
+      } else {
+        _messages.add(serverMessage);
       }
 
       emit(PrivateChatMessagesLoaded(
@@ -160,7 +165,6 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
         hasMore: _hasMore,
       ));
     } catch (e) {
-      // Remove failed optimistic message
       _messages.removeWhere((m) => m.id == tempId);
       emit(PrivateChatMessagesLoaded(
         messages: List.from(_messages),
@@ -174,12 +178,10 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
     if (isClosed) return;
 
     try {
-      // Parse the incoming message
       final messageData = data['message'] is Map<String, dynamic>
           ? data['message'] as Map<String, dynamic>
           : data;
 
-      // Check if this message belongs to the current chat
       final messageChatId = messageData['chat']?.toString() ??
           messageData['chatId']?.toString() ??
           '';
@@ -190,7 +192,6 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
 
       // Don't add if it's our own message (already added via optimistic update)
       if (newMessage.senderId == _currentUserId) {
-        // Check if we already have this message (from optimistic update)
         final exists = _messages.any((m) =>
             m.id == newMessage.id ||
             (m.content == newMessage.content &&
@@ -203,21 +204,14 @@ class PrivateChatMessagesCubit extends Cubit<PrivateChatMessagesState> {
       if (_messages.any((m) => m.id == newMessage.id)) return;
 
       _messages.add(newMessage);
+      _messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
       emit(PrivateChatMessagesLoaded(
         messages: List.from(_messages),
         hasMore: _hasMore,
       ));
     } catch (e) {
-      print('❌ [ChatCubit] Error handling Pusher message: $e');
+      print('❌ error handling pusher message $e');
     }
   }
-
-// @override
-// Future<void> close() {
-//   _messageSubscription?.cancel();
-//   if (_chatId != null) {
-//     pusherService.unsubscribeFromChatChannel(_chatId!);
-//   }
-//   return super.close();
-// }
 }

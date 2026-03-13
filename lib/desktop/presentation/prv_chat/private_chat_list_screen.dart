@@ -8,7 +8,7 @@ import '../../../shared/data/models/chat/chat_models.dart';
 import '../../../shared/dependency_injection/injection.dart';
 
 class PrivateChatListDesktop extends StatelessWidget {
-  final Function(String chatId, String partnerName, String? partnerImage)?
+  final Function(String chatId, String partnerId, String partnerName, String? partnerImage)?
       onChatSelected;
 
   const PrivateChatListDesktop({super.key, this.onChatSelected});
@@ -23,7 +23,7 @@ class PrivateChatListDesktop extends StatelessWidget {
 }
 
 class _PrivateChatListBody extends StatelessWidget {
-  final Function(String chatId, String partnerName, String? partnerImage)?
+  final Function(String chatId, String partnerId, String partnerName, String? partnerImage)?
       onChatSelected;
 
   const _PrivateChatListBody({this.onChatSelected});
@@ -184,7 +184,7 @@ class _PrivateChatListBody extends StatelessWidget {
         ),
         onTap: () {
           context.read<PrivateChatListCubit>().markChatAsRead(chat.id);
-          onChatSelected?.call(chat.id, chat.partnerName, chat.partnerImage);
+          onChatSelected?.call(chat.id, chat.partnerId, chat.partnerName, chat.partnerImage);
         },
       ),
     );

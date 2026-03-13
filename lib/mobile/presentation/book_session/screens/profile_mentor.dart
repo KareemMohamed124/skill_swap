@@ -249,7 +249,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                     Get.to(
                       BlocProvider(
                         create: (_) =>
-                            sl<PrivateChatMessagesCubit>()..init(chatId),
+                            sl<PrivateChatMessagesCubit>()..init(chatId, partnerId: widget.id),
                         child: PrivateChatScreen(
                           chatId: chatId,
                           partnerName: widget.name,
