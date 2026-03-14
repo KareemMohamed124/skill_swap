@@ -149,10 +149,7 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<List<GetChatModel>> getPublicChats() async {
     final response = await api.getMyChatsPublic();
 
-    final chats = (response as List)
-        .map((e) => GetChatModel.fromJson(e))
-        .where((chat) => chat.type == "track")
-        .toList();
+    final chats = response.chats.where((chat) => chat.type == "track").toList();
 
     return chats;
   }

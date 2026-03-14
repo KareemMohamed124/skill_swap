@@ -5,7 +5,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
 import '../../../../main.dart';
-import '../../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import '../../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../../shared/bloc/report_bloc/report_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/data/models/report_user/report_request.dart';
@@ -339,11 +339,14 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                         desktopKey.currentState?.openSidePage(
                           body: widget,
                           rightPanel: BlocProvider(
-                            create: (_) =>
-                                sl<PrivateChatMessagesCubit>()..init(chatId),
+                            create: (_) => sl<PublicChatMessagesCubit>()
+                              ..init(chatId,
+                                  partnerId: widget.id, isPrivate: true),
                             child: PrivateChatScreen(
                               chatId: chatId,
                               partnerName: widget.name,
+                              partnerId: widget.id,
+                              partnerImage: widget.image,
                             ),
                           ),
                         );

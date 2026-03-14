@@ -7,7 +7,7 @@ import 'typing_indicator.dart';
 class MessageBubble extends StatelessWidget {
   final dynamic message;
   final bool isMe;
-  final String? senderName;
+  final String senderName;
   final String? senderImage;
   final bool showAvatar;
   final bool showName;
@@ -17,7 +17,7 @@ class MessageBubble extends StatelessWidget {
     super.key,
     required this.message,
     required this.isMe,
-    this.senderName,
+    required this.senderName,
     this.senderImage,
     this.showAvatar = true,
     this.showName = true,
@@ -34,22 +34,20 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    if (senderImage != null && senderImage!.isNotEmpty) {
-      return CircleAvatar(
-        radius: 16,
-        backgroundImage: NetworkImage(senderImage!),
-      );
-    }
-
     return CircleAvatar(
-      radius: 16,
       backgroundColor: AppPalette.primary,
-      child: Text(
-        senderName != null && senderName!.isNotEmpty
-            ? senderName![0].toUpperCase()
-            : "?",
-        style: const TextStyle(color: Colors.white),
-      ),
+      backgroundImage: senderImage != null && senderImage!.isNotEmpty
+          ? NetworkImage(senderImage!)
+          : null,
+      child: senderImage == null || senderImage!.isEmpty
+          ? Text(
+              senderName.isNotEmpty ? senderName[0].toUpperCase() : '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : null,
     );
   }
 

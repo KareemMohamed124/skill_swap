@@ -34,8 +34,6 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   void initState() {
     super.initState();
     _chatCubit = context.read<PublicChatMessagesCubit>();
-    _chatCubit.init(widget.chatId,
-        isPrivate: true, partnerId: widget.partnerId);
   }
 
   @override
@@ -50,7 +48,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          0,
+          _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -72,7 +70,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
 
     return ListView.builder(
       controller: _scrollController,
-      reverse: true,
+      // reverse: true,
       padding: const EdgeInsets.all(12),
       itemCount: messages.length,
       itemBuilder: (context, index) {

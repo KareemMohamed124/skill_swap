@@ -15,7 +15,7 @@ class PrvMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: isMe ? Alignment.centerLeft : Alignment.centerRight,
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -25,9 +25,9 @@ class PrvMessageBubble extends StatelessWidget {
             topLeft: const Radius.circular(14),
             topRight: const Radius.circular(14),
             bottomLeft:
-                isMe ? const Radius.circular(0) : const Radius.circular(14),
+            isMe ? const Radius.circular(14) : const Radius.circular(0),
             bottomRight:
-                isMe ? const Radius.circular(14) : const Radius.circular(0),
+            isMe ? const Radius.circular(0) : const Radius.circular(14),
           ),
         ),
         child: Text(

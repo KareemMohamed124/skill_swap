@@ -60,9 +60,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
     await pusherService.subscribeToChat(
       chatId: chatId,
-      currentUserId: _currentUserId!,
-      isPrivate: _isPrivate,
-      partnerId: _partnerId,
     );
 
     _messageSubscription =
@@ -83,7 +80,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         limit: _pageLimit,
       );
 
-      _messages = response.messages.reversed.toList();
+      _messages = response.messages.toList();
       _hasMore = response.messages.length >= _pageLimit;
 
       emit(PublicChatMessagesLoaded(
@@ -165,8 +162,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ================= PUSHER MESSAGE =================
-
   void _onPusherNewMessage(Map<String, dynamic> data) {
     if (isClosed) return;
 
@@ -226,8 +221,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ================= CLOSE =================
-
   @override
   Future<void> close() {
     _messageSubscription?.cancel();
@@ -235,9 +228,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     if (_chatId != null && _currentUserId != null) {
       pusherService.unsubscribeFromChat(
         _chatId!,
-        isPrivate: _isPrivate,
-        partnerId: _partnerId,
-        currentUserId: _currentUserId!,
+        // isPrivate: _isPrivate,
+        // partnerId: _partnerId,
+        // currentUserId: _currentUserId!,
       );
     }
 
