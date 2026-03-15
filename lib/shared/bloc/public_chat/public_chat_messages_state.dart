@@ -41,7 +41,7 @@ class PublicChatMessagesLoaded extends PublicChatMessagesState {
     bool clearReply = false,
   }) {
     return PublicChatMessagesLoaded(
-      messages: messages ?? this.messages,
+      messages: messages ?? List.from(this.messages),
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       replyMessage: clearReply ? null : (replyMessage ?? this.replyMessage),

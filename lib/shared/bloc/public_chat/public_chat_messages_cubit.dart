@@ -38,7 +38,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   String? get chatId => _chatId;
 
   String? get currentUserId => _currentUserId;
-  
+
   ChatMessage? get replyMessage => _replyMessage;
 
   void setReplyMessage(ChatMessage message) {
@@ -132,13 +132,15 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       readBy: [],
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      replyTo: _replyMessage != null ? ReplyMessage(
-        id: _replyMessage!.id,
-        content: _replyMessage!.content,
-        type: _replyMessage!.messageType,
-        senderName: _replyMessage!.senderId.name ?? 'Unknown',
-        createdAt: _replyMessage!.createdAt,
-      ) : null,
+      replyTo: _replyMessage != null
+          ? ReplyMessage(
+              id: _replyMessage!.id,
+              content: _replyMessage!.content,
+              type: _replyMessage!.messageType,
+              senderName: _replyMessage!.senderId.name ?? 'Unknown',
+              createdAt: _replyMessage!.createdAt,
+            )
+          : null,
       v: 0,
     );
 
@@ -237,7 +239,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         createdAt:
             DateTime.tryParse(messageData['timestamp'] ?? '') ?? DateTime.now(),
         updatedAt: DateTime.now(),
-        replyTo: messageData['replyTo'] != null ? ReplyMessage.fromJson(messageData['replyTo']) : null,
+        replyTo: messageData['replyTo'] != null
+            ? ReplyMessage.fromJson(messageData['replyTo'])
+            : null,
         v: 0,
       );
 

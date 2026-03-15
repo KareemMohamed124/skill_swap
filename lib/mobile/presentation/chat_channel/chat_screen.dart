@@ -54,7 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
       Scrollable.ensureVisible(
         key.currentContext!,
         duration: const Duration(milliseconds: 300),
-        alignment: 0.5, // Center the message
+        alignment: 0.5,
       );
       setState(() {
         _highlightedMessageId = messageId;
@@ -83,8 +83,8 @@ class _ChatScreenState extends State<ChatScreen> {
               leading: const Icon(Icons.reply),
               title: const Text('Reply'),
               onTap: () {
-                Navigator.pop(context);
                 _chatCubit.setReplyMessage(message);
+                Navigator.pop(context);
               },
             ),
           ],
@@ -107,55 +107,55 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList(List messages) {
     return ListView.builder(
-        controller: _scrollController,
-        //     reverse: true,
-        padding: const EdgeInsets.all(12),
-        itemCount: messages.length,
-        itemBuilder: (context, index) {
-          final ChatMessage message = messages[index];
-          final isMe = message.senderId.id == _chatCubit.currentUserId;
-          
-          if (!_messageKeys.containsKey(message.id)) {
-            _messageKeys[message.id] = GlobalKey();
+      controller: _scrollController,
+      padding: const EdgeInsets.all(12),
+      itemCount: messages.length,
+      itemBuilder: (context, index) {
+        final ChatMessage message = messages[index];
+        final isMe = message.senderId.id == _chatCubit.currentUserId;
+
+        if (!_messageKeys.containsKey(message.id)) {
+          _messageKeys[message.id] = GlobalKey();
+        }
+
+        bool showAvatar = true;
+        bool showName = true;
+
+        if (index > 0) {
+          final previousMessage = messages[index - 1];
+          if (previousMessage.senderId.id == message.senderId.id) {
+            showAvatar = false;
+            showName = false;
           }
+        }
 
-          bool showAvatar = true;
-          bool showName = true;
-
-          if (index > 0) {
-            final previousMessage = messages[index - 1];
-
-            if (previousMessage.senderId.id == message.senderId.id) {
-              showAvatar = false;
-              showName = false;
-            }
-          }
-
-          return SwipeableMessage(
-            onSwipeReply: () => _chatCubit.setReplyMessage(message),
-            child: Container(
-              key: _messageKeys[message.id],
-              child: MessageBubble(
-                message: message,
-                isMe: isMe,
-                senderName: message.senderId.name ?? "User",
-                senderImage: message.senderId.userImage.secureUrl,
-                showAvatar: showAvatar,
-                showName: showName,
-                isHighlighted: _highlightedMessageId == message.id,
-                onLongPress: () => _showReplyOptions(context, message),
-                onTapReply: message.replyTo != null
-                    ? () => _scrollToMessage(message.replyTo!.id)
-                    : null,
-              ),
+        return SwipeableMessage(
+          onSwipeReply: () => _chatCubit.setReplyMessage(message),
+          child: Container(
+            key: _messageKeys[message.id],
+            child: MessageBubble(
+              message: message,
+              isMe: isMe,
+              senderName: message.senderId.name ?? "User",
+              senderImage: message.senderId.userImage.secureUrl,
+              showAvatar: showAvatar,
+              showName: showName,
+              isHighlighted: _highlightedMessageId == message.id,
+              onLongPress: () => _showReplyOptions(context, message),
+              onTapReply: message.replyTo != null
+                  ? () => _scrollToMessage(message.replyTo!.id)
+                  : null,
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Widget _messageInput(PublicChatMessagesState state) {
     return SafeArea(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (state is PublicChatMessagesLoaded && state.replyMessage != null)
             ReplyPreviewBar(
@@ -240,34 +240,39 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child:
-                  BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
-                builder: (context, state) {
-                  if (state is PublicChatMessagesLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+        body: BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
+          builder: (context, state) {
+            if (state is PublicChatMessagesLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-                  if (state is PublicChatMessagesLoaded) {
-                    return _buildMessageList(state.messages);
-                  }
+            if (state is PublicChatMessagesError) {
+              return Center(child: Text(state.message));
+            }
 
-                  if (state is PublicChatMessagesError) {
-                    return Center(child: Text(state.message));
-                  }
+            // Loaded state
+            final messages =
+                state is PublicChatMessagesLoaded ? state.messages : [];
 
-                  return const SizedBox();
-                },
-              ),
-            ),
-            BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
-              builder: (context, state) {
-                return _messageInput(state);
-              },
-            ),
-          ],
+            return Column(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      if (state is PublicChatMessagesLoaded &&
+                          state.replyMessage != null)
+                        ReplyPreviewBar(
+                          replyMessage: state.replyMessage!,
+                          onCancel: () => _chatCubit.clearReply(),
+                        ),
+                      Expanded(child: _buildMessageList(messages)),
+                    ],
+                  ),
+                ),
+                _messageInput(state),
+              ],
+            );
+          },
         ),
       ),
     );
