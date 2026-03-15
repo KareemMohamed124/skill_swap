@@ -74,11 +74,17 @@ class ChatApiService {
   Future<Map<String, dynamic>> sendMessage(
     String chatId,
     String content,
-    String type,
-  ) async {
+    String type, {
+    String? replyTo,
+  }) async {
+    final Map<String, dynamic> data = {'content': content, 'type': type};
+    if (replyTo != null) {
+      data['replyTo'] = replyTo;
+    }
+
     final response = await _dio.post(
       '$_baseUrl/chat/$chatId/message',
-      data: {'content': content, 'type': type},
+      data: data,
     );
 
     return response.data is Map<String, dynamic>
@@ -90,11 +96,17 @@ class ChatApiService {
   Future<Map<String, dynamic>> sendMessagePublic(
     String chatId,
     String content,
-    String type,
-  ) async {
+    String type, {
+    String? replyTo,
+  }) async {
+    final Map<String, dynamic> data = {'content': content, 'type': type};
+    if (replyTo != null) {
+      data['replyTo'] = replyTo;
+    }
+
     final response = await _dio.post(
       '$_baseUrl/chat/$chatId/message',
-      data: {'content': content, 'type': type},
+      data: data,
     );
 
     return response.data is Map<String, dynamic>

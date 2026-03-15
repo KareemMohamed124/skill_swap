@@ -6,6 +6,9 @@ import 'package:skill_swap/mobile/presentation/prv_chat/prv_message_bubble.dart'
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
 import '../../../shared/core/theme/app_palette.dart';
+import '../../../shared/common_ui/reply_preview_bar.dart';
+import '../../../shared/common_ui/swipeable_message.dart';
+import '../../../shared/data/models/public_chat/get_history_messages.dart';
 
 class PrivateChatScreen extends StatefulWidget {
   final String chatId;
@@ -29,6 +32,8 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   late PublicChatMessagesCubit _chatCubit;
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final Map<String, GlobalKey> _messageKeys = {};
+  String? _highlightedMessageId;
 
   @override
   void initState() {
@@ -65,6 +70,51 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     _scrollToBottom();
   }
 
+  void _scrollToMessage(String messageId) {
+    final key = _messageKeys[messageId];
+    if (key != null && key.currentContext != null) {
+      Scrollable.ensureVisible(
+        key.currentContext!,
+        duration: const Duration(milliseconds: 300),
+        alignment: 0.5, // Center the message
+      );
+      setState(() {
+        _highlightedMessageId = messageId;
+      });
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          setState(() {
+            _highlightedMessageId = null;
+          });
+        }
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Message not available")),
+      );
+    }
+  }
+
+  void _showReplyOptions(BuildContext context, ChatMessage message) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.reply),
+              title: const Text('Reply'),
+              onTap: () {
+                Navigator.pop(context);
+                _chatCubit.setReplyMessage(message);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMessageList(List messages) {
     final currentUserId = _chatCubit.currentUserId;
 
@@ -74,44 +124,68 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
       padding: const EdgeInsets.all(12),
       itemCount: messages.length,
       itemBuilder: (context, index) {
-        final message = messages[index];
+        final ChatMessage message = messages[index];
         final isMe = message.senderId.id == currentUserId;
 
-        return PrvMessageBubble(
-          message: message.content ?? '',
-          isMe: isMe,
+        if (!_messageKeys.containsKey(message.id)) {
+          _messageKeys[message.id] = GlobalKey();
+        }
+
+        return SwipeableMessage(
+          onSwipeReply: () => _chatCubit.setReplyMessage(message),
+          child: Container(
+            key: _messageKeys[message.id],
+            child: PrvMessageBubble(
+              message: message,
+              isMe: isMe,
+              isHighlighted: _highlightedMessageId == message.id,
+              onLongPress: () => _showReplyOptions(context, message),
+              onTapReply: message.replyTo != null
+                  ? () => _scrollToMessage(message.replyTo!.id)
+                  : null,
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget _messageInput() {
+  Widget _messageInput(PublicChatMessagesState state) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: "Message...",
-                  fillColor: Theme.of(context).cardColor,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+      child: Column(
+        children: [
+          if (state is PublicChatMessagesLoaded && state.replyMessage != null)
+            ReplyPreviewBar(
+              replyMessage: state.replyMessage!,
+              onCancel: () => _chatCubit.clearReply(),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Message...",
+                      fillColor: Theme.of(context).cardColor,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
-                onSubmitted: (_) => _sendMessage(),
-              ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.send, color: AppPalette.primary),
+                  onPressed: _sendMessage,
+                )
+              ],
             ),
-            const SizedBox(width: 10),
-            IconButton(
-              icon: Icon(Icons.send, color: AppPalette.primary),
-              onPressed: _sendMessage,
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -212,7 +286,11 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
               },
             ),
           ),
-          _messageInput(),
+          BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
+            builder: (context, state) {
+              return _messageInput(state);
+            },
+          ),
         ],
       ),
     );

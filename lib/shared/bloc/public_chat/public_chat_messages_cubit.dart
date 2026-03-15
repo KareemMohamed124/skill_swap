@@ -7,6 +7,7 @@ import '../../data/models/public_chat/common_sender.dart';
 import '../../data/models/public_chat/get_history_messages.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../helper/local_storage.dart';
+import '../../data/models/public_chat/reply_message.dart';
 import 'public_chat_messages_state.dart';
 
 class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
@@ -25,6 +26,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   List<ChatMessage> _messages = [];
   bool _hasMore = true;
 
+  ChatMessage? _replyMessage;
+
   StreamSubscription<Map<String, dynamic>>? _messageSubscription;
 
   PublicChatMessagesCubit({
@@ -35,6 +38,22 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   String? get chatId => _chatId;
 
   String? get currentUserId => _currentUserId;
+  
+  ChatMessage? get replyMessage => _replyMessage;
+
+  void setReplyMessage(ChatMessage message) {
+    _replyMessage = message;
+    if (state is PublicChatMessagesLoaded) {
+      emit((state as PublicChatMessagesLoaded).copyWith(replyMessage: message));
+    }
+  }
+
+  void clearReply() {
+    _replyMessage = null;
+    if (state is PublicChatMessagesLoaded) {
+      emit((state as PublicChatMessagesLoaded).copyWith(clearReply: true));
+    }
+  }
 
   Future<void> init(
     String chatId, {
@@ -50,6 +69,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _currentPage = 1;
     _messages = [];
     _hasMore = true;
+    _replyMessage = null;
 
     await _messageSubscription?.cancel();
 
@@ -86,6 +106,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
         hasMore: _hasMore,
+        replyMessage: _replyMessage,
       ));
     } catch (e) {
       emit(PublicChatMessagesError(message: e.toString()));
@@ -111,6 +132,13 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       readBy: [],
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      replyTo: _replyMessage != null ? ReplyMessage(
+        id: _replyMessage!.id,
+        content: _replyMessage!.content,
+        type: _replyMessage!.messageType,
+        senderName: _replyMessage!.senderId.name ?? 'Unknown',
+        createdAt: _replyMessage!.createdAt,
+      ) : null,
       v: 0,
     );
 
@@ -119,13 +147,18 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     emit(PublicChatMessagesLoaded(
       messages: List.from(_messages),
       hasMore: _hasMore,
+      replyMessage: _replyMessage,
     ));
+
+    final replyToId = _replyMessage?.id;
+    clearReply();
 
     try {
       final serverMessageResponse = await chatRepository.sendMessagePublic(
         _chatId!,
         content.trim(),
         'text',
+        replyTo: replyToId,
       );
 
       final serverMessage = ChatMessage(
@@ -137,6 +170,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         readBy: serverMessageResponse.data.readBy,
         createdAt: serverMessageResponse.data.createdAt,
         updatedAt: serverMessageResponse.data.updatedAt,
+        replyTo: serverMessageResponse.data.replyTo,
         v: serverMessageResponse.data.v,
       );
 
@@ -151,6 +185,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
         hasMore: _hasMore,
+        replyMessage: _replyMessage,
       ));
     } catch (e) {
       _messages.removeWhere((m) => m.id == tempId);
@@ -158,6 +193,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
         hasMore: _hasMore,
+        replyMessage: _replyMessage,
       ));
     }
   }
@@ -201,6 +237,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         createdAt:
             DateTime.tryParse(messageData['timestamp'] ?? '') ?? DateTime.now(),
         updatedAt: DateTime.now(),
+        replyTo: messageData['replyTo'] != null ? ReplyMessage.fromJson(messageData['replyTo']) : null,
         v: 0,
       );
 
@@ -215,6 +252,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
         hasMore: _hasMore,
+        replyMessage: _replyMessage,
       ));
     } catch (e) {
       print('❌ error handling pusher message $e');

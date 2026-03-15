@@ -20,26 +20,31 @@ class PublicChatMessagesLoaded extends PublicChatMessagesState {
   final List<ChatMessage> messages;
   final bool hasMore;
   final bool isLoadingMore;
+  final ChatMessage? replyMessage;
 
   const PublicChatMessagesLoaded({
     required this.messages,
     this.hasMore = true,
     this.isLoadingMore = false,
+    this.replyMessage,
   });
 
   @override
-  List<Object?> get props => [messages, hasMore, isLoadingMore];
+  List<Object?> get props => [messages, hasMore, isLoadingMore, replyMessage];
 
   /// Copy with for pagination / loading more
   PublicChatMessagesLoaded copyWith({
     List<ChatMessage>? messages,
     bool? hasMore,
     bool? isLoadingMore,
+    ChatMessage? replyMessage,
+    bool clearReply = false,
   }) {
     return PublicChatMessagesLoaded(
       messages: messages ?? this.messages,
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      replyMessage: clearReply ? null : (replyMessage ?? this.replyMessage),
     );
   }
 }

@@ -20,10 +20,10 @@ abstract class ChatRepository {
       {int page = 1, int limit = 20});
 
   Future<ChatMessageModel> sendMessage(
-      String chatId, String content, String type);
+      String chatId, String content, String type, {String? replyTo});
 
   Future<SendMessageResponse> sendMessagePublic(
-      String chatId, String content, String type);
+      String chatId, String content, String type, {String? replyTo});
 
   Future<TracksResponse> getTracks();
 

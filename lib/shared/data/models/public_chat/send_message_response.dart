@@ -1,4 +1,5 @@
 import 'common_sender.dart';
+import 'reply_message.dart';
 
 class SendMessageResponse {
   final String message;
@@ -28,6 +29,7 @@ class ChatData {
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final ReplyMessage? replyTo;
   final int v;
 
   ChatData({
@@ -39,6 +41,7 @@ class ChatData {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
+    this.replyTo,
     required this.v,
   });
 
@@ -51,6 +54,7 @@ class ChatData {
         id: json['_id'],
         createdAt: DateTime.parse(json['createdAt']),
         updatedAt: DateTime.parse(json['updatedAt']),
+        replyTo: json['replyTo'] != null ? ReplyMessage.fromJson(json['replyTo']) : null,
         v: json['__v'],
       );
 
@@ -63,6 +67,7 @@ class ChatData {
         '_id': id,
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
+        if (replyTo != null) 'replyTo': replyTo!.toJson(),
         '__v': v,
       };
 }

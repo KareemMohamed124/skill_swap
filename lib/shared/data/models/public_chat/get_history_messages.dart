@@ -1,4 +1,5 @@
 import 'common_sender.dart';
+import 'reply_message.dart';
 
 class ChatHistoryResponse {
   final String message;
@@ -47,6 +48,7 @@ class ChatMessage {
   final List<dynamic> readBy;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final ReplyMessage? replyTo;
   final int v;
 
   ChatMessage({
@@ -58,6 +60,7 @@ class ChatMessage {
     required this.readBy,
     required this.createdAt,
     required this.updatedAt,
+    this.replyTo,
     required this.v,
   });
 
@@ -70,6 +73,7 @@ class ChatMessage {
         readBy: json['readBy'] ?? [],
         createdAt: DateTime.parse(json['createdAt']),
         updatedAt: DateTime.parse(json['updatedAt']),
+        replyTo: json['replyTo'] != null ? ReplyMessage.fromJson(json['replyTo']) : null,
         v: json['__v'],
       );
 
@@ -82,6 +86,7 @@ class ChatMessage {
         'readBy': readBy,
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
+        if (replyTo != null) 'replyTo': replyTo!.toJson(),
         '__v': v,
       };
 }

@@ -1,16 +1,19 @@
 class Sender {
   final String id;
+  final String? name;
   final UserImage userImage;
 
-  Sender({required this.id, required this.userImage});
+  Sender({required this.id, this.name, required this.userImage});
 
   factory Sender.fromJson(Map<String, dynamic> json) => Sender(
         id: json['_id'],
+        name: json['name'],
         userImage: UserImage.fromJson(json['userImage']),
       );
 
   Map<String, dynamic> toJson() => {
         '_id': id,
+        if (name != null) 'name': name,
         'userImage': userImage.toJson(),
       };
 }

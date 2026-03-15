@@ -72,9 +72,9 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<ChatMessageModel> sendMessage(
-      String chatId, String content, String type) async {
+      String chatId, String content, String type, {String? replyTo}) async {
     try {
-      final response = await api.sendMessage(chatId, content, type);
+      final response = await api.sendMessage(chatId, content, type, replyTo: replyTo);
       // The response may wrap the message in a key
       final messageData = response['message'] is Map<String, dynamic>
           ? response['message'] as Map<String, dynamic>
@@ -188,9 +188,9 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<SendMessageResponse> sendMessagePublic(
-      String chatId, String content, String type) async {
+      String chatId, String content, String type, {String? replyTo}) async {
     try {
-      final response = await api.sendMessagePublic(chatId, content, type);
+      final response = await api.sendMessagePublic(chatId, content, type, replyTo: replyTo);
 
       return SendMessageResponse.fromJson(response);
     } on DioException catch (e) {
