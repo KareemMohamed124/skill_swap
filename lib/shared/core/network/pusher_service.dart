@@ -144,16 +144,19 @@ class PusherService {
   void _handleEvent(PusherEvent event) {
     if (event.data == null) return;
 
-    if (event.eventName != "receive_message") return;
+    // Forward receive_message, message_edited, and message_deleted events
+    final supportedEvents = ['receive_message', 'message_edited', 'message_deleted'];
+    if (!supportedEvents.contains(event.eventName)) return;
 
     try {
       final data = jsonDecode(event.data!);
 
       data["_pusherChannel"] = event.channelName;
+      data["_eventType"] = event.eventName;
 
       _messageController.add(data);
 
-      print("📨 message from ${event.channelName}");
+      print("📨 ${event.eventName} from ${event.channelName}");
     } catch (e) {
       print("❌ parse error $e");
     }

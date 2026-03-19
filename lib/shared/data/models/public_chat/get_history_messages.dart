@@ -50,6 +50,7 @@ class ChatMessage {
   final DateTime updatedAt;
   final ReplyMessage? replyTo;
   final int v;
+  final bool isEdited;
 
   ChatMessage({
     required this.id,
@@ -62,6 +63,7 @@ class ChatMessage {
     required this.updatedAt,
     this.replyTo,
     required this.v,
+    this.isEdited = false,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -75,6 +77,7 @@ class ChatMessage {
         updatedAt: DateTime.parse(json['updatedAt']),
         replyTo: json['replyTo'] != null ? ReplyMessage.fromJson(json['replyTo']) : null,
         v: json['__v'],
+        isEdited: json['isEdited'] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -88,5 +91,34 @@ class ChatMessage {
         'updatedAt': updatedAt.toIso8601String(),
         if (replyTo != null) 'replyTo': replyTo!.toJson(),
         '__v': v,
+        'isEdited': isEdited,
       };
+
+  ChatMessage copyWith({
+    String? id,
+    String? chatId,
+    Sender? senderId,
+    String? content,
+    String? messageType,
+    List<dynamic>? readBy,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    ReplyMessage? replyTo,
+    int? v,
+    bool? isEdited,
+  }) {
+    return ChatMessage(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
+      senderId: senderId ?? this.senderId,
+      content: content ?? this.content,
+      messageType: messageType ?? this.messageType,
+      readBy: readBy ?? this.readBy,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      replyTo: replyTo ?? this.replyTo,
+      v: v ?? this.v,
+      isEdited: isEdited ?? this.isEdited,
+    );
+  }
 }

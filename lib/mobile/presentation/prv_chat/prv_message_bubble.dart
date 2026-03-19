@@ -62,6 +62,18 @@ class PrvMessageBubble extends StatelessWidget {
                   fontSize: 15,
                 ),
               ),
+              if (message.isEdited)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    'edited',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontStyle: FontStyle.italic,
+                      color: isMe ? Colors.white70 : Colors.black54,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

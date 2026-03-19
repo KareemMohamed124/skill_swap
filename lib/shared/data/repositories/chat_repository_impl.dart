@@ -197,4 +197,22 @@ class ChatRepositoryImpl implements ChatRepository {
       throw _extractError(e);
     }
   }
+
+  @override
+  Future<void> editMessage(String chatId, String messageId, String content) async {
+    try {
+      await api.editMessage(chatId, messageId, content);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    try {
+      await api.deleteMessage(chatId, messageId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
 }

@@ -128,12 +128,26 @@ class MessageBubble extends StatelessWidget {
                       const SizedBox(height: 3),
                       Align(
                         alignment: Alignment.bottomRight,
-                        child: Text(
-                          time,
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: isMe ? Colors.white70 : Colors.black54,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (message.isEdited)
+                              Text(
+                                'edited  ',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontStyle: FontStyle.italic,
+                                  color: isMe ? Colors.white70 : Colors.black54,
+                                ),
+                              ),
+                            Text(
+                              time,
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: isMe ? Colors.white70 : Colors.black54,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

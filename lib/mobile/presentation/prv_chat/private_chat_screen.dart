@@ -7,6 +7,7 @@ import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/common_ui/reply_preview_bar.dart';
+import '../../../shared/common_ui/edit_preview_bar.dart';
 import '../../../shared/common_ui/swipeable_message.dart';
 import '../../../shared/data/models/public_chat/get_history_messages.dart';
 
@@ -95,7 +96,9 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     }
   }
 
-  void _showReplyOptions(BuildContext context, ChatMessage message) {
+  void _showMessageOptions(BuildContext context, ChatMessage message) {
+    final isMe = message.senderId.id == _chatCubit.currentUserId;
+
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -109,8 +112,53 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                 _chatCubit.setReplyMessage(message);
               },
             ),
+            if (isMe)
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.orange),
+                title: const Text('Edit'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _chatCubit.setEditingMessage(message);
+                  _controller.text = message.content;
+                  _controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: message.content.length),
+                  );
+                },
+              ),
+            if (isMe)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context, message);
+                },
+              ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, ChatMessage message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Message'),
+        content: const Text('Are you sure you want to delete this message?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _chatCubit.deleteMessage(message.id);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }
@@ -120,7 +168,6 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
 
     return ListView.builder(
       controller: _scrollController,
-      // reverse: true,
       padding: const EdgeInsets.all(12),
       itemCount: messages.length,
       itemBuilder: (context, index) {
@@ -139,7 +186,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
               message: message,
               isMe: isMe,
               isHighlighted: _highlightedMessageId == message.id,
-              onLongPress: () => _showReplyOptions(context, message),
+              onLongPress: () => _showMessageOptions(context, message),
               onTapReply: message.replyTo != null
                   ? () => _scrollToMessage(message.replyTo!.id)
                   : null,
@@ -154,7 +201,17 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     return SafeArea(
       child: Column(
         children: [
-          if (state is PublicChatMessagesLoaded && state.replyMessage != null)
+          if (state is PublicChatMessagesLoaded &&
+              state.editingMessage != null)
+            EditPreviewBar(
+              editingMessage: state.editingMessage!,
+              onCancel: () {
+                _chatCubit.clearEditing();
+                _controller.clear();
+              },
+            )
+          else if (state is PublicChatMessagesLoaded &&
+              state.replyMessage != null)
             ReplyPreviewBar(
               replyMessage: state.replyMessage!,
               onCancel: () => _chatCubit.clearReply(),

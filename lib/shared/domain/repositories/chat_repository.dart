@@ -28,4 +28,8 @@ abstract class ChatRepository {
   Future<TracksResponse> getTracks();
 
   Future<JoinTrackResponse> joinTrack(String trackId);
+
+  Future<void> editMessage(String chatId, String messageId, String content);
+
+  Future<void> deleteMessage(String chatId, String messageId);
 }

@@ -140,4 +140,34 @@ class ChatApiService {
         ? response.data
         : <String, dynamic>{};
   }
+
+  /// PATCH /chat/{chatId}/message/{messageId} — Edit a message
+  Future<Map<String, dynamic>> editMessage(
+    String chatId,
+    String messageId,
+    String content,
+  ) async {
+    final response = await _dio.patch(
+      '$_baseUrl/chat/$chatId/message/$messageId',
+      data: {'content': content},
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
+
+  /// DELETE /chat/{chatId}/message/{messageId} — Delete a message
+  Future<Map<String, dynamic>> deleteMessage(
+    String chatId,
+    String messageId,
+  ) async {
+    final response = await _dio.delete(
+      '$_baseUrl/chat/$chatId/message/$messageId',
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
 }
