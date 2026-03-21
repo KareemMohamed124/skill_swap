@@ -95,7 +95,9 @@ class MessageBubble extends StatelessWidget {
                     maxWidth: MediaQuery.of(context).size.width * 0.7,
                   ),
                   decoration: BoxDecoration(
-                    color: isHighlighted ? AppPalette.warning.withOpacity(0.5) : bubbleColor,
+                    color: isHighlighted
+                        ? AppPalette.warning.withOpacity(0.5)
+                        : bubbleColor,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(

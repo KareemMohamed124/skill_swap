@@ -48,7 +48,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   void setReplyMessage(ChatMessage message) {
     _replyMessage = message;
-    _editingMessage = null; // clear editing if replying
+    _editingMessage = null;
     if (state is PublicChatMessagesLoaded) {
       emit((state as PublicChatMessagesLoaded)
           .copyWith(replyMessage: message, clearEditing: true));
@@ -66,7 +66,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   void setEditingMessage(ChatMessage message) {
     _editingMessage = message;
-    _replyMessage = null; // clear reply if editing
+    _replyMessage = null;
     if (state is PublicChatMessagesLoaded) {
       emit((state as PublicChatMessagesLoaded)
           .copyWith(editingMessage: message, clearReply: true));
@@ -110,8 +110,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       chatId: chatId,
     );
 
-    _messageSubscription =
-        pusherService.messageStream.listen(_onPusherEvent);
+    _messageSubscription = pusherService.messageStream.listen(_onPusherEvent);
 
     await loadMessages();
   }
@@ -149,7 +148,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   Future<void> sendMessage(String content) async {
     if (_chatId == null || content.trim().isEmpty) return;
 
-    // If editing, delegate to editMessage
     if (_editingMessage != null) {
       await editMessage(_editingMessage!.id, content.trim());
       return;
@@ -247,7 +245,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   Future<void> editMessage(String messageId, String content) async {
     if (_chatId == null) return;
 
-    // Optimistic: update content locally
     final index = _messages.indexWhere((m) => m.id == messageId);
     if (index == -1) return;
 
@@ -268,7 +265,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     try {
       await chatRepository.editMessage(_chatId!, messageId, content);
     } catch (e) {
-      // Revert on failure
       _messages[index] = originalMessage;
 
       emit(PublicChatMessagesLoaded(
@@ -289,7 +285,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
     final originalMessage = _messages[index];
 
-    // Optimistic: remove from list
     _messages.removeAt(index);
 
     emit(PublicChatMessagesLoaded(
@@ -302,7 +297,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     try {
       await chatRepository.deleteMessage(_chatId!, messageId);
     } catch (e) {
-      // Revert on failure
       _messages.insert(index, originalMessage);
 
       emit(PublicChatMessagesLoaded(
@@ -396,10 +390,14 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
+  // ✅ التعديل هنا فقط
   void _handleMessageUpdated(Map<String, dynamic> data) {
     try {
-      final messageId = data['messageId']?.toString() ?? data['_id']?.toString() ?? '';
-      final newContent = data['content']?.toString() ?? '';
+      final messageId =
+          data['messageId']?.toString() ?? data['_id']?.toString() ?? '';
+
+      final newContent =
+          data['newContent']?.toString() ?? data['content']?.toString() ?? '';
 
       if (messageId.isEmpty || newContent.isEmpty) return;
 
@@ -424,7 +422,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   void _handleMessageDeleted(Map<String, dynamic> data) {
     try {
-      final messageId = data['messageId']?.toString() ?? data['_id']?.toString() ?? '';
+      final messageId =
+          data['messageId']?.toString() ?? data['_id']?.toString() ?? '';
 
       if (messageId.isEmpty) return;
 
@@ -446,9 +445,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _messageSubscription?.cancel();
 
     if (_chatId != null && _currentUserId != null) {
-      pusherService.unsubscribeFromChat(
-        _chatId!,
-      );
+      pusherService.unsubscribeFromChat(_chatId!);
     }
 
     return super.close();

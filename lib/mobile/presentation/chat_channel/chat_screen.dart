@@ -205,8 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (state is PublicChatMessagesLoaded &&
-              state.editingMessage != null)
+          if (state is PublicChatMessagesLoaded && state.editingMessage != null)
             EditPreviewBar(
               editingMessage: state.editingMessage!,
               onCancel: () {
