@@ -24,6 +24,7 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen> {
   final Map<String, String> joinedChats = {}; // trackId -> chatId
+  final Set<String> leftChats = {}; // trackIds the user left locally
   String? selectedChannel;
   String? selectedTrackId;
   String searchQuery = "";
@@ -59,6 +60,46 @@ class _ChatListScreenState extends State<ChatListScreen> {
     context.read<PublicChatBloc>().add(GetPublicChatsEvent());
   }
 
+  void _showLeaveConfirmation(String chatId, String channelName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave Channel'),
+        content: Text('Are you sure you want to leave "$channelName"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<TracksBloc>().add(LeaveChatEvent(chatId));
+            },
+            child: const Text('Leave', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Check if the current user is in the track's users list.
+  /// Handles both String IDs and Map-based user objects from the API.
+  bool _isUserInTrack(dynamic track, String? userId) {
+    if (userId == null || userId.isEmpty) return false;
+    final users = track.users;
+    if (users == null || users is! List) return false;
+
+    return users.any((u) {
+      if (u is String) return u.trim() == userId.trim();
+      if (u is Map) {
+        final id = (u['_id'] ?? u['id'] ?? '').toString();
+        return id.trim() == userId.trim();
+      }
+      return false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -75,6 +116,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
               setState(() {
                 joinedChats[selectedTrackId!] = chatId;
+                leftChats.remove(selectedTrackId);
               });
 
               _openChat(chatId, selectedChannel!);
@@ -84,6 +126,38 @@ class _ChatListScreenState extends State<ChatListScreen> {
               Get.snackbar(
                 "Error",
                 state.error.error.message,
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            }
+
+            if (state is LeaveChatSuccess) {
+              // Find trackId for this chatId and update local state
+              String? leftTrackId;
+              joinedChats.forEach((trackId, cId) {
+                if (cId == state.chatId) leftTrackId = trackId;
+              });
+              setState(() {
+                if (leftTrackId != null) {
+                  joinedChats.remove(leftTrackId);
+                  leftChats.add(leftTrackId!);
+                }
+              });
+
+              Get.snackbar(
+                "Success",
+                "Successfully left the group chat",
+                snackPosition: SnackPosition.BOTTOM,
+              );
+
+              // Refresh lists
+              context.read<TracksBloc>().add(LoadTracksEvent());
+              context.read<PublicChatBloc>().add(GetPublicChatsEvent());
+            }
+
+            if (state is LeaveChatError) {
+              Get.snackbar(
+                "Error",
+                state.message,
                 snackPosition: SnackPosition.BOTTOM,
               );
             }
@@ -129,6 +203,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 /// Channels list
                 Expanded(
                   child: BlocBuilder<TracksBloc, TracksState>(
+                    buildWhen: (previous, current) {
+                      // Don't rebuild on leave/join transient states;
+                      // keep showing the loaded list during those operations
+                      if (current is LeaveChatLoading ||
+                          current is LeaveChatSuccess ||
+                          current is LeaveChatError) {
+                        return false;
+                      }
+                      return true;
+                    },
                     builder: (context, trackState) {
                       if (trackState is JoinTracksLoading) {
                         return const Center(child: CircularProgressIndicator());
@@ -161,14 +245,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                       orElse: () => null,
                                     );
 
-                            // Determine if user joined
+                            // Determine if user joined using track.users
+                            // (NOT chat.participants — getPublicChats uses /my-chats
+                            //  which only returns chats the user is IN, making
+                            //  chat.isJoined() always true for any matched chat)
                             bool isJoined =
-                                chat?.isJoined(currentUserId ?? "") ?? false;
-                            String? chatId = chat?.id;
-                            // Check local joined map
+                                _isUserInTrack(track, currentUserId);
+                            String? chatId = isJoined ? chat?.id : null;
+
+                            // Check local joined map (overrides server state)
                             if (joinedChats.containsKey(track.id)) {
                               isJoined = true;
                               chatId = joinedChats[track.id];
+                            }
+
+                            // Check local left set (overrides everything)
+                            if (leftChats.contains(track.id)) {
+                              isJoined = false;
+                              chatId = null;
                             }
 
                             final isSelected = track.name == selectedChannel;
@@ -218,22 +312,46 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                trailing: ElevatedButton(
-                                  onPressed: () {
-                                    selectedChannel = track.name;
-                                    selectedTrackId = track.id;
+                                trailing: isJoined && chatId != null
+                                    ? Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              selectedChannel = track.name;
+                                              selectedTrackId = track.id;
+                                              _openChat(chatId!, track.name!);
+                                            },
+                                            child: const Text("Open"),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          OutlinedButton(
+                                            onPressed: () {
+                                              selectedChannel = track.name;
+                                              selectedTrackId = track.id;
+                                              _showLeaveConfirmation(
+                                                  chatId!, track.name!);
+                                            },
+                                            style: OutlinedButton.styleFrom(
+                                              foregroundColor: Colors.red,
+                                              side: const BorderSide(
+                                                  color: Colors.red),
+                                            ),
+                                            child: const Text("Leave"),
+                                          ),
+                                        ],
+                                      )
+                                    : ElevatedButton(
+                                        onPressed: () {
+                                          selectedChannel = track.name;
+                                          selectedTrackId = track.id;
 
-                                    if (isJoined && chatId != null) {
-                                      _openChat(chatId, track.name!);
-                                      return;
-                                    }
-
-                                    context
-                                        .read<TracksBloc>()
-                                        .add(JoinTrackEvent(track.id!));
-                                  },
-                                  child: Text(isJoined ? "Joined" : "Join"),
-                                ),
+                                          context
+                                              .read<TracksBloc>()
+                                              .add(JoinTrackEvent(track.id!));
+                                        },
+                                        child: const Text("Join"),
+                                      ),
                                 onTap: () {
                                   if (!isJoined || chatId == null) {
                                     Get.snackbar(

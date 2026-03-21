@@ -7,3 +7,9 @@ class JoinTrackEvent extends TracksEvent {
 
   JoinTrackEvent(this.trackId);
 }
+
+class LeaveChatEvent extends TracksEvent {
+  final String chatId;
+
+  LeaveChatEvent(this.chatId);
+}

@@ -12,6 +12,7 @@ class TracksBloc extends Bloc<TracksEvent, TracksState> {
   TracksBloc(this.repository) : super(JoinTracksInitial()) {
     on<LoadTracksEvent>(_loadTracks);
     on<JoinTrackEvent>(_joinTrack);
+    on<LeaveChatEvent>(_leaveChat);
   }
 
   Future<void> _joinTrack(
@@ -28,6 +29,18 @@ class TracksBloc extends Bloc<TracksEvent, TracksState> {
       case JoinTrackFailure f:
         emit(JoinTracksError(error: f));
         break;
+    }
+  }
+
+  Future<void> _leaveChat(
+      LeaveChatEvent event, Emitter<TracksState> emit) async {
+    emit(LeaveChatLoading());
+
+    try {
+      await repository.leaveChat(event.chatId);
+      emit(LeaveChatSuccess(event.chatId));
+    } catch (e) {
+      emit(LeaveChatError(e.toString()));
     }
   }
 

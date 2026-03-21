@@ -215,4 +215,13 @@ class ChatRepositoryImpl implements ChatRepository {
       throw _extractError(e);
     }
   }
+
+  @override
+  Future<void> leaveChat(String chatId) async {
+    try {
+      await api.leaveChat(chatId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
 }

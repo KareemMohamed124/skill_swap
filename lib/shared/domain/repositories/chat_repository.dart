@@ -32,4 +32,6 @@ abstract class ChatRepository {
   Future<void> editMessage(String chatId, String messageId, String content);
 
   Future<void> deleteMessage(String chatId, String messageId);
+
+  Future<void> leaveChat(String chatId);
 }

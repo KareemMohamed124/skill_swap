@@ -170,4 +170,15 @@ class ChatApiService {
         ? response.data
         : <String, dynamic>{};
   }
+
+  /// DELETE /chat/{chatId}/leave — Leave a group chat
+  Future<Map<String, dynamic>> leaveChat(String chatId) async {
+    final response = await _dio.delete(
+      '$_baseUrl/chat/$chatId/leave',
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
 }

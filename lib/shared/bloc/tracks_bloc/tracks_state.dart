@@ -24,3 +24,17 @@ final class JoinTracksError extends TracksState {
 
   JoinTracksError({required this.error});
 }
+
+class LeaveChatLoading extends TracksState {}
+
+class LeaveChatSuccess extends TracksState {
+  final String chatId;
+
+  LeaveChatSuccess(this.chatId);
+}
+
+class LeaveChatError extends TracksState {
+  final String message;
+
+  LeaveChatError(this.message);
+}
