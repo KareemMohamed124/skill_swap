@@ -224,4 +224,13 @@ class ChatRepositoryImpl implements ChatRepository {
       throw _extractError(e);
     }
   }
+
+  @override
+  Future<void> markMessagesAsRead(String chatId) async {
+    try {
+      await api.markMessagesAsRead(chatId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/common_ui/reply_bubble_preview.dart';
@@ -19,6 +20,15 @@ class PrvMessageBubble extends StatelessWidget {
     this.onTapReply,
     this.isHighlighted = false,
   });
+
+  String _formatTime(dynamic date) {
+    try {
+      final DateTime parsed = DateTime.parse(date.toString());
+      return DateFormat('hh:mm a').format(parsed);
+    } catch (_) {
+      return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +84,32 @@ class PrvMessageBubble extends StatelessWidget {
                     ),
                   ),
                 ),
+              const SizedBox(height: 3),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _formatTime(message.createdAt),
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: isMe ? Colors.white70 : Colors.black54,
+                      ),
+                    ),
+                    if (isMe) ...[
+                      const SizedBox(width: 3),
+                      Icon(
+                        Icons.done_all,
+                        size: 14,
+                        color: message.isSeen
+                            ? Colors.blue
+                            : (isMe ? Colors.white70 : Colors.grey),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
         ),

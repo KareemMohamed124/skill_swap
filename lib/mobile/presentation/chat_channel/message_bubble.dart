@@ -34,7 +34,7 @@ class MessageBubble extends StatelessWidget {
 
   String _formatTime(dynamic date) {
     try {
-      final DateTime parsed = DateTime.parse(date.toString());
+      final parsed = DateTime.parse(date.toString());
       return DateFormat('hh:mm a').format(parsed);
     } catch (_) {
       return '';
@@ -48,112 +48,107 @@ class MessageBubble extends StatelessWidget {
           ? NetworkImage(senderImage!)
           : null,
       child: senderImage == null || senderImage!.isEmpty
-          ? Text(
-              senderName.isNotEmpty ? senderName[0].toUpperCase() : '?',
+          ? Text(senderName[0].toUpperCase(),
               style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            )
+                  color: Colors.white, fontWeight: FontWeight.bold))
           : null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Color bubbleColor = isMe ? AppPalette.primary : Colors.grey.shade300;
+    final bubbleColor = isMe ? AppPalette.primary : Colors.grey.shade300;
 
     final textColor = isMe ? Colors.white : Colors.black87;
+
     final time = _formatTime(message.createdAt);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment:
             isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// avatar
           if (!isMe)
             Padding(
               padding: const EdgeInsets.only(right: 6),
               child: showAvatar ? _buildAvatar() : const SizedBox(width: 32),
             ),
-
           Flexible(
-            child: IntrinsicWidth(
-              stepWidth: 0.1,
-              child: GestureDetector(
-                onLongPress: onLongPress,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isHighlighted
-                        ? AppPalette.warning.withOpacity(0.5)
-                        : bubbleColor,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (!isMe && showName)
-                        Text(
-                          senderName ?? "User",
+            child: GestureDetector(
+              onLongPress: onLongPress,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
+                decoration: BoxDecoration(
+                  color: isHighlighted
+                      ? AppPalette.warning.withOpacity(.5)
+                      : bubbleColor,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!isMe && showName)
+                      Text(senderName,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                      if (!isMe && showName) const SizedBox(height: 3),
-                      if (message.replyTo != null)
-                        ReplyBubblePreview(
-                          replyMessage: message.replyTo!,
-                          isMe: isMe,
-                          onTap: onTapReply ?? () {},
-                        ),
-                      isTyping
-                          ? const TypingIndicator()
-                          : Text(
-                              message.content,
-                              style: TextStyle(color: textColor),
-                              softWrap: true,
-                            ),
-                      const SizedBox(height: 3),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (message.isEdited)
-                              Text(
-                                'edited  ',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontStyle: FontStyle.italic,
-                                  color: isMe ? Colors.white70 : Colors.black54,
-                                ),
-                              ),
-                            Text(
-                              time,
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: isMe ? Colors.white70 : Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade700)),
+                    if (!isMe && showName) const SizedBox(height: 3),
+
+                    if (message.replyTo != null)
+                      ReplyBubblePreview(
+                        replyMessage: message.replyTo!,
+                        isMe: isMe,
+                        onTap: onTapReply ?? () {},
                       ),
-                    ],
-                  ),
+
+                    isTyping
+                        ? const TypingIndicator()
+                        : Text(message.content,
+                            style: TextStyle(color: textColor)),
+
+                    const SizedBox(height: 3),
+
+                    /// TIME + SEEN
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (message.isEdited)
+                            Text('edited  ',
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    fontStyle: FontStyle.italic,
+                                    color: isMe
+                                        ? Colors.white70
+                                        : Colors.black54)),
+                          Text(time,
+                              style: TextStyle(
+                                  fontSize: 9,
+                                  color:
+                                      isMe ? Colors.white70 : Colors.black54)),
+
+                          /// ✅ SEEN ICON
+                          if (isMe) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.done_all,
+                              size: 14,
+                              color:
+                                  message.isSeen ? Colors.blue : Colors.white70,
+                            ),
+                          ]
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),

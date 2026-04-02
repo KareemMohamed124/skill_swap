@@ -145,7 +145,7 @@ class PusherService {
     if (event.data == null) return;
 
     // Forward receive_message, message_edited, and message_deleted events
-    final supportedEvents = ['receive_message', 'message_edited', 'message_deleted'];
+    final supportedEvents = ['receive_message', 'message_edited', 'message_deleted', 'messages_read'];
     if (!supportedEvents.contains(event.eventName)) return;
 
     try {

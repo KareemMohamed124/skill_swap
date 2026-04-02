@@ -181,4 +181,15 @@ class ChatApiService {
         ? response.data
         : <String, dynamic>{};
   }
+
+  /// PATCH /chat/{chatId}/messages/read — Mark all unread messages as read
+  Future<Map<String, dynamic>> markMessagesAsRead(String chatId) async {
+    final response = await _dio.patch(
+      '$_baseUrl/chat/$chatId/messages/read',
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
 }

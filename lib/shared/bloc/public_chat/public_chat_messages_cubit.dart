@@ -113,6 +113,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _messageSubscription = pusherService.messageStream.listen(_onPusherEvent);
 
     await loadMessages();
+
+    // Auto-mark messages as read when chat opens
+    await markMessagesAsRead();
   }
 
   // ============= LOAD =============
@@ -322,6 +325,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       case 'message_deleted':
         _handleMessageDeleted(data);
         break;
+      case 'messages_read':
+        _handleMessagesRead(data);
+        break;
       default:
         _handleNewMessage(data);
         break;
@@ -390,7 +396,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ✅ التعديل هنا فقط
   void _handleMessageUpdated(Map<String, dynamic> data) {
     try {
       final messageId =
@@ -437,6 +442,41 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       ));
     } catch (e) {
       print('❌ error handling message_deleted $e');
+    }
+  }
+
+  // ============= MARK AS READ =============
+
+  Future<void> markMessagesAsRead() async {
+    if (_chatId == null) return;
+
+    try {
+      await chatRepository.markMessagesAsRead(_chatId!);
+    } catch (e) {
+      print('❌ error marking messages as read $e');
+    }
+  }
+
+  void _handleMessagesRead(Map<String, dynamic> data) {
+    try {
+      bool changed = false;
+      for (int i = 0; i < _messages.length; i++) {
+        if (!_messages[i].isSeen) {
+          _messages[i] = _messages[i].copyWith(isSeen: true);
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        emit(PublicChatMessagesLoaded(
+          messages: List.from(_messages),
+          hasMore: _hasMore,
+          replyMessage: _replyMessage,
+          editingMessage: _editingMessage,
+        ));
+      }
+    } catch (e) {
+      print('❌ error handling messages_read $e');
     }
   }
 

@@ -51,6 +51,7 @@ class ChatMessage {
   final ReplyMessage? replyTo;
   final int v;
   final bool isEdited;
+  final bool isSeen;
 
   ChatMessage({
     required this.id,
@@ -64,6 +65,7 @@ class ChatMessage {
     this.replyTo,
     required this.v,
     this.isEdited = false,
+    this.isSeen = false,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -78,6 +80,7 @@ class ChatMessage {
         replyTo: json['replyTo'] != null ? ReplyMessage.fromJson(json['replyTo']) : null,
         v: json['__v'],
         isEdited: json['isEdited'] ?? false,
+        isSeen: json['isSeen'] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -92,6 +95,7 @@ class ChatMessage {
         if (replyTo != null) 'replyTo': replyTo!.toJson(),
         '__v': v,
         'isEdited': isEdited,
+        'isSeen': isSeen,
       };
 
   ChatMessage copyWith({
@@ -106,6 +110,7 @@ class ChatMessage {
     ReplyMessage? replyTo,
     int? v,
     bool? isEdited,
+    bool? isSeen,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -119,6 +124,7 @@ class ChatMessage {
       replyTo: replyTo ?? this.replyTo,
       v: v ?? this.v,
       isEdited: isEdited ?? this.isEdited,
+      isSeen: isSeen ?? this.isSeen,
     );
   }
 }
