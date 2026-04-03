@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
 
 import '../../../mobile/presentation/skill_verification/result_screen.dart';
+import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 
 class QuizQuestion {
   String question;
@@ -26,7 +29,7 @@ class QuizQuestion {
 
 class QuizController extends GetxController {
   static const int totalTimeInSeconds = 15 * 60;
-  static const apiKey = "AIzaSyCJ4d1kF6fmKoj0E141ITsS3UMk8LkeeDc";
+  static const apiKey = "AIzaSyDMHP_v4DbxZ2yjI78LjS4hw8eGrLsjGlM";
   final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;
@@ -35,6 +38,12 @@ class QuizController extends GetxController {
   var selectedOption = RxnInt();
   var loading = false.obs;
   var currentSkill = ''.obs;
+
+  // ── Verification state ──
+  var isVerifying = false.obs;
+  var isSkillVerified = false.obs;
+  var verifiedQuizScore = 0.obs;
+  var verifyError = ''.obs;
 
   Future<void> generateQuiz(String skill) async {
     loading.value = true;
@@ -75,8 +84,7 @@ No explanation, no text outside the JSON.
       for (int i = startIndex; i < text.length; i++) {
         if (text[i] == '[')
           bracketCount++;
-        else if (text[i] == ']')
-          bracketCount--;
+        else if (text[i] == ']') bracketCount--;
         if (bracketCount == 0) {
           endIndex = i + 1;
           break;
@@ -110,9 +118,10 @@ No explanation, no text outside the JSON.
 
   void nextQuestion() {
     if (selectedOption.value != null) {
-      if (questions[index.value].options[selectedOption.value!]
-          .trim()
-          .toLowerCase() ==
+      if (questions[index.value]
+              .options[selectedOption.value!]
+              .trim()
+              .toLowerCase() ==
           questions[index.value].correctAnswer.trim().toLowerCase()) {
         correct.value++;
       }
@@ -139,12 +148,83 @@ No explanation, no text outside the JSON.
     selectedOption.value = null;
     questions.clear();
     currentSkill.value = '';
+    isVerifying.value = false;
+    isSkillVerified.value = false;
+    verifiedQuizScore.value = 0;
+    verifyError.value = '';
   }
 
   void goToResult() {
     Get.to(
-          () => ResultScreen(),
-      arguments: {'score': correct.value, 'total': questions.length},
+      () => ResultScreen(),
+      arguments: {
+        'score': correct.value,
+        'total': questions.length,
+        'skill': currentSkill.value,
+      },
     );
+  }
+
+  /// Sends the quiz score to the backend for skill verification.
+  /// Calculates percentage score, calls POST /user/verify-skill-quiz,
+  /// and refreshes the profile cubit on success.
+  Future<void> verifySkillQuiz({
+    required String skillName,
+    required int score,
+    required int total,
+  }) async {
+    isVerifying.value = true;
+    verifyError.value = '';
+
+    final int quizScore = total > 0 ? ((score / total) * 100).round() : 0;
+
+    try {
+      final dio = GetIt.instance<Dio>();
+      final response = await dio.post(
+        'https://skill-swaapp.vercel.app/user/verify-skill-quiz',
+        data: {
+          'skillName': skillName,
+          'quizScore': quizScore,
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data;
+        final skill = data['skill'];
+
+        verifiedQuizScore.value = skill['quizScore'] ?? quizScore;
+        isSkillVerified.value = skill['isVerified'] ?? (quizScore >= 85);
+
+        print('✅ Skill verification response: $data');
+
+        // Refresh the profile so the SkillsPage updates dynamically
+        try {
+          final profileCubit = GetIt.instance<MyProfileCubit>();
+          profileCubit.refreshProfile();
+        } catch (_) {
+          print('⚠️ Could not refresh profile cubit');
+        }
+      } else {
+        verifyError.value = 'Unexpected response: ${response.statusCode}';
+        // Still set the local score
+        verifiedQuizScore.value = quizScore;
+        isSkillVerified.value = quizScore >= 85;
+      }
+    } on DioException catch (e) {
+      print('❌ Verify skill API error: $e');
+      verifyError.value = e.response?.data?['message']?.toString() ??
+          e.message ??
+          'Network error';
+      // Fallback to local calculation
+      verifiedQuizScore.value = quizScore;
+      isSkillVerified.value = quizScore >= 85;
+    } catch (e) {
+      print('❌ Verify skill error: $e');
+      verifyError.value = e.toString();
+      verifiedQuizScore.value = quizScore;
+      isSkillVerified.value = quizScore >= 85;
+    } finally {
+      isVerifying.value = false;
+    }
   }
 }
