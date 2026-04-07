@@ -1,0 +1,347 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:modal_side_sheet/modal_side_sheet.dart';
+
+import '../../../../mobile/presentation/search/widgets/filterSheet.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
+import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
+import '../../book_session/screens/profile_mentor.dart';
+import '../widgets/filter_button.dart';
+import '../widgets/mentor_card.dart';
+import '../widgets/sort_button.dart';
+
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  bool isSearched = false;
+  TextEditingController searchTextController = TextEditingController();
+  int activeFiltersCount = 0;
+  Timer? _debounce;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    final bloc = context.read<UserFilterBloc>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !bloc.state.isLastPage &&
+        !bloc.state.isLoadingMore) {
+      bloc.add(LoadMoreUsersEvent(
+        page: bloc.currentPage + 1,
+        limit: bloc.limit,
+        query: searchTextController.text.isNotEmpty
+            ? searchTextController.text
+            : null,
+        minPrice: bloc.state.minPrice?.toDouble(),
+        maxPrice: bloc.state.maxPrice?.toDouble(),
+        minRate: bloc.state.selectedRate?.toDouble(),
+        role: bloc.state.selectedRole,
+        track: bloc.state.selectedTrack,
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    searchTextController.dispose();
+    _debounce?.cancel();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isDesktop = constraints.maxWidth > 900;
+            final contentWidth = isDesktop ? 700.0 : double.infinity;
+
+            return Center(
+              child: SizedBox(
+                width: contentWidth,
+                child: Padding(
+                  padding: EdgeInsets.all(screenWidth * 0.04),
+                  child: Column(
+                    children: [
+                      SizedBox(height: screenWidth * 0.02),
+
+                      /// Top Bar
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                'search'.tr,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontSize: isDesktop ? 24 : 20,
+                                    ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: isDesktop ? 48 : 32),
+                        ],
+                      ),
+
+                      SizedBox(height: screenWidth * 0.02),
+
+                      /// Search Field + Filter Icon
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: isDesktop ? 55 : 50,
+                              child: TextField(
+                                controller: searchTextController,
+                                cursorColor:
+                                    isDark ? Colors.white : Colors.black,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context).dividerColor),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context).dividerColor),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  prefixIcon: Icon(Icons.search,
+                                      size: isDesktop ? 28 : 24),
+                                  hintText: "search_placeholder".tr,
+                                ),
+                                onChanged: (searchValue) {
+                                  if (_debounce?.isActive ?? false)
+                                    _debounce!.cancel();
+                                  _debounce = Timer(
+                                      const Duration(milliseconds: 700), () {
+                                    context
+                                        .read<UserFilterBloc>()
+                                        .add(SearchUserEvent(searchValue));
+                                    setState(() {
+                                      isSearched = searchValue.isNotEmpty;
+                                    });
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.02),
+
+                          /// Filter Icon Button
+                          SizedBox(
+                            height: isDesktop ? 55 : 50,
+                            width: isDesktop ? 55 : 50,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: Theme.of(context).dividerColor),
+                              ),
+                              child: IconButton(
+                                icon: Icon(Icons.tune_outlined,
+                                    color: isDark ? Colors.white : Colors.black,
+                                    size: isDesktop ? 28 : 24),
+                                onPressed: () async {
+                                  final bloc = context.read<UserFilterBloc>();
+                                  final state = bloc.state;
+
+                                  final activeFilters =
+                                      await showModalSideSheet<int>(
+                                    context: context,
+                                    withCloseControll: false,
+                                    barrierColor: const Color(0xFFD6D6D6)
+                                        .withOpacity(0.3),
+                                    width: isDesktop ? 500 : screenWidth * 0.85,
+                                    body: BlocProvider.value(
+                                      value: bloc,
+                                      child: MentorFilterSheet(
+                                        initialMinPrice: state.minPrice,
+                                        initialMaxPrice: state.maxPrice,
+                                        initialRate: state.selectedRate,
+                                        initialRole: state.selectedRole,
+                                        initialTrack: state.selectedTrack,
+                                      ),
+                                    ),
+                                  );
+
+                                  if (activeFilters != null) {
+                                    setState(() {
+                                      activeFiltersCount = activeFilters;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: screenWidth * 0.02),
+
+                      /// Sort + Filter Buttons
+                      Row(
+                        children: [
+                          Expanded(child: SortButton()),
+                          SizedBox(width: screenWidth * 0.02),
+                          Expanded(
+                            child: FilterButton(
+                              activeFilters: activeFiltersCount,
+                              onPressed: () async {
+                                final bloc = context.read<UserFilterBloc>();
+                                final state = bloc.state;
+
+                                final activeFilters =
+                                    await showModalSideSheet<int>(
+                                  context: context,
+                                  withCloseControll: false,
+                                  barrierColor:
+                                      const Color(0xFFD6D6D6).withOpacity(0.3),
+                                  width: isDesktop ? 500 : screenWidth * 0.85,
+                                  body: BlocProvider.value(
+                                    value: bloc,
+                                    child: MentorFilterSheet(
+                                      initialMinPrice: state.minPrice,
+                                      initialMaxPrice: state.maxPrice,
+                                      initialRate: state.selectedRate,
+                                      initialRole: state.selectedRole,
+                                      initialTrack: state.selectedTrack,
+                                    ),
+                                  ),
+                                );
+
+                                if (activeFilters != null) {
+                                  setState(() {
+                                    activeFiltersCount = activeFilters;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: screenWidth * 0.015),
+
+                      /// User List
+                      Expanded(
+                        child: BlocBuilder<UserFilterBloc, UserFilterState>(
+                          builder: (context, state) {
+                            /// ✅ Empty State (المضاف بس)
+                            if (state.filteredList.isEmpty &&
+                                !state.isLoading) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 80,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      "No results found",
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                    // SizedBox(height: 8),
+                                    // Text(
+                                    //   "Try searching with different keywords",
+                                    //   style:
+                                    //       Theme.of(context).textTheme.bodySmall,
+                                    //   textAlign: TextAlign.center,
+                                    // ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              controller: _scrollController,
+                              padding: EdgeInsets.zero,
+                              itemCount: state.filteredList.length +
+                                  (state.isLastPage ? 0 : 1),
+                              itemBuilder: (context, index) {
+                                if (index < state.filteredList.length) {
+                                  final user = state.filteredList[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      Get.to(ProfileMentor(
+                                        id: user.id,
+                                        name: user.name,
+                                        track: user.track.name,
+                                        rate: user.rate,
+                                        image: user.userImage.secureUrl,
+                                        bio: user.profile.bio,
+                                        skills: user.skills,
+                                        hoursAvailable: user.freeHours,
+                                        peopleHelped: user.helpTotalHours,
+                                        hourlyRate: 0,
+                                        reviews: user.reviews,
+                                      ));
+                                    },
+                                    child: MentorCard(
+                                      image: user.userImage.secureUrl,
+                                      name: user.name,
+                                      role: user.role,
+                                      rate: user.rate,
+                                      hours: 5,
+                                      price: 0,
+                                      track: user.track.name,
+                                      skills: user.skills,
+                                      responseTime: "9",
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                      color: AppPalette.primary,
+                                    )),
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
