@@ -230,7 +230,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ============= EDIT MESSAGE =============
+  // ================= EDIT MESSAGE (LIMIT 15 MINUTES) =================
   Future<void> editMessage(String messageId, String content) async {
     if (_chatId == null) return;
 
@@ -238,6 +238,14 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     if (index == -1) return;
 
     final originalMessage = _messages[index];
+
+    // ✅ السماح بالتعديل فقط خلال 15 دقيقة من إنشاء الرسالة
+    final difference = DateTime.now().difference(originalMessage.createdAt);
+    if (difference.inMinutes > 15) {
+      print("❌ Time to edit this message has expired");
+      return;
+    }
+
     _messages[index] =
         originalMessage.copyWith(content: content, isEdited: true);
 
@@ -377,17 +385,14 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         return;
       }
 
-      /// ✅ 2. deduplication قوي
       final exists = _messages.any((m) =>
           m.id == newMessage.id ||
           (m.content == newMessage.content &&
               m.senderId.id == newMessage.senderId.id &&
-              m.createdAt.difference(newMessage.createdAt).inSeconds.abs() <
-                  2));
+              m.createdAt.difference(newMessage.createdAt).inSeconds.abs() < 2));
 
       if (exists) return;
 
-      /// ✅ 3. replace temp لو match
       final tempIndex = _messages.indexWhere((m) =>
           m.id.startsWith('temp_') &&
           m.content == newMessage.content &&
