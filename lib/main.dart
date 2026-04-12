@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:device_preview/device_preview.dart';
+
+// Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+// Project
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/common_ui/screen_manager/screen_manager.dart';
 import 'package:skill_swap/shared/core/localization/app_translation.dart';
@@ -20,46 +26,68 @@ import 'package:skill_swap/shared/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/shared/dependency_injection/injection.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
 
+// Zego
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+
 import 'desktop/presentation/common/desktop_screen_manager.dart';
 import 'desktop/presentation/sign/screens/sign_in_screen.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
+import 'mobile/presentation/video_call/LiveKeys.dart';
 
 final GlobalKey<DesktopScreenManagerState> desktopKey =
-GlobalKey<DesktopScreenManagerState>();
+    GlobalKey<DesktopScreenManagerState>();
 
+// ==========================
+// Firebase Background
+// ==========================
 @pragma('vm:entry-point')
 Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-
-  print("Background Notification Received");
-  print("DATA: ${message.data}");
+  if (!kIsWeb && Platform.isAndroid) {
+    await Firebase.initializeApp();
+  }
 }
 
+// ==========================
+// MAIN
+// ==========================
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Gemini Initialization
+
+  // Gemini
   try {
     Gemini.init(apiKey: QuizController.apiKey);
-    print("Gemini initialized with API key");
-  } catch (e) {
-    print("Failed to initialize Gemini: $e");
-  }
+  } catch (_) {}
 
-  // Hive & Storage Initialization
+  // Local storage
   await Hive.initFlutter();
   await Hive.openBox('appBox');
   await initDependencies();
   await GetStorage.init();
-  // Firebase Notification
-  await Firebase.initializeApp();
-  // background messages
-  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
-  // initialize notification service
-  await NotificationService.init();
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-    print("New FCM Token: $newToken");
-  });
+
+  final userId = await LocalStorage.getUserId();
+  const userName = 'User';
+
+  // ==========================
+  // ANDROID ONLY SERVICES
+  // ==========================
+  if (!kIsWeb && Platform.isAndroid) {
+    await Firebase.initializeApp();
+
+    FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
+
+    await NotificationService.init();
+
+    await ZegoUIKitPrebuiltCallInvitationService().init(
+      appID: LiveKeys.appId,
+      appSign: LiveKeys.appSign,
+      userID: userId ?? '',
+      userName: userName,
+      plugins: [ZegoUIKitSignalingPlugin()],
+    );
+  }
+
   final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
   final isLogged = await LocalStorage.isLoggedIn();
 
@@ -72,30 +100,30 @@ void main() async {
   } else {
     startScreen = LayoutBuilder(
       builder: (context, constraints) {
-        if (kIsWeb) {
-          return ScreenManager();
-        }
+        if (kIsWeb) return ScreenManager();
+
         if (constraints.maxWidth >= 800) {
-          // Desktop or large screen
           return SignInDesktop();
         }
-        return ScreenManager(); // Mobile
+
+        return ScreenManager();
       },
     );
   }
 
-  Get.put(ThemeController()
-    ..loadSavedTheme());
+  Get.put(ThemeController()..loadSavedTheme());
 
-  // Run App with Device Preview
   runApp(
     DevicePreview(
-      enabled: true,
+      enabled: kDebugMode, // 🔥 مهم جدًا
       builder: (context) => MyApp(startScreen: startScreen),
     ),
   );
 }
 
+// ==========================
+// APP ROOT
+// ==========================
 class MyApp extends StatelessWidget {
   final Widget startScreen;
 
@@ -103,15 +131,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LanguageController langController = Get.put(LanguageController());
+    final langController = Get.put(LanguageController());
 
     return GetBuilder<ThemeController>(
       builder: (controller) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider(create: (_) =>
-            sl<MyProfileCubit>()
-              ..fetchMyProfile()),
+            BlocProvider(
+              create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+            ),
           ],
           child: GetMaterialApp(
             useInheritedMediaQuery: true,

@@ -1,9 +1,9 @@
 class SessionModel {
   final String sessionId;
-  final String instructorId;
-  final String image;
-  final String name;
-  final String role;
+  final String userId;
+  final String userImage;
+  final String userName;
+  final String userRole;
   final DateTime dateTime;
   final int duration;
   final int price;
@@ -17,10 +17,10 @@ class SessionModel {
 
   SessionModel(
       {required this.sessionId,
-      required this.instructorId,
-      required this.image,
-      required this.name,
-      required this.role,
+      required this.userId,
+      required this.userImage,
+      required this.userName,
+      required this.userRole,
       required this.dateTime,
       required this.price,
       required this.status,
@@ -37,10 +37,10 @@ class SessionModel {
     return SessionModel(
         sessionId: sessionId,
         bookingCode: bookingCode,
-        instructorId: instructorId,
-        name: name,
-        role: role,
-        image: image,
+        userId: userId,
+        userName: userName,
+        userRole: userRole,
+        userImage: userImage,
         dateTime: dateTime,
         price: price,
         status: status ?? this.status,

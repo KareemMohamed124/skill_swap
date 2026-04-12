@@ -26,7 +26,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
   final Set<String> selectedTags = {};
 
   Widget _buildUserImage(double cardWidth) {
-    final image = widget.session.image;
+    final image = widget.session.userImage;
 
     if (image == null || image.isEmpty) return _buildPlaceholder(cardWidth);
 
@@ -114,7 +114,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                         ClipOval(child: _buildUserImage(cardWidth)),
                         const SizedBox(width: 12),
                         Text(
-                          widget.session.name,
+                          widget.session.userName,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],

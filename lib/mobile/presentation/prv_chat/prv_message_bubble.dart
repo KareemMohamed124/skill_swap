@@ -36,81 +36,91 @@ class PrvMessageBubble extends StatelessWidget {
       onLongPress: onLongPress,
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: isHighlighted
-                ? AppPalette.warning.withOpacity(0.5)
-                : (isMe ? AppPalette.primary : Colors.grey.shade300),
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(14),
-              topRight: const Radius.circular(14),
-              bottomLeft:
-                  isMe ? const Radius.circular(14) : const Radius.circular(0),
-              bottomRight:
-                  isMe ? const Radius.circular(0) : const Radius.circular(14),
-            ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (message.replyTo != null) ...[
-                ReplyBubblePreview(
-                  replyMessage: message.replyTo!,
-                  isMe: isMe,
-                  onTap: onTapReply ?? () {},
-                ),
-                const SizedBox(height: 4),
-              ],
-              Text(
-                message.content,
-                style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black,
-                  fontSize: 15,
-                ),
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: isHighlighted
+                  ? AppPalette.warning.withOpacity(0.5)
+                  : (isMe ? AppPalette.primary : Colors.grey.shade300),
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(14),
+                topRight: const Radius.circular(14),
+                bottomLeft:
+                    isMe ? const Radius.circular(14) : const Radius.circular(0),
+                bottomRight:
+                    isMe ? const Radius.circular(0) : const Radius.circular(14),
               ),
-              if (message.isEdited)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    'edited',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontStyle: FontStyle.italic,
-                      color: isMe ? Colors.white70 : Colors.black54,
-                    ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize:
+                  MainAxisSize.min, // مهم جدًا عشان البابل يضبط على طول النص
+              children: [
+                if (message.replyTo != null) ...[
+                  ReplyBubblePreview(
+                    replyMessage: message.replyTo!,
+                    isMe: isMe,
+                    onTap: onTapReply ?? () {},
+                  ),
+                  const SizedBox(height: 4),
+                ],
+                Text(
+                  message.content,
+                  style: TextStyle(
+                    color: isMe ? Colors.white : Colors.black,
+                    fontSize: 15,
                   ),
                 ),
-              const SizedBox(height: 3),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _formatTime(message.createdAt),
+                if (message.isEdited)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      'edited',
                       style: TextStyle(
                         fontSize: 9,
+                        fontStyle: FontStyle.italic,
                         color: isMe ? Colors.white70 : Colors.black54,
                       ),
                     ),
-                    if (isMe) ...[
-                      const SizedBox(width: 3),
-                      Icon(
-                        Icons.done_all,
-                        size: 14,
-                        color: message.isSeen
-                            ? Colors.blue
-                            : (isMe ? Colors.white70 : Colors.grey),
+                  ),
+                const SizedBox(height: 3),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatTime(message.createdAt),
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: isMe ? Colors.white70 : Colors.black54,
+                        ),
                       ),
+                      if (isMe) ...[
+                        const SizedBox(width: 4),
+                        if (message.status == MessageStatus.sending)
+                          const Icon(Icons.access_time,
+                              size: 14, color: Colors.white70),
+                        if (message.status == MessageStatus.failed)
+                          const Icon(Icons.error, size: 14, color: Colors.red),
+                        if (message.status == MessageStatus.sent)
+                          Icon(
+                            Icons.done_all,
+                            size: 14,
+                            color:
+                                message.isSeen ? Colors.blue : Colors.white70,
+                          ),
+                      ]
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

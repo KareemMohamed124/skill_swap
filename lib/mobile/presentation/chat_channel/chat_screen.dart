@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
-import '../../../shared/common_ui/edit_preview_bar.dart';
-import '../../../shared/common_ui/reply_preview_bar.dart';
 import '../../../shared/common_ui/swipeable_message.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/public_chat/get_history_messages.dart';
@@ -28,9 +26,12 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   late PublicChatMessagesCubit _chatCubit;
+
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
   final Map<String, GlobalKey> _messageKeys = {};
+
   String? _highlightedMessageId;
 
   @override
@@ -38,6 +39,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _chatCubit = sl<PublicChatMessagesCubit>();
     _chatCubit.init(widget.chatId, isPrivate: false);
+  }
+
+  /// ✅ يسمح بالتعديل لمدة 15 دقيقة فقط
+  bool _canEditMessage(ChatMessage message) {
+    final difference = DateTime.now().difference(message.createdAt);
+    return difference.inMinutes <= 15;
   }
 
   void _sendMessage() {
@@ -81,13 +88,18 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() => _highlightedMessageId = messageId);
 
       Future.delayed(const Duration(milliseconds: 1500), () {
-        if (mounted) setState(() => _highlightedMessageId = null);
+        if (mounted) {
+          setState(() => _highlightedMessageId = null);
+        }
       });
     }
   }
 
+  /// ✅ Message Options بعد التعديل
   void _showMessageOptions(BuildContext context, ChatMessage message) {
     final isMe = message.senderId.id == _chatCubit.currentUserId;
+
+    final canEdit = _canEditMessage(message);
 
     showModalBottomSheet(
       context: context,
@@ -102,7 +114,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               },
             ),
-            if (isMe)
+
+            /// Edit يظهر فقط قبل 15 دقيقة
+            if (isMe && canEdit)
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.orange),
                 title: const Text('Edit'),
@@ -117,6 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   );
                 },
               ),
+
             if (isMe)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
@@ -167,20 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
         final message = messages[index];
         final isMe = message.senderId.id == _chatCubit.currentUserId;
 
-        if (!_messageKeys.containsKey(message.id)) {
-          _messageKeys[message.id] = GlobalKey();
-        }
-
-        bool showAvatar = true;
-        bool showName = true;
-
-        if (index > 0) {
-          final previousMessage = messages[index - 1];
-          if (previousMessage.senderId.id == message.senderId.id) {
-            showAvatar = false;
-            showName = false;
-          }
-        }
+        _messageKeys.putIfAbsent(message.id, () => GlobalKey());
 
         return SwipeableMessage(
           onSwipeReply: () => _chatCubit.setReplyMessage(message),
@@ -191,8 +193,8 @@ class _ChatScreenState extends State<ChatScreen> {
               isMe: isMe,
               senderName: message.senderId.name ?? "User",
               senderImage: message.senderId.userImage.secureUrl,
-              showAvatar: showAvatar,
-              showName: showName,
+              showAvatar: true,
+              showName: true,
               isHighlighted: _highlightedMessageId == message.id,
               onLongPress: () => _showMessageOptions(context, message),
               onTapReply: message.replyTo != null
@@ -207,50 +209,31 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _messageInput(PublicChatMessagesState state) {
     return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (state is PublicChatMessagesLoaded && state.editingMessage != null)
-            EditPreviewBar(
-              editingMessage: state.editingMessage!,
-              onCancel: () {
-                _chatCubit.clearEditing();
-                _controller.clear();
-              },
-            )
-          else if (state is PublicChatMessagesLoaded &&
-              state.replyMessage != null)
-            ReplyPreviewBar(
-              replyMessage: state.replyMessage!,
-              onCancel: () => _chatCubit.clearReply(),
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: "Message...",
-                      fillColor: Theme.of(context).cardColor,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: "Message...",
+                  fillColor: Theme.of(context).cardColor,
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(Icons.send, color: AppPalette.primary),
-                  onPressed: _sendMessage,
-                )
-              ],
+                onSubmitted: (_) => _sendMessage(),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            IconButton(
+              icon: const Icon(Icons.send, color: AppPalette.primary),
+              onPressed: _sendMessage,
+            )
+          ],
+        ),
       ),
     );
   }
@@ -270,33 +253,17 @@ class _ChatScreenState extends State<ChatScreen> {
     return BlocProvider.value(
       value: _chatCubit,
       child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Get.back(),
           ),
-          title: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: AppPalette.primary,
-                child: Text(widget.channelName[0]),
-              ),
-              const SizedBox(width: 8),
-              Text(widget.channelName),
-            ],
-          ),
+          title: Text(widget.channelName),
         ),
         body: BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
           builder: (context, state) {
             if (state is PublicChatMessagesLoading) {
               return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state is PublicChatMessagesError) {
-              return Center(child: Text(state.message));
             }
 
             final messages = state is PublicChatMessagesLoaded
@@ -305,19 +272,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
             return Column(
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      if (state is PublicChatMessagesLoaded &&
-                          state.replyMessage != null)
-                        ReplyPreviewBar(
-                          replyMessage: state.replyMessage!,
-                          onCancel: () => _chatCubit.clearReply(),
-                        ),
-                      Expanded(child: _buildMessageList(messages)),
-                    ],
-                  ),
-                ),
+                Expanded(child: _buildMessageList(messages)),
                 _messageInput(state),
               ],
             );

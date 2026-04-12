@@ -39,6 +39,8 @@ class ChatHistoryResponse {
       };
 }
 
+enum MessageStatus { sending, sent, failed }
+
 class ChatMessage {
   final String id;
   final String chatId;
@@ -52,6 +54,7 @@ class ChatMessage {
   final int v;
   final bool isEdited;
   final bool isSeen;
+  final MessageStatus status;
 
   ChatMessage({
     required this.id,
@@ -66,6 +69,7 @@ class ChatMessage {
     required this.v,
     this.isEdited = false,
     this.isSeen = false,
+    this.status = MessageStatus.sent,
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
@@ -100,33 +104,33 @@ class ChatMessage {
         'isSeen': isSeen,
       };
 
-  ChatMessage copyWith({
-    String? id,
-    String? chatId,
-    Sender? senderId,
-    String? content,
-    String? messageType,
-    List<dynamic>? readBy,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    ReplyMessage? replyTo,
-    int? v,
-    bool? isEdited,
-    bool? isSeen,
-  }) {
+  ChatMessage copyWith(
+      {String? id,
+      String? chatId,
+      Sender? senderId,
+      String? content,
+      String? messageType,
+      List<dynamic>? readBy,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      ReplyMessage? replyTo,
+      int? v,
+      bool? isEdited,
+      bool? isSeen,
+      MessageStatus? status}) {
     return ChatMessage(
-      id: id ?? this.id,
-      chatId: chatId ?? this.chatId,
-      senderId: senderId ?? this.senderId,
-      content: content ?? this.content,
-      messageType: messageType ?? this.messageType,
-      readBy: readBy ?? this.readBy,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      replyTo: replyTo ?? this.replyTo,
-      v: v ?? this.v,
-      isEdited: isEdited ?? this.isEdited,
-      isSeen: isSeen ?? this.isSeen,
-    );
+        id: id ?? this.id,
+        chatId: chatId ?? this.chatId,
+        senderId: senderId ?? this.senderId,
+        content: content ?? this.content,
+        messageType: messageType ?? this.messageType,
+        readBy: readBy ?? this.readBy,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        replyTo: replyTo ?? this.replyTo,
+        v: v ?? this.v,
+        isEdited: isEdited ?? this.isEdited,
+        isSeen: isSeen ?? this.isSeen,
+        status: status ?? this.status);
   }
 }

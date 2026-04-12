@@ -94,4 +94,16 @@ class UsersCubit extends Cubit<UsersState> {
   Future<void> fetchNextPage() async {
     await fetchUsers();
   }
+
+  Future<UserModel?> getUserById(String id) async {
+    try {
+      final user = _users.cast<UserModel?>().firstWhere(
+            (u) => u?.id == id,
+            orElse: () => null,
+          );
+      return user;
+    } catch (_) {
+      return null;
+    }
+  }
 }

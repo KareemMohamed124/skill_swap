@@ -1,158 +1,245 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
 
-class NextSessionCard extends StatelessWidget {
+class NextSessionCard extends StatefulWidget {
   final String name;
-  final String startsIn;
+  final DateTime sessionTime;
   final String dateTime;
   final String duration;
   final bool isMentor;
-  final int remainingMinutes;
+  final VoidCallback? onTap;
 
   const NextSessionCard({
     super.key,
     required this.name,
-    required this.startsIn,
+    required this.sessionTime,
     required this.dateTime,
     required this.duration,
-    required this.remainingMinutes,
     this.isMentor = true,
+    this.onTap,
   });
+
+  @override
+  State<NextSessionCard> createState() => _NextSessionCardState();
+}
+
+class _NextSessionCardState extends State<NextSessionCard> {
+  late Duration remaining;
+  late StreamSubscription ticker;
+
+  Color get baseColor =>
+      widget.isMentor ? const Color(0xFF7E57C2) : AppPalette.primary;
+
+  String get emoji => widget.isMentor ? "🧑🏻‍🏫" : "🧑🏻‍🎓";
+
+  @override
+  void initState() {
+    super.initState();
+    _updateTime();
+    ticker = Stream.periodic(const Duration(seconds: 1)).listen((_) {
+      _updateTime();
+    });
+  }
+
+  void _updateTime() {
+    final now = DateTime.now();
+    setState(() {
+      remaining = widget.sessionTime.difference(now);
+    });
+  }
+
+  String formatDuration(Duration d) {
+    if (d.isNegative) return "Started";
+
+    final hours = d.inHours;
+    final minutes = d.inMinutes % 60;
+    final seconds = d.inSeconds % 60;
+
+    if (hours > 0) return "${hours}h ${minutes}m ${seconds}s";
+    return "${minutes}m ${seconds}s";
+  }
+
+  @override
+  void dispose() {
+    ticker.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final isSoon = remaining.inMinutes <= 60 && !remaining.isNegative;
+    final canJoin = remaining.inMinutes <= 10;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () {},
-      child: Container(
-        height: screenHeight * 0.11, // بدل 86
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).dividerColor,
-              blurRadius: 10,
-              offset: Offset(0, screenHeight * 0.005), // بدل 4
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: widget.onTap,
+        child: Container(
+          height: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+
+            /// Full Background Gradient
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: widget.isMentor
+                  ? [Color(0xFF7E57C2), Color(0xFF9C7BFF)]
+                  : [AppPalette.primary, AppPalette.primary.withOpacity(0.7)],
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            /// Left Gradient Line
-            Container(
-              width: screenWidth * 0.01, // بدل 4
-              height: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(16),
+
+            /// Shadow
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 12),
+
+              /// Avatar
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.2),
                 ),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    isMentor ? AppPalette.primary : Colors.purple,
-                    (isMentor ? AppPalette.primary : Colors.purple)
-                        .withOpacity(0.3),
+                child: Center(
+                    child: FaIcon(widget.isMentor
+                        ? FontAwesomeIcons.chalkboardTeacher
+                        : FontAwesomeIcons.userGraduate)),
+              ),
+
+              const SizedBox(width: 12),
+
+              /// Content
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Name + Timer + Video Call
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: isSoon
+                                ? Colors.red.withOpacity(0.3)
+                                : Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            formatDuration(remaining),
+                            style: TextStyle(
+                              color: isSoon ? Colors.redAccent : Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        // Row(
+                        //   children: [
+                        //     Icon(Icons.videocam_rounded,
+                        //         size: 16, color: Colors.white),
+                        //     const SizedBox(width: 4),
+                        //     Text(
+                        //       "Video Call",
+                        //       style: const TextStyle(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.w500,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    /// Date & Duration
+                    Row(
+                      children: [
+                        Icon(Icons.access_time,
+                            size: 16, color: Colors.white70),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            "${widget.dateTime} • ${widget.duration}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    /// Join Button
+                    Row(
+                      children: [
+                        const Spacer(),
+                        if (canJoin)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              "Join Now",
+                              style: TextStyle(
+                                color: widget.isMentor
+                                    ? const Color(0xFF7E57C2)
+                                    : AppPalette.primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            SizedBox(width: screenWidth * 0.03), // بدل 12
-
-            /// Icon
-            Container(
-              width: screenWidth * 0.1, // بدل 40
-              height: screenWidth * 0.1, // بدل 40
-              decoration: BoxDecoration(
-                color: AppPalette.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isMentor ? Icons.school : Icons.book,
-                size: screenWidth * 0.055, // بدل 22
-                color: AppPalette.primary,
-              ),
-            ),
-
-            SizedBox(width: screenWidth * 0.04), // بدل 16
-
-            /// Content
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Name + Starts in
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.02),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          startsIn,
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.03, // بدل 12
-                            color: remainingMinutes < 60
-                                ? Colors.red
-                                : AppPalette.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.04), // بدل 16
-                    ],
-                  ),
-
-                  SizedBox(height: screenHeight * 0.008), // بدل 6
-
-                  /// Date & Call type
-                  Row(
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "$dateTime • $duration",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.02), // بدل 8
-                      Icon(
-                        Icons.videocam_outlined,
-                        size: screenWidth * 0.04, // بدل 16
-                        color: Theme.of(context).textTheme.bodyMedium!.color,
-                      ),
-                      SizedBox(width: screenWidth * 0.01), // بدل 4
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          "Video Call",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

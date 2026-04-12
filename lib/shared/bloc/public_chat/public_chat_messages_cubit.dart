@@ -44,6 +44,16 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   ChatMessage? get editingMessage => _editingMessage;
 
+  // ================= HELPER =================
+  PublicChatMessagesLoaded _emitLoaded() {
+    return PublicChatMessagesLoaded(
+      messages: List.from(_messages),
+      hasMore: _hasMore,
+      replyMessage: _replyMessage,
+      editingMessage: _editingMessage,
+    );
+  }
+
   // ============= REPLY =============
   void setReplyMessage(ChatMessage message) {
     _replyMessage = message;
@@ -135,7 +145,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ============= SEND MESSAGE =============
+  // ================= SEND =================
   Future<void> sendMessage(String content) async {
     if (_chatId == null || content.trim().isEmpty) return;
 
@@ -143,8 +153,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       await editMessage(_editingMessage!.id, content.trim());
       return;
     }
-
-    await pusherService.whenConnected;
 
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
 
@@ -162,6 +170,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       readBy: [],
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      status: MessageStatus.sending,
       replyTo: _replyMessage != null
           ? ReplyMessage(
               id: _replyMessage!.id,
@@ -175,59 +184,65 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     );
 
     _messages.add(optimisticMessage);
-
-    emit(PublicChatMessagesLoaded(
-      messages: List.from(_messages),
-      hasMore: _hasMore,
-      replyMessage: _replyMessage,
-      editingMessage: _editingMessage,
-    ));
+    emit(_emitLoaded());
 
     final replyToId = _replyMessage?.id;
     clearReply();
 
+    _trySendMessage(tempId, optimisticMessage, replyToId);
+  }
+
+  // ================= TRY SEND =================
+  Future<void> _trySendMessage(
+      String tempId, ChatMessage message, String? replyToId) async {
+    final index = _messages.indexWhere((m) => m.id == tempId);
+    if (index == -1) return;
+
     try {
-      final serverMessageResponse = await chatRepository.sendMessage(
+      final res = await chatRepository.sendMessage(
         _chatId!,
-        content.trim(),
+        message.content,
         'text',
         replyTo: replyToId,
       );
 
-      final serverMessage = ChatMessage(
-        id: serverMessageResponse.data.id,
-        chatId: serverMessageResponse.data.chatId,
-        senderId: serverMessageResponse.data.senderId,
-        content: serverMessageResponse.data.content,
-        messageType: serverMessageResponse.data.messageType,
-        readBy: serverMessageResponse.data.readBy,
-        createdAt: serverMessageResponse.data.createdAt,
-        updatedAt: serverMessageResponse.data.updatedAt,
-        replyTo: serverMessageResponse.data.replyTo,
-        v: serverMessageResponse.data.v,
+      _messages[index] = message.copyWith(
+        id: res.data.id,
+        status: MessageStatus.sent,
       );
 
-      final index = _messages.indexWhere((m) => m.id == tempId);
-      if (index != -1)
-        _messages[index] = serverMessage;
-      else
-        _messages.add(serverMessage);
-
-      emit(PublicChatMessagesLoaded(
-        messages: List.from(_messages),
-        hasMore: _hasMore,
-        replyMessage: _replyMessage,
-        editingMessage: _editingMessage,
-      ));
+      emit(_emitLoaded());
     } catch (e) {
-      _messages.removeWhere((m) => m.id == tempId);
-      emit(PublicChatMessagesLoaded(
-        messages: List.from(_messages),
-        hasMore: _hasMore,
-        replyMessage: _replyMessage,
-        editingMessage: _editingMessage,
-      ));
+      _messages[index] = message.copyWith(
+        status: MessageStatus.failed,
+      );
+
+      emit(_emitLoaded());
+
+      // 🔥 AUTO RESEND
+      Future.delayed(const Duration(seconds: 3), () {
+        final i = _messages.indexWhere((m) => m.id == tempId);
+        if (i != -1 && _messages[i].status == MessageStatus.failed) {
+          _retryMessage(tempId, replyToId);
+        }
+      });
     }
+  }
+
+  // ================= RETRY =================
+  Future<void> _retryMessage(String tempId, String? replyToId) async {
+    final index = _messages.indexWhere((m) => m.id == tempId);
+    if (index == -1) return;
+
+    final message = _messages[index];
+
+    _messages[index] = message.copyWith(
+      status: MessageStatus.sending,
+    );
+
+    emit(_emitLoaded());
+
+    _trySendMessage(tempId, message, replyToId);
   }
 
   // ============= EDIT MESSAGE =============
@@ -291,11 +306,11 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ============= PUSHER EVENTS =============
+  // ================= PUSHER =================
   void _onPusherEvent(Map<String, dynamic> data) {
     if (isClosed) return;
 
-    final eventType = data['_eventType']?.toString() ?? 'receive_message';
+    final eventType = data['_eventType'] ?? 'receive_message';
 
     switch (eventType) {
       case 'message_edited':
@@ -309,107 +324,68 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         break;
       default:
         _handleNewMessage(data);
-        break;
     }
   }
 
   void _handleNewMessage(Map<String, dynamic> data) {
-    try {
-      final messageData = data['message'] is Map<String, dynamic>
-          ? data['message'] as Map<String, dynamic>
-          : data;
+    final messageData = data['message'] is Map<String, dynamic>
+        ? data['message'] as Map<String, dynamic>
+        : data;
 
-      final messageChatId = messageData['chatId']?.toString() ?? '';
-      if (messageChatId != _chatId) return;
+    final messageChatId = messageData['chatId']?.toString() ?? '';
+    if (messageChatId != _chatId) return;
 
-      final senderData = messageData['senderData'] ?? {};
-      final senderId = messageData['senderId']?.toString() ?? 'unknown';
-      final senderName = senderData['userName']?.toString() ?? 'unknown';
+    final senderData = messageData['senderData'] ?? {};
+    final senderId = messageData['senderId']?.toString() ?? 'unknown';
+    final senderName = senderData['userName']?.toString() ?? 'unknown';
 
-      String userImageUrl =
-          senderData['userImage']?['secure_url']?.toString() ?? '';
+    String userImageUrl =
+        senderData['userImage']?['secure_url']?.toString() ?? '';
 
-      if (userImageUrl.isEmpty) {
-        try {
-          final oldMessage =
-              _messages.firstWhere((m) => m.senderId.id == senderId);
-          userImageUrl = oldMessage.senderId.userImage.secureUrl;
-        } catch (_) {}
-      }
+    if (userImageUrl.isEmpty) {
+      try {
+        final oldMessage =
+            _messages.firstWhere((m) => m.senderId.id == senderId);
+        userImageUrl = oldMessage.senderId.userImage.secureUrl;
+      } catch (_) {}
+    }
+    if (senderId != _currentUserId) return;
 
-      final newMessage = ChatMessage(
-        id: messageData['id']?.toString() ?? DateTime.now().toString(),
-        chatId: messageChatId,
-        senderId: Sender(
-          id: senderId,
-          userImage: UserImage(secureUrl: userImageUrl, publicId: ''),
-          name: senderName,
-          role: '',
-        ),
-        content: messageData['message']?.toString() ?? '',
-        messageType: messageData['messageType']?.toString() ?? 'text',
-        readBy: [],
-        createdAt:
-            DateTime.tryParse(messageData['timestamp'] ?? '') ?? DateTime.now(),
-        updatedAt: DateTime.now(),
-        replyTo: messageData['replyTo'] != null
-            ? ReplyMessage.fromJson(messageData['replyTo'])
-            : null,
-        v: 0,
-      );
+    final newMessage = ChatMessage(
+      id: messageData['id']?.toString() ?? DateTime.now().toString(),
+      chatId: messageChatId,
+      senderId: Sender(
+        id: senderId,
+        userImage: UserImage(secureUrl: userImageUrl, publicId: ''),
+        name: senderName,
+        role: '',
+      ),
+      content: messageData['message'] ?? '',
+      messageType: 'text',
+      readBy: [],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      status: MessageStatus.sent,
+      v: 0,
+    );
 
-      if (senderId == _currentUserId) {
-        final tempIndex = _messages.indexWhere((m) =>
-            m.id.startsWith('temp_') &&
-            m.content == newMessage.content &&
-            m.senderId.id == senderId);
-
-        if (tempIndex != -1) {
-          _messages[tempIndex] = newMessage;
-
-          emit(PublicChatMessagesLoaded(
-            messages: List.from(_messages),
-            hasMore: _hasMore,
-            replyMessage: _replyMessage,
-            editingMessage: _editingMessage,
-          ));
-        }
-        return;
-      }
-
-      /// ✅ 2. deduplication قوي
-      final exists = _messages.any((m) =>
-          m.id == newMessage.id ||
-          (m.content == newMessage.content &&
-              m.senderId.id == newMessage.senderId.id &&
-              m.createdAt.difference(newMessage.createdAt).inSeconds.abs() <
-                  2));
-
-      if (exists) return;
-
-      /// ✅ 3. replace temp لو match
-      final tempIndex = _messages.indexWhere((m) =>
-          m.id.startsWith('temp_') &&
-          m.content == newMessage.content &&
-          m.senderId.id == newMessage.senderId.id);
+    if (senderId == _currentUserId) {
+      final tempIndex = _messages.indexWhere(
+          (m) => m.id.startsWith('temp_') && m.content == newMessage.content);
 
       if (tempIndex != -1) {
-        _messages[tempIndex] = newMessage;
-      } else {
-        _messages.add(newMessage);
+        _messages[tempIndex] = newMessage.copyWith(status: MessageStatus.sent);
+
+        emit(_emitLoaded());
       }
-
-      _messages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
-      emit(PublicChatMessagesLoaded(
-        messages: List.from(_messages),
-        hasMore: _hasMore,
-        replyMessage: _replyMessage,
-        editingMessage: _editingMessage,
-      ));
-    } catch (e) {
-      print('❌ error handling pusher message $e');
+      return;
     }
+
+    final exists = _messages.any((m) => m.id == newMessage.id);
+    if (exists) return;
+
+    _messages.add(newMessage);
+    emit(_emitLoaded());
   }
 
   void _handleMessageUpdated(Map<String, dynamic> data) {
@@ -488,6 +464,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
+  // ================= CLOSE =================
   @override
   Future<void> close() {
     _messageSubscription?.cancel();

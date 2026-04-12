@@ -97,24 +97,20 @@ class BookingRepositoryImpl extends BookingRepository {
     try {
       final response = await api.statusBookSession(id, request);
 
-      if (response['message'] == 'Booking status updated') {
-        return StatusBookingSuccess(
-          StatusBookingSuccessResponse.fromJson(response),
-        );
+      if (response['message'] != null) {
+        final msg = response['message'].toString().toLowerCase();
+
+        if (msg.contains('updated') ||
+            msg.contains('accepted') ||
+            msg.contains('success')) {
+          return StatusBookingSuccess(
+            StatusBookingSuccessResponse.fromJson(response),
+          );
+        }
       }
 
       return StatusBookingFailure(
         StatusBookingErrorResponse.fromJson(response),
-      );
-    } on DioException catch (e) {
-      if (e.response?.data != null &&
-          e.response!.data is Map<String, dynamic>) {
-        final error = StatusBookingErrorResponse.fromJson(e.response!.data);
-        return StatusBookingFailure(error);
-      }
-
-      return StatusBookingFailure(
-        StatusBookingErrorResponse(message: _getServerErrorMessage(e)),
       );
     } catch (e) {
       return StatusBookingFailure(

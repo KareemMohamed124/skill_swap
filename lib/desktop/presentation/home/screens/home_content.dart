@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/desktop/presentation/book_session/screens/profile_mentor.dart';
+import 'package:skill_swap/desktop/presentation/home/pages/next_session_view_all.dart';
+
 import 'package:skill_swap/desktop/presentation/home/pages/recommended_view_all.dart';
 import 'package:skill_swap/desktop/presentation/home/pages/top_users_view_all.dart';
-import 'package:skill_swap/desktop/presentation/home/widgets/next_session_card.dart';
-import 'package:skill_swap/desktop/presentation/home/widgets/recommended_card.dart'
-    show RecommendedCard;
-import 'package:skill_swap/desktop/presentation/home/widgets/section_header.dart';
-import 'package:skill_swap/desktop/presentation/home/widgets/top_user_card.dart';
 import 'package:skill_swap/main.dart';
-import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 
-import '../../../../mobile/presentation/home/pages/next_session_view_all.dart';
+import '../../../../mobile/presentation/game_part/game_section.dart';
+
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
-import '../../../../shared/constants/strings.dart';
+
 import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/helper/home_controller.dart';
+
+import '../widgets/section_header.dart';
+import '../widgets/top_users_section.dart';
+import '../widgets/next_session_section.dart';
+import '../widgets/recommended_section.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -29,11 +33,17 @@ class _HomeContentState extends State<HomeContent> {
   final ScrollController _topUsersScrollController = ScrollController();
   final ScrollController _recommendedScrollController = ScrollController();
 
+  final HomeController controller = Get.put(HomeController());
+
   @override
   void initState() {
     super.initState();
+
     _topUsersScrollController.addListener(_topUsersScrollListener);
     _recommendedScrollController.addListener(_recommendedScrollListener);
+
+    context.read<MyProfileCubit>().fetchMyProfile();
+    context.read<GetBookingsCubit>().fetchTodayNextSessions();
   }
 
   void _topUsersScrollListener() {
@@ -46,10 +56,12 @@ class _HomeContentState extends State<HomeContent> {
 
   void _handleScroll(ScrollController controller) {
     final cubit = context.read<UsersCubit>();
+
     if (controller.position.pixels >=
             controller.position.maxScrollExtent - 150 &&
         cubit.state is UsersLoaded) {
       final state = cubit.state as UsersLoaded;
+
       if (!state.isLoadingMore && !state.isLastPage) {
         cubit.fetchNextPage();
       }
@@ -60,8 +72,10 @@ class _HomeContentState extends State<HomeContent> {
   void dispose() {
     _topUsersScrollController.removeListener(_topUsersScrollListener);
     _topUsersScrollController.dispose();
+
     _recommendedScrollController.removeListener(_recommendedScrollListener);
     _recommendedScrollController.dispose();
+
     super.dispose();
   }
 
@@ -92,258 +106,123 @@ class _HomeContentState extends State<HomeContent> {
           constraints: const BoxConstraints(maxWidth: 1200),
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BlocBuilder<MyProfileCubit, MyProfileState>(
-                  builder: (context, state) {
-                    String name = "User";
-                    String avatarPath = '';
+            child: Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// HEADER
+                  BlocBuilder<MyProfileCubit, MyProfileState>(
+                    builder: (context, state) {
+                      String name = "User";
+                      String avatarPath = '';
 
-                    if (state is MyProfileLoaded) {
-                      name = state.profile.name ?? name;
-                      avatarPath = state.profile.userImage?.secureUrl ?? '';
-                    }
+                      if (state is MyProfileLoaded) {
+                        name = state.profile.name ?? name;
+                        avatarPath = state.profile.userImage?.secureUrl ?? '';
+                      }
 
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 24),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom:
-                              BorderSide(color: Colors.grey.shade800, width: 1),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.white24,
-                            child: ClipOval(
-                              child: _buildAvatar(avatarPath),
-                            ),
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 24),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                                color: Colors.grey.shade800, width: 1),
                           ),
-                          const SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Hi, $name',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white24,
+                              child: ClipOval(
+                                child: _buildAvatar(avatarPath),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'keep_learning'.tr,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: Colors.white70,
-                                    ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-                SectionHeader(
-                  sectionTitle: 'top_users'.tr,
-                  onTop: () => desktopKey.currentState?.openSidePage(
-                    body: BlocProvider(
-                      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
-                      child: const TopUsersViewAll(),
+                            ),
+                            const SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Hi, $name',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'keep_learning'.tr,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: Colors.white70,
+                                      ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  /// GAME
+                  if (controller.showGameFirst.value) ...[
+                    GameSection(),
+                    const SizedBox(height: 40),
+                  ],
+
+                  /// TOP USERS
+                  SectionHeader(
+                    sectionTitle: 'top_users'.tr,
+                    onTop: () => desktopKey.currentState?.openSidePage(
+                      body: const TopUsersViewAll(),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                BlocBuilder<UsersCubit, UsersState>(
-                  builder: (context, state) {
-                    final usersList = state is UsersLoaded ? state.users : [];
-                    final isLastPage =
-                        state is UsersLoaded ? state.isLastPage : false;
+                  const SizedBox(height: 16),
+                  TopUsersSectionDesktop(controller: _topUsersScrollController),
 
-                    return SizedBox(
-                      height: 150,
-                      child: GridView.builder(
-                        controller: _topUsersScrollController,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: usersList.isNotEmpty
-                            ? (isLastPage
-                                ? usersList.length
-                                : usersList.length + 1)
-                            : 5,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 1,
-                          mainAxisSpacing: 24,
-                          crossAxisSpacing: 24,
-                          childAspectRatio: 0.9,
-                        ),
-                        itemBuilder: (context, index) {
-                          if (usersList.isEmpty) {
-                            return const TopUserCard(isLoading: true);
-                          }
+                  const SizedBox(height: 40),
 
-                          if (index >= usersList.length) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 32),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
-
-                          final u = usersList[index];
-
-                          return InkWell(
-                            onTap: () {
-                              desktopKey.currentState?.openSidePage(
-                                body: ProfileMentorDesktop(
-                                  id: u.id,
-                                  name: u.name,
-                                  track: u.track.name.isEmpty
-                                      ? "Mobile Development"
-                                      : u.track.name,
-                                  rate: u.rate,
-                                  image: u.userImage.secureUrl,
-                                  bio: u.profile.bio,
-                                  skills: u.skills,
-                                  hoursAvailable: u.freeHours,
-                                  peopleHelped: u.helpTotalHours,
-                                  hourlyRate: 0,
-                                ),
-                              );
-                            },
-                            child: TopUserCard(
-                              id: u.id,
-                              image: u.userImage.secureUrl,
-                              name: u.name,
-                              track: u.track.name.isEmpty
-                                  ? "Mobile Development"
-                                  : u.track.name,
-                              hours: u.helpTotalHours,
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 40),
-                SectionHeader(
-                  sectionTitle: 'your_next_session'.tr,
-                  onTop: () => desktopKey.currentState?.openSidePage(
-                    body: const NextSessionViewAll(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: AppData.nextSessions.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (_, i) {
-                    final s = AppData.nextSessions[i];
-                    return NextSessionCard(
-                      name: s.name,
-                      duration: s.duration,
-                      dateTime: s.dateTime,
-                      startsIn: s.startsIn,
-                      isMentor: s.isMentor,
-                    );
-                  },
-                ),
-                const SizedBox(height: 40),
-                SectionHeader(
-                  sectionTitle: 'recommended_for_you'.tr,
-                  onTop: () => desktopKey.currentState?.openSidePage(
-                    body: BlocProvider(
-                      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
-                      child: const RecommendedViewAll(),
+                  /// NEXT SESSIONS
+                  SectionHeader(
+                    sectionTitle: 'your_next_session'.tr,
+                    onTop: () => desktopKey.currentState?.openSidePage(
+                      body: const NextSessionViewAll(),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                BlocBuilder<UsersCubit, UsersState>(
-                  builder: (context, state) {
-                    final usersList = state is UsersLoaded ? state.users : [];
-                    final isLastPage =
-                        state is UsersLoaded ? state.isLastPage : false;
+                  const SizedBox(height: 16),
+                  const NextSessionSectionDesktop(),
 
-                    return SizedBox(
-                      height: 170,
-                      child: GridView.builder(
-                        controller: _recommendedScrollController,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: usersList.isNotEmpty
-                            ? (isLastPage
-                                ? usersList.length
-                                : usersList.length + 1)
-                            : 5,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 1,
-                          mainAxisSpacing: 24,
-                          crossAxisSpacing: 24,
-                          childAspectRatio: 1,
-                        ),
-                        itemBuilder: (context, index) {
-                          if (usersList.isEmpty) {
-                            return const RecommendedCard(isLoading: true);
-                          }
+                  const SizedBox(height: 40),
 
-                          if (index >= usersList.length) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 32),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
+                  /// RECOMMENDED
+                  SectionHeader(
+                    sectionTitle: 'recommended_for_you'.tr,
+                    onTop: () => desktopKey.currentState?.openSidePage(
+                      body: const RecommendedViewAll(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  RecommendedSectionDesktop(
+                    controller: _recommendedScrollController,
+                  ),
 
-                          final u = usersList[index];
-
-                          return InkWell(
-                            onTap: () {
-                              desktopKey.currentState?.openSidePage(
-                                body: ProfileMentorDesktop(
-                                  id: u.id,
-                                  name: u.name,
-                                  track: u.track.name.isEmpty
-                                      ? "Mobile Development"
-                                      : u.track.name,
-                                  rate: u.rate,
-                                  image: u.userImage.secureUrl,
-                                  bio: u.profile.bio,
-                                  skills: u.skills,
-                                  hoursAvailable: u.freeHours,
-                                  peopleHelped: u.helpTotalHours,
-                                  hourlyRate: 0,
-                                ),
-                              );
-                            },
-                            child: RecommendedCard(
-                              id: u.id,
-                              image: u.userImage.secureUrl,
-                              name: u.name,
-                              track: u.track.name.isEmpty
-                                  ? "Mobile Development"
-                                  : u.track.name,
-                              rating: u.rate,
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
+                  /// GAME
+                  if (!controller.showGameFirst.value) ...[
+                    const SizedBox(height: 40),
+                    GameSection(),
+                  ],
+                ],
+              ),
             ),
           ),
         ),

@@ -96,8 +96,15 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     }
   }
 
+  /// ✅ يسمح بالتعديل لمدة 15 دقيقة فقط
+  bool _canEditMessage(ChatMessage message) {
+    final difference = DateTime.now().difference(message.createdAt);
+    return difference.inMinutes <= 15;
+  }
+
   void _showMessageOptions(BuildContext context, ChatMessage message) {
     final isMe = message.senderId.id == _chatCubit.currentUserId;
+    final canEdit = _canEditMessage(message);
 
     showModalBottomSheet(
       context: context,
@@ -112,7 +119,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                 _chatCubit.setReplyMessage(message);
               },
             ),
-            if (isMe)
+            if (isMe && canEdit)
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.orange),
                 title: const Text('Edit'),

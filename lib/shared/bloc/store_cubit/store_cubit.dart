@@ -3,46 +3,29 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../../../mobile/presentation/game_stor/models/store_item_model.dart';
+import '../../data/models/store/item_mapper.dart';
+import '../../domain/repositories/store_repository.dart';
 import 'store_state.dart';
 
 class StoreCubit extends Cubit<StoreState> {
+  final StoreRepository repository;
+
   Timer? timer;
   final box = GetStorage();
 
   static const String endTimeKey = "store_end_time";
 
-  StoreCubit()
+  StoreCubit(this.repository)
       : super(StoreState(
-    coins: 1250,
-    remaining: Duration.zero,
-    elapsed: Duration.zero,
-    items: [
-      StoreItem(
-        id: "1",
-        title: "20% Coupon",
-        price: 200,
-        image: "assets/images/store_images/coupon20_skillSwap.png",
-        rarity: "common",
-      ),
-      StoreItem(
-        id: "2",
-        title: "50% Coupon",
-        price: 500,
-        image: "assets/images/store_images/coupon50_skillSwap.png",
-        rarity: "rare",
-      ),
-      StoreItem(
-        id: "3",
-        title: "",
-        price: 250,
-        image: "assets/images/store_images/coin.png",
-        rarity: "epic",
-      ),
-    ],
-  )) {
+          coins: 0,
+          remaining: Duration.zero,
+          elapsed: Duration.zero,
+          items: [],
+        )) {
     _initTimer();
   }
+
+  // ================= TIMER =================
 
   DateTime getNextSaturdayMidnight() {
     final now = DateTime.now();
@@ -80,35 +63,63 @@ class StoreCubit extends Cubit<StoreState> {
     timer?.cancel();
 
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      final now = DateTime.now();
-      final remaining = endTime.difference(now);
+      final remaining = endTime.difference(DateTime.now());
 
       if (remaining.isNegative) {
         final newEnd = getNextSaturdayMidnight();
         box.write(endTimeKey, newEnd.millisecondsSinceEpoch);
-
         _startTimer(newEnd);
         return;
       }
-      emit(state.copyWith(
-        remaining: remaining,
-      ));
+
+      emit(state.copyWith(remaining: remaining));
     });
   }
 
-  void buyItem(String id, {int? customPrice}) {
-    final item = state.items.firstWhere((e) => e.id == id);
+  // ================= GET ITEMS =================
 
-    int price = customPrice ?? item.price;
+  Future<void> getStoreItems() async {
+    emit(state.copyWith(isLoading: true));
 
-    if (item.isPurchased || state.coins < price) return;
+    try {
+      final response = await repository.getItems();
 
-    item.isPurchased = true;
+      final items = response.items.map((e) => e.toStoreItem()).toList();
 
-    emit(state.copyWith(
-      coins: state.coins - price,
-      items: List.from(state.items),
-    ));
+      emit(state.copyWith(
+        items: items,
+        isLoading: false,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  // ================= PURCHASE =================
+
+  Future<void> buyItem(String id) async {
+    try {
+      final response = await repository.purchaseItem(id);
+
+      final updatedItems = state.items.map((item) {
+        if (item.id == id) {
+          item.isPurchased = true;
+        }
+        return item;
+      }).toList();
+
+      emit(state.copyWith(
+        items: updatedItems,
+        successMessage: response.message,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        errorMessage: e.toString(),
+      ));
+    }
   }
 
   @override

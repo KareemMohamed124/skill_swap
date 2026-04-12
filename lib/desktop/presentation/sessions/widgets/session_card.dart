@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 
 import '../../../../mobile/presentation/payment/payment_webview_screen.dart';
 import '../../../../mobile/presentation/sessions/models/session.dart';
-import '../../../../mobile/presentation/video_call/callID.dart';
 import '../../../../shared/bloc/book_session/book_session_bloc.dart';
 import '../../../../shared/bloc/book_session/book_session_event.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
@@ -118,7 +117,7 @@ class _SessionCardState extends State<SessionCard> {
   }
 
   Widget _buildUserImage(double cardWidth) {
-    final image = widget.session.image;
+    final image = widget.session.userImage;
 
     if (image == null || image.isEmpty) {
       return _buildPlaceholder(cardWidth);
@@ -188,9 +187,9 @@ class _SessionCardState extends State<SessionCard> {
               sl<ActiveBookingBloc>()
                 ..add(LoadBookingDetails(bookingId)),
               child: BookSessionDesktop(
-                userId: widget.session.instructorId,
+                userId: widget.session.userId,
                 bookingId: bookingId,
-                userName: widget.session.name,
+                userName: widget.session.userName,
                 price: widget.session.price,
               ),
             ),
@@ -218,12 +217,12 @@ class _SessionCardState extends State<SessionCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.session.name,
+                        Text(widget.session.userName,
                             style: Theme
                                 .of(context)
                                 .textTheme
                                 .titleMedium),
-                        Text(widget.session.role,
+                        Text(widget.session.userRole,
                             style: Theme
                                 .of(context)
                                 .textTheme
@@ -379,14 +378,13 @@ class _SessionCardState extends State<SessionCard> {
                   GestureDetector(
                     onTap: _timeRemaining.inSeconds <= 0
                         ? () {
-                      Get.to(() =>
-                          CallPage(
-                            // callID: 'room',
-                            // userID: widget.session.instructorId,
-                            // userName: widget.session.name,
-                            // isStudent: widget.session.isStudent,
-                            session: widget.session,
-                          ));
+                      // Get.to(() => CallPage(
+                      //       // callID: 'room',
+                      //       // userID: widget.session.instructorId,
+                      //       // userName: widget.session.name,
+                      //       // isStudent: widget.session.isStudent,
+                      //       session: widget.session,
+                      //     ));
                     }
                         : null,
                     child: Container(

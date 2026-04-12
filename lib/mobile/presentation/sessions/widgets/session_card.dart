@@ -6,14 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../shared/bloc/book_session/book_session_bloc.dart';
-import '../../../../shared/bloc/book_session/book_session_event.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
+import '../../../../shared/bloc/join_session_bloc/join_session_bloc.dart';
+import '../../../../shared/bloc/join_session_bloc/join_session_event.dart';
+import '../../../../shared/bloc/join_session_bloc/join_session_state.dart';
 import '../../../../shared/bloc/pay_booking_bloc/pay_booking_bloc.dart';
 import '../../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
 import '../../../../shared/data/models/status_booking/status_booking_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
-import '../../book_session/screens/book_session.dart';
+import '../../book_session/screens/profile_mentor.dart';
+import '../../book_session/widgets/session_booking_page.dart';
 import '../../payment/payment_webview_screen.dart';
 import '../../video_call/callID.dart';
 import '../models/session.dart';
@@ -120,7 +123,7 @@ class _SessionCardState extends State<SessionCard> {
   }
 
   Widget _buildUserImage(double cardWidth) {
-    final image = widget.session.image;
+    final image = widget.session.userImage;
 
     if (image == null || image.isEmpty) {
       return _buildPlaceholder(cardWidth);
@@ -183,22 +186,62 @@ class _SessionCardState extends State<SessionCard> {
         }
       },
       child: InkWell(
-        onTap: () {
-          final bookingId = widget.session.sessionId.toString();
+        onTap: isPending
+            ? () async {
+                final user = await context
+                    .read<UsersCubit>()
+                    .getUserById(widget.session.userId);
 
-          Get.to(
-            BlocProvider(
-              create: (_) =>
-                  sl<ActiveBookingBloc>()..add(LoadBookingDetails(bookingId)),
-              child: BookSessionScreen(
-                userId: widget.session.instructorId,
-                bookingId: bookingId,
-                userName: widget.session.name,
-                price: widget.session.price,
-              ),
-            ),
-          );
-        },
+                if (user != null) {
+                  Get.to(
+                    ProfileMentor(
+                      id: user.id,
+                      image: user.userImage.secureUrl ?? "",
+                      name: user.name,
+                      track: user.track.name,
+                      rate: user.rate ?? 5.0,
+                      bio: user.profile.bio ?? "",
+                      hoursAvailable: user.freeHours ?? 5,
+                      peopleHelped: user.helpTotalHours ?? 0,
+                      hourlyRate: widget.session.price,
+                      skills: user.skills ?? [],
+                      reviews: user.reviews ?? [],
+                    ),
+                  )?.then((_) {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => BookingBottomSheet(
+                        userId: user.id,
+                        userName: user.name,
+                        price: widget.session.price,
+                        bookingId: widget.session.sessionId.toString(),
+                        availableDates: [], // ممكن تجيبيها من API
+                      ),
+                    );
+                  });
+                } else {
+                  Get.snackbar("Error", "User data not found");
+                }
+              }
+            : null,
+        // onTap: () {
+        //   final bookingId = widget.session.sessionId.toString();
+        //
+        //   Get.to(
+        //     BlocProvider(
+        //       create: (_) =>
+        //           sl<ActiveBookingBloc>()..add(LoadBookingDetails(bookingId)),
+        //       child: BookSessionScreen(
+        //         userId: widget.session.userId,
+        //         bookingId: bookingId,
+        //         userName: widget.session.userName,
+        //         price: widget.session.price,
+        //       ),
+        //     ),
+        //   );
+        // },
         child: Container(
           padding: EdgeInsets.all(screenWidth * 0.04),
           decoration: BoxDecoration(
@@ -218,9 +261,9 @@ class _SessionCardState extends State<SessionCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.session.name,
+                        Text(widget.session.userName,
                             style: Theme.of(context).textTheme.titleMedium),
-                        Text(widget.session.role,
+                        Text(widget.session.userRole,
                             style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
@@ -314,7 +357,7 @@ class _SessionCardState extends State<SessionCard> {
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red, // زر Rejected أحمر
+                          foregroundColor: Colors.red,
                           side: const BorderSide(color: Colors.red),
                         ),
                         onPressed: isLoading
@@ -339,28 +382,68 @@ class _SessionCardState extends State<SessionCard> {
 
               /// FREE SESSION
               else if (isAccepted && widget.session.price == 0)
-                GestureDetector(
-                  onTap: _timeRemaining.inSeconds <= 0
-                      ? () {
-                          Get.to(() => CallPage(session: widget.session));
-                        }
-                      : null,
-                  child: Container(
-                    height: screenWidth * 0.11,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: _timeRemaining.inSeconds > 0
-                          ? Theme.of(context).primaryColor
-                          : Colors.green,
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                    ),
-                    child: Text(
-                      _timeRemaining.inSeconds > 0
-                          ? "Session starts in ${_formatDuration(_timeRemaining)}"
-                          : "Live now",
-                      style: const TextStyle(color: Colors.white),
-                    ),
+                BlocProvider(
+                  create: (_) => sl<JoinSessionBloc>(),
+                  child: BlocConsumer<JoinSessionBloc, JoinSessionState>(
+                    listener: (context, state) {
+                      if (state is JoinSessionSuccess) {
+                        Get.to(() => CallPage(session: widget.session));
+                      } else if (state is JoinSessionFailure) {
+                        Get.snackbar("Error", state.error);
+                      }
+                    },
+                    builder: (context, state) {
+                      final isJoining = state is JoinSessionLoading;
+
+                      return GestureDetector(
+                        onTap: (_timeRemaining.inSeconds <= 0 && !isJoining)
+                            ? () {
+                                context.read<JoinSessionBloc>().add(
+                                      JoinSessionRequested(
+                                        widget.session.sessionId,
+                                      ),
+                                    );
+                              }
+                            : null,
+                        child: Container(
+                          height: screenWidth * 0.11,
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: _timeRemaining.inSeconds > 0
+                                ? Theme.of(context).primaryColor
+                                : Colors.green,
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.03),
+                          ),
+                          child: isJoining
+                              ? const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Joining...",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                )
+                              : Text(
+                                  _timeRemaining.inSeconds > 0
+                                      ? "Session starts in ${_formatDuration(_timeRemaining)}"
+                                      : "Live now",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                        ),
+                      );
+                    },
                   ),
                 )
 

@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
-import 'package:skill_swap/shared/core/services/notification_service.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
 
+import '../../core/services/notification_service.dart';
 import '../../data/models/logout/logout_response.dart';
 import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -17,7 +17,9 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
   }
 
   Future<void> _onLogoutRequested(
-      LogoutRequested event, Emitter<LogoutState> emit) async {
+    LogoutRequested event,
+    Emitter<LogoutState> emit,
+  ) async {
     emit(LogoutLoading());
 
     final response = await repository.logout();
@@ -29,7 +31,7 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
       await LocalStorage.clearUser();
       await NotificationService.deleteToken();
       sl<MyProfileCubit>().clearProfile();
-//      sl<GetBookingsCubit>().clearBooking();
+      //      sl<GetBookingsCubit>().clearBooking();
 
       emit(LogoutSuccessState(success: response.message));
     } else if (response is LogoutFailure) {

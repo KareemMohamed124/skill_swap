@@ -24,6 +24,7 @@ class StoreItemCard extends StatefulWidget {
 class _StoreItemCardState extends State<StoreItemCard>
     with TickerProviderStateMixin {
   late int selectedHours;
+
   final int minHours = 1;
   final int maxHours = 8;
   final int pricePerHour = 10;
@@ -37,6 +38,7 @@ class _StoreItemCardState extends State<StoreItemCard>
   @override
   void initState() {
     super.initState();
+
     selectedHours = minHours;
 
     rotateController = AnimationController(
@@ -95,29 +97,24 @@ class _StoreItemCardState extends State<StoreItemCard>
   @override
   void dispose() {
     rotateController.dispose();
-    buyEffectController.dispose();
+    buyEffectController.dispose(); // ✅ fix
     floatingController.dispose();
     coinFlyController.dispose();
     super.dispose();
   }
 
+  // ================= BUY =================
+
   void onBuyPressed() async {
-    if (!widget.item.isPurchased) {
-      await buyEffectController.forward(from: 0);
-      coinFlyController.forward(from: 0);
+    if (widget.item.isPurchased) return;
 
-      int totalPrice = widget.item.title.contains("Hours")
-          ? selectedHours * pricePerHour
-          : widget.item.price;
+    await buyEffectController.forward(from: 0);
+    coinFlyController.forward(from: 0);
 
-      if (context.read<StoreCubit>().state.coins >= totalPrice) {
-        context
-            .read<StoreCubit>()
-            .buyItem(widget.item.id, customPrice: totalPrice);
-      }
+    /// 🔥 call API مباشرة
+    context.read<StoreCubit>().buyItem(widget.item.id);
 
-      buyEffectController.reverse();
-    }
+    buyEffectController.reverse();
   }
 
   @override
@@ -182,7 +179,7 @@ class _StoreItemCardState extends State<StoreItemCard>
                   },
                 ),
 
-                /// ✨ Glow Effect
+                /// ✨ Glow
                 if (buyEffectController.value > 0)
                   Container(
                     width: 120 + (buyEffectController.value * 100),
@@ -196,7 +193,7 @@ class _StoreItemCardState extends State<StoreItemCard>
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    /// 🎯 لو العنصر ساعات
+                    /// 🎯 HOURS ITEM
                     if (item.title.contains("Hours"))
                       Column(
                         children: [
@@ -206,8 +203,6 @@ class _StoreItemCardState extends State<StoreItemCard>
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                           const SizedBox(height: 8),
-
-                          /// ✅ Slider الجديد
                           SizedBox(
                             width: 150,
                             child: CustomSingleSlider(
@@ -225,7 +220,7 @@ class _StoreItemCardState extends State<StoreItemCard>
                         ],
                       )
 
-                    /// 🎁 لو عنصر عادي
+                    /// 🎁 NORMAL ITEM
                     else
                       AnimatedBuilder(
                         animation: Listenable.merge(
@@ -237,7 +232,9 @@ class _StoreItemCardState extends State<StoreItemCard>
                               angle: widget.isSelected
                                   ? rotateController.value * 6.28
                                   : 0,
-                              child: Image.asset(item.image, height: 60),
+                              child: item.image.startsWith("http")
+                                  ? Image.network(item.image, height: 60)
+                                  : Image.asset(item.image, height: 60),
                             ),
                           );
                         },
@@ -245,7 +242,6 @@ class _StoreItemCardState extends State<StoreItemCard>
 
                     const SizedBox(height: 10),
 
-                    /// 📌 Title
                     Text(
                       item.title,
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -253,7 +249,7 @@ class _StoreItemCardState extends State<StoreItemCard>
 
                     const SizedBox(height: 12),
 
-                    /// 💸 زر الشراء
+                    /// 💸 BUY BUTTON
                     GestureDetector(
                       onTap: onBuyPressed,
                       child: AnimatedContainer(
@@ -288,10 +284,7 @@ class _StoreItemCardState extends State<StoreItemCard>
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    (item.title.contains("Hours")
-                                            ? selectedHours * pricePerHour
-                                            : item.price)
-                                        .toString(),
+                                    item.price.toString(),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

@@ -137,7 +137,7 @@ class _NotificationDesktopPanelState extends State<NotificationDesktopPanel> {
                       tagColor: tagColor,
                       timeAgo: _formatTimeAgo(dateTime),
                       title: title,
-                      mentorName: session.name,
+                      mentorName: session.userName,
                       sessionTime:
                           "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
                       icon: icon,

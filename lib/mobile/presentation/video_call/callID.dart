@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:skill_swap/mobile/presentation/video_call/rateSession.dart';
 import 'package:zego_uikit/zego_uikit.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 import '../../../shared/bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../../../shared/dependency_injection/injection.dart';
@@ -26,6 +27,7 @@ class _CallPageState extends State<CallPage> {
   @override
   void initState() {
     super.initState();
+    ZegoUIKit().logout();
     requestPermissions();
   }
 
@@ -45,9 +47,10 @@ class _CallPageState extends State<CallPage> {
           ZegoUIKitPrebuiltCall(
             appID: LiveKeys.appId,
             appSign: LiveKeys.appSign,
-            userID: widget.session.instructorId,
-            userName: widget.session.name,
+            userID: widget.session.userId,
+            userName: widget.session.userName,
             callID: widget.session.bookingCode,
+            plugins: [ZegoUIKitSignalingPlugin()],
             events: ZegoUIKitPrebuiltCallEvents(
               onCallEnd: (event, defaultAction) {
                 defaultAction();
@@ -131,8 +134,8 @@ class _CallPageState extends State<CallPage> {
 
               if (remoteUsers.isEmpty) {
                 return _buildWaitingUI(
-                  widget.session.name,
-                  widget.session.image,
+                  widget.session.userName,
+                  widget.session.userImage,
                 );
               }
 

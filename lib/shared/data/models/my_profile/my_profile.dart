@@ -28,6 +28,7 @@ class MyProfile extends Equatable {
   final DateTime? activationCodeExpires;
   final String fcmToken;
   final int score;
+
   final int varPoints;
   final int freeHours;
   final int helpTotalHours;

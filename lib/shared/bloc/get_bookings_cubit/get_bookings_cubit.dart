@@ -58,10 +58,10 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         return SessionModel(
             sessionId: booking.id,
             bookingCode: booking.bookingCode,
-            instructorId: otherUser.id,
-            name: otherUser.name,
-            role: otherUser.role,
-            image: otherUser.userImage.secureUrl,
+            userId: otherUser.id,
+            userName: otherUser.name,
+            userRole: otherUser.role,
+            userImage: otherUser.userImage.secureUrl,
             dateTime: dateTime,
             duration: booking.durationMins,
             price: booking.price,
@@ -183,9 +183,12 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         final isRelated = booking.studentId.id == currentUserId ||
             booking.instructorId.id == currentUserId;
 
-        final isUpcoming = dateTime.isAfter(now);
+        final duration = booking.durationMins ?? 0;
+        final endTime = dateTime.add(Duration(minutes: duration));
 
-        return isToday && isRelated && isUpcoming;
+        final isNotFinished = now.isBefore(endTime);
+
+        return isToday && isRelated && isNotFinished;
       }).map((booking) {
         final dateTime = DateTime(
           booking.date.year,
@@ -201,20 +204,15 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         final diff = dateTime.difference(now);
 
         return NextSession(
-          image: "assets/images/people_images/Ahmed Ibrahim.png",
           name: otherUser.name,
+          sessionTime: dateTime,
           dateTime: "Today, ${DateFormat('h:mm a').format(dateTime)}",
-          duration: "${booking.durationMins ?? 1}h",
-          startsIn: diff.inMinutes < 60
-              ? "Starts in ${diff.inMinutes}m"
-              : "Starts in ${diff.inHours}h",
+          duration: "${booking.durationMins ?? 1} min",
           isMentor: isMentor,
-          remainingMinutes: diff.inMinutes,
         );
       }).toList();
 
-      sessions.sort((a, b) => a.remainingMinutes.compareTo(b.remainingMinutes));
-
+      sessions.sort((a, b) => a.sessionTime.compareTo(b.sessionTime));
       emit(GetTodaySessionsLoaded(sessions: sessions));
     } catch (e) {
       emit(GetBookingsError(message: e.toString()));

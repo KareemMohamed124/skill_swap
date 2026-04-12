@@ -18,8 +18,9 @@ class GameSection extends StatefulWidget {
 }
 
 class _GameSectionState extends State<GameSection> {
-  final PageController _controller = PageController(viewportFraction: 0.82);
+  final PageController _controller = PageController(viewportFraction: 0.85);
   final box = GetStorage();
+
   late bool isFirst = box.read("leaderBoardFirst") ?? true;
 
   int _currentPage = 0;
@@ -61,111 +62,121 @@ class _GameSectionState extends State<GameSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        /// Title + Button
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "🎮 Challenge",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) {
-                      final page = BlocProvider(
-                        create: (_) => sl<UsersCubit>(),
-                        child: const LeaderboardScreen(),
-                      );
+            /// Title + Button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "🎮 Challenge",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) {
+                          final page = BlocProvider(
+                            create: (_) => sl<UsersCubit>(),
+                            child: const LeaderboardScreen(),
+                          );
 
-                      if (isFirst) {
-                        Future.delayed(const Duration(milliseconds: 300), () {
-                          showStoreDialog(_,
-                              isFirstTime: true,
-                              title: "Leaderboard",
-                              subtitle: "leaderboard");
-                          box.write("leaderBoardFirst", false);
-                          isFirst = false;
-                        });
-                      }
+                          if (isFirst) {
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () {
+                                showStoreDialog(
+                                  _,
+                                  isFirstTime: true,
+                                  title: "Leaderboard",
+                                  subtitle: "leaderboard",
+                                );
+                                box.write("leaderBoardFirst", false);
+                                isFirst = false;
+                              },
+                            );
+                          }
 
-                      return page;
-                    },
+                          return page;
+                        },
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.emoji_events, color: primaryColor),
+                  label: Text(
+                    "View Leaderboard",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                );
-              },
-              icon: const Icon(Icons.emoji_events, color: primaryColor),
-              label: Text(
-                "View Leaderboard",
-                style: Theme.of(context).textTheme.bodyLarge,
+                )
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Carousel
+            SizedBox(
+              height: 220,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: images.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final bool isActive = index == _currentPage;
+
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: isActive ? 10 : 25,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        if (isActive)
+                          BoxShadow(
+                            color: primaryColor.withValues(alpha: 0.25),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                      ],
+                      image: DecorationImage(
+                        image: AssetImage(images[index]),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
               ),
-            )
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Indicator
+            Center(
+              child: SmoothPageIndicator(
+                controller: _controller,
+                count: images.length,
+                effect: WormEffect(
+                  dotHeight: 8,
+                  dotWidth: 8,
+                  activeDotColor: primaryColor,
+                  dotColor: Colors.grey.shade300,
+                ),
+              ),
+            ),
           ],
         ),
-
-        const SizedBox(height: 15),
-
-        /// Carousel
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _controller,
-            itemCount: images.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              final bool isActive = index == _currentPage;
-
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                margin: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: isActive ? 10 : 25,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    if (isActive)
-                      BoxShadow(
-                        color: primaryColor.withValues(alpha: 0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                  image: DecorationImage(
-                    image: AssetImage(images[index]),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-
-        const SizedBox(height: 15),
-
-        /// Indicator
-        Center(
-          child: SmoothPageIndicator(
-            controller: _controller,
-            count: images.length,
-            effect: WormEffect(
-              dotHeight: 8,
-              dotWidth: 8,
-              activeDotColor: primaryColor,
-              dotColor: Colors.grey.shade300,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

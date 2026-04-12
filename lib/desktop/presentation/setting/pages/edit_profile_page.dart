@@ -204,14 +204,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void fillControllersFromProfile(profile) {
-    nameController.text = profile.name;
+    nameController.text = profile.userName;
     bioController.text = profile.profile.bio;
 
     final skillsList = profile.skills ?? [];
     selectedSkills = skillsList.map((e) => e.skillName).toList();
     originalSkills = List.from(selectedSkills);
 
-    userTrack = profile.track.name;
+    userTrack = profile.track.userName;
     selectedImage = null;
     controllersFilled = true;
   }
