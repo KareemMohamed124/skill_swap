@@ -88,11 +88,13 @@ class SessionDetailsPage extends StatelessWidget {
                                 peopleHelped: 0,
                                 hourlyRate: 0,
                                 skills: [],
+                                reviews: [],
                               ),
                               rightPanel: BookSessionDesktop(
                                 userId: session.mentorId,
                                 userName: session.mentorName,
                                 price: 0,
+                                availableDates: [],
                               ));
                         },
                         icon: const Icon(Icons.person_outline),
@@ -287,11 +289,13 @@ class SessionDetailsPage extends StatelessWidget {
                 peopleHelped: 0,
                 hourlyRate: 0,
                 skills: [],
+                reviews: [],
               ),
               rightPanel: BookSessionDesktop(
                 userId: session.mentorId,
                 userName: session.mentorName,
                 price: 0,
+                availableDates: [],
               ));
         },
       ),

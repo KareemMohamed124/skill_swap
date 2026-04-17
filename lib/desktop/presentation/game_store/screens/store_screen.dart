@@ -1,13 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:skill_swap/desktop/presentation/game_store/widgets/fantasy_store_header.dart';
+import 'package:skill_swap/desktop/presentation/game_store/widgets/store_item_card.dart';
+import 'package:skill_swap/desktop/presentation/game_store/widgets/timer_widget.dart';
 
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
+import '../../../../shared/data/repositories/store_repository_impl.dart';
+import '../../../../shared/data/web_services/store/store_api_service.dart';
 import '../../../../shared/dependency_injection/injection.dart';
-import '../widgets/fantasy_store_header.dart';
-import '../widgets/store_item_card.dart';
-import '../widgets/timer_widget.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});

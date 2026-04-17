@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/desktop/presentation/chat_channel/pages/chat_list.dart';
+import 'package:skill_swap/desktop/presentation/game_store/screens/store_screen.dart';
 import 'package:skill_swap/desktop/presentation/home/screens/notification_desktop_panel.dart';
 import 'package:skill_swap/desktop/presentation/profile/screens/profile_screen.dart';
 import 'package:skill_swap/desktop/presentation/search/screens/search_screen.dart';
@@ -14,7 +15,12 @@ import '../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../../../shared/bloc/public_chat/public_chat_bloc.dart';
+import '../../../shared/bloc/public_chat/public_chat_event.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
+import '../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
+import '../../../shared/bloc/tracks_bloc/tracks_bloc.dart';
+import '../../../shared/bloc/tracks_bloc/tracks_event.dart';
 import '../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../shared/dependency_injection/injection.dart';
 import '../home/screens/home_content.dart';
@@ -55,21 +61,32 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         return HomeContent();
 
       case 1:
-        return ChatListScreen(
-          onChannelSelected: (chatId, channelName) {
-            openSidePage(
-              body: getBody(1),
-              rightPanel: MultiBlocProvider(
-                providers: [
-                  BlocProvider(create: (_) => sl<PublicChatMessagesCubit>()),
-                ],
-                child: ChatScreen(
-                  chatId: chatId,
-                  channelName: channelName,
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+                create: (_) => sl<TracksBloc>()..add(LoadTracksEvent())),
+            BlocProvider(
+                create: (_) =>
+                    sl<PublicChatBloc>()..add(GetPublicChatsEvent())),
+          ],
+          child: ChatListScreen(
+            onChannelSelected: (chatId, channelName) {
+              openSidePage(
+                body: getBody(1),
+                rightPanel: MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                        create: (_) =>
+                            sl<PublicChatMessagesCubit>()..init(chatId)),
+                  ],
+                  child: ChatScreen(
+                    chatId: chatId,
+                    channelName: channelName,
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
 
       case 2:
@@ -79,12 +96,22 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         );
 
       case 3:
-        return SessionsScreen();
+        return MultiBlocProvider(providers: [
+          // BlocProvider<MyProfileCubit>(
+          //   create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+          // ),
+          BlocProvider(create: (_) => sl<GetBookingsCubit>()),
+          BlocProvider(create: (_) => sl<StatusBookBloc>()),
+          //BlocProvider(create: (_) => sl<SubmitReviewBloc>()),
+        ], child: SessionsScreen());
 
       case 4:
         return ProfileScreen();
 
       case 5:
+        return StoreScreen();
+
+      case 6:
         return SettingScreen();
 
       default:
@@ -99,6 +126,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
       create: (_) => sl<MentorFilterBloc>(),
       child: MentorFilterSheet(),
     ),
+    null,
     null,
     null,
     null

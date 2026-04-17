@@ -30,6 +30,7 @@ import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
 import '../bloc/status_book_bloc/status_book_bloc.dart';
+import '../bloc/store_cubit/store_cubit.dart';
 import '../bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../bloc/track_cubit/track_cubit.dart';
 import '../bloc/tracks_bloc/tracks_bloc.dart';
@@ -46,17 +47,20 @@ import '../data/repositories/booking_repository_impl.dart';
 import '../data/repositories/chat_repository_impl.dart';
 import '../data/repositories/notification_repository_impl.dart';
 import '../data/repositories/report_repository_impl.dart';
+import '../data/repositories/store_repository_impl.dart';
 import '../data/repositories/user_repository_impl.dart';
 import '../data/web_services/auth/auth_api.dart';
 import '../data/web_services/booking/booking_api.dart';
 import '../data/web_services/chat/chat_api_service.dart';
 import '../data/web_services/notification/notification_api.dart';
 import '../data/web_services/report/report_api.dart';
+import '../data/web_services/store/store_api_service.dart';
 import '../data/web_services/user/user_api.dart';
 import '../domain/repositories/auth_repository.dart';
 import '../domain/repositories/chat_repository.dart';
 import '../domain/repositories/notification_repository.dart';
 import '../domain/repositories/report_repository.dart';
+import '../domain/repositories/store_repository.dart';
 import '../domain/repositories/user_repository.dart';
 
 final sl = GetIt.instance;
@@ -72,6 +76,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<BookingApi>(() => BookingApi(sl<Dio>()));
   sl.registerLazySingleton<UserApi>(() => UserApi(sl<Dio>()));
   sl.registerLazySingleton<ReportApi>(() => ReportApi(sl<Dio>()));
+  sl.registerLazySingleton<StoreApiService>(() => StoreApiService(sl<Dio>()));
+
   sl.registerLazySingleton<NotificationApi>(
     () => NotificationApi(sl<Dio>()),
   );
@@ -98,6 +104,9 @@ Future<void> initDependencies() async {
 
   sl.registerLazySingleton<ChatRepository>(
       () => ChatRepositoryImpl(api: sl<ChatApiService>()));
+
+  sl.registerLazySingleton<StoreRepository>(
+      () => StoreRepositoryImpl(api: sl<StoreApiService>()));
 
   // Blocs
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
@@ -166,6 +175,10 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<TracksBloc>(
     () => TracksBloc(sl<ChatRepository>()),
+  );
+
+  sl.registerFactory<StoreCubit>(
+    () => StoreCubit(sl<StoreRepository>()),
   );
 
   // Chat Cubits

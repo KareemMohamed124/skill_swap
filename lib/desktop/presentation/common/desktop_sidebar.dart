@@ -5,7 +5,6 @@ import 'package:skill_swap/desktop/presentation/common/unreal_card.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
-import '../../../mobile/presentation/sign/screens/sign_in_screen.dart';
 import '../../../shared/bloc/logout_bloc/logout_event.dart';
 import '../../../shared/bloc/logout_bloc/logout_state.dart';
 import '../sign/screens/sign_in_screen.dart';
@@ -22,9 +21,7 @@ class DesktopSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       width: 220,
@@ -76,27 +73,33 @@ class DesktopSidebar extends StatelessWidget {
                   ),
                   _item(
                     context,
+                    icon: Icons.storefront_outlined,
+                    title: "store",
+                    index: 5,
+                  ),
+                  _item(
+                    context,
                     icon: Icons.settings,
                     title: "setting".tr,
-                    index: 5,
+                    index: 6,
                   ),
                   _item(
                     context,
                     icon: Icons.logout,
                     title: "sign_out".tr,
-                    index: 6,
+                    index: 7,
                     isAction: true,
                     onAction: () {
                       context.read<LogoutBloc>().add(
-                        LogoutRequested(),
-                      );
+                            LogoutRequested(),
+                          );
                     },
                   ),
                   _item(
                     context,
                     icon: Icons.delete,
                     title: "delete_account".tr,
-                    index: 7,
+                    index: 8,
                     isAction: true,
                     onAction: () {
                       // delete account action
@@ -106,7 +109,7 @@ class DesktopSidebar extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(height: 20),
+          const Divider(height: 16),
           Padding(
             padding: const EdgeInsets.all(8),
             child: UnrealExperienceCard(),
@@ -117,7 +120,8 @@ class DesktopSidebar extends StatelessWidget {
     );
   }
 
-  Widget _item(BuildContext context, {
+  Widget _item(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required int index,
@@ -129,18 +133,14 @@ class DesktopSidebar extends StatelessWidget {
     final Color textColor = isAction
         ? Colors.red
         : active
-        ? AppPalette.primary
-        : Theme
-        .of(context)
-        .textTheme
-        .bodyMedium!
-        .color!;
+            ? AppPalette.primary
+            : Theme.of(context).textTheme.bodyMedium!.color!;
 
     final Color? backgroundColor = active
         ? AppPalette.primary.withValues(alpha: 0.15)
         : isAction
-        ? Colors.red.withValues(alpha: 0.08)
-        : null;
+            ? Colors.red.withValues(alpha: 0.08)
+            : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

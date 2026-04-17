@@ -7,7 +7,7 @@ import 'package:skill_swap/desktop/presentation/home/pages/recommended_view_all.
 import 'package:skill_swap/desktop/presentation/home/pages/top_users_view_all.dart';
 import 'package:skill_swap/main.dart';
 
-import '../../../../mobile/presentation/game_part/game_section.dart';
+import '../../../../desktop/presentation/game_part/game_section.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';

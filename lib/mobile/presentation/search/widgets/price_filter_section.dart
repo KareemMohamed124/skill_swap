@@ -73,42 +73,39 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         SizedBox(height: width * 0.01),
         Row(
           children: [
-            Expanded(child: priceBox("min".tr, priceRange.start, width)),
+            Expanded(child: priceBox("min".tr, priceRange.start)),
             SizedBox(width: width * 0.04),
-            Expanded(child: priceBox("max".tr, priceRange.end, width)),
+            Expanded(child: priceBox("max".tr, priceRange.end)),
           ],
         ),
       ],
     );
   }
 
-  Widget priceBox(String label, double value, double width) {
+  Widget priceBox(String label, double value) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FittedBox(
-          child: Text(
-            label,
-            style: const TextStyle(color: Colors.grey),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
           ),
         ),
-        SizedBox(height: width * 0.01),
+        SizedBox(height: 4),
         Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 20,
-          ),
+          height: 40,
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
+            color: Theme.of(context).cardColor,
           ),
           child: Text(
             "\$${value.round()}",
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
       ],

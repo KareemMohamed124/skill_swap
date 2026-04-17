@@ -92,12 +92,12 @@ class AuthInterceptor extends Interceptor {
           ),
         ],
       ),
-      barrierDismissible: false, // المستخدم لازم يضغط OK
+      barrierDismissible: false,
     );
 
     Future.delayed(const Duration(seconds: 5), () {
       if (Get.isDialogOpen ?? false) {
-        Get.back(); // اغلاق الـ dialog
+        Get.back();
         Get.offAll(() => const SignInScreen());
       }
     });

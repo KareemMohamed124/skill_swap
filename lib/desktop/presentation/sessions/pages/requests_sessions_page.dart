@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,23 +13,6 @@ class RequestsSessionsPage extends StatefulWidget {
 }
 
 class _RequestsSessionsPageState extends State<RequestsSessionsPage> {
-  Timer? timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    timer = Timer.periodic(const Duration(seconds: 3), (_) {
-      context.read<GetBookingsCubit>().fetchAllBookings("pending");
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GetBookingsCubit, GetBookingsState>(

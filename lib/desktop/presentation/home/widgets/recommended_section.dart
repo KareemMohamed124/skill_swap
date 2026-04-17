@@ -48,31 +48,32 @@ class RecommendedSectionDesktop extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     if (index < state.filteredList.length) {
-                      final u = state.filteredList[index];
+                      final user = state.filteredList[index];
 
                       return InkWell(
                           onTap: () {
                             desktopKey.currentState?.openSidePage(
                               body: ProfileMentorDesktop(
-                                id: u.id,
-                                name: u.name,
-                                track: u.track.name,
-                                rate: u.rate,
-                                image: u.userImage.secureUrl,
-                                bio: u.profile.bio,
-                                skills: u.skills,
-                                hoursAvailable: u.freeHours,
-                                peopleHelped: u.helpTotalHours,
+                                id: user.id,
+                                name: user.name,
+                                track: user.track.name,
+                                rate: user.rate,
+                                image: user.userImage.secureUrl,
+                                bio: user.profile.bio,
+                                skills: user.skills,
+                                hoursAvailable: user.freeHours,
+                                peopleHelped: user.helpTotalHours,
                                 hourlyRate: 0,
+                                reviews: user.reviews,
                               ),
                             );
                           },
                           child: RecommendedCard(
-                            id: u.id,
-                            image: u.userImage.secureUrl,
-                            name: u.name,
-                            track: u.track.name,
-                            rating: u.rate,
+                            id: user.id,
+                            image: user.userImage.secureUrl,
+                            name: user.name,
+                            track: user.track.name,
+                            rating: user.rate,
                           ));
                     } else {
                       return const Center(child: CircularProgressIndicator());

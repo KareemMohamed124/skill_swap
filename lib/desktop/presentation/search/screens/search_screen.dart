@@ -174,6 +174,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         hoursAvailable: user.freeHours,
                                         peopleHelped: user.helpTotalHours,
                                         hourlyRate: 0,
+                                        reviews: user.reviews,
                                       ));
                                     },
                                     child: MentorCard(

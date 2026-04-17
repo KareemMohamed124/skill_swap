@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DesktopScaffold extends StatelessWidget {
   final Widget body;
   final Widget? rightPanel;
-  final Widget? sidebar; // الجديد: Sidebar اختياري
+  final Widget? sidebar;
 
   const DesktopScaffold({
     super.key,
@@ -21,7 +21,7 @@ class DesktopScaffold extends StatelessWidget {
         children: [
           if (sidebar != null)
             SizedBox(
-              width: 220,
+              width: 250,
               child: sidebar!,
             ),
 
@@ -30,7 +30,7 @@ class DesktopScaffold extends StatelessWidget {
             child: body,
           ),
 
-          /// Right Panel (Notifications أو أي حاجة ثانية)
+          /// Right Panel
           if (width >= 1200 && rightPanel != null)
             SizedBox(
               width: 320,

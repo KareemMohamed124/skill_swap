@@ -15,22 +15,6 @@ class PendingSessionsPage extends StatefulWidget {
 }
 
 class _PendingSessionsPageState extends State<PendingSessionsPage> {
-  Timer? timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    timer = Timer.periodic(const Duration(seconds: 3), (_) {
-      context.read<GetBookingsCubit>().fetchAllBookings("pending");
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +30,7 @@ class _PendingSessionsPageState extends State<PendingSessionsPage> {
 
         if (state is GetBookingsLoaded) {
           final pending =
-              state.bookings.where((s) => s.rawStatus == "pending").toList();
+          state.bookings.where((s) => s.rawStatus == "pending").toList();
 
           if (pending.isEmpty) {
             return const Center(child: Text("No pending sessions"));

@@ -21,7 +21,6 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
     int initialPage = 1,
   })  : _currentPage = initialPage,
         super(UserFilterState(filteredList: allUsers)) {
-    // 🔍 Search
     on<SearchUserEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
@@ -48,7 +47,6 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
       ));
     });
 
-    // 🎯 Apply Filters
     on<ApplyFiltersEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
@@ -84,7 +82,6 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
       ));
     });
 
-    // 🔃 Sort
     on<SortUserEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
@@ -111,7 +108,6 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
       ));
     });
 
-    // 🔄 Reset Filters
     on<ResetFiltersEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
@@ -135,7 +131,6 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
       ));
     });
 
-    // 📦 Load More (Pagination)
     on<LoadMoreUsersEvent>((event, emit) async {
       if (state.isLastPage || _isLoadingMore) return;
 

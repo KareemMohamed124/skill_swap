@@ -252,7 +252,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
-                            /// ✅ Empty State (المضاف بس)
                             if (state.filteredList.isEmpty &&
                                 !state.isLoading) {
                               return Center(

@@ -45,31 +45,32 @@ class TopUsersSectionDesktop extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final u = usersList[index];
+                final user = usersList[index];
 
                 return InkWell(
                   onTap: () {
                     desktopKey.currentState?.openSidePage(
                       body: ProfileMentorDesktop(
-                        id: u.id,
-                        name: u.userName,
-                        track: u.track.userName,
-                        rate: u.rate,
-                        image: u.userImage.secureUrl,
-                        bio: u.profile.bio,
-                        skills: u.skills,
-                        hoursAvailable: u.freeHours,
-                        peopleHelped: u.helpTotalHours,
+                        id: user.id,
+                        name: user.name,
+                        track: user.track.name,
+                        rate: user.rate,
+                        image: user.userImage.secureUrl,
+                        bio: user.profile.bio,
+                        skills: user.skills,
+                        hoursAvailable: user.freeHours,
+                        peopleHelped: user.helpTotalHours,
                         hourlyRate: 0,
+                        reviews: user.reviews,
                       ),
                     );
                   },
                   child: TopUserCard(
-                    id: u.id,
-                    image: u.userImage.secureUrl,
-                    name: u.userName,
-                    track: u.track.userName,
-                    hours: u.helpTotalHours,
+                    id: user.id,
+                    image: user.userImage.secureUrl,
+                    name: user.userName,
+                    track: user.track.userName,
+                    hours: user.helpTotalHours,
                   ),
                 );
               },
