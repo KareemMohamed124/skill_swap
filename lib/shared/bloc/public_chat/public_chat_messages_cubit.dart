@@ -19,6 +19,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   bool _isPrivate = false;
   String? _partnerId;
+  int? _participantsCount;
 
   int _currentPage = 1;
   static const int _pageLimit = 20;
@@ -93,10 +94,12 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     String chatId, {
     bool isPrivate = false,
     String? partnerId,
+    int? participantsCount,
   }) async {
     _chatId = chatId;
     _isPrivate = isPrivate;
     _partnerId = partnerId;
+    _participantsCount = participantsCount;
 
     _currentUserId = await LocalStorage.getUserId();
     _currentPage = 1;
@@ -133,6 +136,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       _messages = response.messages.toList();
       _hasMore = response.messages.length >= _pageLimit;
+
+      _recomputeSeenFromReadBy();
 
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
@@ -349,7 +354,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         userImageUrl = oldMessage.senderId.userImage.secureUrl;
       } catch (_) {}
     }
-    if (senderId != _currentUserId) return;
 
     final newMessage = ChatMessage(
       id: messageData['id']?.toString() ?? DateTime.now().toString(),
@@ -386,6 +390,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
     _messages.add(newMessage);
     emit(_emitLoaded());
+
+    markMessagesAsRead();
   }
 
   void _handleMessageUpdated(Map<String, dynamic> data) {
@@ -432,6 +438,34 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
+  void _recomputeSeenFromReadBy() {
+    if (_currentUserId == null) return;
+
+    final required =
+        _isPrivate ? 1 : ((_participantsCount ?? 2) - 1).clamp(1, 1 << 30);
+
+    for (int i = 0; i < _messages.length; i++) {
+      final msg = _messages[i];
+      if (msg.senderId.id != _currentUserId) continue;
+
+      final uniqueOthers = msg.readBy
+          .map((e) {
+            if (e is Map) {
+              return (e['_id'] ?? e['id'] ?? '').toString();
+            }
+            return e.toString();
+          })
+          .where((id) => id.isNotEmpty && id != _currentUserId)
+          .toSet()
+          .length;
+
+      final newSeen = uniqueOthers >= required;
+      if (newSeen != msg.isSeen) {
+        _messages[i] = msg.copyWith(isSeen: newSeen);
+      }
+    }
+  }
+
   Future<void> markMessagesAsRead() async {
     if (_chatId == null) return;
     try {
@@ -443,11 +477,49 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   void _handleMessagesRead(Map<String, dynamic> data) {
     try {
+      final dynamic rawReader = data['userId'] ??
+          data['readerId'] ??
+          (data['readBy'] is String ? data['readBy'] : null);
+      final readerId = rawReader?.toString() ?? '';
+
+      if (readerId.isNotEmpty && readerId == _currentUserId) return;
+
       bool changed = false;
-      for (int i = 0; i < _messages.length; i++) {
-        if (!_messages[i].isSeen) {
-          _messages[i] = _messages[i].copyWith(isSeen: true);
-          changed = true;
+
+      final useFallback = _isPrivate || readerId.isEmpty;
+
+      if (useFallback) {
+        for (int i = 0; i < _messages.length; i++) {
+          final msg = _messages[i];
+          if (msg.senderId.id != _currentUserId) continue;
+          if (!msg.isSeen) {
+            _messages[i] = msg.copyWith(isSeen: true);
+            changed = true;
+          }
+        }
+      } else {
+        final required = ((_participantsCount ?? 2) - 1).clamp(1, 1 << 30);
+
+        for (int i = 0; i < _messages.length; i++) {
+          final msg = _messages[i];
+          if (msg.senderId.id != _currentUserId) continue;
+
+          final readBy = List<dynamic>.from(msg.readBy);
+          final already = readBy.any((e) => e.toString() == readerId);
+          if (!already) readBy.add(readerId);
+
+          final uniqueOthers = readBy
+              .map((e) => e.toString())
+              .where((id) => id != _currentUserId)
+              .toSet()
+              .length;
+
+          final newSeen = uniqueOthers >= required;
+
+          if (!already || newSeen != msg.isSeen) {
+            _messages[i] = msg.copyWith(readBy: readBy, isSeen: newSeen);
+            changed = true;
+          }
         }
       }
 
