@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
+import '../../../shared/common_ui/edit_preview_bar.dart';
+import '../../../shared/common_ui/reply_preview_bar.dart';
 import '../../../shared/common_ui/swipeable_message.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/public_chat/get_history_messages.dart';
@@ -209,31 +211,65 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _messageInput(PublicChatMessagesState state) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: "Message...",
-                  fillColor: Theme.of(context).cardColor,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ✅ Show EditPreviewBar when editing
+          if (state is PublicChatMessagesLoaded && state.editingMessage != null)
+            EditPreviewBar(
+              editingMessage: state.editingMessage!,
+              onCancel: () {
+                _chatCubit.clearEditing();
+                _controller.clear();
+              },
+            )
+          // ✅ Show ReplyPreviewBar when replying
+          else if (state is PublicChatMessagesLoaded &&
+              state.replyMessage != null)
+            ReplyPreviewBar(
+              replyMessage: state.replyMessage!,
+              onCancel: () => _chatCubit.clearReply(),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Message...",
+                      fillColor: Theme.of(context).cardColor,
+                      filled: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
-                onSubmitted: (_) => _sendMessage(),
-              ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(Icons.send, color: AppPalette.primary),
+                  onPressed: _sendMessage,
+                )
+              ],
             ),
-            const SizedBox(width: 10),
-            IconButton(
-              icon: const Icon(Icons.send, color: AppPalette.primary),
-              onPressed: _sendMessage,
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

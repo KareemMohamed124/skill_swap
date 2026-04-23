@@ -27,7 +27,7 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
       await LocalStorage.clearAllTokens();
       await LocalStorage.clearUserId();
       await LocalStorage.clearUser();
-      //  await NotificationService.deleteToken();
+      await NotificationService.deleteToken();
       sl<MyProfileCubit>().clearProfile();
       //      sl<GetBookingsCubit>().clearBooking();
 

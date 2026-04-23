@@ -1,4 +1,8 @@
+import 'dart:io' show Platform;
+
 import 'package:device_preview/device_preview.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,10 +11,12 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // Project
+import 'package:skill_swap/firebase_options.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/common_ui/screen_manager/screen_manager.dart';
 import 'package:skill_swap/shared/core/localization/app_translation.dart';
 import 'package:skill_swap/shared/core/localization/language_controller.dart';
+import 'package:skill_swap/shared/core/services/notification_service.dart';
 import 'package:skill_swap/shared/core/theme/dark_theme.dart';
 import 'package:skill_swap/shared/core/theme/light_theme.dart';
 import 'package:skill_swap/shared/core/theme/theme_controller.dart';
@@ -27,14 +33,18 @@ final GlobalKey<DesktopScreenManagerState> desktopKey =
     GlobalKey<DesktopScreenManagerState>();
 
 // ==========================
-// Firebase Background
+// Firebase Background Handler
 // ==========================
-// @pragma('vm:entry-point')
-// Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
-//   if (!kIsWeb && Platform.isAndroid) {
-//     await Firebase.initializeApp();
-//   }
-// }
+// MUST be a top-level function (not a class method).
+@pragma('vm:entry-point')
+Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // No need to show a local notification here —
+  // FCM automatically shows a system tray notification when the app
+  // is in the background / terminated.
+}
 
 // ==========================
 // MAIN
@@ -57,23 +67,26 @@ void main() async {
   const userName = 'User';
 
   // ==========================
-  // ANDROID ONLY SERVICES
+  // ANDROID-ONLY SERVICES
   // ==========================
-  //if (!kIsWeb && Platform.isAndroid) {
-  //await Firebase.initializeApp();
+  if (!kIsWeb && Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-//    FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
 
-  // await NotificationService.init();
+    await NotificationService.init();
 
-  // await ZegoUIKitPrebuiltCallInvitationService().init(
-  //   appID: LiveKeys.appId,
-  //   appSign: LiveKeys.appSign,
-  //   userID: userId ?? '',
-  //   userName: userName,
-  //   plugins: [ZegoUIKitSignalingPlugin()],
-  // );
-  //}
+    // Uncomment when you re-enable Zego video calls:
+    // await ZegoUIKitPrebuiltCallInvitationService().init(
+    //   appID: LiveKeys.appId,
+    //   appSign: LiveKeys.appSign,
+    //   userID: userId ?? '',
+    //   userName: userName,
+    //   plugins: [ZegoUIKitSignalingPlugin()],
+    // );
+  }
 
   final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
   final isLogged = await LocalStorage.isLoggedIn();

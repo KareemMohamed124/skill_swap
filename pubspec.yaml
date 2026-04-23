@@ -49,9 +49,9 @@ dependencies:
   get_storage: ^2.1.1
 
   # Firebase (Android only usage)
-  # firebase_core: ^4.5.0
-  #firebase_messaging: ^16.1.2
-  #flutter_local_notifications: ^21.0.0
+  firebase_core: ^4.5.0
+  firebase_messaging: ^16.1.2
+  flutter_local_notifications: ^21.0.0
 
   # Device / Camera
   image_picker: ^1.2.1
@@ -120,4 +120,4 @@ flutter_native_splash:
 dependency_overrides:
   image_picker_for_web: ^2.1.1
   #zego_zim: 2.27.0
-  #firebase_core_platform_interface: ^5.0.0
+  firebase_core_platform_interface: ^5.0.0
