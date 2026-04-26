@@ -14,8 +14,11 @@ class ResetPasswordScreen extends StatefulWidget {
   final String email;
   final String code;
 
-  const ResetPasswordScreen(
-      {super.key, required this.email, required this.code});
+  const ResetPasswordScreen({
+    super.key,
+    required this.email,
+    required this.code,
+  });
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -25,14 +28,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  String? passwordError;
-  String? confirmPasswordError;
-
   final formKey = GlobalKey<FormState>();
 
   @override
+  void dispose() {
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // MediaQuery
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -48,16 +54,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: CustomAppBar(title: "Reset Password"),
+        appBar: const CustomAppBar(title: "Reset Password"),
         body: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-              horizontal: horizontalPadding, vertical: verticalPadding),
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
+          ),
           child: Form(
             key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: screenHeight * 0.02),
+
                 Text(
                   "Create New Password",
                   style: TextStyle(
@@ -66,7 +75,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                 ),
+
                 SizedBox(height: fieldSpacing / 2),
+
                 Text(
                   "Enter your new password to continue",
                   style: TextStyle(
@@ -74,6 +85,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     color: Theme.of(context).textTheme.bodyMedium!.color,
                   ),
                 ),
+
                 SizedBox(height: fieldSpacing),
 
                 /// New Password
@@ -85,16 +97,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Password is required";
-                    } else if (!RegExp(
+                    }
+                    if (!RegExp(
                       r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
                     ).hasMatch(value)) {
-                      return "Password must contain at least 8 characters, uppercase, lowercase, and a number";
-                    } else if (value.length < 8) {
-                      return "Password must be at least 8 characters";
+                      return "Password must be 8+ chars, upper, lower & number";
                     }
-                    return passwordError;
+                    return null;
                   },
                 ),
+
                 SizedBox(height: fieldSpacing),
 
                 /// Confirm Password
@@ -110,51 +122,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     if (value != newPasswordController.text) {
                       return "Passwords do not match";
                     }
-                    return confirmPasswordError;
+                    return null;
                   },
                 ),
+
                 SizedBox(height: fieldSpacing * 1.5),
 
-                /// Confirm Button
+                /// Button
                 BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
                   listener: (context, state) {
                     if (state is ResetPasswordFailureState) {
-                      setState(() {
-                        passwordError = null;
-                        confirmPasswordError = null;
-
-                        final errors = state.error.validationErrors;
-                        if (errors != null && errors.isNotEmpty) {
-                          for (var err in errors) {
-                            switch (err.field) {
-                              case "password":
-                                passwordError = err.message;
-                                break;
-                              case "confirmPassword":
-                                confirmPasswordError = err.message;
-                                break;
-                            }
-                          }
-                        } else {
-                          passwordError = state.error.message;
-                        }
-                      });
-                      formKey.currentState?.validate();
-                    } else if (state is ResetPasswordSuccessState) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(state.data.message)));
-                      Get.to(SignInScreen());
+                        SnackBar(content: Text(state.error.message)),
+                      );
+                    }
+
+                    if (state is ResetPasswordSuccessState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.data.message)),
+                      );
+
+                      Get.offAll(() => const SignInScreen());
                     }
                   },
                   builder: (context, state) {
+                    final isLoading = state is ResetPasswordLoading;
+
                     return SizedBox(
                       width: double.infinity,
                       height: buttonHeight,
                       child: CustomButton(
-                        text: state is ResetPasswordLoading
-                            ? "Updating..."
-                            : "Confirm",
-                        onPressed: state is ResetPasswordLoading
+                        text: isLoading ? "Updating..." : "Confirm",
+                        onPressed: isLoading
                             ? null
                             : () {
                                 if (formKey.currentState!.validate()) {
@@ -165,6 +164,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     confirmPassword:
                                         confirmPasswordController.text,
                                   );
+
                                   context
                                       .read<ResetPasswordBloc>()
                                       .add(ConfirmSubmit(request));
@@ -174,6 +174,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     );
                   },
                 ),
+
                 SizedBox(height: fieldSpacing),
               ],
             ),
