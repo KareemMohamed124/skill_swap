@@ -210,8 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _messageInput(PublicChatMessagesState state) {
-    return SafeArea(
-      child: Column(
+    return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // ✅ Show EditPreviewBar when editing
@@ -270,7 +269,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ],
-      ),
     );
   }
 
@@ -289,6 +287,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return BlocProvider.value(
       value: _chatCubit,
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),

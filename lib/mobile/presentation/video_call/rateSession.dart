@@ -84,6 +84,7 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: const Color(0xffF5F6FA),
         appBar: AppBar(
           backgroundColor: Colors.white,

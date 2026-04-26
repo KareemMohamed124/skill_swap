@@ -46,6 +46,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return BlocProvider(
       create: (context) => sl<ResetPasswordBloc>(),
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: CustomAppBar(title: "Reset Password"),
         body: SingleChildScrollView(

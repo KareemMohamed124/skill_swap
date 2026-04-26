@@ -205,8 +205,8 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   }
 
   Widget _messageInput(PublicChatMessagesState state) {
-    return SafeArea(
-      child: Column(
+    return Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (state is PublicChatMessagesLoaded && state.editingMessage != null)
             EditPreviewBar(
@@ -249,7 +249,6 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             ),
           ),
         ],
-      ),
     );
   }
 
@@ -258,6 +257,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,

@@ -294,6 +294,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final padding = screenWidth * 0.04;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocListener<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
