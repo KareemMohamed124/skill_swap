@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:get/get.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:get_it/get_it.dart';
+
 import 'package:dio/dio.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../mobile/presentation/skill_verification/result_screen.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
@@ -29,7 +30,7 @@ class QuizQuestion {
 
 class QuizController extends GetxController {
   static const int totalTimeInSeconds = 15 * 60;
-  static const apiKey = "AIzaSyAi5a8kuNg0ZWck-_BFVcFwvDh2BOUl3fw";
+  static const apiKey = "AIzaSyC01uAFY1ERFMEFDsLltnq6PQ4v1FsVS04";
   final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;
@@ -38,6 +39,7 @@ class QuizController extends GetxController {
   var selectedOption = RxnInt();
   var loading = false.obs;
   var currentSkill = ''.obs;
+  var fromAddSkill = false.obs;
 
   // ── Verification state ──
   var isVerifying = false.obs;
@@ -45,9 +47,10 @@ class QuizController extends GetxController {
   var verifiedQuizScore = 0.obs;
   var verifyError = ''.obs;
 
-  Future<void> generateQuiz(String skill) async {
+  Future<void> generateQuiz(String skill, {bool isAddSkill = false}) async {
     loading.value = true;
     currentSkill.value = skill;
+    fromAddSkill.value = isAddSkill;
 
     final prompt = """
 Generate exactly 15 multiple-choice questions about $skill.
@@ -161,6 +164,7 @@ No explanation, no text outside the JSON.
         'score': correct.value,
         'total': questions.length,
         'skill': currentSkill.value,
+        'fromAddSkill': fromAddSkill.value
       },
     );
   }

@@ -12,6 +12,7 @@ class SessionModel {
   final DateTime timeAgo;
   final String bookingCode;
   final bool isStudent;
+  final String paymentStatus;
 
   // final DateTime createAt;
 
@@ -28,7 +29,8 @@ class SessionModel {
       required this.timeAgo,
       required this.bookingCode,
       required this.isStudent,
-      required this.duration});
+      required this.duration,
+      required this.paymentStatus});
 
   SessionModel copyWith({
     String? status,
@@ -47,6 +49,7 @@ class SessionModel {
         rawStatus: rawStatus ?? this.rawStatus,
         timeAgo: timeAgo,
         isStudent: isStudent,
-        duration: duration);
+        duration: duration,
+        paymentStatus: paymentStatus);
   }
 }

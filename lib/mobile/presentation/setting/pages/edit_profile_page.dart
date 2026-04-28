@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:skill_swap/mobile/presentation/onboarding_screen/screens/start_screen.dart';
 import 'package:skill_swap/shared/data/models/update_profile/update_profile.dart';
 import 'package:skill_swap/shared/data/models/update_profile/update_profile_request.dart';
 import 'package:skill_swap/shared/data/models/update_profile/update_skill.dart';
@@ -23,6 +24,7 @@ import '../../../../shared/core/theme/app_palette.dart';
 import '../../setting/pages/change_password.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
+import '../../skill_verification/quiz_details_screen.dart';
 
 const Map<String, List<String>> tracksWithSkillsMap = {
   "Mobile Development": [
@@ -204,6 +206,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
   List<dynamic> originalSkills = [];
   String? userTrack;
   List<dynamic> selectedSkillsNew = [];
+  bool hasSeenMentorDialog = false;
+
+  String _originalName = '';
+  String _originalBio = '';
+
+  bool get _hasChanges {
+    final nameChanged = nameController.text.trim() != _originalName.trim();
+    final bioChanged = bioController.text.trim() != _originalBio.trim();
+    final skillsChanged = selectedSkillsNew.isNotEmpty;
+    return nameChanged || bioChanged || skillsChanged;
+  }
 
   @override
   void initState() {
@@ -212,12 +225,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
     bioController = TextEditingController();
     skillsController = TextEditingController();
 
+    nameController.addListener(() => setState(() {}));
+    bioController.addListener(() => setState(() {}));
+
     context.read<MyProfileCubit>().fetchMyProfile();
   }
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    bioController.dispose();
+    skillsController.dispose();
+    super.dispose();
+  }
+
   void fillControllersFromProfile(profile) {
-    nameController.text = profile.name;
-    bioController.text = profile.profile.bio;
+    nameController.text = profile.name ?? '';
+    bioController.text = profile.profile.bio ?? '';
 
     final skillsList = profile.skills ?? [];
     selectedSkills = skillsList.map((e) => e.skillName).toList();
@@ -225,9 +249,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     skillsController.text = selectedSkills.join(', ');
 
     userTrack = profile.track.name;
-
     selectedImage = null;
     controllersFilled = true;
+
+    _originalName = profile.name ?? '';
+    _originalBio = profile.profile.bio ?? '';
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -288,12 +314,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  void _handleMentorAddSkill() {
+    if (!hasSeenMentorDialog) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Verification Required"),
+          content: const Text(
+              "To add a skill, you need to pass an assessment with at least 85%."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                hasSeenMentorDialog = true;
+                showSkillsPicker(isMentorFlow: true);
+              },
+              child: const Text("Continue"),
+            ),
+          ],
+        ),
+      );
+    } else {
+      showSkillsPicker(isMentorFlow: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final padding = screenWidth * 0.04;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocListener<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
@@ -307,6 +363,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               skillsController.text = selectedSkills.join(', ');
               nameController.text = state.user.name ?? '';
               bioController.text = state.user.profile.bio ?? '';
+
+              _originalName = state.user.name ?? '';
+              _originalBio = state.user.profile.bio ?? '';
+              originalSkills = List.from(selectedSkills);
+
               controllersFilled = false;
             });
 
@@ -319,11 +380,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
           builder: (context, state) {
             final isLoading = state is MyProfileLoading;
             final profile = state is MyProfileLoaded ? state.profile : null;
+            final isMentor = profile?.role == "Mentor";
 
             if (!controllersFilled && profile != null) {
               fillControllersFromProfile(profile);
             }
-            //    controllersFilled = false;
+
             final avatarRadius = screenWidth * 0.08;
             final fontSizeTitle = screenWidth * 0.045;
             final fontSizeHint = screenWidth * 0.035;
@@ -389,7 +451,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       style:
                                           TextStyle(fontSize: fontSizeTitle)),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
                                   "JPG, PNG or GIF, Max size 2MB",
                                   style: TextStyle(
@@ -420,41 +482,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         inputField("bio".tr, "Tell others about yourself...",
                             bioController, fontSizeHint,
                             maxLines: 3, isLoading: isLoading),
-                        skillsSection(fontSizeTitle),
+                        skillsSection(fontSizeTitle, isMentor),
                         SizedBox(height: spacing / 2),
                         SizedBox(
                           width: double.infinity,
                           child: CustomButton(
                             text: "save_changes".tr,
-                            onPressed: () {
-                              final hasSkillsChanged = selectedSkills.length !=
-                                      originalSkills.length ||
-                                  !selectedSkills
-                                      .every((s) => originalSkills.contains(s));
+                            onPressed: _hasChanges
+                                ? () {
+                                    final skillsList =
+                                        selectedSkillsNew.isNotEmpty
+                                            ? selectedSkillsNew
+                                                .map((skillName) => UpdateSkill(
+                                                    skillName: skillName))
+                                                .toList()
+                                            : null;
 
-                              final skillsList = selectedSkillsNew.isNotEmpty
-                                  ? selectedSkillsNew
-                                      .map((skillName) =>
-                                          UpdateSkill(skillName: skillName))
-                                      .toList()
-                                  : null;
+                                    final updateRequest = UpdateProfileRequest(
+                                      name: nameController.text.trim().isEmpty
+                                          ? null
+                                          : nameController.text.trim(),
+                                      profile: UpdateProfile(
+                                        bio: bioController.text.trim().isEmpty
+                                            ? null
+                                            : bioController.text.trim(),
+                                      ),
+                                      skills: skillsList,
+                                    );
 
-                              final updateRequest = UpdateProfileRequest(
-                                name: nameController.text.trim().isEmpty
-                                    ? null
-                                    : nameController.text.trim(),
-                                profile: UpdateProfile(
-                                  bio: bioController.text.trim().isEmpty
-                                      ? null
-                                      : bioController.text.trim(),
-                                ),
-                                skills: skillsList,
-                              );
-
-                              context
-                                  .read<UpdateProfileBloc>()
-                                  .add(SubmitUpdateProfile(updateRequest));
-                            },
+                                    context.read<UpdateProfileBloc>().add(
+                                        SubmitUpdateProfile(updateRequest));
+                                  }
+                                : null,
                           ),
                         ),
                       ],
@@ -507,7 +566,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         BlocListener<DeleteAccountBloc, DeleteAccountState>(
                           listener: (context, state) {
                             if (state is DeleteAccountSuccessState) {
-                              Get.offAll(() => const SignUpScreen());
+                              Get.offAll(() => const StartScreen());
                             } else if (state is DeleteAccountFailureState) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -606,6 +665,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         controller: controller,
         maxLines: maxLines,
         enabled: !isLoading,
+        keyboardType: TextInputType.text,
         decoration: InputDecoration(
           hintText: isLoading ? '' : hint,
           hintStyle: TextStyle(
@@ -702,7 +762,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget skillsSection(double fontSize) {
+  Widget skillsSection(double fontSize, bool isMentor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -723,7 +783,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ActionChip(
               avatar: const Icon(Icons.add),
               label: const Text("Add"),
-              onPressed: showSkillsPicker,
+              onPressed: () {
+                if (isMentor) {
+                  _handleMentorAddSkill();
+                } else {
+                  showSkillsPicker();
+                }
+              },
             ),
           ],
         ),
@@ -731,7 +797,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  void showSkillsPicker() {
+  void showSkillsPicker({bool isMentorFlow = false}) {
     final trackSkills = tracksWithSkillsMap[userTrack] ?? [];
 
     List<String> tempSelectedSkills = List.from(selectedSkillsNew);
@@ -772,10 +838,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ? null
                               : (selected) {
                                   setModalState(() {
-                                    if (selected) {
+                                    if (isMentorFlow) {
+                                      tempSelectedSkills.clear();
                                       tempSelectedSkills.add(skill);
                                     } else {
-                                      tempSelectedSkills.remove(skill);
+                                      if (selected) {
+                                        tempSelectedSkills.add(skill);
+                                      } else {
+                                        tempSelectedSkills.remove(skill);
+                                      }
                                     }
                                   });
                                 },
@@ -787,17 +858,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: AppPalette.primary,
-                            foregroundColor: Colors.white),
-                        child: const Text("Save Skills"),
-                        onPressed: () {
-                          setState(() {
-                            selectedSkillsNew = tempSelectedSkills;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: AppPalette.primary,
+                              foregroundColor: Colors.white),
+                          child: Text(
+                              isMentorFlow ? "Take Assessment" : "Save Skills"),
+                          onPressed: () {
+                            if (isMentorFlow) {
+                              if (tempSelectedSkills.isEmpty) return;
+                              final selectedSkill = tempSelectedSkills.first;
+                              Navigator.pop(context);
+                              Get.to(() => QuizDetailsScreen(
+                                    skillName: selectedSkill,
+                                    fromAddSkill: true,
+                                  ));
+                            } else {
+                              setState(() {
+                                selectedSkillsNew = tempSelectedSkills;
+                              });
+                              Navigator.pop(context);
+                            }
+                          }),
                     )
                   ],
                 ),

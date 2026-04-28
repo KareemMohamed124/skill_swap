@@ -17,20 +17,27 @@ class LanguageController extends GetxController {
 
     Locale deviceLocale = Get.deviceLocale ?? const Locale('en', 'US');
 
-    if (deviceLocale.languageCode == 'ar') {
-      return const Locale('ar', 'EG');
-    } else {
-      return const Locale('en', 'US');
-    }
+    return deviceLocale.languageCode == 'ar'
+        ? const Locale('ar', 'EG')
+        : const Locale('en', 'US');
   }
+
   String get currentLangCode {
-    return box.read('lang') ?? 'en';
+    String? langCode = box.read('lang');
+
+    if (langCode != null) return langCode;
+
+    Locale deviceLocale = Get.deviceLocale ?? const Locale('en', 'US');
+
+    return deviceLocale.languageCode == 'ar' ? 'ar' : 'en';
   }
+
   void changeLanguage(String langCode) {
     Locale locale =
-    langCode == 'ar' ? const Locale('ar', 'EG') : const Locale('en', 'US');
+        langCode == 'ar' ? const Locale('ar', 'EG') : const Locale('en', 'US');
 
     Get.updateLocale(locale);
     box.write('lang', langCode);
+    update();
   }
 }

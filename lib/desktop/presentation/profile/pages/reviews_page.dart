@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../mobile/presentation/profile/widgets/review_card.dart';
+import '../../../../desktop/presentation/profile/widgets/review_card.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 
 class ReviewsPage extends StatelessWidget {

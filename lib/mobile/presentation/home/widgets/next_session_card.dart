@@ -32,9 +32,7 @@ class _NextSessionCardState extends State<NextSessionCard> {
   late StreamSubscription ticker;
 
   Color get baseColor =>
-      widget.isMentor ? const Color(0xFF7E57C2) : AppPalette.primary;
-
-  String get emoji => widget.isMentor ? "🧑🏻‍🏫" : "🧑🏻‍🎓";
+      widget.isMentor ? const Color(0xFF33B1D2) : AppPalette.primary;
 
   @override
   void initState() {
@@ -71,9 +69,10 @@ class _NextSessionCardState extends State<NextSessionCard> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final isSoon = remaining.inMinutes <= 60 && !remaining.isNegative;
     final canJoin = remaining.inMinutes <= 10;
+
+    final bg = Theme.of(context).colorScheme.surface;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -84,27 +83,40 @@ class _NextSessionCardState extends State<NextSessionCard> {
           height: 100,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-
-            /// Full Background Gradient
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: widget.isMentor
-                  ? [Color(0xFF7E57C2), Color(0xFF9C7BFF)]
-                  : [AppPalette.primary, AppPalette.primary.withOpacity(0.7)],
+            color: bg,
+            border: Border.all(
+              color: baseColor.withOpacity(0.15),
             ),
-
-            /// Shadow
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 6),
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Row(
             children: [
+              /// 🔥 Colored Side Bar
+              Container(
+                width: 6,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      baseColor,
+                      baseColor.withOpacity(0.6),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                  ),
+                ),
+              ),
+
               const SizedBox(width: 12),
 
               /// Avatar
@@ -113,12 +125,16 @@ class _NextSessionCardState extends State<NextSessionCard> {
                 height: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.2),
+                  color: baseColor.withOpacity(0.15),
                 ),
                 child: Center(
-                    child: FaIcon(widget.isMentor
-                        ? FontAwesomeIcons.chalkboardTeacher
-                        : FontAwesomeIcons.userGraduate)),
+                  child: FaIcon(
+                    widget.isMentor
+                        ? FontAwesomeIcons.userGraduate
+                        : FontAwesomeIcons.chalkboardTeacher,
+                    color: baseColor,
+                  ),
+                ),
               ),
 
               const SizedBox(width: 12),
@@ -129,7 +145,7 @@ class _NextSessionCardState extends State<NextSessionCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Name + Timer + Video Call
+                    /// Name + Timer
                     Row(
                       children: [
                         Expanded(
@@ -137,8 +153,8 @@ class _NextSessionCardState extends State<NextSessionCard> {
                             widget.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -150,35 +166,23 @@ class _NextSessionCardState extends State<NextSessionCard> {
                               horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             color: isSoon
-                                ? Colors.red.withOpacity(0.3)
-                                : Colors.white.withOpacity(0.2),
+                                ? Colors.red.withOpacity(0.15)
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.08),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             formatDuration(remaining),
                             style: TextStyle(
-                              color: isSoon ? Colors.redAccent : Colors.white,
+                              color: isSoon ? Colors.redAccent : Colors.green,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        // Row(
-                        //   children: [
-                        //     Icon(Icons.videocam_rounded,
-                        //         size: 16, color: Colors.white),
-                        //     const SizedBox(width: 4),
-                        //     Text(
-                        //       "Video Call",
-                        //       style: const TextStyle(
-                        //         color: Colors.white,
-                        //         fontWeight: FontWeight.w500,
-                        //         fontSize: 12,
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
+                        const SizedBox(width: 8),
                       ],
                     ),
 
@@ -188,53 +192,30 @@ class _NextSessionCardState extends State<NextSessionCard> {
                     Row(
                       children: [
                         Icon(Icons.access_time,
-                            size: 16, color: Colors.white70),
+                            size: 16,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6)),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             "${widget.dateTime} • ${widget.duration}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.white70, fontSize: 13),
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 6),
-
-                    /// Join Button
-                    Row(
-                      children: [
-                        const Spacer(),
-                        if (canJoin)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 6,
-                                ),
-                              ],
-                            ),
-                            child: Text(
-                              "Join Now",
-                              style: TextStyle(
-                                color: widget.isMentor
-                                    ? const Color(0xFF7E57C2)
-                                    : AppPalette.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
                   ],
                 ),
               ),

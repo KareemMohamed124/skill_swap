@@ -14,6 +14,8 @@ import '../../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../bloc/public_chat/public_chat_bloc.dart';
 import '../../bloc/public_chat/public_chat_event.dart';
 import '../../bloc/status_book_bloc/status_book_bloc.dart';
+import '../../bloc/store_cubit/purchase_cubit.dart';
+import '../../bloc/store_cubit/store_cubit.dart';
 import '../../bloc/tracks_bloc/tracks_bloc.dart';
 import '../../bloc/tracks_bloc/tracks_event.dart';
 import '../../bloc/user_filter_bloc/user_filter_bloc.dart';
@@ -68,6 +70,9 @@ class _ScreenManagerState extends State<ScreenManager> {
       BlocProvider(create: (_) => sl<TracksBloc>()..add(LoadTracksEvent())),
       BlocProvider(
           create: (_) => sl<PublicChatBloc>()..add(GetPublicChatsEvent())),
+      BlocProvider(
+        create: (_) => sl<PurchaseCubit>(),
+      )
     ], child: ChatListScreen()),
     BlocProvider(
       create: (_) => sl<UserFilterBloc>(),
@@ -82,13 +87,19 @@ class _ScreenManagerState extends State<ScreenManager> {
           BlocProvider(create: (_) => sl<StatusBookBloc>()),
           //BlocProvider(create: (_) => sl<SubmitReviewBloc>()),
         ],
-        child: SessionsScreen(
-          initialTab: widget.initialSessionTab,
+        child: BlocProvider(
+          create: (_) => sl<PurchaseCubit>(),
+          child: SessionsScreen(
+            initialTab: widget.initialSessionTab,
+          ),
         )),
     ProfileScreen(
       initialTab: widget.initialProfileTab,
     ),
-    StoreScreen(),
+    BlocProvider(
+      create: (_) => sl<StoreCubit>()..getStoreItems(),
+      child: StoreScreen(),
+    ),
   ];
 
   @override

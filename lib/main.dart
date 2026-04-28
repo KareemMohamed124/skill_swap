@@ -1,18 +1,20 @@
 import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-// Project
+import 'package:path_provider/path_provider.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/common_ui/screen_manager/screen_manager.dart';
 import 'package:skill_swap/shared/core/localization/app_translation.dart';
 import 'package:skill_swap/shared/core/localization/language_controller.dart';
-import 'package:skill_swap/shared/core/theme/dark_theme.dart';
-import 'package:skill_swap/shared/core/theme/light_theme.dart';
+import 'package:skill_swap/shared/core/services/notification_service.dart';
 import 'package:skill_swap/shared/core/theme/theme_controller.dart';
 import 'package:skill_swap/shared/data/quiz/quiz_controller.dart';
 import 'package:skill_swap/shared/dependency_injection/injection.dart';
@@ -20,63 +22,71 @@ import 'package:skill_swap/shared/helper/local_storage.dart';
 
 import 'desktop/presentation/common/desktop_screen_manager.dart';
 import 'desktop/presentation/sign/screens/sign_in_screen.dart';
+import 'firebase_options.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
 final GlobalKey<DesktopScreenManagerState> desktopKey =
     GlobalKey<DesktopScreenManagerState>();
 
-// ==========================
-// Firebase Background
-// ==========================
-// @pragma('vm:entry-point')
-// Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
-//   if (!kIsWeb && Platform.isAndroid) {
-//     await Firebase.initializeApp();
-//   }
-// }
+@pragma('vm:entry-point')
+Future<void> firebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-// ==========================
-// MAIN
-// ==========================
+  final FlutterLocalNotificationsPlugin localNotifications =
+      FlutterLocalNotificationsPlugin();
+
+  await localNotifications.initialize(
+    settings: const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    ),
+  );
+
+  await localNotifications.show(
+    id: DateTime.now().millisecondsSinceEpoch % 2147483647,
+    title: message.notification?.title ?? message.data["title"] ?? "SkillSwap",
+    // ✅
+    body: message.notification?.body ?? message.data["body"] ?? "",
+    // ✅
+    notificationDetails: const NotificationDetails(
+      android: AndroidNotificationDetails(
+        "channel_id",
+        "General Notifications",
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
+    ),
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Gemini
+  final dir = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(dir.path);
+  await Hive.openBox('appBox');
+
   try {
     Gemini.init(apiKey: QuizController.apiKey);
   } catch (_) {}
 
-  // Local storage
-  await Hive.initFlutter();
-  await Hive.openBox('appBox');
   await initDependencies();
   await GetStorage.init();
 
-  final userId = await LocalStorage.getUserId();
-  const userName = 'User';
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  // ==========================
-  // ANDROID ONLY SERVICES
-  // ==========================
-  //if (!kIsWeb && Platform.isAndroid) {
-  //await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
 
-//    FirebaseMessaging.onBackgroundMessage(firebaseBackgroundHandler);
+  print("🔥🔥🔥 BEFORE INIT");
+  await NotificationService.init();
+  print("🔥🔥🔥 AFTER INIT");
 
-  // await NotificationService.init();
-
-  // await ZegoUIKitPrebuiltCallInvitationService().init(
-  //   appID: LiveKeys.appId,
-  //   appSign: LiveKeys.appSign,
-  //   userID: userId ?? '',
-  //   userName: userName,
-  //   plugins: [ZegoUIKitSignalingPlugin()],
-  // );
-  //}
-
-  final isOnboardingSeen = await LocalStorage.isOnboardingSeen();
-  final isLogged = await LocalStorage.isLoggedIn();
+  final isOnboardingSeen = LocalStorage.isOnboardingSeen();
+  final isLogged = LocalStorage.isLoggedIn();
 
   Widget startScreen;
 
@@ -94,7 +104,6 @@ void main() async {
         if (width >= 800) {
           return SignInDesktop();
         }
-
         return ScreenManager();
       },
     );
@@ -104,15 +113,12 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: kDebugMode, // 🔥 مهم جدًا
+      enabled: false,
       builder: (context) => MyApp(startScreen: startScreen),
     ),
   );
 }
 
-// ==========================
-// APP ROOT
-// ==========================
 class MyApp extends StatelessWidget {
   final Widget startScreen;
 
@@ -120,7 +126,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final langController = Get.put(LanguageController());
+    final themeController = Get.put(ThemeController());
+    final languageController = Get.put(LanguageController());
 
     return GetBuilder<ThemeController>(
       builder: (controller) {
@@ -131,17 +138,13 @@ class MyApp extends StatelessWidget {
             ),
           ],
           child: GetMaterialApp(
-            useInheritedMediaQuery: true,
-            builder: (context, child) {
-              return DevicePreview.appBuilder(context, child);
-            },
             title: 'SkillSwap',
             debugShowCheckedModeBanner: false,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: controller.themeMode,
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: themeController.themeMode,
             translations: AppTranslation(),
-            locale: langController.initialLanguage,
+            locale: languageController.initialLanguage,
             fallbackLocale: const Locale("en", "US"),
             home: startScreen,
           ),

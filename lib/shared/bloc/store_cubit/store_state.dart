@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../../mobile/presentation/game_stor/models/store_item_model.dart';
 
 class StoreState extends Equatable {
-  final int coins;
   final Duration remaining;
   final Duration elapsed;
   final List<StoreItem> items;
@@ -13,7 +12,6 @@ class StoreState extends Equatable {
   final String? successMessage;
 
   const StoreState({
-    required this.coins,
     required this.remaining,
     required this.elapsed,
     required this.items,
@@ -23,7 +21,6 @@ class StoreState extends Equatable {
   });
 
   StoreState copyWith({
-    int? coins,
     Duration? remaining,
     Duration? elapsed,
     List<StoreItem>? items,
@@ -32,19 +29,17 @@ class StoreState extends Equatable {
     String? successMessage,
   }) {
     return StoreState(
-      coins: coins ?? this.coins,
       remaining: remaining ?? this.remaining,
       elapsed: elapsed ?? this.elapsed,
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
-      successMessage: successMessage,
+      errorMessage: errorMessage ?? this.errorMessage,
+      successMessage: successMessage ?? this.successMessage,
     );
   }
 
   @override
   List<Object?> get props => [
-        coins,
         remaining,
         elapsed,
         items,

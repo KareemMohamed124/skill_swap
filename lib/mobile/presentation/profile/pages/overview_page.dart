@@ -60,9 +60,6 @@ class OverviewPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// =========================
-                    /// Progress Container
-                    /// =========================
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -230,7 +227,6 @@ class OverviewPage extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () async {
-                                /// ✅ لو already mentor
                                 if (isMentor) {
                                   showDialog(
                                     context: context,
@@ -333,7 +329,6 @@ class OverviewPage extends StatelessWidget {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 20),
                     MultiBlocProvider(
                       providers: [
@@ -354,10 +349,6 @@ class OverviewPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    /// =========================
-                    /// Recent Activity Container
-                    /// =========================
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),

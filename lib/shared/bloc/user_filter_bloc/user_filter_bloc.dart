@@ -74,14 +74,13 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         filteredList: users,
         isLoading: false,
         isLastPage: isLastPage,
-        minPrice: event.minPrice ?? state.minPrice,
-        maxPrice: event.maxPrice ?? state.maxPrice,
-        selectedRate: event.minRate?.toInt(),
+        minPrice: event.minPrice ?? 20,
+        maxPrice: event.maxPrice ?? 60,
+        selectedRate: event.minRate != null ? event.minRate!.toInt() : null,
         selectedRole: event.role,
         selectedTrack: event.track,
       ));
     });
-
     on<SortUserEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
@@ -115,19 +114,28 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         isLoading: true,
         filteredList: [],
         isLastPage: false,
+        selectedRole: null,
+        selectedTrack: null,
+        selectedRate: null,
+        minPrice: 20,
+        maxPrice: 60,
       ));
 
       _currentPage = 1;
 
       final users =
           await userRepository.getAllUsers(page: _currentPage, limit: limit);
-
       final isLastPage = users.isEmpty || users.length < limit;
 
       emit(state.copyWith(
         filteredList: users,
         isLoading: false,
         isLastPage: isLastPage,
+        selectedRole: null,
+        selectedTrack: null,
+        selectedRate: null,
+        minPrice: 20,
+        maxPrice: 60,
       ));
     });
 

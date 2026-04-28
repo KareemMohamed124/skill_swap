@@ -23,6 +23,7 @@ class SubmitReviewBloc extends Bloc<SubmitReviewEvent, SubmitReviewState> {
       switch (result) {
         case SubmitReviewSuccess s:
           emit(SubmitReviewSuccessState(s.success));
+          emit(SubmitReviewInitial());
           break;
         case SubmitReviewFailure f:
           emit(SubmitReviewFailureState(f.error));

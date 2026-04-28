@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
+import 'package:skill_swap/shared/data/web_services/notification/test_notification_request.dart';
 
 import 'notification_request.dart';
 
@@ -19,7 +20,9 @@ abstract class NotificationApi {
   @DELETE("user/fcm-token")
   Future<void> deleteFcmToken();
 
-// /// send test notification
-// @POST("user/fcm-token/test")
-// Future<Map<String, dynamic>> sendTestNotification();
+  /// send notification to a specific user
+  @POST("user/fcm-token/test")
+  Future<Map<String, dynamic>> sendNotification(
+    @Body() SendNotificationRequest body,
+  );
 }

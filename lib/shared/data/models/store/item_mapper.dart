@@ -4,14 +4,13 @@ import 'item_model.dart';
 extension ItemMapper on Item {
   StoreItem toStoreItem() {
     return StoreItem(
-      id: id,
-      title: title,
-      price: priceInPoints,
-      image: img.secureUrl.isNotEmpty
-          ? img.secureUrl
-          : "assets/images/store_images/coin.png",
-      rarity: _mapRarity(priceInPoints),
-    );
+        id: id,
+        title: title,
+        price: priceInPoints,
+        image: img.secureUrl ?? "assets/images/store_images/coin.png",
+        rarity: _mapRarity(priceInPoints),
+        isLocked: isLocked,
+        isPurchased: isLocked);
   }
 
   String _mapRarity(int price) {

@@ -18,7 +18,6 @@ class GetBookingModel {
   final DateTime updatedAt;
   final int v;
 
-  // ✅ New fields
   final String paymentStatus;
   final String? stripeSessionId;
   final String review;
@@ -52,25 +51,36 @@ class GetBookingModel {
     required this.ratingRequestSent,
   });
 
-  factory GetBookingModel.fromJson(Map<String, dynamic> json) {
+  factory GetBookingModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      throw Exception("GetBookingModel json is null");
+    }
+
+    DateTime safeDate(dynamic value) {
+      if (value == null) return DateTime.now();
+      return DateTime.tryParse(value.toString()) ?? DateTime.now();
+    }
+
     return GetBookingModel(
       id: IdNormalizer.normalize(json['_id']),
-      studentId: UserBooking.fromJson(json['studentId']),
-      instructorId: UserBooking.fromJson(json['instructorId']),
-      date: DateTime.parse(json['date']),
-      time: json['time'] ?? '',
+      studentId: json['studentId'] != null
+          ? UserBooking.fromJson(json['studentId'])
+          : UserBooking.empty(),
+      instructorId: json['instructorId'] != null
+          ? UserBooking.fromJson(json['instructorId'])
+          : UserBooking.empty(),
+      date: safeDate(json['date']),
+      time: json['time']?.toString() ?? '',
       durationMins: json['duration_mins'] ?? 0,
       price: json['price'] ?? 0,
       bookingCode: json['bookingCode'] ?? '',
       status: json['status'] ?? '',
       rate: json['rate'] ?? 0,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      createdAt: safeDate(json['createdAt']),
+      updatedAt: safeDate(json['updatedAt']),
       v: json['__v'] ?? 0,
-
-      // ✅ New mappings
       paymentStatus: json['paymentStatus'] ?? '',
-      stripeSessionId: json['stripeSessionId'],
+      stripeSessionId: json['stripeSessionId']?.toString(),
       review: json['review'] ?? '',
       isRated: json['isRated'] ?? false,
       studentJoined: json['studentJoined'] ?? false,

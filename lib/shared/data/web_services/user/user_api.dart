@@ -62,4 +62,9 @@ abstract class UserApi {
 
   @POST("user/request-mentor")
   Future<dynamic> requestMentor();
+
+  @PATCH("user/select-theme")
+  Future<dynamic> setActiveTheme(
+    @Body() String themeId,
+  );
 }

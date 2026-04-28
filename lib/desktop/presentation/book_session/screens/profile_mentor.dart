@@ -4,17 +4,20 @@ import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
+import '../../../../desktop/presentation/profile/widgets/review_card.dart';
 import '../../../../main.dart';
-import '../../../../mobile/presentation/profile/widgets/review_card.dart';
+import '../../../../mobile/presentation/prv_chat/private_chat_screen.dart';
 import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/book_session/book_session_bloc.dart';
 import '../../../../shared/bloc/book_session/book_session_event.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
+import '../../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../../shared/bloc/report_bloc/report_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/data/models/my_profile/review_model.dart';
 import '../../../../shared/data/models/report_user/report_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/domain/repositories/chat_repository.dart';
 import '../../sign/widgets/custom_button.dart';
 import 'book_session.dart';
 
@@ -24,6 +27,7 @@ class ProfileMentorDesktop extends StatefulWidget {
   final String name;
   final String track;
   final double rate;
+  final String role;
   final String bio;
   final int hoursAvailable;
   final int peopleHelped;
@@ -38,6 +42,7 @@ class ProfileMentorDesktop extends StatefulWidget {
     required this.name,
     required this.track,
     required this.rate,
+    required this.role,
     required this.bio,
     required this.hoursAvailable,
     required this.peopleHelped,
@@ -51,9 +56,45 @@ class ProfileMentorDesktop extends StatefulWidget {
 }
 
 class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
+  int calculateHourlyRate(int hours, String role) {
+    if (role.toLowerCase() != 'mentor') {
+      return 0;
+    }
+
+    if (hours < 100) return 0;
+
+    if (hours < 120) return 30;
+
+    if (hours < 140) return 35;
+
+    if (hours < 160) return 40;
+
+    if (hours < 180) return 45;
+
+    return 50;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    Widget _buildAvatar(String? imagePath) {
+      if (imagePath == null || imagePath.isEmpty) {
+        return const Icon(Icons.person, size: 48, color: Colors.white);
+      }
+
+      if (imagePath.startsWith("http")) {
+        return Image.network(
+          imagePath,
+          width: 48,
+          height: 48,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) =>
+              const Icon(Icons.person, size: 48, color: Colors.white),
+        );
+      }
+
+      return const Icon(Icons.person, size: 48, color: Colors.white);
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -79,12 +120,11 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                         },
                       ),
                       const SizedBox(width: 4),
-                      ClipOval(
-                        child: Image.asset(
-                          widget.image,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.white24,
+                        child: ClipOval(
+                          child: _buildAvatar(widget.image),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -93,22 +133,35 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(widget.name,
-                                style: const TextStyle(
-                                    fontSize: 18, color: Colors.white)),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color,
+                                )),
                             const SizedBox(height: 4),
                             Row(
                               children: [
                                 Text("${widget.track} Developer • ",
-                                    style:
-                                        const TextStyle(color: Colors.white70)),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color,
+                                    )),
                                 Row(
                                   children: [
                                     const Icon(Icons.star,
                                         size: 14, color: Color(0xFFFFCE31)),
                                     const SizedBox(width: 4),
                                     Text("${widget.rate}",
-                                        style: const TextStyle(
-                                            color: Colors.white)),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        )),
                                   ],
                                 )
                               ],
@@ -181,11 +234,13 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
 
             /// Stats
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(32),
-              ),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor,
+                  )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -199,7 +254,9 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                       info: "people_helped".tr),
                   mentorInfo(
                       context: context,
-                      rate: "${widget.hourlyRate}\$",
+                      rate: widget.role == "Mentor"
+                          ? "${calculateHourlyRate(widget.peopleHelped, widget.role)}\$"
+                          : "Free",
                       info: "hourly_rate".tr),
                 ],
               ),
@@ -208,26 +265,53 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
             const SizedBox(height: 16),
 
             /// About
-            Text("about".tr),
+            Text("about".tr, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 8),
-            Text(widget.bio),
-
-            const SizedBox(height: 16),
-
-            /// Skills
-            Text("skills".tr),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: widget.skills
-                  .map((s) => Chip(label: Text(s.skillName)))
-                  .toList(),
+            Text(
+              widget.bio == ""
+                  ? "I'm ${widget.track ?? 'Mobile Development'}."
+                  : widget.bio,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.75,
+                color: isDark
+                    ? AppPalette.darkTextSecondary
+                    : AppPalette.lightTextSecondary,
+              ),
             ),
 
             const SizedBox(height: 16),
 
-            /// 🔥 Reviews (FIXED)
-            Text("reviews".tr),
+            /// Skills
+            Text("skills".tr, style: Theme.of(context).textTheme.bodyLarge),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: widget.skills.map((skill) {
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6D6D6).withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    skill.skillName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 16),
+
+            /// Reviews
+            Text("reviews".tr, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 8),
 
             if (widget.reviews.isEmpty)
@@ -254,9 +338,44 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
             /// Actions
             Row(
               children: [
-                IconButton(
-                  icon: Icon(Iconsax.message, color: AppPalette.primary),
-                  onPressed: () {},
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppPalette.primary),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Iconsax.message, color: AppPalette.primary),
+                    onPressed: () async {
+                      try {
+                        final chatRepo = sl<ChatRepository>();
+                        final chatId =
+                            await chatRepo.createOrGetPrivateChat(widget.id);
+
+                        desktopKey.currentState?.openSidePage(
+                          body: widget,
+                          rightPanel: BlocProvider(
+                            create: (_) => sl<PublicChatMessagesCubit>()
+                              ..init(chatId,
+                                  partnerId: widget.id, isPrivate: true),
+                            child: PrivateChatScreen(
+                              chatId: chatId,
+                              partnerName: widget.name,
+                              partnerId: widget.id,
+                              partnerImage: widget.image,
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        Get.snackbar('Error', 'Failed to open chat: $e');
+                      }
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 8,
                 ),
                 Expanded(
                   child: CustomButton(
@@ -274,9 +393,19 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
 
                         if (state is GetAvailableDatesSuccess) {
                           if (state.data.availableDates.isEmpty) {
-                            Get.snackbar(
-                              "Oops",
-                              "${widget.name} hasn't set any available days yet",
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: Text("Oops"),
+                                content: Text(
+                                    "${widget.name} hasn't set any available days for this week yet"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
                             );
                           } else {
                             desktopKey.currentState?.openSidePage(
@@ -295,8 +424,10 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                                   userId: widget.id,
                                   bookingId: null,
                                   userName: widget.name,
-                                  price: widget.hourlyRate,
+                                  price: calculateHourlyRate(
+                                      widget.peopleHelped, widget.role),
                                   availableDates: state.data.availableDates,
+                                  role: widget.role,
                                 ),
                               ),
                             );

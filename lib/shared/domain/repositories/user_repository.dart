@@ -15,6 +15,45 @@ abstract class UserRepository {
     int limit = 10,
   });
 
+  @override
+  Future<List<UserModel>> getUsers({
+    required int page,
+    int limit = 10,
+    String? query,
+    String? role,
+    String? track,
+    double? minPrice,
+    double? maxPrice,
+    double? minRate,
+    String? sort,
+  }) {
+    if (query != null && query.isNotEmpty) {
+      return searchUsers(query: query, page: page, limit: limit);
+    }
+
+    if (role != null ||
+        track != null ||
+        minPrice != null ||
+        maxPrice != null ||
+        minRate != null) {
+      return filterUsers(
+        role: role,
+        track: track,
+        minPrice: minPrice?.toInt(),
+        maxPrice: maxPrice?.toInt(),
+        minRating: minRate?.toInt(),
+        page: page,
+        limit: limit,
+      );
+    }
+
+    if (sort != null) {
+      return sortUsers(query: sort, page: page, limit: limit);
+    }
+
+    return getAllUsers(page: page, limit: limit);
+  }
+
   Future<MyProfile> getMyProfile();
 
   Future<List<UserModel>> searchUsers(
@@ -41,4 +80,6 @@ abstract class UserRepository {
   Future<DeleteAccountResponse> deleteAccount();
 
   Future<String> requestMentor();
+
+  Future<void> setActiveTheme(String themeId);
 }

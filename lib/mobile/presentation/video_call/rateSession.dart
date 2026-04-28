@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../shared/bloc/submit_review_bloc/submit_review_bloc.dart';
+import '../../../shared/common_ui/error_dialog.dart';
+import '../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/submit_review/submit_review_request.dart';
 import '../sessions/models/session.dart';
@@ -64,19 +66,44 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
     return formatter.format(dt);
   }
 
+  String getRatingText(int rating) {
+    switch (rating) {
+      case 1:
+        return "Very Bad - Needs serious improvement";
+      case 2:
+        return "Bad - Not satisfied";
+      case 3:
+        return "Average - It was okay";
+      case 4:
+        return "Good - Nice session";
+      case 5:
+        return "Excellent - Outstanding session!";
+      default:
+        return "Tap a star to rate";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.35;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocListener<SubmitReviewBloc, SubmitReviewState>(
       listener: (context, state) {
         if (state is SubmitReviewSuccessState) {
-          Get.offAll(ThankYouScreen());
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (_) => const ThankYouScreen()),
-          // );
+          showAppDialog(
+            context: context,
+            type: DialogType.success,
+            message: "Thank you for your feedback!",
+            //autoCloseDuration: const Duration(seconds: 5),
+            onPressed: () {
+              Get.offAll(() => ScreenManager(
+                    initialIndex: 3,
+                    initialSessionTab: 0,
+                  ));
+            },
+          );
         } else if (state is SubmitReviewFailureState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error.message)),
@@ -84,14 +111,16 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xffF5F6FA),
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
-          leading: const BackButton(color: Colors.black),
-          title: const Text(
+          leading:
+              BackButton(color: isDark ? Colors.white : AppPalette.primary),
+          title: Text(
             "Rate Your Session",
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: isDark ? Colors.white : AppPalette.primary),
           ),
           centerTitle: true,
         ),
@@ -103,10 +132,13 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Session Summary",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -141,9 +173,12 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
               _buildCard(
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       "How would you rate this session?",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -166,10 +201,11 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                       }),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      "Excellent - Outstanding session!",
-                      style: TextStyle(color: Colors.grey),
-                    )
+                    if (selectedRating != 0)
+                      Text(
+                        getRatingText(selectedRating),
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                   ],
                 ),
               ),
@@ -178,9 +214,12 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Additional Comments (Required)",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -203,37 +242,41 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
               const SizedBox(height: 24),
               BlocBuilder<SubmitReviewBloc, SubmitReviewState>(
                 builder: (context, state) {
-                  return ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppPalette.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppPalette.primary,
+                        padding: const EdgeInsets.all(14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    onPressed:
-                        selectedRating == 0 || state is SubmitReviewLoading
-                            ? null
-                            : () {
-                                final request = SubmitReviewRequest(
-                                  rate: selectedRating,
-                                  review: commentController.text,
-                                );
+                      onPressed:
+                          selectedRating == 0 || state is SubmitReviewLoading
+                              ? null
+                              : () {
+                                  final request = SubmitReviewRequest(
+                                    rate: selectedRating,
+                                    review: commentController.text,
+                                  );
 
-                                context.read<SubmitReviewBloc>().add(
-                                      ConfirmSubmit(
-                                          id: widget.session.sessionId,
-                                          request: request),
-                                    );
-                              },
-                    child: state is SubmitReviewLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            "Submit Feedback",
-                            style: TextStyle(fontSize: 16),
-                          ),
+                                  context.read<SubmitReviewBloc>().add(
+                                        ConfirmSubmit(
+                                            id: widget.session.sessionId,
+                                            request: request),
+                                      );
+                                },
+                      child: state is SubmitReviewLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              "Submit Feedback",
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                    ),
                   );
                 },
               ),
@@ -282,9 +325,9 @@ class _RateSessionScreenState extends State<RateSessionScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: child,
     );

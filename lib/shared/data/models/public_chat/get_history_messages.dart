@@ -1,3 +1,5 @@
+import 'package:skill_swap/shared/data/models/public_chat/message_theme.dart';
+
 import 'common_sender.dart';
 import 'reply_message.dart';
 
@@ -55,39 +57,41 @@ class ChatMessage {
   final bool isEdited;
   final bool isSeen;
   final MessageStatus status;
+  final MessageTheme? theme;
 
-  ChatMessage({
-    required this.id,
-    required this.chatId,
-    required this.senderId,
-    required this.content,
-    required this.messageType,
-    required this.readBy,
-    required this.createdAt,
-    required this.updatedAt,
-    this.replyTo,
-    required this.v,
-    this.isEdited = false,
-    this.isSeen = false,
-    this.status = MessageStatus.sent,
-  });
+  ChatMessage(
+      {required this.id,
+      required this.chatId,
+      required this.senderId,
+      required this.content,
+      required this.messageType,
+      required this.readBy,
+      required this.createdAt,
+      required this.updatedAt,
+      this.replyTo,
+      required this.v,
+      this.isEdited = false,
+      this.isSeen = false,
+      this.status = MessageStatus.sent,
+      this.theme});
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
-        id: json['_id'],
-        chatId: json['chatId'],
-        senderId: Sender.fromJson(json['senderId']),
-        content: json['content'],
-        messageType: json['messageType'],
-        readBy: json['readBy'] ?? [],
-        createdAt: DateTime.parse(json['createdAt']),
-        updatedAt: DateTime.parse(json['updatedAt']),
-        replyTo: json['replyTo'] != null
-            ? ReplyMessage.fromJson(json['replyTo'])
-            : null,
-        v: json['__v'],
-        isEdited: json['isEdited'] ?? false,
-        isSeen: json['isSeen'] ?? false,
-      );
+      id: json['_id'],
+      chatId: json['chatId'],
+      senderId: Sender.fromJson(json['senderId']),
+      content: json['content'],
+      messageType: json['messageType'],
+      readBy: json['readBy'] ?? [],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      replyTo: json['replyTo'] != null
+          ? ReplyMessage.fromJson(json['replyTo'])
+          : null,
+      v: json['__v'],
+      isEdited: json['isEdited'] ?? false,
+      isSeen: json['isSeen'] ?? false,
+      theme:
+          json['theme'] != null ? MessageTheme.fromJson(json['theme']) : null);
 
   Map<String, dynamic> toJson() => {
         '_id': id,
@@ -102,6 +106,7 @@ class ChatMessage {
         '__v': v,
         'isEdited': isEdited,
         'isSeen': isSeen,
+        'theme': theme
       };
 
   ChatMessage copyWith(
@@ -117,7 +122,8 @@ class ChatMessage {
       int? v,
       bool? isEdited,
       bool? isSeen,
-      MessageStatus? status}) {
+      MessageStatus? status,
+      MessageTheme? theme}) {
     return ChatMessage(
         id: id ?? this.id,
         chatId: chatId ?? this.chatId,
@@ -131,6 +137,7 @@ class ChatMessage {
         v: v ?? this.v,
         isEdited: isEdited ?? this.isEdited,
         isSeen: isSeen ?? this.isSeen,
-        status: status ?? this.status);
+        status: status ?? this.status,
+        theme: theme ?? this.theme);
   }
 }

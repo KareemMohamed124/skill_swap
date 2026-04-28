@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
+import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
+import '../../../shared/common_ui/edit_preview_bar.dart';
+import '../../../shared/common_ui/reply_preview_bar.dart';
 import '../../../shared/common_ui/swipeable_message.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/public_chat/get_history_messages.dart';
 import '../../../shared/dependency_injection/injection.dart';
+import 'chat_theme_page.dart';
 import 'message_bubble.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -41,7 +46,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _chatCubit.init(widget.chatId, isPrivate: false);
   }
 
-  /// ✅ يسمح بالتعديل لمدة 15 دقيقة فقط
   bool _canEditMessage(ChatMessage message) {
     final difference = DateTime.now().difference(message.createdAt);
     return difference.inMinutes <= 15;
@@ -95,10 +99,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  /// ✅ Message Options بعد التعديل
   void _showMessageOptions(BuildContext context, ChatMessage message) {
     final isMe = message.senderId.id == _chatCubit.currentUserId;
-
     final canEdit = _canEditMessage(message);
 
     showModalBottomSheet(
@@ -114,24 +116,19 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               },
             ),
-
-            /// Edit يظهر فقط قبل 15 دقيقة
             if (isMe && canEdit)
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.orange),
                 title: const Text('Edit'),
                 onTap: () {
                   Navigator.pop(context);
-
                   _chatCubit.setEditingMessage(message);
-
                   _controller.text = message.content;
                   _controller.selection = TextSelection.fromPosition(
                     TextPosition(offset: message.content.length),
                   );
                 },
               ),
-
             if (isMe)
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
@@ -173,7 +170,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildMessageList(List<ChatMessage> messages) {
+  // ✅ myActiveTheme بتيجي كـ parameter — مش بتتقرأ من جوا
+  Widget _buildMessageList(List<ChatMessage> messages, String? myActiveTheme) {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(12),
@@ -200,6 +198,10 @@ class _ChatScreenState extends State<ChatScreen> {
               onTapReply: message.replyTo != null
                   ? () => _scrollToMessage(message.replyTo!.id)
                   : null,
+              // ✅ لو message.theme موجود (Pusher/history) → استخدمه
+              // ✅ لو مش موجود (optimistic) وكانت isMe → خد من profile
+              senderThemeValue:
+                  message.theme?.value ?? (isMe ? myActiveTheme : null),
             ),
           ),
         );
@@ -209,31 +211,65 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _messageInput(PublicChatMessagesState state) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: "Message...",
-                  fillColor: Theme.of(context).cardColor,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (state is PublicChatMessagesLoaded && state.editingMessage != null)
+            EditPreviewBar(
+              editingMessage: state.editingMessage!,
+              onCancel: () {
+                _chatCubit.clearEditing();
+                _controller.clear();
+              },
+            )
+          else if (state is PublicChatMessagesLoaded &&
+              state.replyMessage != null)
+            ReplyPreviewBar(
+              replyMessage: state.replyMessage!,
+              onCancel: () => _chatCubit.clearReply(),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Message...",
+                      fillColor: Theme.of(context).cardColor,
+                      filled: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
-                onSubmitted: (_) => _sendMessage(),
-              ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(Icons.send, color: AppPalette.primary),
+                  onPressed: _sendMessage,
+                )
+              ],
             ),
-            const SizedBox(width: 10),
-            IconButton(
-              icon: const Icon(Icons.send, color: AppPalette.primary),
-              onPressed: _sendMessage,
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -253,27 +289,94 @@ class _ChatScreenState extends State<ChatScreen> {
     return BlocProvider.value(
       value: _chatCubit,
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Get.back(),
           ),
-          title: Text(widget.channelName),
+          title: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppPalette.primary,
+                child: Text(
+                  widget.channelName[0],
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  widget.channelName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppPalette.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'theme') {
+                  Get.to(MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) => sl<PurchaseCubit>()..getPurchases(),
+                      ),
+                      BlocProvider.value(
+                        value: context.read<MyProfileCubit>(),
+                      ),
+                    ],
+                    child: const ChatThemePage(),
+                  ));
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: 'theme',
+                  child: Text('Chat theme'),
+                ),
+              ],
+            ),
+          ],
         ),
         body: BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
-          builder: (context, state) {
-            if (state is PublicChatMessagesLoading) {
+          builder: (context, chatState) {
+            if (chatState is PublicChatMessagesLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            final messages = state is PublicChatMessagesLoaded
-                ? state.messages
+            final messages = chatState is PublicChatMessagesLoaded
+                ? chatState.messages
                 : <ChatMessage>[];
 
             return Column(
               children: [
-                Expanded(child: _buildMessageList(messages)),
-                _messageInput(state),
+                Expanded(
+                  // ✅ BlocBuilder للـ MyProfileCubit عشان لما الثيم يتغير
+                  // الرسائل كلها تتحدث فوراً
+                  child: BlocBuilder<MyProfileCubit, MyProfileState>(
+                    builder: (context, profileState) {
+                      final myActiveTheme = profileState is MyProfileLoaded
+                          ? profileState.profile.activeTheme?.value
+                          : null;
+
+                      return _buildMessageList(messages, myActiveTheme);
+                    },
+                  ),
+                ),
+                _messageInput(chatState),
               ],
             );
           },

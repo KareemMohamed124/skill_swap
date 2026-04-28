@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 
 import '../../../shared/core/network/pusher_service.dart';
+import '../../constants/not_type.dart';
 import '../../data/models/public_chat/common_sender.dart';
 import '../../data/models/public_chat/get_history_messages.dart';
+import '../../data/models/public_chat/message_theme.dart';
 import '../../data/models/public_chat/reply_message.dart';
+import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/chat_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 import 'public_chat_messages_state.dart';
 
@@ -19,6 +23,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   bool _isPrivate = false;
   String? _partnerId;
+  int? _participantsCount;
 
   int _currentPage = 1;
   static const int _pageLimit = 20;
@@ -30,6 +35,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   ChatMessage? _editingMessage;
 
   StreamSubscription<Map<String, dynamic>>? _messageSubscription;
+
+  // ✅ Cache بيخزن آخر theme لكل sender عشان الرسائل القديمة
+  final Map<String, String> _senderThemeCache = {};
 
   PublicChatMessagesCubit({
     required this.chatRepository,
@@ -43,6 +51,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   ChatMessage? get replyMessage => _replyMessage;
 
   ChatMessage? get editingMessage => _editingMessage;
+
+  // ✅ Getter للـ cache عشان ChatScreen يقدر يوصله
+  Map<String, String> get senderThemeCache => _senderThemeCache;
 
   // ================= HELPER =================
   PublicChatMessagesLoaded _emitLoaded() {
@@ -93,10 +104,12 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     String chatId, {
     bool isPrivate = false,
     String? partnerId,
+    int? participantsCount,
   }) async {
     _chatId = chatId;
     _isPrivate = isPrivate;
     _partnerId = partnerId;
+    _participantsCount = participantsCount;
 
     _currentUserId = await LocalStorage.getUserId();
     _currentPage = 1;
@@ -104,6 +117,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _hasMore = true;
     _replyMessage = null;
     _editingMessage = null;
+    _senderThemeCache.clear(); // ✅ clear الـ cache عند كل init
 
     await _messageSubscription?.cancel();
 
@@ -133,6 +147,15 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       _messages = response.messages.toList();
       _hasMore = response.messages.length >= _pageLimit;
+
+      _recomputeSeenFromReadBy();
+
+      // ✅ لو الـ history جابت theme في الرسائل، خزنها في الـ cache
+      for (final msg in _messages) {
+        if (msg.theme != null && msg.theme!.value.isNotEmpty) {
+          _senderThemeCache[msg.senderId.id] = msg.theme!.value;
+        }
+      }
 
       emit(PublicChatMessagesLoaded(
         messages: List.from(_messages),
@@ -171,6 +194,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       status: MessageStatus.sending,
+      theme: null,
       replyTo: _replyMessage != null
           ? ReplyMessage(
               id: _replyMessage!.id,
@@ -212,6 +236,19 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       );
 
       emit(_emitLoaded());
+
+      if (_isPrivate && _partnerId != null) {
+        sl<NotificationRepository>().sendNotification(
+          receiverId: _partnerId!,
+          type: NotificationTypes.chatMessage,
+          payload: {
+            'chatId': _chatId!,
+            'messagePreview': message.content.length > 100
+                ? message.content.substring(0, 100)
+                : message.content,
+          },
+        );
+      }
     } catch (e) {
       _messages[index] = message.copyWith(
         status: MessageStatus.failed,
@@ -219,7 +256,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       emit(_emitLoaded());
 
-      // 🔥 AUTO RESEND
       Future.delayed(const Duration(seconds: 3), () {
         final i = _messages.indexWhere((m) => m.id == tempId);
         if (i != -1 && _messages[i].status == MessageStatus.failed) {
@@ -236,10 +272,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
     final message = _messages[index];
 
-    _messages[index] = message.copyWith(
-      status: MessageStatus.sending,
-    );
-
+    _messages[index] = message.copyWith(status: MessageStatus.sending);
     emit(_emitLoaded());
 
     _trySendMessage(tempId, message, replyToId);
@@ -332,6 +365,12 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         ? data['message'] as Map<String, dynamic>
         : data;
 
+    final themeData = messageData['theme'];
+    final MessageTheme? theme =
+        themeData != null && themeData is Map<String, dynamic>
+            ? MessageTheme.fromJson(themeData)
+            : null;
+
     final messageChatId = messageData['chatId']?.toString() ?? '';
     if (messageChatId != _chatId) return;
 
@@ -349,7 +388,10 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         userImageUrl = oldMessage.senderId.userImage.secureUrl;
       } catch (_) {}
     }
-    if (senderId != _currentUserId) return;
+
+    if (theme != null && theme.value.isNotEmpty) {
+      _senderThemeCache[senderId] = theme.value;
+    }
 
     final newMessage = ChatMessage(
       id: messageData['id']?.toString() ?? DateTime.now().toString(),
@@ -366,6 +408,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       status: MessageStatus.sent,
+      theme: theme,
       v: 0,
     );
 
@@ -375,7 +418,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       if (tempIndex != -1) {
         _messages[tempIndex] = newMessage.copyWith(status: MessageStatus.sent);
-
         emit(_emitLoaded());
       }
       return;
@@ -386,6 +428,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
     _messages.add(newMessage);
     emit(_emitLoaded());
+
+    markMessagesAsRead();
   }
 
   void _handleMessageUpdated(Map<String, dynamic> data) {
@@ -432,6 +476,34 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
+  void _recomputeSeenFromReadBy() {
+    if (_currentUserId == null) return;
+
+    final required =
+        _isPrivate ? 1 : ((_participantsCount ?? 2) - 1).clamp(1, 1 << 30);
+
+    for (int i = 0; i < _messages.length; i++) {
+      final msg = _messages[i];
+      if (msg.senderId.id != _currentUserId) continue;
+
+      final uniqueOthers = msg.readBy
+          .map((e) {
+            if (e is Map) {
+              return (e['_id'] ?? e['id'] ?? '').toString();
+            }
+            return e.toString();
+          })
+          .where((id) => id.isNotEmpty && id != _currentUserId)
+          .toSet()
+          .length;
+
+      final newSeen = uniqueOthers >= required;
+      if (newSeen != msg.isSeen) {
+        _messages[i] = msg.copyWith(isSeen: newSeen);
+      }
+    }
+  }
+
   Future<void> markMessagesAsRead() async {
     if (_chatId == null) return;
     try {
@@ -443,11 +515,49 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   void _handleMessagesRead(Map<String, dynamic> data) {
     try {
+      final dynamic rawReader = data['userId'] ??
+          data['readerId'] ??
+          (data['readBy'] is String ? data['readBy'] : null);
+      final readerId = rawReader?.toString() ?? '';
+
+      if (readerId.isNotEmpty && readerId == _currentUserId) return;
+
       bool changed = false;
-      for (int i = 0; i < _messages.length; i++) {
-        if (!_messages[i].isSeen) {
-          _messages[i] = _messages[i].copyWith(isSeen: true);
-          changed = true;
+
+      final useFallback = _isPrivate || readerId.isEmpty;
+
+      if (useFallback) {
+        for (int i = 0; i < _messages.length; i++) {
+          final msg = _messages[i];
+          if (msg.senderId.id != _currentUserId) continue;
+          if (!msg.isSeen) {
+            _messages[i] = msg.copyWith(isSeen: true);
+            changed = true;
+          }
+        }
+      } else {
+        final required = ((_participantsCount ?? 2) - 1).clamp(1, 1 << 30);
+
+        for (int i = 0; i < _messages.length; i++) {
+          final msg = _messages[i];
+          if (msg.senderId.id != _currentUserId) continue;
+
+          final readBy = List<dynamic>.from(msg.readBy);
+          final already = readBy.any((e) => e.toString() == readerId);
+          if (!already) readBy.add(readerId);
+
+          final uniqueOthers = readBy
+              .map((e) => e.toString())
+              .where((id) => id != _currentUserId)
+              .toSet()
+              .length;
+
+          final newSeen = uniqueOthers >= required;
+
+          if (!already || newSeen != msg.isSeen) {
+            _messages[i] = msg.copyWith(readBy: readBy, isSeen: newSeen);
+            changed = true;
+          }
         }
       }
 

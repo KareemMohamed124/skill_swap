@@ -31,6 +31,45 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
+  Future<List<UserModel>> getUsers({
+    required int page,
+    int limit = 10,
+    String? query,
+    String? role,
+    String? track,
+    double? minPrice,
+    double? maxPrice,
+    double? minRate,
+    String? sort,
+  }) {
+    if (query != null && query.isNotEmpty) {
+      return searchUsers(query: query, page: page, limit: limit);
+    }
+
+    if (role != null ||
+        track != null ||
+        minPrice != null ||
+        maxPrice != null ||
+        minRate != null) {
+      return filterUsers(
+        role: role,
+        track: track,
+        minPrice: minPrice?.toInt(),
+        maxPrice: maxPrice?.toInt(),
+        minRating: minRate?.toInt(),
+        page: page,
+        limit: limit,
+      );
+    }
+
+    if (sort != null) {
+      return sortUsers(query: sort, page: page, limit: limit);
+    }
+
+    return getAllUsers(page: page, limit: limit);
+  }
+
+  @override
   Future<List<UserModel>> getAllUsers(
       {required int page, int limit = 10}) async {
     final response = await api.getAllUsers(page, limit);
@@ -210,5 +249,10 @@ class UserRepositoryImpl extends UserRepository {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  @override
+  Future<void> setActiveTheme(String themeId) async {
+    await api.setActiveTheme(themeId);
   }
 }

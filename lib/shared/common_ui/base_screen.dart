@@ -19,7 +19,8 @@ class BaseScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false, // ✅
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // ✅
       body: Stack(
         children: [
           Column(
@@ -29,23 +30,22 @@ class BaseScreen extends StatelessWidget {
           ),
           Positioned(
             top: screenHeight * 0.09,
-            // بدل 80
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
               width: double.infinity,
-              constraints: BoxConstraints(minHeight: screenHeight),
+              constraints: const BoxConstraints(),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(screenWidth * 0.08), // بدل 32
-                  topRight: Radius.circular(screenWidth * 0.08), // بدل 32
+                  topLeft: Radius.circular(screenWidth * 0.08),
+                  topRight: Radius.circular(screenWidth * 0.08),
                 ),
               ),
               child: child,
             ),
-          )
+          ),
         ],
       ),
     );

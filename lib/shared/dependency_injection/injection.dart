@@ -30,6 +30,7 @@ import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
 import '../bloc/status_book_bloc/status_book_bloc.dart';
+import '../bloc/store_cubit/purchase_cubit.dart';
 import '../bloc/store_cubit/store_cubit.dart';
 import '../bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../bloc/track_cubit/track_cubit.dart';
@@ -181,9 +182,14 @@ Future<void> initDependencies() async {
     () => StoreCubit(sl<StoreRepository>()),
   );
 
+  sl.registerFactory<PurchaseCubit>(
+    () => PurchaseCubit(sl<StoreRepository>()),
+  );
+
   // Chat Cubits
   sl.registerFactory<PublicChatMessagesCubit>(() => PublicChatMessagesCubit(
       chatRepository: sl<ChatRepository>(),
+      // notificationRepository: sl<NotificationRepository>(),
       pusherService: sl<PusherService>()));
 
   // Load users safely

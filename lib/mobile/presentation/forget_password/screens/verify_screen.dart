@@ -74,7 +74,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
         )
       ],
       child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor,
         body: BlocConsumer<VerifyCodeBloc, VerifyCodeState>(
           listener: (context, state) {
             if (state is VerifyCodeFailureState) {
@@ -94,104 +97,129 @@ class _VerifyScreenState extends State<VerifyScreen> {
             }
           },
           builder: (context, state) {
-            return CustomAuth(
-              title: 'Verify Your Email',
-              subTitle: 'Enter the 6-digit code sent to ${widget.email}.',
-              childWidget: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                      6,
-                      (index) => Container(
-                        width: 45,
-                        height: 50,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Color(0xFFE6E7FF)),
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints:
+                    BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
+                      child: CustomAuth(
+                        title: 'Verify Your Email',
+                        subTitle:
+                        'Enter the 6-digit code sent to ${widget.email}.',
+                        childWidget: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List.generate(
+                                6,
+                                    (index) =>
+                                    Container(
+                                      width: 45,
+                                      height: 50,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border:
+                                        Border.all(color: Color(0xFFE6E7FF)),
+                                      ),
+                                      child: TextField(
+                                        focusNode: focusNodes[index],
+                                        textAlign: TextAlign.center,
+                                        maxLength: 1,
+                                        keyboardType: TextInputType.number,
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.black),
+                                        decoration: InputDecoration(
+                                          counterText: "",
+                                          border: InputBorder.none,
+                                        ),
+                                        onChanged: (value) {
+                                          if (value.isNotEmpty) {
+                                            codeDigits[index] = value;
+
+                                            if (index < 5) {
+                                              FocusScope
+                                                  .of(context)
+                                                  .requestFocus(
+                                                  focusNodes[index + 1]);
+                                            } else {
+                                              FocusScope.of(context).unfocus();
+                                            }
+                                          } else {
+                                            codeDigits[index] = "";
+
+                                            if (index > 0) {
+                                              FocusScope
+                                                  .of(context)
+                                                  .requestFocus(
+                                                  focusNodes[index - 1]);
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ),
+                              ),
+                            ),
+                            if (codeError != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: Text(
+                                  codeError!,
+                                  style: TextStyle(
+                                      color: Colors.red, fontSize: 14),
+                                ),
+                              ),
+                          ],
                         ),
-                        child: TextField(
-                          focusNode: focusNodes[index],
-                          textAlign: TextAlign.center,
-                          maxLength: 1,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(fontSize: 20, color: Colors.black),
-                          decoration: InputDecoration(
-                            counterText: "",
-                            border: InputBorder.none,
-                          ),
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              codeDigits[index] = value;
+                        buttonText: state is VerifyCodeLoading
+                            ? 'Verification'
+                            : 'Verify',
+                        onPressed: state is VerifyCodeLoading
+                            ? null
+                            : () {
+                          if (codeDigits
+                              .any((digit) => digit.isEmpty)) {
+                            setState(() {
+                              codeError =
+                              "Please enter all 6 digits";
+                            });
+                            return;
+                          }
 
-                              if (index < 5) {
-                                FocusScope.of(context)
-                                    .requestFocus(focusNodes[index + 1]);
-                              } else {
-                                FocusScope.of(context).unfocus();
-                              }
-                            } else {
-                              codeDigits[index] = "";
+                          final code = codeDigits.join();
 
-                              if (index > 0) {
-                                FocusScope.of(context)
-                                    .requestFocus(focusNodes[index - 1]);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (codeError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        codeError!,
-                        style: TextStyle(color: Colors.red, fontSize: 14),
-                      ),
-                    ),
-                ],
-              ),
-              buttonText:
-                  state is VerifyCodeLoading ? 'Verification' : 'Verify',
-              onPressed: state is VerifyCodeLoading
-                  ? null
-                  : () {
-                      if (codeDigits.any((digit) => digit.isEmpty)) {
-                        setState(() {
-                          codeError = "Please enter all 6 digits";
-                        });
-                        return;
-                      }
-
-                      final code = codeDigits.join();
-
-                      context.read<VerifyCodeBloc>().add(
+                          context.read<VerifyCodeBloc>().add(
                             SubmitVerify(
                               widget.email,
                               code,
                             ),
                           );
-                    },
-              bottomText: isResend
-                  ? "Didn't receive the code? "
-                  : "Resend code in ${timerText}",
-              bottomActionText: isResend ? 'Resend' : '',
-              onBottomTap: isResend
-                  ? () {
-                      setState(() {
-                        isResend = false;
-                        secondsRemaining = 900; // 15 دقيقة
-                      });
-                      startTimer();
-                      context
-                          .read<SendCodeBloc>()
-                          .add(ResendCode(widget.email));
-                    }
-                  : () {},
+                        },
+                        bottomText: isResend
+                            ? "Didn't receive the code? "
+                            : "Resend code in $timerText",
+                        bottomActionText: isResend ? 'Resend' : '',
+                        onBottomTap: isResend
+                            ? () {
+                          setState(() {
+                            isResend = false;
+                            secondsRemaining = 900; // 15 دقيقة
+                          });
+                          startTimer();
+                          context
+                              .read<SendCodeBloc>()
+                              .add(ResendCode(widget.email));
+                        }
+                            : () {},
+                      ),
+                    ),
+                  ),
+                );
+              },
             );
           },
         ),

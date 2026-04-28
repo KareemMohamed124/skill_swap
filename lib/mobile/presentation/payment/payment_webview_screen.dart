@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../../shared/common_ui/screen_manager/screen_manager.dart';
+
 class PaymentWebViewScreen extends StatefulWidget {
   final String checkoutUrl;
   final String successUrl;
@@ -162,8 +164,10 @@ class PaymentSuccessScreen extends StatelessWidget {
                   height: screenWidth * 0.12,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Pop back to the sessions screen
-                      Get.back();
+                      Get.to(() => ScreenManager(
+                            initialIndex: 3,
+                            initialSessionTab: 0, // Requests
+                          ));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

@@ -8,18 +8,20 @@ class StoreApiService {
 
   Future<Map<String, dynamic>> getItems() async {
     final response = await _dio.get('$_baseUrl/store');
+    return response.data ?? {};
+  }
 
-    return response.data;
+  Future<Map<String, dynamic>> getPurchases() async {
+    final response = await _dio.get('$_baseUrl/store/purchases');
+    return response.data ?? {};
   }
 
   Future<Map<String, dynamic>> purchaseItem(String itemId) async {
     final response = await _dio.post(
       '$_baseUrl/store/purchase',
-      data: {
-        "itemId": itemId,
-      },
+      data: {"itemId": itemId},
     );
 
-    return response.data;
+    return response.data ?? {};
   }
 }

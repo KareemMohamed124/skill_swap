@@ -22,6 +22,7 @@ class UserModel {
   final Track track;
   final List<Skill> skills;
   final List<WarningModel> warnings;
+  final String? activeTheme;
 
   final double rate;
   final int freeHours;
@@ -44,7 +45,7 @@ class UserModel {
   final List<dynamic> feedbackGiven;
   final List<dynamic> feedbackReceived;
   final List<dynamic> mentorSuggestions;
-
+  final List<dynamic> purchasedThemes;
   final List<ReviewModel> reviews;
 
   final int v;
@@ -75,6 +76,8 @@ class UserModel {
     this.activationCodeExpires,
     this.fcmToken,
     required this.score,
+    required this.activeTheme,
+    required this.purchasedThemes,
     required this.varPoints,
     required this.challenges,
     required this.messages,
@@ -130,6 +133,7 @@ class UserModel {
       rate: parseDouble(json?['rate']),
       freeHours: parseInt(json?['freeHours']),
       helpTotalHours: parseInt(json?['helpTotalHours']),
+      activeTheme: json?['activeTheme'],
       wallet: parseInt(json?['wallet']),
       totalScore: parseInt(json?['totalScore']),
       numberOfReviews: parseInt(json?['numberOfReviews']),
@@ -140,6 +144,7 @@ class UserModel {
       varPoints: parseInt(json?['var_points']),
       challenges: json?['challenges'] ?? [],
       messages: json?['messages'] ?? [],
+      purchasedThemes: json?['purchasedThemes'] ?? [],
       reports: json?['reports'] ?? [],
       requests: json?['requests'] ?? [],
       feedbackGiven: json?['feedbackGiven'] ?? [],
@@ -182,8 +187,10 @@ class UserModel {
       "fcmToken": fcmToken,
       "score": score,
       "var_points": varPoints,
+      "activeTheme": activeTheme,
       "challenges": challenges,
       "messages": messages,
+      "purchasedThemes": purchasedThemes,
       "reports": reports,
       "requests": requests,
       "feedbackGiven": feedbackGiven,
@@ -228,12 +235,14 @@ class UserModel {
       varPoints: varPoints,
       challenges: challenges,
       messages: messages,
+      purchasedThemes: purchasedThemes,
       reports: reports,
       requests: requests,
       feedbackGiven: feedbackGiven,
       feedbackReceived: feedbackReceived,
       mentorSuggestions: mentorSuggestions,
       reviews: reviews,
+      activeTheme: activeTheme,
       v: v,
       createdAt: createdAt,
       updatedAt: updatedAt,

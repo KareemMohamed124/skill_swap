@@ -16,8 +16,10 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
     on<LogoutRequested>(_onLogoutRequested);
   }
 
-  Future<void> _onLogoutRequested(LogoutRequested event,
-      Emitter<LogoutState> emit,) async {
+  Future<void> _onLogoutRequested(
+    LogoutRequested event,
+    Emitter<LogoutState> emit,
+  ) async {
     emit(LogoutLoading());
 
     final response = await repository.logout();
@@ -26,8 +28,8 @@ class LogoutBloc extends Bloc<LogoutEvent, LogoutState> {
       // Clear all tokens and profile
       await LocalStorage.clearAllTokens();
       await LocalStorage.clearUserId();
-      await LocalStorage.clearUser();
-      //  await NotificationService.deleteToken();
+      // await LocalStorage.clearUser();
+      await NotificationService.deleteToken();
       sl<MyProfileCubit>().clearProfile();
       //      sl<GetBookingsCubit>().clearBooking();
 

@@ -16,8 +16,8 @@ class Reviewer {
   factory Reviewer.fromJson(Map<String, dynamic> json) {
     return Reviewer(
       id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      role: json['role'] ?? '',
+      name: json['name'] ?? 'User',
+      role: json['role'] ?? 'Normal',
       userImage: json['userImage'] != null
           ? UserImage.fromJson(json['userImage'])
           : UserImage.empty(),

@@ -54,7 +54,8 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          _scrollController.position.minScrollExtent,
+          // ✅ reverse: true فـ min مش max
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -77,7 +78,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
       Scrollable.ensureVisible(
         key.currentContext!,
         duration: const Duration(milliseconds: 300),
-        alignment: 0.5, // Center the message
+        alignment: 0.5,
       );
       setState(() {
         _highlightedMessageId = messageId;
@@ -96,7 +97,6 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     }
   }
 
-  /// ✅ يسمح بالتعديل لمدة 15 دقيقة فقط
   bool _canEditMessage(ChatMessage message) {
     final difference = DateTime.now().difference(message.createdAt);
     return difference.inMinutes <= 15;
@@ -172,13 +172,16 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
 
   Widget _buildMessageList(List messages) {
     final currentUserId = _chatCubit.currentUserId;
+    final reversedMessages = messages.reversed.toList(); // ✅ عكس الترتيب
 
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(12),
-      itemCount: messages.length,
+      reverse: true,
+      // ✅ الحل الأساسي
+      itemCount: reversedMessages.length,
       itemBuilder: (context, index) {
-        final ChatMessage message = messages[index];
+        final ChatMessage message = reversedMessages[index];
         final isMe = message.senderId.id == currentUserId;
 
         if (!_messageKeys.containsKey(message.id)) {
@@ -205,59 +208,68 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   }
 
   Widget _messageInput(PublicChatMessagesState state) {
-    return SafeArea(
-      child: Column(
-        children: [
-          if (state is PublicChatMessagesLoaded && state.editingMessage != null)
-            EditPreviewBar(
-              editingMessage: state.editingMessage!,
-              onCancel: () {
-                _chatCubit.clearEditing();
-                _controller.clear();
-              },
-            )
-          else if (state is PublicChatMessagesLoaded &&
-              state.replyMessage != null)
-            ReplyPreviewBar(
-              replyMessage: state.replyMessage!,
-              onCancel: () => _chatCubit.clearReply(),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: "Message...",
-                      fillColor: Theme.of(context).cardColor,
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: Icon(Icons.send, color: AppPalette.primary),
-                  onPressed: _sendMessage,
-                )
-              ],
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (state is PublicChatMessagesLoaded && state.editingMessage != null)
+          EditPreviewBar(
+            editingMessage: state.editingMessage!,
+            onCancel: () {
+              _chatCubit.clearEditing();
+              _controller.clear();
+            },
+          )
+        else if (state is PublicChatMessagesLoaded &&
+            state.replyMessage != null)
+          ReplyPreviewBar(
+            replyMessage: state.replyMessage!,
+            onCancel: () => _chatCubit.clearReply(),
           ),
-        ],
-      ),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    hintText: "Message...",
+                    fillColor: Theme.of(context).cardColor,
+                    filled: true,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onSubmitted: (_) => _sendMessage(),
+                ),
+              ),
+              const SizedBox(width: 10),
+              IconButton(
+                icon: Icon(Icons.send, color: AppPalette.primary),
+                onPressed: _sendMessage,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-
+    // ✅ شيلنا الـ scrollToBottom من هنا
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -289,6 +301,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             const SizedBox(width: 8),
             Text(
               widget.partnerName,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppPalette.primary,
                 fontWeight: FontWeight.bold,
@@ -305,14 +318,13 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                 BlocConsumer<PublicChatMessagesCubit, PublicChatMessagesState>(
               listener: (context, state) {
                 if (state is PublicChatMessagesLoaded) {
-                  _scrollToBottom();
+                  _scrollToBottom(); // ✅ هنا بس
                 }
               },
               builder: (context, state) {
                 if (state is PublicChatMessagesLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
                 if (state is PublicChatMessagesLoaded) {
                   if (state.messages.isEmpty) {
                     return Center(
@@ -326,13 +338,12 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                   }
                   return _buildMessageList(state.messages);
                 }
-
                 if (state is PublicChatMessagesError) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Failed to load messages'),
+                        const Text('Failed to load messages'),
                         const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: () => context
@@ -344,15 +355,18 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
                     ),
                   );
                 }
-
                 return const SizedBox();
               },
             ),
           ),
-          BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
-            builder: (context, state) {
-              return _messageInput(state);
-            },
+          Material(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child:
+                BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
+              builder: (context, state) {
+                return _messageInput(state);
+              },
+            ),
           ),
         ],
       ),

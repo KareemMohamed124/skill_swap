@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:skill_swap/mobile/presentation/frames/skill_type.dart';
 
@@ -21,25 +22,25 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onLongPress;
   final VoidCallback? onTapReply;
   final bool isHighlighted;
-
+  final String? senderThemeValue;
   final bool isFirstInGroup;
   final bool isLastInGroup;
 
-  const MessageBubble({
-    super.key,
-    required this.message,
-    required this.isMe,
-    required this.senderName,
-    this.senderImage,
-    this.showAvatar = true,
-    this.showName = true,
-    this.isTyping = false,
-    this.onLongPress,
-    this.onTapReply,
-    this.isHighlighted = false,
-    this.isFirstInGroup = true,
-    this.isLastInGroup = true,
-  });
+  const MessageBubble(
+      {super.key,
+      required this.message,
+      required this.isMe,
+      required this.senderName,
+      this.senderImage,
+      this.showAvatar = true,
+      this.showName = true,
+      this.isTyping = false,
+      this.onLongPress,
+      this.onTapReply,
+      this.isHighlighted = false,
+      this.isFirstInGroup = true,
+      this.isLastInGroup = true,
+      this.senderThemeValue});
 
   String _formatTime(DateTime date) {
     return DateFormat('hh:mm a').format(date);
@@ -80,9 +81,38 @@ class MessageBubble extends StatelessWidget {
     return isMe ? _lighten(baseColor, 0.1) : _lighten(baseColor, 0.35);
   }
 
+  SkillType _mapThemeToSkill(String theme) {
+    switch (theme) {
+      case "cpp":
+        return SkillType.cpp;
+      case "java":
+        return SkillType.java;
+      case "php":
+        return SkillType.php;
+      case "javascript":
+        return SkillType.javascript;
+      case "csharp":
+        return SkillType.csharp;
+      default:
+        return SkillType.none;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final skill = isMe ? SkillType.none : SkillType.none;
+    final box = GetStorage();
+
+    String _getUserTheme() {
+      return box.read("user_theme_currentUserId") ?? "default";
+    }
+
+    final userTheme = _getUserTheme();
+
+    SkillType skill = SkillType.none;
+
+    if (senderThemeValue != null && senderThemeValue!.isNotEmpty) {
+      skill = _mapThemeToSkill(senderThemeValue!);
+    }
     final style = frameStyles[skill];
 
     final Color bubbleColor = _getBubbleColor(style);
@@ -139,7 +169,7 @@ class MessageBubble extends StatelessWidget {
                       children: [
                         if (!isMe && showName)
                           Text(
-                            senderName.isNotEmpty ? senderName : "User",
+                            senderName.isNotEmpty ? senderName : "Unknown",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 11,

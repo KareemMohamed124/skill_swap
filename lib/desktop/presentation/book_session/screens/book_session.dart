@@ -31,15 +31,16 @@ class BookSessionDesktop extends StatefulWidget {
   final int price;
   final String? bookingId;
   final List<AvailableDates> availableDates;
+  final String role;
 
-  const BookSessionDesktop({
-    super.key,
-    required this.userId,
-    required this.userName,
-    required this.price,
-    this.bookingId,
-    required this.availableDates,
-  });
+  const BookSessionDesktop(
+      {super.key,
+      required this.userId,
+      required this.userName,
+      required this.price,
+      this.bookingId,
+      required this.availableDates,
+      required this.role});
 
   @override
   State<BookSessionDesktop> createState() => _BookSessionDesktopState();
@@ -51,6 +52,7 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
 
   String? selectedDate;
   DateTime? startTime;
+  String paymentMethod = "pay";
 
   List<Booking> apiBookings = [];
 
@@ -73,7 +75,25 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
 
   Future<void> _init() async {
     myId = widget.userId;
-    acceptedCubit.getAcceptedBookings();
+
+    await acceptedCubit.getAcceptedBookings();
+
+    final firstAvailableDay = widget.availableDates.firstWhere(
+      (day) => !isDayFullyBooked(day),
+      orElse: () => widget.availableDates.first,
+    );
+
+    selectedDate = firstAvailableDay.date;
+
+    final slots = generateSlots();
+    for (final slot in slots) {
+      if (canSelectSlot(slot)) {
+        startTime = slot;
+        break;
+      }
+    }
+
+    setState(() {});
   }
 
   int get durationMinutes => int.parse(selectedDuration);
@@ -208,249 +228,343 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final slots = generateSlots();
 
-    return BlocBuilder<AcceptedBookingsCubit, AcceptedBookingsState>(
-      builder: (context, acceptedState) {
-        if (acceptedState is AcceptedBookingsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      backgroundColor:
+          isDark ? AppPalette.darkSurface : AppPalette.lightSurface,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              "Session Details",
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const Divider(height: 20),
+          const SizedBox(height: 16),
+          Expanded(
+            child: BlocBuilder<AcceptedBookingsCubit, AcceptedBookingsState>(
+              builder: (context, acceptedState) {
+                if (acceptedState is AcceptedBookingsLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-        if (acceptedState is AcceptedBookingsError) {
-          return Center(child: Text(acceptedState.error));
-        }
+                if (acceptedState is AcceptedBookingsError) {
+                  return Center(child: Text(acceptedState.error));
+                }
 
-        if (acceptedState is AcceptedBookingsLoaded) {
-          final bookings = acceptedState.bookings;
+                if (acceptedState is AcceptedBookingsLoaded) {
+                  final bookings = acceptedState.bookings;
 
-          apiBookings = bookings
-              .where((b) => b.instructor.id == myId && b.status == "accepted")
-              .map((b) {
-            final baseDate = b.date.toLocal();
-            final timeParts = b.time.split(":");
+                  apiBookings = bookings
+                      .where((b) =>
+                          b.instructor.id == myId && b.status == "accepted")
+                      .map((b) {
+                    final baseDate = b.date.toLocal();
+                    final timeParts = b.time.split(":");
 
-            final dateTime = DateTime(
-              baseDate.year,
-              baseDate.month,
-              baseDate.day,
-              int.parse(timeParts[0]),
-              int.parse(timeParts[1]),
-            );
+                    final dateTime = DateTime(
+                      baseDate.year,
+                      baseDate.month,
+                      baseDate.day,
+                      int.parse(timeParts[0]),
+                      int.parse(timeParts[1]),
+                    );
 
-            return Booking(
-              start: dateTime,
-              end: dateTime.add(Duration(minutes: b.durationMins)),
-              status: b.status,
-            );
-          }).toList();
+                    return Booking(
+                      start: dateTime,
+                      end: dateTime.add(Duration(minutes: b.durationMins)),
+                      status: b.status,
+                    );
+                  }).toList();
 
-          return BlocConsumer<ActiveBookingBloc, ActiveBookingState>(
-            listener: (context, state) {
-              if (state is BookingCreatedSuccess) {
-                showAppDialog(
-                  context: context,
-                  type: DialogType.success,
-                  message: "Booking created successfully",
-                  autoCloseDuration: const Duration(seconds: 5),
-                );
-              }
+                  return BlocConsumer<ActiveBookingBloc, ActiveBookingState>(
+                    listener: (context, state) {
+                      if (state is BookingCreatedSuccess) {
+                        showAppDialog(
+                          context: context,
+                          type: DialogType.success,
+                          message: "Booking created successfully",
+                          autoCloseDuration: const Duration(seconds: 5),
+                        );
+                      }
 
-              if (state is BookingUpdatedSuccess) {
-                showAppDialog(
-                  context: context,
-                  type: DialogType.success,
-                  message: "Booking updated successfully",
-                  autoCloseDuration: const Duration(seconds: 2),
-                );
-              }
+                      if (state is BookingUpdatedSuccess) {
+                        showAppDialog(
+                          context: context,
+                          type: DialogType.success,
+                          message: "Booking updated successfully",
+                          autoCloseDuration: const Duration(seconds: 2),
+                        );
+                      }
 
-              if (state is BookingCancelledSuccess) {
-                showAppDialog(
-                  context: context,
-                  type: DialogType.warning,
-                  message: "Booking cancelled",
-                  autoCloseDuration: const Duration(seconds: 5),
-                );
-              }
+                      if (state is BookingCancelledSuccess) {
+                        showAppDialog(
+                          context: context,
+                          type: DialogType.warning,
+                          message: "Booking cancelled",
+                          autoCloseDuration: const Duration(seconds: 5),
+                        );
+                      }
 
-              if (state is BookingError) {
-                showAppDialog(
-                  context: context,
-                  type: DialogType.error,
-                  message: state.message,
-                );
-              }
+                      if (state is BookingError) {
+                        showAppDialog(
+                          context: context,
+                          type: DialogType.error,
+                          message: state.message,
+                        );
+                      }
 
-              if (state is BookingLoaded) {
-                selectedDate =
-                    DateFormat('yyyy-MM-dd').format(state.booking.date!);
+                      if (state is BookingLoaded) {
+                        selectedDate = DateFormat('yyyy-MM-dd')
+                            .format(state.booking.date!);
 
-                startTime = DateTime(
-                  state.booking.date!.year,
-                  state.booking.date!.month,
-                  state.booking.date!.day,
-                  int.parse(state.booking.time.split(":")[0]),
-                  int.parse(state.booking.time.split(":")[1]),
-                );
+                        startTime = DateTime(
+                          state.booking.date!.year,
+                          state.booking.date!.month,
+                          state.booking.date!.day,
+                          int.parse(state.booking.time.split(":")[0]),
+                          int.parse(state.booking.time.split(":")[1]),
+                        );
 
-                selectedDuration = state.booking.duration_mins.toString();
-              }
+                        selectedDuration =
+                            state.booking.duration_mins.toString();
+                      }
 
-              setState(() {});
-            },
-            builder: (context, state) {
-              final isLoading = state is BookingLoading;
-              final booking = state is BookingLoaded ? state.booking : null;
+                      setState(() {});
+                    },
+                    builder: (context, state) {
+                      final isLoading = state is BookingLoading;
+                      final booking =
+                          state is BookingLoaded ? state.booking : null;
 
-              return SizedBox(
-                width: 400,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).cardColor,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("select_date".tr),
-                      Wrap(
-                        spacing: 8,
-                        children: widget.availableDates.map((day) {
-                          final isSelected = selectedDate == day.date;
-                          final isDisabled = isDayFullyBooked(day);
-
-                          return ChoiceChip(
-                            label: Text(formatDay(day.date)),
-                            selected: isSelected,
-                            onSelected: isDisabled
-                                ? null
-                                : (_) {
-                                    setState(() {
-                                      selectedDate = day.date;
-                                      startTime = null;
-                                    });
-                                  },
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 20),
-                      Text("select_duration".tr),
-                      Row(
-                        children: durations.map((d) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: ChoiceChip(
-                              label: Text("$d min"),
-                              selected: selectedDuration == d,
-                              onSelected: (_) {
-                                setState(() {
-                                  selectedDuration = d;
-                                  startTime = null;
-                                });
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 20),
-                      Text("select_time".tr),
-                      SizedBox(
-                        height: 60,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: slots.map((slot) {
-                            final disabled = !canSelectSlot(slot);
-                            final inRange = isInSelectedRange(slot);
-
-                            return GestureDetector(
-                              onTap: disabled
-                                  ? null
-                                  : () => setState(() => startTime = slot),
-                              child: Container(
-                                width: 80,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: disabled
-                                      ? Colors.grey
-                                      : inRange
-                                          ? AppPalette.primary
-                                          : Colors.black26,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(formatTime(slot)),
+                      return SizedBox(
+                        width: 400,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          color: Theme.of(context).cardColor,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("select_date".tr,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
+                              const SizedBox(
+                                height: 8,
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const Spacer(),
-                      if (isLoading)
-                        const Center(child: CircularProgressIndicator())
-                      else if (booking != null && booking.status != "accepted")
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  context
-                                      .read<ActiveBookingBloc>()
-                                      .add(CancelBooking(booking.id));
-                                },
-                                child: const Text("Cancel"),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  final request = UpdateBookingRequest(
-                                    date: selectedDate!,
-                                    time: to24Hour(startTime!),
-                                    duration_mins: durationMinutes,
-                                    price: booking.price ?? widget.price,
+                              Wrap(
+                                spacing: 8,
+                                children: widget.availableDates.map((day) {
+                                  final isSelected = selectedDate == day.date;
+                                  final isDisabled = isDayFullyBooked(day);
+
+                                  return ChoiceChip(
+                                    label: Text(formatDay(day.date)),
+                                    selected: isSelected,
+                                    selectedColor: AppPalette.primary,
+                                    onSelected: isDisabled
+                                        ? null
+                                        : (_) {
+                                            setState(() {
+                                              selectedDate = day.date;
+                                              startTime = null;
+                                            });
+                                          },
                                   );
-
-                                  context.read<ActiveBookingBloc>().add(
-                                      UpdateBooking(
-                                          booking.id.toString(), request));
-                                },
-                                child: const Text("Update"),
+                                }).toList(),
                               ),
-                            ),
-                          ],
-                        )
-                      else
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: startTime == null || selectedDate == null
-                                ? null
-                                : () {
-                                    final request = BookingRequest(
-                                      date: selectedDate!,
-                                      time: to24Hour(startTime!),
-                                      duration_mins: durationMinutes,
-                                      instructorId: widget.userId,
-                                      price: widget.price,
-                                    );
+                              const SizedBox(height: 16),
+                              Text("select_duration".tr,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                height: 50,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: durations.length,
+                                  itemBuilder: (_, index) {
+                                    final d = durations[index];
+                                    final selected = selectedDuration == d;
 
-                                    context
-                                        .read<ActiveBookingBloc>()
-                                        .add(CreateBooking(request));
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: ChoiceChip(
+                                        label: Text("$d min"),
+                                        selected: selected,
+                                        selectedColor: AppPalette.primary,
+                                        onSelected: (_) {
+                                          setState(() {
+                                            selectedDuration = d;
+                                            startTime = null;
+                                          });
+                                        },
+                                      ),
+                                    );
                                   },
-                            child: const Text("Confirm Booking"),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text("select_time".tr,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                              const SizedBox(height: 8),
+                              if (selectedDate == null)
+                                const Text("Select a day first")
+                              else
+                                SizedBox(
+                                  height: 50,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: slots.length,
+                                    itemBuilder: (_, index) {
+                                      final slot = slots[index];
+
+                                      final disabled = !canSelectSlot(slot);
+                                      final inRange = isInSelectedRange(slot);
+
+                                      return GestureDetector(
+                                        onTap: disabled
+                                            ? null
+                                            : () {
+                                                setState(() {
+                                                  startTime = slot;
+                                                });
+                                              },
+                                        child: Container(
+                                          width: 75,
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          decoration: BoxDecoration(
+                                            color: disabled
+                                                ? Colors.grey.shade800
+                                                : inRange
+                                                    ? AppPalette.primary
+                                                    : Colors.grey.shade900,
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            formatTime(slot),
+                                            style: TextStyle(
+                                              color: disabled
+                                                  ? Colors.grey
+                                                  : Colors.white,
+                                              fontWeight: inRange
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              const SizedBox(height: 16),
+                              if (widget.role == "Mentor") ...[
+                                Text(
+                                  "Session type",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                RadioListTile(
+                                  value: "barter",
+                                  groupValue: paymentMethod,
+                                  onChanged: (v) =>
+                                      setState(() => paymentMethod = v!),
+                                  title: const Text("Exchange hours"),
+                                ),
+                                RadioListTile(
+                                  value: "pay",
+                                  groupValue: paymentMethod,
+                                  onChanged: (v) =>
+                                      setState(() => paymentMethod = v!),
+                                  title: const Text("Pay by price"),
+                                ),
+                              ],
+                              const Spacer(),
+                              if (isLoading)
+                                const Center(child: CircularProgressIndicator())
+                              else if (booking != null &&
+                                  booking.status != "accepted")
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          context
+                                              .read<ActiveBookingBloc>()
+                                              .add(CancelBooking(booking.id));
+                                        },
+                                        child: const Text("Cancel"),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          final request = UpdateBookingRequest(
+                                            date: selectedDate!,
+                                            time: to24Hour(startTime!),
+                                            duration_mins: durationMinutes,
+                                            price: paymentMethod == "pay"
+                                                ? widget.price
+                                                : 0,
+                                          );
+
+                                          context.read<ActiveBookingBloc>().add(
+                                              UpdateBooking(
+                                                  booking.id.toString(),
+                                                  request));
+                                        },
+                                        child: const Text("Update"),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              else
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: startTime == null ||
+                                            selectedDate == null
+                                        ? null
+                                        : () {
+                                            final request = BookingRequest(
+                                              date: selectedDate!,
+                                              time: to24Hour(startTime!),
+                                              duration_mins: durationMinutes,
+                                              instructorId: widget.userId,
+                                              price: widget.price,
+                                            );
+
+                                            context
+                                                .read<ActiveBookingBloc>()
+                                                .add(CreateBooking(request));
+                                          },
+                                    child: const Text("Confirm Booking"),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        }
+                      );
+                    },
+                  );
+                }
 
-        return const SizedBox();
-      },
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

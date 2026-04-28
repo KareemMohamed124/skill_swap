@@ -83,6 +83,7 @@ class SessionDetailsPage extends StatelessWidget {
                               peopleHelped: 0,
                               hourlyRate: 0,
                               reviews: [],
+                              role: '',
                             ));
                           },
                           icon: const Icon(Icons.person_outline),

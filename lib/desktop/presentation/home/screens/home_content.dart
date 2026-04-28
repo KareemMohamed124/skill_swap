@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/desktop/presentation/home/pages/next_session_view_all.dart';
-
 import 'package:skill_swap/desktop/presentation/home/pages/recommended_view_all.dart';
 import 'package:skill_swap/desktop/presentation/home/pages/top_users_view_all.dart';
 import 'package:skill_swap/main.dart';
 
 import '../../../../desktop/presentation/game_part/game_section.dart';
-
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
-
-import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/home_controller.dart';
-
-import '../widgets/section_header.dart';
-import '../widgets/top_users_section.dart';
 import '../widgets/next_session_section.dart';
 import '../widgets/recommended_section.dart';
+import '../widgets/section_header.dart';
+import '../widgets/top_users_section.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -100,128 +94,115 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Obx(
-              () => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// HEADER
-                  BlocBuilder<MyProfileCubit, MyProfileState>(
-                    builder: (context, state) {
-                      String name = "User";
-                      String avatarPath = '';
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 1200,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Obx(
+                () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// HEADER
+                    BlocBuilder<MyProfileCubit, MyProfileState>(
+                      builder: (context, state) {
+                        String name = "User";
+                        String avatarPath = '';
 
-                      if (state is MyProfileLoaded) {
-                        name = state.profile.name ?? name;
-                        avatarPath = state.profile.userImage?.secureUrl ?? '';
-                      }
+                        if (state is MyProfileLoaded) {
+                          name = state.profile.name ?? name;
+                          avatarPath = state.profile.userImage?.secureUrl ?? '';
+                        }
 
-                      return Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 24),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                                color: Colors.grey.shade800, width: 1),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Colors.white24,
-                              child: ClipOval(
-                                child: _buildAvatar(avatarPath),
-                              ),
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                  color: Colors.grey.shade800, width: 1),
                             ),
-                            const SizedBox(width: 16),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Hi, $name',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Colors.white24,
+                                child: ClipOval(
+                                  child: _buildAvatar(avatarPath),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'keep_learning'.tr,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                        color: Colors.white70,
-                                      ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                              ),
+                              const SizedBox(width: 16),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Hi, $name',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text('keep_learning'.tr,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    ),
 
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                  /// GAME
-                  if (controller.showGameFirst.value) ...[
-                    GameSection(),
+                    /// GAME
+                    if (controller.showGameFirst.value) ...[
+                      GameSection(),
+                      const SizedBox(height: 40),
+                    ],
+
+                    /// TOP USERS
+                    SectionHeader(
+                      sectionTitle: 'top_users'.tr,
+                      onTop: () => desktopKey.currentState?.openSidePage(
+                        body: const TopUsersViewAll(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TopUsersSectionDesktop(),
+
                     const SizedBox(height: 40),
-                  ],
 
-                  /// TOP USERS
-                  SectionHeader(
-                    sectionTitle: 'top_users'.tr,
-                    onTop: () => desktopKey.currentState?.openSidePage(
-                      body: const TopUsersViewAll(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TopUsersSectionDesktop(controller: _topUsersScrollController),
+                    const NextSessionSectionDesktop(),
 
-                  const SizedBox(height: 40),
-
-                  /// NEXT SESSIONS
-                  SectionHeader(
-                    sectionTitle: 'your_next_session'.tr,
-                    onTop: () => desktopKey.currentState?.openSidePage(
-                      body: const NextSessionViewAll(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const NextSessionSectionDesktop(),
-
-                  const SizedBox(height: 40),
-
-                  /// RECOMMENDED
-                  SectionHeader(
-                    sectionTitle: 'recommended_for_you'.tr,
-                    onTop: () => desktopKey.currentState?.openSidePage(
-                      body: const RecommendedViewAll(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  RecommendedSectionDesktop(
-                    controller: _recommendedScrollController,
-                  ),
-
-                  /// GAME
-                  if (!controller.showGameFirst.value) ...[
                     const SizedBox(height: 40),
-                    GameSection(),
+
+                    /// RECOMMENDED
+                    SectionHeader(
+                      sectionTitle: 'recommended_for_you'.tr,
+                      onTop: () => desktopKey.currentState?.openSidePage(
+                        body: const RecommendedViewAll(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    RecommendedSectionDesktop(
+                      controller: _recommendedScrollController,
+                    ),
+
+                    /// GAME
+                    if (!controller.showGameFirst.value) ...[
+                      const SizedBox(height: 40),
+                      GameSection(),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

@@ -84,6 +84,7 @@ class SessionDetailsPage extends StatelessWidget {
                                 track: session.mentorTrack,
                                 rate: session.rating,
                                 bio: '',
+                                role: '',
                                 hoursAvailable: 0,
                                 peopleHelped: 0,
                                 hourlyRate: 0,
@@ -94,6 +95,7 @@ class SessionDetailsPage extends StatelessWidget {
                                 userId: session.mentorId,
                                 userName: session.mentorName,
                                 price: 0,
+                                role: '',
                                 availableDates: [],
                               ));
                         },
@@ -285,6 +287,7 @@ class SessionDetailsPage extends StatelessWidget {
                 track: session.mentorTrack,
                 rate: session.rating,
                 bio: '',
+                role: '',
                 hoursAvailable: 0,
                 peopleHelped: 0,
                 hourlyRate: 0,
@@ -294,6 +297,7 @@ class SessionDetailsPage extends StatelessWidget {
               rightPanel: BookSessionDesktop(
                 userId: session.mentorId,
                 userName: session.mentorName,
+                role: '',
                 price: 0,
                 availableDates: [],
               ));

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/desktop/presentation/sign/screens/sign_in_screen.dart';
 
 import '../../../../desktop/presentation/sign/widgets/custom_text_field.dart';
 import '../../../../shared/bloc/change_password_bloc/change_password_bloc.dart';
@@ -9,6 +8,7 @@ import '../../../../shared/common_ui/base_screen.dart';
 import '../../../../shared/data/models/change_password/change_password_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
+import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -79,7 +79,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               formKey.currentState?.validate();
             } else if (state is ChangePasswordSuccessState) {
               Get.snackbar('Success', state.success.message);
-              Get.to(SignInDesktop());
+              Get.to(SignInScreen());
             }
           },
           builder: (context, state) {

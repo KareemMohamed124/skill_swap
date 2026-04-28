@@ -7,8 +7,10 @@ import 'quiz_screen.dart';
 
 class QuizDetailsScreen extends StatelessWidget {
   final String skillName;
+  final bool fromAddSkill;
 
-  QuizDetailsScreen({super.key, required this.skillName});
+  QuizDetailsScreen(
+      {super.key, required this.skillName, this.fromAddSkill = false});
 
   final QuizController controller = Get.put(QuizController(), permanent: true);
 
@@ -206,10 +208,12 @@ class QuizDetailsScreen extends StatelessWidget {
                       ? null
                       : () async {
                           controller.loading.value = true;
-                          await controller.generateQuiz(skillName);
+                          await controller.generateQuiz(skillName,
+                              isAddSkill: fromAddSkill);
                           controller.loading.value = false;
                           if (controller.questions.isNotEmpty) {
-                            Get.to(() => QuizScreen());
+                            Get.to(
+                                () => QuizScreen(fromAddSkill: fromAddSkill));
                           } else {
                             Get.snackbar(
                               'Error',

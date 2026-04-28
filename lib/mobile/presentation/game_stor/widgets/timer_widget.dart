@@ -10,13 +10,15 @@ class TimerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocBuilder<StoreCubit, StoreState>(
       builder: (_, state) {
         final d = state.remaining;
 
         final totalWeek = 7 * 24 * 60 * 60 * 1000;
         final progress =
-        (state.remaining.inMilliseconds / totalWeek).clamp(0.0, 1.0);
+            (state.remaining.inMilliseconds / totalWeek).clamp(0.0, 1.0);
         return Container(
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(16),
@@ -24,12 +26,8 @@ class TimerWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
               colors: [
-                Theme
-                    .of(context)
-                    .cardColor,
-                Theme
-                    .of(context)
-                    .scaffoldBackgroundColor,
+                Theme.of(context).cardColor,
+                Theme.of(context).scaffoldBackgroundColor,
               ],
             ),
             border: Border.all(
@@ -50,14 +48,11 @@ class TimerWidget extends StatelessWidget {
               Row(
                 children: [
                   Icon(Icons.hourglass_bottom,
-                      color: Theme
-                          .of(context)
-                          .primaryColor),
+                      color: isDark ? Colors.white : AppPalette.primary),
                   const SizedBox(width: 8),
                   Text("Store Return",
-                      style: TextStyle(color: Theme
-                          .of(context)
-                          .primaryColor)),
+                      style: TextStyle(
+                          color: isDark ? Colors.white : AppPalette.primary)),
                 ],
               ),
 
@@ -68,18 +63,13 @@ class TimerWidget extends StatelessWidget {
                 value: progress,
                 minHeight: 10,
                 backgroundColor: Colors.black12,
-                valueColor: AlwaysStoppedAnimation(
-                  Theme
-                      .of(context)
-                      .primaryColor,
-                ),
+                valueColor: AlwaysStoppedAnimation(AppPalette.primary),
               ),
 
               const SizedBox(height: 10),
 
               Text(
-                "${d.inDays}d ${d.inHours % 24}h ${d.inMinutes % 60}m ${d
-                    .inSeconds % 60}s",
+                "${d.inDays}d ${d.inHours % 24}h ${d.inMinutes % 60}m ${d.inSeconds % 60}s",
               ),
             ],
           ),

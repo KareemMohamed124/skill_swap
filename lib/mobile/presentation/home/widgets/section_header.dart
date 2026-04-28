@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 class SectionHeader extends StatelessWidget {
   final String sectionTitle;
   final VoidCallback? onTop;
+
   const SectionHeader({
     super.key,
     required this.sectionTitle,
@@ -22,7 +23,7 @@ class SectionHeader extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             sectionTitle,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
         GestureDetector(
@@ -33,14 +34,14 @@ class SectionHeader extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   "view_all".tr,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
               SizedBox(width: screenWidth * 0.02), // بدل 8
               Icon(
                 Icons.arrow_forward_ios,
                 size: screenWidth * 0.04, // بدل 16
-                color: Theme.of(context).textTheme.titleMedium!.color,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ],
           ),

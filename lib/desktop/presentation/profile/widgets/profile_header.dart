@@ -21,6 +21,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       String imagePath = '';
       int freeHours = 0;
       int helpHours = 0;
+
       if (state is MyProfileLoaded) {
         final profile = state.profile;
 
@@ -60,15 +61,18 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 Row(
                   children: [
                     Text(name,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         )),
                     const SizedBox(width: 6),
                     const Icon(Icons.star, color: Colors.yellow, size: 18),
                     const SizedBox(width: 4),
-                    const Text('4.9', style: TextStyle(color: Colors.white)),
+                    Text('4.9',
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        )),
                   ],
                 ),
               ],

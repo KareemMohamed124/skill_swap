@@ -120,10 +120,10 @@ class RecommendedCard extends StatelessWidget {
 
 Widget _buildPlaceholder(double cardWidth) {
   return Container(
-    width: cardWidth * 0.25,
-    height: cardWidth * 0.25,
+    width: double.infinity,
+    height: cardWidth,
     decoration: const BoxDecoration(
-      shape: BoxShape.circle,
+
       color: Colors.grey,
     ),
     child: const Icon(

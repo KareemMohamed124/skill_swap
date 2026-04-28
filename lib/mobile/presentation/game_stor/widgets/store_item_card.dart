@@ -97,13 +97,11 @@ class _StoreItemCardState extends State<StoreItemCard>
   @override
   void dispose() {
     rotateController.dispose();
-    buyEffectController.dispose(); // ✅ fix
+    buyEffectController.dispose();
     floatingController.dispose();
     coinFlyController.dispose();
     super.dispose();
   }
-
-  // ================= BUY =================
 
   void onBuyPressed() async {
     if (widget.item.isPurchased) return;
@@ -111,7 +109,6 @@ class _StoreItemCardState extends State<StoreItemCard>
     await buyEffectController.forward(from: 0);
     coinFlyController.forward(from: 0);
 
-    /// 🔥 call API مباشرة
     context.read<StoreCubit>().buyItem(widget.item.id);
 
     buyEffectController.reverse();
@@ -121,7 +118,7 @@ class _StoreItemCardState extends State<StoreItemCard>
   Widget build(BuildContext context) {
     final item = widget.item;
     final color = getRarityColor();
-
+    final isDisabled = item.isLocked || item.isPurchased;
     return AnimatedBuilder(
       animation: Listenable.merge(
           [buyEffectController, floatingController, coinFlyController]),
@@ -251,23 +248,25 @@ class _StoreItemCardState extends State<StoreItemCard>
 
                     /// 💸 BUY BUTTON
                     GestureDetector(
-                      onTap: onBuyPressed,
+                      onTap: isDisabled ? null : onBuyPressed,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
-                          gradient: LinearGradient(
-                            colors: item.isPurchased
-                                ? [Colors.grey, Colors.black]
-                                : [
+                          gradient: isDisabled
+                              ? const LinearGradient(
+                                  colors: [Colors.grey, Colors.black],
+                                )
+                              : LinearGradient(
+                                  colors: [
                                     getRarityColor(),
-                                    getRarityColor().withOpacity(0.7)
+                                    getRarityColor().withOpacity(0.7),
                                   ],
-                          ),
+                                ),
                         ),
-                        child: item.isPurchased
+                        child: isDisabled
                             ? const Text(
                                 "Purchased",
                                 style: TextStyle(
@@ -293,7 +292,7 @@ class _StoreItemCardState extends State<StoreItemCard>
                                 ],
                               ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ],

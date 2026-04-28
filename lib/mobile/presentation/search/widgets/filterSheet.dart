@@ -196,7 +196,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                           style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -209,7 +209,14 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                                 track: selectedTrack,
                               ),
                             );
-                        Navigator.pop(context, activeFiltersCount);
+
+                        int newCount = 0;
+                        if (startPrice != 20 || endPrice != 60) newCount++;
+                        if (selectedRate != null) newCount++;
+                        if (selectedRole != null) newCount++;
+                        if (selectedTrack != null) newCount++;
+
+                        Navigator.pop(context, newCount);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.primary,

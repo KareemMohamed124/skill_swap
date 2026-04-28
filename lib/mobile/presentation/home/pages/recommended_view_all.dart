@@ -115,6 +115,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                         peopleHelped: u.helpTotalHours,
                         hourlyRate: 0,
                         reviews: u.reviews,
+                        role: u.role,
                       ),
                     );
                   },

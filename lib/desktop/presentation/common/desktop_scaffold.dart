@@ -15,25 +15,33 @@ class DesktopScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: colors.background, // 👈 الخلفية العامة
       body: Row(
         children: [
+          /// Sidebar
           if (sidebar != null)
-            SizedBox(
+            Container(
               width: 250,
+              color: colors.surfaceVariant, // 👈 لون ثابت للسايدبار
               child: sidebar!,
             ),
 
           /// Main Content
           Expanded(
-            child: body,
+            child: Container(
+              color: colors.surface, // 👈 لون النص (الميدل)
+              child: body,
+            ),
           ),
 
           /// Right Panel
           if (width >= 1200 && rightPanel != null)
-            SizedBox(
+            Container(
               width: 320,
+              color: colors.surfaceVariant, // 👈 نفس لون السايدبار
               child: rightPanel!,
             ),
         ],

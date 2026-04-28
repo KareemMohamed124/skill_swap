@@ -5,6 +5,7 @@ sealed class CancelBookEvent {}
 
 class CancelBookSession extends CancelBookEvent {
   final String id;
+  final String? recipientId;
 
-  CancelBookSession({required this.id});
+  CancelBookSession({required this.id, this.recipientId});
 }

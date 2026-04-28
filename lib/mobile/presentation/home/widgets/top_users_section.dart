@@ -94,6 +94,7 @@ class _TopUsersListState extends State<_TopUsersList> {
                         image: u.userImage.secureUrl,
                         bio: u.profile.bio,
                         skills: u.skills,
+                        role: u.role,
                         hoursAvailable: u.freeHours,
                         peopleHelped: u.helpTotalHours,
                         hourlyRate: 0,

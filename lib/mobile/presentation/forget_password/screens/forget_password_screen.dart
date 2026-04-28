@@ -35,7 +35,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       create: (context) => sl<SendCodeBloc>(),
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: BlocConsumer<SendCodeBloc, SendCodeState>(
           listener: (context, state) {
             if (state is SendCodeFailureState) {

@@ -31,15 +31,16 @@ class BookingBottomSheet extends StatefulWidget {
   final int price;
   final String? bookingId;
   final List<AvailableDates> availableDates;
+  final String role;
 
-  const BookingBottomSheet({
-    super.key,
-    required this.userId,
-    required this.userName,
-    required this.price,
-    this.bookingId,
-    required this.availableDates,
-  });
+  const BookingBottomSheet(
+      {super.key,
+      required this.userId,
+      required this.userName,
+      required this.price,
+      this.bookingId,
+      required this.availableDates,
+      required this.role});
 
   @override
   State<BookingBottomSheet> createState() => _BookingBottomSheetState();
@@ -51,6 +52,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
   String? selectedDate;
   DateTime? startTime;
+  String paymentMethod = "pay";
 
   List<Booking> apiBookings = [];
 
@@ -83,7 +85,25 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
   Future<void> _init() async {
     myId = widget.userId;
-    acceptedCubit.getAcceptedBookings();
+
+    await acceptedCubit.getAcceptedBookings();
+
+    final firstAvailableDay = widget.availableDates.firstWhere(
+      (day) => !isDayFullyBooked(day),
+      orElse: () => widget.availableDates.first,
+    );
+
+    selectedDate = firstAvailableDay.date;
+
+    final slots = generateSlots();
+    for (final slot in slots) {
+      if (canSelectSlot(slot)) {
+        startTime = slot;
+        break;
+      }
+    }
+
+    setState(() {});
   }
 
   int get durationMinutes => int.parse(selectedDuration);
@@ -137,9 +157,14 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
       final bookingStart = booking.start;
       final bookingEnd = booking.end;
-      final overlaps =
-          slotStart.isBefore(bookingEnd) && slotEnd.isAfter(bookingStart);
+      final sameDay = booking.start.year == slotStart.year &&
+          booking.start.month == slotStart.month &&
+          booking.start.day == slotStart.day;
 
+      if (!sameDay) return false;
+
+      final overlaps =
+          slotStart.isBefore(booking.end) && slotEnd.isAfter(booking.start);
       return overlaps;
     });
   }
@@ -314,7 +339,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               final booking = state is BookingLoaded ? state.booking : null;
 
               return Container(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.7,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
@@ -337,7 +362,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                     const SizedBox(height: 16),
                     Text("select_date".tr,
                         style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       children: widget.availableDates.map((day) {
@@ -359,10 +384,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     Text("select_duration".tr,
                         style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     SizedBox(
                       height: 50,
                       child: ListView.builder(
@@ -389,10 +414,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     Text("select_time".tr,
                         style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     if (selectedDate == null)
                       const Text("Select a day first")
                     else
@@ -443,6 +468,27 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                           },
                         ),
                       ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    if (widget.role == "Mentor") ...[
+                      Text(
+                        "Session type",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      RadioListTile(
+                        value: "barter",
+                        groupValue: paymentMethod,
+                        onChanged: (v) => setState(() => paymentMethod = v!),
+                        title: const Text("Exchange hours"),
+                      ),
+                      RadioListTile(
+                        value: "pay",
+                        groupValue: paymentMethod,
+                        onChanged: (v) => setState(() => paymentMethod = v!),
+                        title: const Text("Pay by price"),
+                      ),
+                    ],
                     const Spacer(),
                     if (isLoading)
                       const Center(child: CircularProgressIndicator())
@@ -467,7 +513,8 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                                   date: selectedDate!,
                                   time: to24Hour(startTime!),
                                   duration_mins: durationMinutes,
-                                  price: booking.price ?? widget.price,
+                                  price:
+                                      paymentMethod == "pay" ? widget.price : 0,
                                 );
 
                                 context.read<ActiveBookingBloc>().add(
@@ -491,7 +538,9 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                                     time: to24Hour(startTime!),
                                     duration_mins: durationMinutes,
                                     instructorId: widget.userId,
-                                    price: widget.price,
+                                    price: paymentMethod == "pay"
+                                        ? widget.price
+                                        : 0,
                                   );
 
                                   context

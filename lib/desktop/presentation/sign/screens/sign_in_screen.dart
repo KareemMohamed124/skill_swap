@@ -99,6 +99,8 @@ class _SignInDesktopState extends State<SignInDesktop> {
                   color: Theme.of(context)
                       .scaffoldBackgroundColor
                       .withValues(alpha: 0.5),
+                  border: Border.all(
+                      color: Theme.of(context).dividerColor, width: 2),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(

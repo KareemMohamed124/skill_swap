@@ -7,7 +7,9 @@ import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  final bool fromAddSkill;
+
+  const QuizScreen({super.key, this.fromAddSkill = false});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();

@@ -79,7 +79,7 @@ class _ReviewCardState extends State<ReviewCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${widget.name} (${widget.role})",
+                      "${widget.name ?? "user"} (${widget.role ?? "Normal"})",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Row(

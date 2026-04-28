@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/desktop/presentation/chat_channel/pages/chat_list.dart';
+import 'package:skill_swap/desktop/presentation/chat_channel/pages/chat_screen.dart';
 import 'package:skill_swap/desktop/presentation/game_store/screens/store_screen.dart';
 import 'package:skill_swap/desktop/presentation/home/screens/notification_desktop_panel.dart';
 import 'package:skill_swap/desktop/presentation/profile/screens/profile_screen.dart';
 import 'package:skill_swap/desktop/presentation/search/screens/search_screen.dart';
-import 'package:skill_swap/desktop/presentation/search/widgets/filterSheet.dart';
 import 'package:skill_swap/desktop/presentation/sessions/screens/sessions_screen.dart';
 import 'package:skill_swap/desktop/presentation/setting/screens/setting.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
 
-import '../../../mobile/presentation/chat_channel/chat_screen.dart';
 import '../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../shared/bloc/get_users_cubit/users_cubit.dart';
-import '../../../shared/bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../../../shared/bloc/public_chat/public_chat_bloc.dart';
 import '../../../shared/bloc/public_chat/public_chat_event.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
+import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_bloc.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_event.dart';
 import '../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
@@ -48,11 +47,19 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   Widget? currentRightPanel;
 
   final List<_PageState> _history = [];
+  late final PublicChatMessagesCubit _chatMessagesCubit =
+      sl<PublicChatMessagesCubit>();
 
   @override
   void initState() {
     super.initState();
     openPage(index: 0);
+  }
+
+  @override
+  void dispose() {
+    _chatMessagesCubit.close();
+    super.dispose();
   }
 
   Widget getBody(int index) {
@@ -72,17 +79,11 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
           child: ChatListScreen(
             onChannelSelected: (chatId, channelName) {
               openSidePage(
-                body: getBody(1),
-                rightPanel: MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (_) =>
-                            sl<PublicChatMessagesCubit>()..init(chatId)),
-                  ],
-                  child: ChatScreen(
-                    chatId: chatId,
-                    channelName: channelName,
-                  ),
+                body: currentBody ?? getBody(currentIndex),
+                rightPanel: BlocProvider.value(
+                  // ← value مش create
+                  value: _chatMessagesCubit,
+                  child: ChatScreen(chatId: chatId, channelName: channelName),
                 ),
               );
             },
@@ -102,6 +103,9 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
           // ),
           BlocProvider(create: (_) => sl<GetBookingsCubit>()),
           BlocProvider(create: (_) => sl<StatusBookBloc>()),
+          BlocProvider(
+            create: (_) => sl<PurchaseCubit>(),
+          )
           //BlocProvider(create: (_) => sl<SubmitReviewBloc>()),
         ], child: SessionsScreen());
 
@@ -122,10 +126,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   final List<Widget?> rightPanels = [
     NotificationDesktopPanel(),
     null,
-    BlocProvider(
-      create: (_) => sl<MentorFilterBloc>(),
-      child: MentorFilterSheet(),
-    ),
+    null,
     null,
     null,
     null,
@@ -141,7 +142,10 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     });
   }
 
-  void openSidePage({required Widget body, Widget? rightPanel}) {
+  openSidePage({
+    required Widget body,
+    Widget? rightPanel,
+  }) {
     _history.add(_PageState(
       body: currentBody!,
       rightPanel: currentRightPanel,

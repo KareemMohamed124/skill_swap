@@ -21,7 +21,6 @@ class DeleteAccountBloc extends Bloc<DeleteAccountEvent, DeleteAccountState> {
         case DeleteAccountSuccess():
           await LocalStorage.clearAllTokens();
           await LocalStorage.clearUserId();
-          await LocalStorage.clearUser();
           sl<MyProfileCubit>().clearProfile();
           emit(DeleteAccountSuccessState());
           break;

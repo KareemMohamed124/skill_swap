@@ -96,34 +96,41 @@ class SkillCard extends StatelessWidget {
         children: [
           /// ───── Title + Status ─────
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-
-                  /// ✅ Verified Icon
-                  if (verified)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 6),
-                      child: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 18,
+              /// 🔥 skill name ياخد المساحة المتاحة
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
                       ),
                     ),
-                ],
+
+                    /// ✅ Verified Icon
+                    if (verified)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 6),
+                        child: Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 18,
+                        ),
+                      ),
+                  ],
+                ),
               ),
 
-              /// Badge
+              const SizedBox(width: 10),
+
+              /// 🔥 Badge ثابت
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

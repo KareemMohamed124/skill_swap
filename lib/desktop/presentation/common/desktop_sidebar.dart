@@ -25,7 +25,7 @@ class DesktopSidebar extends StatelessWidget {
 
     return Container(
       width: 220,
-      color: isDark ? AppPalette.darkSurface : AppPalette.lightSurface,
+      color: isDark ? AppPalette.darkElevated : AppPalette.lightElevated,
       child: Column(
         children: [
           const SizedBox(height: 16),
@@ -88,7 +88,7 @@ class DesktopSidebar extends StatelessWidget {
                     icon: Icons.logout,
                     title: "sign_out".tr,
                     index: 7,
-                    isAction: true,
+                    //isAction: true,
                     onAction: () {
                       context.read<LogoutBloc>().add(
                             LogoutRequested(),

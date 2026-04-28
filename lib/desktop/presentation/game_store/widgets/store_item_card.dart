@@ -97,7 +97,7 @@ class _StoreItemCardState extends State<StoreItemCard>
   @override
   void dispose() {
     rotateController.dispose();
-    buyEffectController.dispose(); // ✅ fix
+    buyEffectController.dispose();
     floatingController.dispose();
     coinFlyController.dispose();
     super.dispose();
@@ -111,7 +111,6 @@ class _StoreItemCardState extends State<StoreItemCard>
     await buyEffectController.forward(from: 0);
     coinFlyController.forward(from: 0);
 
-    /// 🔥 call API مباشرة
     context.read<StoreCubit>().buyItem(widget.item.id);
 
     buyEffectController.reverse();
@@ -133,8 +132,8 @@ class _StoreItemCardState extends State<StoreItemCard>
           scale: scale,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(

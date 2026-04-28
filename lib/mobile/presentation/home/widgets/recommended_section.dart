@@ -18,12 +18,10 @@ class RecommendedSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MyProfileCubit, MyProfileState>(
       builder: (context, profileState) {
-        // لو لسه البيانات بتتحمل
         if (profileState is! MyProfileLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // جلب التراك الحالي للمستخدم
         final currentTrack = profileState.profile.track.name ?? '';
 
         return BlocProvider(
@@ -121,6 +119,7 @@ class _RecommendedListState extends State<_RecommendedList> {
                         rate: u.rate,
                         image: u.userImage.secureUrl,
                         bio: u.profile.bio,
+                        role: u.role,
                         skills: u.skills,
                         hoursAvailable: u.freeHours,
                         peopleHelped: u.helpTotalHours,

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,8 +7,6 @@ import 'package:skill_swap/desktop/presentation/game_store/widgets/timer_widget.
 
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
-import '../../../../shared/data/repositories/store_repository_impl.dart';
-import '../../../../shared/data/web_services/store/store_api_service.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 
 class StoreScreen extends StatefulWidget {
@@ -77,9 +74,11 @@ class _StoreScreenState extends State<StoreScreen> {
                           padding: const EdgeInsets.all(12),
                           itemCount: state.items.length,
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.75,
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 300,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 0.8,
                           ),
                           itemBuilder: (_, i) {
                             final item = state.items[i];

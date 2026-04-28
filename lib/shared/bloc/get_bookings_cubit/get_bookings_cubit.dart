@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
+import '../../../mobile/presentation/history/models/history_model.dart';
 import '../../../mobile/presentation/home/models/next_session.dart';
 import '../../../mobile/presentation/notification/models/notification_model.dart';
 import '../../../mobile/presentation/sessions/models/session.dart';
@@ -65,6 +66,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             dateTime: dateTime,
             duration: booking.durationMins,
             price: booking.price,
+            paymentStatus: booking.paymentStatus,
             status: displayStatus,
             rawStatus: displayStatus,
             timeAgo: booking.createdAt,
@@ -75,6 +77,75 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
     } catch (e) {
       emit(GetBookingsError(message: e.toString()));
     }
+  }
+
+  Future<List<HistoryModel>> getCompletedHistory() async {
+    final response = await bookingRepository.getAllBookings("completed");
+    final currentUserId = await LocalStorage.getUserId();
+
+    return response.bookings.where((booking) {
+      return booking.status == "completed" &&
+          booking.studentId.id == currentUserId;
+    }).map((booking) {
+      final otherUser = booking.instructorId;
+
+      final dateTime = DateTime(
+        booking.date.year,
+        booking.date.month,
+        booking.date.day,
+        int.parse(booking.time.split(":")[0]),
+        int.parse(booking.time.split(":")[1]),
+      );
+
+      return HistoryModel(
+        id: booking.id,
+        name: otherUser.name,
+        role: otherUser.role,
+        imageUrl: otherUser.userImage.secureUrl,
+        date: "${dateTime.day}/${dateTime.month}/${dateTime.year}",
+        time: booking.time,
+        duration: "${booking.durationMins} min",
+        status: "Finished",
+        rating: booking.rate.toDouble(),
+        isReviewReceived: false,
+        reviewComment: booking.review,
+      );
+    }).toList();
+  }
+
+  Future<List<HistoryModel>> getReviewHistory() async {
+    final response = await bookingRepository.getAllBookings("completed");
+    final currentUserId = await LocalStorage.getUserId();
+
+    return response.bookings.where((booking) {
+      return booking.status == "completed" &&
+          booking.instructorId.id == currentUserId &&
+          booking.isRated == true;
+    }).map((booking) {
+      final otherUser = booking.studentId;
+
+      final dateTime = DateTime(
+        booking.date.year,
+        booking.date.month,
+        booking.date.day,
+        int.parse(booking.time.split(":")[0]),
+        int.parse(booking.time.split(":")[1]),
+      );
+
+      return HistoryModel(
+        id: booking.id,
+        name: otherUser.name,
+        role: otherUser.role,
+        imageUrl: otherUser.userImage.secureUrl,
+        date: "${dateTime.day}/${dateTime.month}/${dateTime.year}",
+        time: booking.time,
+        duration: "${booking.durationMins} min",
+        status: "Finished",
+        rating: booking.rate.toDouble(),
+        isReviewReceived: true,
+        reviewComment: booking.review,
+      );
+    }).toList();
   }
 
   Future<List<NotificationModel>> fetchNotifications() async {

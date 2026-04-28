@@ -55,16 +55,16 @@ class _NotificationDesktopPanelState extends State<NotificationDesktopPanel> {
 
     return Scaffold(
       backgroundColor:
-          isDark ? AppPalette.darkSurface : AppPalette.lightSurface,
+          isDark ? AppPalette.darkElevated : AppPalette.lightElevated,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(16),
             child: Text(
               "Notifications",
               style: TextStyle(
-                color: Color(0xFFD6D6D6),
+                color: Theme.of(context).textTheme.bodyLarge!.color,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),

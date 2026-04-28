@@ -3,12 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../shared/bloc/update_profile_bloc/update_profile_bloc.dart';
 import '../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../shared/core/theme/app_palette.dart';
+import '../../../shared/data/models/update_profile/update_profile_request.dart';
+import '../../../shared/data/models/update_profile/update_skill.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({super.key});
+  final bool fromAddSkill;
+  final String? skillName;
+
+  const ResultScreen({
+    super.key,
+    this.fromAddSkill = false,
+    this.skillName,
+  });
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();
@@ -19,6 +29,7 @@ class _ResultScreenState extends State<ResultScreen> {
   late final int total;
   late final String skillName;
   late final QuizController controller;
+  late MyProfileCubit profileCubit;
 
   @override
   void initState() {
@@ -26,9 +37,10 @@ class _ResultScreenState extends State<ResultScreen> {
 
     score = Get.arguments['score'];
     total = Get.arguments['total'];
-    skillName = Get.arguments['skill'] ?? '';
+    skillName = widget.skillName ?? Get.arguments['skill'] ?? '';
 
     controller = Get.find<QuizController>();
+    profileCubit = context.read<MyProfileCubit>();
 
     controller.isSkillVerified.value = false;
     controller.verifiedQuizScore.value = 0;
@@ -48,6 +60,15 @@ class _ResultScreenState extends State<ResultScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final int displayScore = controller.verifiedQuizScore.value;
+    final bool verified =
+        controller.isSkillVerified.value && displayScore >= 85;
+
+    final isMentor = profileCubit.state is MyProfileLoaded &&
+        (profileCubit.state as MyProfileLoaded).profile.role == "Mentor";
+
+    final canAdd = profileCubit.canAddSkill(skillName);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -73,10 +94,6 @@ class _ResultScreenState extends State<ResultScreen> {
                 ],
               );
             }
-
-            final int displayScore = controller.verifiedQuizScore.value;
-            final bool verified =
-                controller.isSkillVerified.value && displayScore >= 85;
 
             return SingleChildScrollView(
               child: Column(
@@ -108,9 +125,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     "You got $score out of $total questions correct",
                     style: TextStyle(
                       fontSize: screenWidth * 0.045,
-                      color: isDark
-                          ? AppPalette.darkTextPrimary
-                          : AppPalette.primary,
+                      color: isDark ? Colors.white70 : AppPalette.primary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -121,9 +136,8 @@ class _ResultScreenState extends State<ResultScreen> {
                       value: displayScore / 100,
                       minHeight: screenHeight * 0.015,
                       backgroundColor: const Color(0XFFF2F5F8),
-                      valueColor: const AlwaysStoppedAnimation(
-                        AppPalette.primary,
-                      ),
+                      valueColor:
+                          const AlwaysStoppedAnimation(AppPalette.primary),
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.02),
@@ -155,6 +169,19 @@ class _ResultScreenState extends State<ResultScreen> {
                       ],
                     ),
                   ),
+                  if (widget.fromAddSkill)
+                    Padding(
+                      padding: EdgeInsets.only(top: screenHeight * 0.015),
+                      child: Text(
+                        canAdd
+                            ? "You can add this skill!"
+                            : "You already have this skill or not allowed.",
+                        style: TextStyle(
+                          color: canAdd ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   if (!verified)
                     Padding(
                       padding: EdgeInsets.only(top: screenHeight * 0.01),
@@ -171,22 +198,33 @@ class _ResultScreenState extends State<ResultScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppPalette.primary,
                       minimumSize: Size(double.infinity, screenHeight * 0.07),
-                      padding: const EdgeInsets.all(14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: () {
-                      if (verified) {
-                        context.read<MyProfileCubit>().refreshProfile();
+                      if (verified &&
+                          widget.fromAddSkill &&
+                          isMentor &&
+                          canAdd) {
+                        final request = UpdateProfileRequest(
+                          skills: [
+                            UpdateSkill(skillName: skillName),
+                          ],
+                        );
+
+                        context
+                            .read<UpdateProfileBloc>()
+                            .add(SubmitUpdateProfile(request));
+
+                        profileCubit.refreshProfile();
                       }
 
-                      // حذف QuizController
                       if (Get.isRegistered<QuizController>()) {
                         Get.delete<QuizController>();
                       }
 
-                      Get.to(() => ScreenManager(
+                      Get.offAll(() => ScreenManager(
                             initialIndex: 4,
                             initialProfileTab: 1,
                           ));
@@ -194,10 +232,16 @@ class _ResultScreenState extends State<ResultScreen> {
                     child: const Text(
                       "Continue",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
                         color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.back(); // Retry
+                    },
+                    child: const Text("Retry Quiz"),
                   ),
                 ],
               ),

@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class StoreImage extends Equatable {
-  final String secureUrl;
+  final String? secureUrl;
   final String? publicId;
 
   const StoreImage({
-    required this.secureUrl,
+    this.secureUrl,
     this.publicId,
   });
 
@@ -15,10 +15,10 @@ class StoreImage extends Equatable {
         publicId,
       ];
 
-  factory StoreImage.fromJson(Map<String, dynamic>? json) {
+  factory StoreImage.fromJson(Map<String, dynamic> json) {
     return StoreImage(
-      secureUrl: json?['secure_url'] ?? '',
-      publicId: json?['public_id'],
+      secureUrl: json['secure_url'] ?? '',
+      publicId: json['public_id'] ?? '',
     );
   }
 

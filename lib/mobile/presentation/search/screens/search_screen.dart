@@ -29,6 +29,24 @@ class _SearchScreenState extends State<SearchScreen> {
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
 
+  int calculateHourlyRate(int hours, String role) {
+    if (role.toLowerCase() != 'mentor') {
+      return 0;
+    }
+
+    if (hours < 100) return 0;
+
+    if (hours < 120) return 30;
+
+    if (hours < 140) return 35;
+
+    if (hours < 160) return 40;
+
+    if (hours < 180) return 45;
+
+    return 50;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +89,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
@@ -174,7 +193,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   final activeFilters =
                                       await showModalSideSheet<int>(
                                     context: context,
-                                    withCloseControll: false,
+                                    withCloseControll: true,
                                     barrierColor: const Color(0xFFD6D6D6)
                                         .withOpacity(0.3),
                                     width: isDesktop ? 500 : screenWidth * 0.85,
@@ -219,7 +238,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 final activeFilters =
                                     await showModalSideSheet<int>(
                                   context: context,
-                                  withCloseControll: false,
+                                  withCloseControll: true,
                                   barrierColor:
                                       const Color(0xFFD6D6D6).withOpacity(0.3),
                                   width: isDesktop ? 500 : screenWidth * 0.85,
@@ -303,8 +322,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                         skills: user.skills,
                                         hoursAvailable: user.freeHours,
                                         peopleHelped: user.helpTotalHours,
-                                        hourlyRate: 0,
+                                        hourlyRate: calculateHourlyRate(
+                                            user.helpTotalHours, user.role),
                                         reviews: user.reviews,
+                                        role: user.role,
                                       ));
                                     },
                                     child: MentorCard(
@@ -312,8 +333,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                       name: user.name,
                                       role: user.role,
                                       rate: user.rate,
-                                      hours: 5,
-                                      price: 0,
+                                      hours: user.helpTotalHours,
+                                      price: calculateHourlyRate(
+                                          user.helpTotalHours, user.role),
                                       track: user.track.name,
                                       skills: user.skills,
                                       responseTime: "9",

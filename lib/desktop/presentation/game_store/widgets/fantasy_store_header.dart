@@ -5,7 +5,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/utils.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
-import '../../../../shared/bloc/store_cubit/store_cubit.dart';
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../screens/purchases_page.dart';
 import '../widgets/show_store_daiolg.dart';
 
@@ -15,8 +15,9 @@ class FantasyStoreHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final coins = context.select<StoreCubit, int>((cubit) => cubit.state.coins);
-
+    final coins = context.select<MyProfileCubit, int>(
+      (cubit) => cubit.coins,
+    );
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

@@ -28,6 +28,7 @@ class ProfileMentor extends StatefulWidget {
   final String image;
   final String name;
   final String track;
+  final String role;
   final double rate;
   final String bio;
   final int hoursAvailable;
@@ -43,6 +44,7 @@ class ProfileMentor extends StatefulWidget {
       required this.image,
       required this.name,
       required this.track,
+      required this.role,
       required this.rate,
       required this.bio,
       required this.hoursAvailable,
@@ -55,6 +57,24 @@ class ProfileMentor extends StatefulWidget {
 }
 
 class _ProfileMentorState extends State<ProfileMentor> {
+  int calculateHourlyRate(int hours, String role) {
+    if (role.toLowerCase() != 'mentor') {
+      return 0;
+    }
+
+    if (hours < 100) return 0;
+
+    if (hours < 120) return 30;
+
+    if (hours < 140) return 35;
+
+    if (hours < 160) return 40;
+
+    if (hours < 180) return 45;
+
+    return 50;
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -126,6 +146,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                             color: Theme.of(context).cardColor,
                             borderRadius:
                                 BorderRadius.circular(screenWidth * 0.08),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -140,7 +163,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                   info: "people_helped".tr),
                               mentorInfo(
                                   context: context,
-                                  rate: "${widget.hourlyRate}\$",
+                                  rate: widget.role == "Mentor"
+                                      ? "${calculateHourlyRate(widget.peopleHelped, widget.role)}\$"
+                                      : "Free",
                                   info: "hourly_rate".tr),
                             ],
                           ),
@@ -254,7 +279,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                     final chatId =
                         await chatRepo.createOrGetPrivateChat(widget.id);
                     Get.to(
-                      BlocProvider(
+                      () => BlocProvider(
                         create: (_) => sl<PublicChatMessagesCubit>()
                           ..init(chatId, partnerId: widget.id, isPrivate: true),
                         child: PrivateChatScreen(
@@ -322,8 +347,10 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                   child: BookingBottomSheet(
                                     userId: widget.id,
                                     userName: widget.name,
-                                    price: widget.hourlyRate,
+                                    price: calculateHourlyRate(
+                                        widget.peopleHelped, widget.role),
                                     availableDates: state.data.availableDates,
+                                    role: widget.role,
                                   ),
                                 ));
                       }

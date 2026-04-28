@@ -6,6 +6,7 @@ import '../../../shared/bloc/public_chat/public_chat_bloc.dart';
 import '../../../shared/bloc/public_chat/public_chat_event.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_state.dart';
+import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_bloc.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_event.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_state.dart';
@@ -27,6 +28,8 @@ class _ChatListScreenState extends State<ChatListScreen>
   final Map<String, String> joinedChats = {};
   final Set<String> _leavingTracks = {};
   final Set<String> _joiningTracks = {};
+  final Set<String> _shownJoinDialogForTrack = {};
+  bool _dialogLoaded = false;
 
   String? selectedChannel;
   String? selectedTrackId;
@@ -37,10 +40,24 @@ class _ChatListScreenState extends State<ChatListScreen>
   late AnimationController _shimmerController;
   late Animation<double> _shimmerAnim;
 
+  Future<void> _loadDialogFlags() async {
+    final list = await LocalStorage.getShownDialogs() ?? [];
+    _shownJoinDialogForTrack.addAll(list);
+    _dialogLoaded = true;
+    setState(() {});
+  }
+
+  Future<void> _saveDialogFlags() async {
+    await LocalStorage.saveShownDialogs(
+      _shownJoinDialogForTrack.toList(),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _loadDialogFlags();
 
     _shimmerController = AnimationController(
       vsync: this,
@@ -53,6 +70,7 @@ class _ChatListScreenState extends State<ChatListScreen>
 
     context.read<TracksBloc>().add(LoadTracksEvent());
     context.read<PublicChatBloc>().add(GetPublicChatsEvent());
+    context.read<PurchaseCubit>().getPurchases();
   }
 
   @override
@@ -188,16 +206,22 @@ class _ChatListScreenState extends State<ChatListScreen>
                   },
                   decoration: InputDecoration(
                     hintText: "Search".tr,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Theme.of(context).dividerColor),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     prefixIcon: Icon(
                       Icons.search,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                     filled: true,
                     fillColor: Theme.of(context).cardColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                      borderSide: BorderSide.none,
-                    ),
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.025),
@@ -259,21 +283,47 @@ class _ChatListScreenState extends State<ChatListScreen>
                             final isJoining = _joiningTracks.contains(track.id);
 
                             return InkWell(
-                              onTap: () {
-                                if (!isJoined) {
-                                  Get.snackbar(
-                                    "Oops",
-                                    "You need to join first",
-                                    snackPosition: SnackPosition.BOTTOM,
-                                  );
-                                  return;
-                                }
-                                if (chatId != null) {
-                                  selectedChannel = track.name;
-                                  selectedTrackId = track.id;
-                                  _openChat(chatId, track.name!);
-                                }
-                              },
+                              onTap: (!isJoined &&
+                                      _shownJoinDialogForTrack
+                                          .contains(track.id))
+                                  ? null
+                                  : () async {
+                                      if (!isJoined) {
+                                        final id = track.id!;
+
+                                        if (!_shownJoinDialogForTrack
+                                            .contains(id)) {
+                                          _shownJoinDialogForTrack.add(id);
+                                          await _saveDialogFlags();
+
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AlertDialog(
+                                              title:
+                                                  const Text("Join Required"),
+                                              content: Text(
+                                                "Join '${track.name}' to access this channel",
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text("OK"),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
+
+                                        return;
+                                      }
+
+                                      if (chatId != null) {
+                                        selectedChannel = track.name;
+                                        selectedTrackId = track.id;
+                                        _openChat(chatId, track.name!);
+                                      }
+                                    },
                               child: Container(
                                 margin: EdgeInsets.symmetric(
                                     vertical: screenHeight * 0.007),

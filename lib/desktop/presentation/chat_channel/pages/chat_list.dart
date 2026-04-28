@@ -25,12 +25,27 @@ class _ChatListScreenState extends State<ChatListScreen> {
   final Map<String, String> joinedChats = {};
   final Set<String> _leavingTracks = {};
   final Set<String> _joiningTracks = {};
+  final Set<String> _shownJoinDialogForTrack = {};
 
   String? selectedChannel;
   String? selectedTrackId;
   String searchQuery = "";
   String? currentUserId;
   bool _dataLoaded = false;
+  bool _dialogLoaded = false;
+
+  Future<void> _loadDialogFlags() async {
+    final list = await LocalStorage.getShownDialogs() ?? [];
+    _shownJoinDialogForTrack.addAll(list);
+    _dialogLoaded = true;
+    setState(() {});
+  }
+
+  Future<void> _saveDialogFlags() async {
+    await LocalStorage.saveShownDialogs(
+      _shownJoinDialogForTrack.toList(),
+    );
+  }
 
   @override
   void initState() {
@@ -154,13 +169,22 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       },
                       decoration: InputDecoration(
                         hintText: "Search".tr,
-                        prefixIcon: const Icon(Icons.search),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Theme.of(context).dividerColor),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Theme.of(context).dividerColor),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
                         filled: true,
                         fillColor: Theme.of(context).cardColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
                       ),
                     ),
 
@@ -227,22 +251,48 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     _joiningTracks.contains(track.id);
 
                                 return InkWell(
-                                  onTap: () {
-                                    if (!isJoined) {
-                                      Get.snackbar(
-                                        "Oops",
-                                        "You need to join first",
-                                        snackPosition: SnackPosition.BOTTOM,
-                                      );
-                                      return;
-                                    }
+                                  onTap: (!isJoined &&
+                                          _shownJoinDialogForTrack
+                                              .contains(track.id))
+                                      ? null
+                                      : () async {
+                                          if (!isJoined) {
+                                            final id = track.id!;
 
-                                    if (chatId != null) {
-                                      selectedChannel = track.name;
-                                      selectedTrackId = track.id;
-                                      _openChat(chatId, track.name!);
-                                    }
-                                  },
+                                            if (!_shownJoinDialogForTrack
+                                                .contains(id)) {
+                                              _shownJoinDialogForTrack.add(id);
+                                              await _saveDialogFlags();
+
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) => AlertDialog(
+                                                  title: const Text(
+                                                      "Join Required"),
+                                                  content: Text(
+                                                    "Join '${track.name}' to access this channel",
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: const Text("OK"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            }
+
+                                            return;
+                                          }
+
+                                          if (chatId != null) {
+                                            selectedChannel = track.name;
+                                            selectedTrackId = track.id;
+                                            _openChat(chatId, track.name!);
+                                          }
+                                        },
                                   child: Container(
                                     margin:
                                         const EdgeInsets.symmetric(vertical: 8),

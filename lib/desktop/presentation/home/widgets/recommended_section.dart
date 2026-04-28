@@ -58,6 +58,7 @@ class RecommendedSectionDesktop extends StatelessWidget {
                                 name: user.name,
                                 track: user.track.name,
                                 rate: user.rate,
+                                role: user.role,
                                 image: user.userImage.secureUrl,
                                 bio: user.profile.bio,
                                 skills: user.skills,

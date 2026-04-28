@@ -5,6 +5,7 @@ import '../user/profile_model.dart';
 import '../user/skill_model.dart';
 import '../user/track_model.dart';
 import '../user/usesr_image.dart';
+import 'active_theme.dart';
 import 'review_model.dart';
 
 class MyProfile extends Equatable {
@@ -20,6 +21,7 @@ class MyProfile extends Equatable {
   final bool isActive;
   final String role;
 
+  final ActiveTheme? activeTheme;
   final int rate;
   final int totalScore;
   final int wallet;
@@ -30,6 +32,8 @@ class MyProfile extends Equatable {
   final int score;
 
   final int varPoints;
+  final int points;
+
   final int freeHours;
   final int helpTotalHours;
 
@@ -47,6 +51,7 @@ class MyProfile extends Equatable {
   final List<dynamic> mentorSuggestions;
   final List<dynamic> challenges;
   final List<dynamic> warnings;
+  final List<dynamic> purchasedThemes;
 
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -58,6 +63,7 @@ class MyProfile extends Equatable {
     required this.track,
     required this.id,
     required this.name,
+    required this.varPoints,
     required this.email,
     required this.isActive,
     required this.role,
@@ -73,17 +79,19 @@ class MyProfile extends Equatable {
     required this.activationCodeExpires,
     required this.fcmToken,
     required this.score,
-    required this.varPoints,
+    required this.points,
     required this.skills,
     required this.reviews,
     required this.messages,
     required this.reports,
     required this.requests,
+    required this.activeTheme,
     required this.feedbackGiven,
     required this.feedbackReceived,
     required this.mentorSuggestions,
     required this.challenges,
     required this.warnings,
+    required this.purchasedThemes,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -116,13 +124,18 @@ class MyProfile extends Equatable {
       freeHours: json['freeHours'] ?? 0,
       helpTotalHours: json['helpTotalHours'] ?? 0,
       activationCode: json['activationCode'],
+      activeTheme: json['activeTheme'] != null && json['activeTheme'] is Map
+          ? ActiveTheme.fromJson(json['activeTheme'])
+          : null,
       activationCodeExpires: json['activationCodeExpires'] != null
           ? DateTime.tryParse(json['activationCodeExpires'])
           : null,
       fcmToken: json['fcmToken'] ?? '',
       score: parseInt(json['score']),
       varPoints: parseInt(json['var_points']),
+      points: parseInt(json['points']),
       messages: json['messages'] ?? [],
+      purchasedThemes: json['purchasedThemes'] ?? [],
       reports: json['reports'] ?? [],
       requests: json['requests'] ?? [],
       feedbackGiven: json['feedbackGiven'] ?? [],
@@ -197,6 +210,7 @@ class MyProfile extends Equatable {
         name,
         email,
         isActive,
+        purchasedThemes,
         role,
         rate,
         totalScore,
@@ -207,6 +221,7 @@ class MyProfile extends Equatable {
         score,
         varPoints,
         numberOfReviews,
+        activeTheme,
         freeHours,
         helpTotalHours,
         warningCount,

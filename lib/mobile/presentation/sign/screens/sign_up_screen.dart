@@ -131,22 +131,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     /// Name
                     CustomTextField(
-                      controller: nameController,
-                      labelText: "Full Name",
-                      hintText: "Enter your full name",
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Name is required";
-                        }
-                        if (RegExp(r'^\d').hasMatch(value)) {
-                          return "Name cannot start with a number";
-                        }
-                        if (value.length < 2 || value.length > 20) {
-                          return "Name must be between 2 and 20 characters";
-                        }
-                        return nameError;
-                      },
-                    ),
+                        controller: nameController,
+                        labelText: "UserName",
+                        hintText: "Enter your UserName",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Name is required";
+                          }
+
+                          if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9]{1,19}$')
+                              .hasMatch(value)) {
+                            return "Only letters and numbers allowed (no spaces)";
+                          }
+
+                          return nameError;
+                        }),
 
                     SizedBox(height: formSpacing),
 

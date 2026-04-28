@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
-import '../../../../shared/dependency_injection/injection.dart';
 import '../widgets/fantasy_store_header.dart';
 import '../widgets/store_item_card.dart';
 import '../widgets/timer_widget.dart';
@@ -23,8 +23,16 @@ class _StoreScreenState extends State<StoreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<StoreCubit>()..getStoreItems(),
+    return BlocListener<StoreCubit, StoreState>(
+      listenWhen: (prev, curr) => prev.successMessage != curr.successMessage,
+      listener: (context, state) {
+        if (state.successMessage != null) {
+          context.read<MyProfileCubit>().fetchMyProfile();
+
+          // optional cleanup
+          context.read<StoreCubit>().clearMessage();
+        }
+      },
       child: Scaffold(
         body: SafeArea(
           child: BlocConsumer<StoreCubit, StoreState>(

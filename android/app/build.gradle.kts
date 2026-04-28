@@ -21,8 +21,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-
-        // ✅ تمكين core library desugaring
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -33,7 +31,10 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
+
+            // 🔥 تفعيل التصغير (لو حصل مشاكل ارجعيه false مؤقتًا)
             isMinifyEnabled = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -48,33 +49,14 @@ flutter {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+    // 🔥 Fix R8 / SLF4J error (المشكلة اللي عندك)
+    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation("org.slf4j:slf4j-simple:2.0.13")
+
+    // Java desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // Pusher
     implementation("com.pusher:pusher-java-client:2.2.5")
-} buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven { setUrl("https://jitpack.io") }
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.4.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
-    }
 }
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { setUrl("https://jitpack.io") }
-    }
-}
-
-val newBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
-rootProject.layout.buildDirectory.value(newBuildDir)
-
-subprojects {
-    val newSubprojectBuildDir = newBuildDir.dir(project.name)
-    project.layout.buildDirectory.value(newSubprojectBuildDir)
-}
-

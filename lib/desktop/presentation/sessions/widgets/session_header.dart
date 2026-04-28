@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/desktop/presentation/history/screens/history_screen.dart';
+import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 
 import '../../../../main.dart';
 import '../../../../shared/common_ui/circle_button_icon.dart';
@@ -31,42 +34,41 @@ class SessionsHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style:TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white
-                      )
-                    ),
+                    Text(title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        )),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
                   ],
                 ),
               ),
-              CircleButtonIcon(icon: Icons.history,
-                onTap: (){
+              CircleButtonIcon(
+                icon: Icons.history,
+                onTap: () {
                   desktopKey.currentState?.openSidePage(
-                      body: HistoryScreen()
-                  );
-                      }
-                ,),
+                      body: BlocProvider(
+                    create: (_) => sl<GetBookingsCubit>(),
+                    child: HistoryScreen(),
+                  ));
+                },
+              ),
             ],
           ),
-
           const SizedBox(height: 16),
         ],
       ),
     );
   }
 }
-
 
 Widget selectStatus({
   required BuildContext context,

@@ -130,14 +130,40 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 SizedBox(height: screenWidth * 0.02),
                 GetBuilder<ThemeController>(builder: (controller) {
-                  return customSwitch(
-                    title: 'dark_mode'.tr,
-                    icon: Icons.dark_mode_outlined,
-                    value: controller.themeMode == ThemeMode.dark,
-                    onChanged: (v) {
-                      controller
-                          .changeTheme(v ? ThemeMode.dark : ThemeMode.light);
-                    },
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.dark_mode_outlined,
+                              size: screenWidth * 0.06),
+                          SizedBox(width: screenWidth * 0.03),
+                          Text('theme'.tr,
+                              style: TextStyle(fontSize: screenWidth * 0.045)),
+                        ],
+                      ),
+                      DropdownButton<ThemeMode>(
+                        value: controller.themeMode,
+                        underline: const SizedBox(),
+                        items: const [
+                          DropdownMenuItem(
+                            value: ThemeMode.system,
+                            child: Text('System'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.light,
+                            child: Text('Light'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.dark,
+                            child: Text('Dark'),
+                          ),
+                        ],
+                        onChanged: (mode) {
+                          controller.changeTheme(mode!);
+                        },
+                      ),
+                    ],
                   );
                 }),
                 SizedBox(height: screenWidth * 0.02),
