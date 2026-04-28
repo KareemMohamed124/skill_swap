@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 
+import '../../constants/notification_types.dart';
 import '../../data/models/booking/booking_model.dart' as bookingModel;
 import '../../data/models/booking/booking_model.dart';
 import '../../data/models/booking/booking_response.dart';
@@ -7,7 +8,9 @@ import '../../data/models/booking_details/booking_details_response.dart';
 import '../../data/models/cancel_booking/cancel_booking_response.dart';
 import '../../data/models/get_booking/booking.dart';
 import '../../data/models/update_booking/update_booking_response.dart';
+import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/booking_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 import 'book_session_event.dart';
 import 'book_session_state.dart';
@@ -50,6 +53,15 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
 
           /// ✅ ADD THIS
           emit(BookingCreatedSuccess(s.data.bookSession));
+
+          // 🔔 Notify the INSTRUCTOR about new booking request
+          sl<NotificationRepository>().sendNotification(
+            receiverId: event.request.instructorId,
+            type: NotificationTypes.newBooking,
+            payload: {
+              'bookingId': s.data.bookSession.id ?? '',
+            },
+          );
 
           /// UI يكمل طبيعي
           emit(BookingLoaded(s.data.bookSession));
@@ -100,6 +112,23 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
 
           /// ✅ ADD THIS
           emit(BookingCancelledSuccess());
+
+          // 🔔 Notify the other party about cancellation
+          if (_cachedBooking != null) {
+            final currentUserId = await LocalStorage.getUserId();
+            final recipientId =
+                currentUserId == _cachedBooking!.studentId
+                    ? _cachedBooking!.instructorId
+                    : _cachedBooking!.studentId;
+
+            sl<NotificationRepository>().sendNotification(
+              receiverId: recipientId ?? '',
+              type: NotificationTypes.bookingCancelled,
+              payload: {
+                'bookingId': _cachedBooking!.id ?? '',
+              },
+            );
+          }
 
           _cachedBooking = null;
           emit(BookingIdle());
@@ -164,3 +193,4 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
     });
   }
 }
+

@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 
 import '../../../shared/core/network/pusher_service.dart';
+import '../../constants/notification_types.dart';
 import '../../data/models/public_chat/common_sender.dart';
 import '../../data/models/public_chat/get_history_messages.dart';
 import '../../data/models/public_chat/reply_message.dart';
+import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/chat_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 import 'public_chat_messages_state.dart';
 
@@ -217,6 +220,20 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       );
 
       emit(_emitLoaded());
+
+      // 🔔 Notify the chat PARTNER (only for private chats)
+      if (_isPrivate && _partnerId != null) {
+        sl<NotificationRepository>().sendNotification(
+          receiverId: _partnerId!,
+          type: NotificationTypes.chatMessage,
+          payload: {
+            'chatId': _chatId!,
+            'messagePreview': message.content.length > 100
+                ? message.content.substring(0, 100)
+                : message.content,
+          },
+        );
+      }
     } catch (e) {
       _messages[index] = message.copyWith(
         status: MessageStatus.failed,

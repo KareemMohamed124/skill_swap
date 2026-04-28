@@ -3,5 +3,11 @@ abstract class NotificationRepository {
 
   Future<void> deleteFcmToken();
 
-//Future<void> sendTestNotification();
+  /// Send a push notification to a specific user
+  Future<void> sendNotification({
+    required String receiverId,
+    required String type,
+    Map<String, dynamic> payload,
+  });
 }
+

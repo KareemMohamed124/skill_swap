@@ -363,6 +363,7 @@ class _SessionCardState extends State<SessionCard> {
                               id: widget.session.sessionId,
                               request: StatusBookingRequest(
                                   status: "accepted"),
+                              studentId: widget.session.userId,
                             ),
                           );
                         },
@@ -387,6 +388,7 @@ class _SessionCardState extends State<SessionCard> {
                               id: widget.session.sessionId,
                               request: StatusBookingRequest(
                                   status: "rejected"),
+                              studentId: widget.session.userId,
                             ),
                           );
                         },

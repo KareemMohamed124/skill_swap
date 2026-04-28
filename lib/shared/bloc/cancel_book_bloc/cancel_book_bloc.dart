@@ -1,8 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../../constants/notification_types.dart';
 import '../../data/models/cancel_booking/cancel_booking_response.dart';
+import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/booking_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 
 part 'cancel_book_event.dart';
 
@@ -20,6 +23,17 @@ class CancelBookBloc extends Bloc<CancelBookEvent, CancelBookState> {
       switch (response) {
         case CancelBookingSuccess s:
           emit(CancelBookSuccess(success: s));
+
+          // 🔔 Notify the other party about cancellation
+          if (event.recipientId != null) {
+            sl<NotificationRepository>().sendNotification(
+              receiverId: event.recipientId!,
+              type: NotificationTypes.bookingCancelled,
+              payload: {
+                'bookingId': event.id,
+              },
+            );
+          }
           break;
         case CancelBookingFailure f:
           emit(CancelBookFailure(error: f));
@@ -28,3 +42,4 @@ class CancelBookBloc extends Bloc<CancelBookEvent, CancelBookState> {
     });
   }
 }
+
