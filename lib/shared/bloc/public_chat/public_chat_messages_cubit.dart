@@ -222,6 +222,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     final index = _messages.indexWhere((m) => m.id == tempId);
     if (index == -1) return;
 
+    bool _notificationSent = false;
+
     try {
       final res = await chatRepository.sendMessage(
         _chatId!,
@@ -237,12 +239,22 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       emit(_emitLoaded());
 
-      if (_isPrivate && _partnerId != null) {
+      if (!_notificationSent && _isPrivate && _partnerId != null) {
+        _notificationSent = true;
+        final senderName = _messages
+                .firstWhere(
+                  (m) => m.senderId.id == _currentUserId,
+                  orElse: () => _messages.first,
+                )
+                .senderId
+                .name ??
+            'Someone';
         sl<NotificationRepository>().sendNotification(
           receiverId: _partnerId!,
           type: NotificationTypes.chatMessage,
           payload: {
             'chatId': _chatId!,
+            'senderName': senderName,
             'messagePreview': message.content.length > 100
                 ? message.content.substring(0, 100)
                 : message.content,
@@ -250,10 +262,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         );
       }
     } catch (e) {
-      _messages[index] = message.copyWith(
-        status: MessageStatus.failed,
-      );
-
+      _messages[index] = message.copyWith(status: MessageStatus.failed);
       emit(_emitLoaded());
 
       Future.delayed(const Duration(seconds: 3), () {

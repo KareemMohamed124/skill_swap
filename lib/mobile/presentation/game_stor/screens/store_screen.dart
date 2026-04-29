@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
+import '../../../../shared/common_ui/error_dialog.dart';
 import '../widgets/fantasy_store_header.dart';
 import '../widgets/store_item_card.dart';
 import '../widgets/timer_widget.dart';
@@ -19,42 +19,38 @@ class StoreScreen extends StatefulWidget {
 class _StoreScreenState extends State<StoreScreen> {
   String? selectedId;
 
-  final box = GetStorage();
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<StoreCubit, StoreState>(
-      listenWhen: (prev, curr) => prev.successMessage != curr.successMessage,
+      listenWhen: (prev, curr) =>
+          prev.successMessage != curr.successMessage ||
+          prev.errorMessage != curr.errorMessage,
       listener: (context, state) {
         if (state.successMessage != null) {
-          context.read<MyProfileCubit>().fetchMyProfile();
+          showAppDialog(
+            context: context,
+            message: state.successMessage!,
+            type: DialogType.success,
+            autoCloseDuration: const Duration(seconds: 2),
+          );
 
-          // optional cleanup
+          context.read<MyProfileCubit>().fetchMyProfile();
+          context.read<StoreCubit>().clearMessage();
+        }
+
+        if (state.errorMessage != null) {
+          showAppDialog(
+            context: context,
+            message: state.errorMessage!,
+            type: DialogType.error,
+          );
+
           context.read<StoreCubit>().clearMessage();
         }
       },
       child: Scaffold(
         body: SafeArea(
-          child: BlocConsumer<StoreCubit, StoreState>(
-            listener: (context, state) {
-              if (state.errorMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-
-              if (state.successMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.successMessage!),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            },
+          child: BlocBuilder<StoreCubit, StoreState>(
             builder: (context, state) {
               return Column(
                 children: [

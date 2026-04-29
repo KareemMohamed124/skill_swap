@@ -5,7 +5,10 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/utils.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
+import '../../../../main.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/bloc/store_cubit/purchase_cubit.dart';
+import '../../../../shared/dependency_injection/injection.dart';
 import '../screens/purchases_page.dart';
 import '../widgets/show_store_daiolg.dart';
 
@@ -86,7 +89,10 @@ class FantasyStoreHeader extends StatelessWidget {
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: () {
-                  Get.to(() => const MyPurchasesPage());
+                  desktopKey.currentState?.openSidePage(
+                      body: BlocProvider(
+                          create: (_) => sl<PurchaseCubit>()..getPurchases(),
+                          child: const MyPurchasesPage()));
                 },
                 child: Icon(
                   Icons.shopping_bag_outlined,

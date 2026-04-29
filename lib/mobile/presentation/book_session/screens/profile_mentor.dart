@@ -75,6 +75,14 @@ class _ProfileMentorState extends State<ProfileMentor> {
     return 50;
   }
 
+  int calculateSessionPrice({
+    required int hourlyRate,
+    required int durationInMinutes,
+  }) {
+    final pricePerMinute = hourlyRate / 60;
+    return (pricePerMinute * durationInMinutes).round();
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);

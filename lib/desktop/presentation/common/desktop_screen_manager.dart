@@ -34,7 +34,16 @@ class _PageState {
 }
 
 class DesktopScreenManager extends StatefulWidget {
-  const DesktopScreenManager({super.key});
+  final int initialIndex;
+  final int initialSessionTab;
+  final int initialProfileTab;
+
+  const DesktopScreenManager({
+    super.key,
+    this.initialIndex = 0,
+    this.initialSessionTab = 0,
+    this.initialProfileTab = 0,
+  });
 
   @override
   State<DesktopScreenManager> createState() => DesktopScreenManagerState();
@@ -42,6 +51,9 @@ class DesktopScreenManager extends StatefulWidget {
 
 class DesktopScreenManagerState extends State<DesktopScreenManager> {
   int currentIndex = 0;
+
+  late int initialSessionTab;
+  late int initialProfileTab;
 
   Widget? currentBody;
   Widget? currentRightPanel;
@@ -53,7 +65,12 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   @override
   void initState() {
     super.initState();
-    openPage(index: 0);
+
+    currentIndex = widget.initialIndex;
+    initialSessionTab = widget.initialSessionTab;
+    initialProfileTab = widget.initialProfileTab;
+
+    openPage(index: currentIndex);
   }
 
   @override
@@ -81,9 +98,11 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
               openSidePage(
                 body: currentBody ?? getBody(currentIndex),
                 rightPanel: BlocProvider.value(
-                  // ← value مش create
                   value: _chatMessagesCubit,
-                  child: ChatScreen(chatId: chatId, channelName: channelName),
+                  child: ChatScreen(
+                    chatId: chatId,
+                    channelName: channelName,
+                  ),
                 ),
               );
             },
@@ -97,20 +116,21 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         );
 
       case 3:
-        return MultiBlocProvider(providers: [
-          // BlocProvider<MyProfileCubit>(
-          //   create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
-          // ),
-          BlocProvider(create: (_) => sl<GetBookingsCubit>()),
-          BlocProvider(create: (_) => sl<StatusBookBloc>()),
-          BlocProvider(
-            create: (_) => sl<PurchaseCubit>(),
-          )
-          //BlocProvider(create: (_) => sl<SubmitReviewBloc>()),
-        ], child: SessionsScreen());
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<GetBookingsCubit>()),
+            BlocProvider(create: (_) => sl<StatusBookBloc>()),
+            BlocProvider(create: (_) => sl<PurchaseCubit>()),
+          ],
+          child: SessionsScreen(
+            initialTab: initialSessionTab,
+          ),
+        );
 
       case 4:
-        return ProfileScreen();
+        return ProfileScreen(
+          initialTab: initialProfileTab,
+        );
 
       case 5:
         return StoreScreen();
@@ -130,7 +150,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     null,
     null,
     null,
-    null
+    null,
   ];
 
   void openPage({required int index}) {
@@ -142,7 +162,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     });
   }
 
-  openSidePage({
+  void openSidePage({
     required Widget body,
     Widget? rightPanel,
   }) {
@@ -169,18 +189,36 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     return false;
   }
 
+  void openSessions({int tab = 0}) {
+    setState(() {
+      currentIndex = 3;
+      initialSessionTab = tab;
+      currentBody = getBody(3);
+      currentRightPanel = rightPanels[3];
+      _history.clear();
+    });
+  }
+
+  void openProfile({int tab = 0}) {
+    setState(() {
+      currentIndex = 4;
+      initialProfileTab = tab;
+      currentBody = getBody(4);
+      currentRightPanel = rightPanels[4];
+      _history.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<MyProfileCubit>(
+        BlocProvider(
           create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
         ),
-        BlocProvider<UsersCubit>(
-          create: (_) => sl<UsersCubit>(),
-        ),
-        BlocProvider<GetBookingsCubit>(create: (_) => sl<GetBookingsCubit>()),
-        BlocProvider(create: (_) => sl<LogoutBloc>())
+        BlocProvider(create: (_) => sl<UsersCubit>()),
+        BlocProvider(create: (_) => sl<GetBookingsCubit>()),
+        BlocProvider(create: (_) => sl<LogoutBloc>()),
       ],
       child: DesktopScaffold(
         sidebar: DesktopSidebar(

@@ -129,7 +129,7 @@ class ProfileHeader extends StatelessWidget {
                           freeHours.toString(), 'hours_available'.tr),
                       _buildMetricItem(
                           helpHours.toString(), 'people_helped'.tr),
-                      _buildMetricItem('3', 'achievements'.tr),
+                      //    _buildMetricItem('3', 'achievements'.tr),
                     ],
                   ),
                 ),

@@ -170,7 +170,22 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // ✅ myActiveTheme بتيجي كـ parameter — مش بتتقرأ من جوا
+  bool _isSameSender(ChatMessage a, ChatMessage b) {
+    return a.senderId.id == b.senderId.id;
+  }
+
+  bool _isFirstInGroup(List<ChatMessage> messages, int index) {
+    if (index == 0) return true;
+
+    return !_isSameSender(messages[index], messages[index - 1]);
+  }
+
+  bool _isLastInGroup(List<ChatMessage> messages, int index) {
+    if (index == messages.length - 1) return true;
+
+    return !_isSameSender(messages[index], messages[index + 1]);
+  }
+
   Widget _buildMessageList(List<ChatMessage> messages, String? myActiveTheme) {
     return ListView.builder(
       controller: _scrollController,
@@ -180,6 +195,8 @@ class _ChatScreenState extends State<ChatScreen> {
         final message = messages[index];
         final isMe = message.senderId.id == _chatCubit.currentUserId;
 
+        final isFirstInGroup = _isFirstInGroup(messages, index);
+        final isLastInGroup = _isLastInGroup(messages, index);
         _messageKeys.putIfAbsent(message.id, () => GlobalKey());
 
         return SwipeableMessage(
@@ -198,10 +215,10 @@ class _ChatScreenState extends State<ChatScreen> {
               onTapReply: message.replyTo != null
                   ? () => _scrollToMessage(message.replyTo!.id)
                   : null,
-              // ✅ لو message.theme موجود (Pusher/history) → استخدمه
-              // ✅ لو مش موجود (optimistic) وكانت isMe → خد من profile
               senderThemeValue:
                   message.theme?.value ?? (isMe ? myActiveTheme : null),
+              isFirstInGroup: isFirstInGroup,
+              isLastInGroup: isLastInGroup,
             ),
           ),
         );

@@ -64,21 +64,21 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  Color _lighten(Color color, [double amount = 0.2]) {
-    final hsl = HSLColor.fromColor(color);
-    final lighter = hsl.withLightness(
-      (hsl.lightness + amount).clamp(0.0, 1.0),
-    );
-    return lighter.toColor();
-  }
+  // Color _lighten(Color color, [double amount = 0.2]) {
+  //   final hsl = HSLColor.fromColor(color);
+  //   final lighter = hsl.withLightness(
+  //     (hsl.lightness + amount).clamp(0.0, 1.0),
+  //   );
+  //   return lighter.toColor();
+  // }
 
   Color _getBubbleColor(FrameStyle? style) {
     if (style == null) {
       return isMe ? AppPalette.primary : Colors.grey.shade300;
     }
 
-    final baseColor = style.colors.first;
-    return isMe ? _lighten(baseColor, 0.1) : _lighten(baseColor, 0.35);
+    //final baseColor = style.colors.first;
+    return style.colors.first;
   }
 
   SkillType _mapThemeToSkill(String theme) {

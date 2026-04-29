@@ -50,40 +50,15 @@ class QuizDetailsScreen extends StatelessWidget {
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 700;
 
-                return isWide
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /// LEFT - Details
-                          Expanded(
-                            flex: 2,
-                            child: _buildDetailsCard(context),
-                          ),
-
-                          const SizedBox(width: 24),
-
-                          /// RIGHT - Notes + Button
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                _buildNotesCard(context),
-                                const SizedBox(height: 24),
-                                _buildStartButton(context),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          _buildDetailsCard(context),
-                          const SizedBox(height: 20),
-                          _buildNotesCard(context),
-                          const SizedBox(height: 20),
-                          _buildStartButton(context),
-                        ],
-                      );
+                return Column(
+                  children: [
+                    _buildDetailsCard(context),
+                    const SizedBox(height: 20),
+                    _buildNotesCard(context),
+                    const SizedBox(height: 20),
+                    _buildStartButton(context),
+                  ],
+                );
               },
             ),
           ),

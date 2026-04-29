@@ -41,77 +41,66 @@ class DesktopSidebar extends StatelessWidget {
               },
               child: ListView(
                 children: [
-                  _item(
-                    context,
-                    icon: Icons.home,
-                    title: "home".tr,
-                    index: 0,
+                  _item(context, icon: Icons.home, title: "home".tr, index: 0),
+                  _item(context, icon: Icons.chat, title: "chat".tr, index: 1),
+                  _item(context,
+                      icon: Icons.search, title: "search".tr, index: 2),
+                  _item(context,
+                      icon: Icons.schedule, title: "sessions".tr, index: 3),
+                  _item(context,
+                      icon: Icons.person, title: "profile".tr, index: 4),
+                  _item(context,
+                      icon: Icons.storefront_outlined,
+                      title: "store",
+                      index: 5),
+                  _item(context,
+                      icon: Icons.settings, title: "setting".tr, index: 6),
+                  const Divider(height: 16),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Text(
+                      "ACCOUNT ACTIONS",
+                      style: TextStyle(
+                        color: isDark ? Colors.white : AppPalette.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                   _item(
                     context,
-                    icon: Icons.chat,
-                    title: "chat".tr,
-                    index: 1,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.search,
-                    title: "search".tr,
-                    index: 2,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.schedule,
-                    title: "sessions".tr,
-                    index: 3,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.person,
-                    title: "profile".tr,
-                    index: 4,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.storefront_outlined,
-                    title: "store",
-                    index: 5,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.settings,
-                    title: "setting".tr,
-                    index: 6,
+                    icon: Icons.lock_reset,
+                    title: "change_password".tr,
+                    index: 7,
+                    isAction: true,
+                    onAction: () {},
                   ),
                   _item(
                     context,
                     icon: Icons.logout,
                     title: "sign_out".tr,
-                    index: 7,
-                    //isAction: true,
+                    index: 8,
+                    isAction: true,
                     onAction: () {
-                      context.read<LogoutBloc>().add(
-                            LogoutRequested(),
-                          );
+                      context.read<LogoutBloc>().add(LogoutRequested());
                     },
                   ),
                   _item(
                     context,
                     icon: Icons.delete,
                     title: "delete_account".tr,
-                    index: 8,
+                    index: 9,
                     isAction: true,
-                    onAction: () {
-                      // delete account action
-                    },
+                    onAction: () {},
                   ),
                 ],
               ),
             ),
           ),
           const Divider(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(8),
+          const Padding(
+            padding: EdgeInsets.all(8),
             child: UnrealExperienceCard(),
           ),
           const SizedBox(height: 16),
@@ -128,19 +117,16 @@ class DesktopSidebar extends StatelessWidget {
     bool isAction = false,
     VoidCallback? onAction,
   }) {
-    final bool active = !isAction && currentIndex == index;
+    final bool active = currentIndex == index;
 
-    final Color textColor = isAction
-        ? Colors.red
-        : active
-            ? AppPalette.primary
-            : Theme.of(context).textTheme.bodyMedium!.color!;
+    final Color activeColor =
+        isAction ? Colors.red : AppPalette.primary; // 🔴 actions / 🔵 normal
 
-    final Color? backgroundColor = active
-        ? AppPalette.primary.withValues(alpha: 0.15)
-        : isAction
-            ? Colors.red.withValues(alpha: 0.08)
-            : null;
+    final Color textColor =
+        active ? activeColor : Theme.of(context).textTheme.bodyMedium!.color!;
+
+    final Color? backgroundColor =
+        active ? activeColor.withOpacity(0.15) : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

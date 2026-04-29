@@ -11,7 +11,12 @@ import '../pages/reviews_page.dart';
 import '../pages/skills_page.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final int initialTab;
+
+  const ProfileScreen({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -24,7 +29,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
   }
 
   @override
@@ -41,11 +51,16 @@ class _ProfileScreenState extends State<ProfileScreen>
         child: Column(
           children: [
             BlocProvider(
-                create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
-                child: const ProfileHeader()), // const SizedBox(height: 24),
+              create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+              child: const ProfileHeader(),
+            ),
             ProfileTabs(
               tabController: _tabController,
-              tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr],
+              tabs: [
+                'overview'.tr,
+                'skills'.tr,
+                'reviews'.tr,
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(

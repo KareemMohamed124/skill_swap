@@ -7,6 +7,7 @@ import 'package:skill_swap/desktop/presentation/game_store/widgets/timer_widget.
 
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
+import '../../../../shared/common_ui/error_dialog.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 
 class StoreScreen extends StatefulWidget {
@@ -18,7 +19,6 @@ class StoreScreen extends StatefulWidget {
 
 class _StoreScreenState extends State<StoreScreen> {
   String? selectedId;
-
   final box = GetStorage();
 
   @override
@@ -28,23 +28,31 @@ class _StoreScreenState extends State<StoreScreen> {
       child: Scaffold(
         body: SafeArea(
           child: BlocConsumer<StoreCubit, StoreState>(
+            listenWhen: (prev, curr) =>
+                prev.successMessage != curr.successMessage ||
+                prev.errorMessage != curr.errorMessage,
             listener: (context, state) {
-              if (state.errorMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: Colors.red,
-                  ),
+              // ✅ SUCCESS DIALOG
+              if (state.successMessage != null) {
+                showAppDialog(
+                  context: context,
+                  message: state.successMessage!,
+                  type: DialogType.success,
+                  autoCloseDuration: const Duration(seconds: 2),
                 );
+
+                context.read<StoreCubit>().clearMessage();
               }
 
-              if (state.successMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.successMessage!),
-                    backgroundColor: Colors.green,
-                  ),
+              // ❌ ERROR DIALOG
+              if (state.errorMessage != null) {
+                showAppDialog(
+                  context: context,
+                  message: state.errorMessage!,
+                  type: DialogType.error,
                 );
+
+                context.read<StoreCubit>().clearMessage();
               }
             },
             builder: (context, state) {
@@ -74,7 +82,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           padding: const EdgeInsets.all(12),
                           itemCount: state.items.length,
                           gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 300,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../../../../shared/bloc/store_cubit/purchase_state.dart';
@@ -11,8 +12,9 @@ class MyPurchasesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<PurchaseCubit, PurchaseState>(
+    return BaseScreen(
+      title: "My Purchases",
+      child: BlocBuilder<PurchaseCubit, PurchaseState>(
         builder: (context, state) {
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());

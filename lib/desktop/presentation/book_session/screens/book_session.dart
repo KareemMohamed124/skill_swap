@@ -56,6 +56,14 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
 
   List<Booking> apiBookings = [];
 
+  int calculateSessionPrice({
+    required int hourlyRate,
+    required int durationInMinutes,
+  }) {
+    final pricePerMinute = hourlyRate / 60;
+    return (pricePerMinute * durationInMinutes).round();
+  }
+
   late AcceptedBookingsCubit acceptedCubit;
   String? myId;
 
@@ -541,7 +549,12 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
                                               time: to24Hour(startTime!),
                                               duration_mins: durationMinutes,
                                               instructorId: widget.userId,
-                                              price: widget.price,
+                                              price: paymentMethod == "pay"
+                                                  ? calculateSessionPrice(
+                                                      hourlyRate: widget.price,
+                                                      durationInMinutes:
+                                                          durationMinutes)
+                                                  : 0,
                                             );
 
                                             context

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/desktop/presentation/profile/widgets/availability_card.dart';
 
+import '../../../../main.dart';
 import '../../../../shared/bloc/add_available_dates_bloc/add_available_dates_bloc.dart';
 import '../../../../shared/bloc/delete_available_dates/delete_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
@@ -75,11 +76,6 @@ class OverviewPage extends StatelessWidget {
                         context: context,
                         rate: profile.helpTotalHours.toString() ?? "0",
                         info: "people_helped".tr,
-                      ),
-                      mentorInfo(
-                        context: context,
-                        rate: "0",
-                        info: "achievements".tr,
                       ),
                     ],
                   ),
@@ -191,7 +187,9 @@ class OverviewPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                desktopKey.currentState?.openProfile(tab: 1);
+                              },
                               child: Text(
                                 "complete_skills_verification".tr,
                                 style: const TextStyle(
@@ -244,7 +242,6 @@ class OverviewPage extends StatelessWidget {
                                   return;
                                 }
 
-                                /// ❌ لو الشروط مش متحققة
                                 if (!canApply) {
                                   final remainingHours =
                                       (requiredHours - helpedHours)
@@ -282,7 +279,6 @@ class OverviewPage extends StatelessWidget {
                                   return;
                                 }
 
-                                /// 🚀 لو كل حاجة تمام
                                 try {
                                   /// loading
                                   showDialog(
@@ -345,47 +341,47 @@ class OverviewPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 10)
-                    ],
-                    border: Border.all(color: Theme.of(context).dividerColor),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_month,
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge!.color),
-                          const SizedBox(width: 8),
-                          Text(
-                            "recent_activity".tr,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge!.color,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      activityItem(
-                          context, "Completed React assessment", "2 days ago"),
-                      activityItem(context, "Helped Sarah with JavaScript",
-                          "3 days ago"),
-                      activityItem(
-                          context, "Joined React community chat", "1 week ago"),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   width: double.infinity,
+                //   padding: const EdgeInsets.all(16),
+                //   decoration: BoxDecoration(
+                //     color: Theme.of(context).cardColor,
+                //     borderRadius: BorderRadius.circular(16),
+                //     boxShadow: [
+                //       BoxShadow(color: Colors.black12, blurRadius: 10)
+                //     ],
+                //     border: Border.all(color: Theme.of(context).dividerColor),
+                //   ),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       Row(
+                //         children: [
+                //           Icon(Icons.calendar_month,
+                //               color:
+                //                   Theme.of(context).textTheme.bodyLarge!.color),
+                //           const SizedBox(width: 8),
+                //           Text(
+                //             "recent_activity".tr,
+                //             style: TextStyle(
+                //               fontSize: 18,
+                //               fontWeight: FontWeight.w600,
+                //               color:
+                //                   Theme.of(context).textTheme.bodyLarge!.color,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //       const SizedBox(height: 16),
+                //       activityItem(
+                //           context, "Completed React assessment", "2 days ago"),
+                //       activityItem(context, "Helped Sarah with JavaScript",
+                //           "3 days ago"),
+                //       activityItem(
+                //           context, "Joined React community chat", "1 week ago"),
+                //     ],
+                //   ),
+                // ),
               ],
             ),
           );

@@ -65,6 +65,14 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     }
   }
 
+  int calculateSessionPrice({
+    required int hourlyRate,
+    required int durationInMinutes,
+  }) {
+    final pricePerMinute = hourlyRate / 60;
+    return (pricePerMinute * durationInMinutes).round();
+  }
+
   late AcceptedBookingsCubit acceptedCubit;
   String? myId;
 
@@ -539,7 +547,9 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                                     duration_mins: durationMinutes,
                                     instructorId: widget.userId,
                                     price: paymentMethod == "pay"
-                                        ? widget.price
+                                        ? calculateSessionPrice(
+                                            hourlyRate: widget.price,
+                                            durationInMinutes: durationMinutes)
                                         : 0,
                                   );
 

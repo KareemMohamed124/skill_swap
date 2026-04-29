@@ -349,54 +349,54 @@ class OverviewPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black12, blurRadius: 10)
-                        ],
-                        border:
-                            Border.all(color: Theme.of(context).dividerColor),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_month,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .color,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "recent_activity".tr,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          activityItem(context, "Completed React assessment",
-                              "2 days ago"),
-                          activityItem(context, "Helped Sarah with JavaScript",
-                              "3 days ago"),
-                          activityItem(context, "Joined React community chat",
-                              "1 week ago"),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   width: double.infinity,
+                    //   padding: const EdgeInsets.all(16),
+                    //   decoration: BoxDecoration(
+                    //     color: Theme.of(context).cardColor,
+                    //     borderRadius: BorderRadius.circular(16),
+                    //     boxShadow: const [
+                    //       BoxShadow(color: Colors.black12, blurRadius: 10)
+                    //     ],
+                    //     border:
+                    //         Border.all(color: Theme.of(context).dividerColor),
+                    //   ),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       Row(
+                    //         children: [
+                    //           Icon(
+                    //             Icons.calendar_month,
+                    //             color: Theme.of(context)
+                    //                 .textTheme
+                    //                 .bodyLarge!
+                    //                 .color,
+                    //           ),
+                    //           const SizedBox(width: 8),
+                    //           Text(
+                    //             "recent_activity".tr,
+                    //             style: TextStyle(
+                    //               fontSize: 18,
+                    //               fontWeight: FontWeight.w600,
+                    //               color: Theme.of(context)
+                    //                   .textTheme
+                    //                   .bodyLarge!
+                    //                   .color,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       const SizedBox(height: 16),
+                    //       activityItem(context, "Completed React assessment",
+                    //           "2 days ago"),
+                    //       activityItem(context, "Helped Sarah with JavaScript",
+                    //           "3 days ago"),
+                    //       activityItem(context, "Joined React community chat",
+                    //           "1 week ago"),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
