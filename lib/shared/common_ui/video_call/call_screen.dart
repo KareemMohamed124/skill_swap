@@ -39,6 +39,9 @@ class _CallScreenState extends State<CallScreen> {
   bool cam = true;
   bool _navigated = false;
 
+  // Buffer candidates that arrive before the remote description is set
+  final List<RTCIceCandidate> _pendingCandidates = [];
+
   @override
   void initState() {
     super.initState();
@@ -130,8 +133,13 @@ class _CallScreenState extends State<CallScreen> {
         );
 
         await service.peerConnection!.setRemoteDescription(answer);
-
         _isRemoteDescriptionSet = true;
+
+        // Flush any ICE candidates that arrived before the remote description was ready
+        for (final candidate in _pendingCandidates) {
+          await service.peerConnection!.addCandidate(candidate);
+        }
+        _pendingCandidates.clear();
       }
     });
   }
@@ -140,16 +148,23 @@ class _CallScreenState extends State<CallScreen> {
   void listenForCandidates() {
     callRef.doc(callId).collection('candidates').snapshots().listen((snapshot) {
       for (var change in snapshot.docChanges) {
-        final data = change.doc.data();
+        // Only process newly added candidates, never modified/removed
+        if (change.type != DocumentChangeType.added) continue;
 
-        if (data != null && data['senderId'] != currentUserId) {
-          service.peerConnection!.addCandidate(
-            RTCIceCandidate(
-              data['candidate'],
-              data['sdpMid'],
-              (data['sdpMLineIndex'] as num).toInt(),
-            ),
-          );
+        final data = change.doc.data();
+        if (data == null || data['senderId'] == currentUserId) continue;
+
+        final candidate = RTCIceCandidate(
+          data['candidate'],
+          data['sdpMid'],
+          (data['sdpMLineIndex'] as num).toInt(),
+        );
+
+        if (_isRemoteDescriptionSet) {
+          service.peerConnection!.addCandidate(candidate);
+        } else {
+          // Remote description not ready yet — buffer and flush later
+          _pendingCandidates.add(candidate);
         }
       }
     });
@@ -222,6 +237,7 @@ class _CallScreenState extends State<CallScreen> {
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
       final sources = await service.getScreenSources();
       if (sources.isEmpty) return;
+      if (!mounted) return;
 
       final selected = await showDialog<DesktopCapturerSource>(
         context: context,
