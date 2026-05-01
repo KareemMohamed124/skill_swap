@@ -200,4 +200,26 @@ class ChatRepositoryImpl implements ChatRepository {
       throw _extractError(e);
     }
   }
+
+  @override
+  Future<List<ChatMessage>> searchMessages(String chatId, String query) async {
+    try {
+      final response = await api.searchMessages(chatId, query);
+
+      final messagesJson =
+          response['messages'] ?? response['data']?['messages'] ?? [];
+
+      final messages = <ChatMessage>[];
+      if (messagesJson is List) {
+        for (var item in messagesJson) {
+          if (item is Map<String, dynamic>) {
+            messages.add(ChatMessage.fromJson(item));
+          }
+        }
+      }
+      return messages;
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
 }

@@ -83,11 +83,13 @@ class ChatMessage {
       messageType: json['messageType'],
       readBy: json['readBy'] ?? [],
       createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : DateTime.now(),
       replyTo: json['replyTo'] != null
           ? ReplyMessage.fromJson(json['replyTo'])
           : null,
-      v: json['__v'],
+      v: json['__v'] ?? 0,
       isEdited: json['isEdited'] ?? false,
       isSeen: json['isSeen'] ?? false,
       theme:

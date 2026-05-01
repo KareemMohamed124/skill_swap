@@ -154,4 +154,17 @@ class ChatApiService {
         ? response.data
         : <String, dynamic>{};
   }
+
+  /// GET /chat/{chatId}/search?q=hello
+  Future<Map<String, dynamic>> searchMessages(
+      String chatId, String query) async {
+    final response = await _dio.get(
+      '$_baseUrl/chat/$chatId/search',
+      queryParameters: {'q': query},
+    );
+
+    return response.data is Map<String, dynamic>
+        ? response.data
+        : <String, dynamic>{};
+  }
 }

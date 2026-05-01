@@ -23,6 +23,7 @@ import '../bloc/join_session_bloc/join_session_bloc.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../bloc/pay_booking_bloc/pay_booking_bloc.dart';
+import '../bloc/public_chat/message_search_cubit.dart';
 import '../bloc/public_chat/public_chat_bloc.dart';
 import '../bloc/public_chat/public_chat_messages_cubit.dart';
 import '../bloc/register_bloc/register_bloc.dart';
@@ -191,6 +192,9 @@ Future<void> initDependencies() async {
       chatRepository: sl<ChatRepository>(),
       // notificationRepository: sl<NotificationRepository>(),
       pusherService: sl<PusherService>()));
+
+  sl.registerFactory<MessageSearchCubit>(
+      () => MessageSearchCubit(chatRepository: sl<ChatRepository>()));
 
   // Load users safely
   List<UserModel> users = [];
