@@ -440,47 +440,31 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
             if (_isSearching)
-              BlocBuilder<MessageSearchCubit, MessageSearchState>(
-                builder: (context, searchState) {
-                  if (searchState is MessageSearchLoading) {
-                    return Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
+              Positioned.fill(
+                child: BlocBuilder<MessageSearchCubit, MessageSearchState>(
+                  builder: (context, searchState) {
+                    if (searchState is MessageSearchLoading) {
+                      return Container(
                         color: Theme.of(context)
                             .scaffoldBackgroundColor
                             .withOpacity(0.9),
+                        alignment: Alignment.topCenter,
                         padding: const EdgeInsets.all(8.0),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    );
-                  }
-                  if (searchState is MessageSearchLoaded) {
-                    if (searchState.results.isEmpty) {
-                      return Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
+                        child: const CircularProgressIndicator(),
+                      );
+                    }
+                    if (searchState is MessageSearchLoaded) {
+                      if (searchState.results.isEmpty) {
+                        return Container(
                           color: Theme.of(context)
                               .scaffoldBackgroundColor
                               .withOpacity(0.9),
+                          alignment: Alignment.topCenter,
                           padding: const EdgeInsets.all(16.0),
-                          child: const Center(
-                            child: Text("No messages found"),
-                          ),
-                        ),
-                      );
-                    }
-                    return Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
+                          child: const Text("No messages found"),
+                        );
+                      }
+                      return Container(
                         color: Theme.of(context)
                             .scaffoldBackgroundColor
                             .withOpacity(0.95),
@@ -524,11 +508,11 @@ class _ChatScreenState extends State<ChatScreen> {
                             );
                           },
                         ),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
           ],
         ),
