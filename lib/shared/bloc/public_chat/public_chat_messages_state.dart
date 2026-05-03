@@ -9,13 +9,10 @@ abstract class PublicChatMessagesState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initial state
 class PublicChatMessagesInitial extends PublicChatMessagesState {}
 
-/// Loading first page
 class PublicChatMessagesLoading extends PublicChatMessagesState {}
 
-/// Loaded state with messages
 class PublicChatMessagesLoaded extends PublicChatMessagesState {
   final List<ChatMessage> messages;
   final bool hasMore;
@@ -35,7 +32,6 @@ class PublicChatMessagesLoaded extends PublicChatMessagesState {
   List<Object?> get props =>
       [messages, hasMore, isLoadingMore, replyMessage, editingMessage];
 
-  /// Copy with for pagination / loading more
   PublicChatMessagesLoaded copyWith({
     List<ChatMessage>? messages,
     bool? hasMore,
@@ -56,7 +52,6 @@ class PublicChatMessagesLoaded extends PublicChatMessagesState {
   }
 }
 
-/// Error state
 class PublicChatMessagesError extends PublicChatMessagesState {
   final String message;
 

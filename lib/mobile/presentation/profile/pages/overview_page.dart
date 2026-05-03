@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/add_available_dates_bloc/add_available_dates_bloc.dart';
 import '../../../../shared/bloc/delete_available_dates/delete_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/get_upcoming_sat_bloc/get_upcoming_sat_bloc.dart';
+import '../../../../shared/bloc/set_available_dates_bloc/set_available_dates_bloc.dart';
 import '../../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
@@ -247,7 +249,6 @@ class OverviewPage extends StatelessWidget {
                                   return;
                                 }
 
-                                /// ❌ لو الشروط مش متحققة
                                 if (!canApply) {
                                   final remainingHours =
                                       (requiredHours - helpedHours)
@@ -285,7 +286,6 @@ class OverviewPage extends StatelessWidget {
                                   return;
                                 }
 
-                                /// 🚀 لو كل حاجة تمام
                                 try {
                                   /// loading
                                   showDialog(
@@ -296,7 +296,7 @@ class OverviewPage extends StatelessWidget {
                                   );
 
                                   final message = await sl<UserRepository>()
-                                      .requestMentor();
+                                      .requestMentor(30);
 
                                   Navigator.pop(context);
 
@@ -338,7 +338,11 @@ class OverviewPage extends StatelessWidget {
                         BlocProvider(
                             create: (_) => sl<AddAvailableDatesBloc>()),
                         BlocProvider(
+                            create: (_) => sl<SetAvailableDatesBloc>()),
+                        BlocProvider(
                             create: (_) => sl<DeleteAvailableDatesBloc>()),
+                        BlocProvider(
+                            create: (_) => sl<AcceptedBookingsCubit>()),
                       ],
                       child: Builder(
                         builder: (context) {

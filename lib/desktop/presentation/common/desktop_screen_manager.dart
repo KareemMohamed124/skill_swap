@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/desktop/presentation/chat_channel/pages/chat_list.dart';
-import 'package:skill_swap/desktop/presentation/chat_channel/pages/chat_screen.dart';
 import 'package:skill_swap/desktop/presentation/game_store/screens/store_screen.dart';
-import 'package:skill_swap/desktop/presentation/home/screens/notification_desktop_panel.dart';
 import 'package:skill_swap/desktop/presentation/profile/screens/profile_screen.dart';
 import 'package:skill_swap/desktop/presentation/search/screens/search_screen.dart';
 import 'package:skill_swap/desktop/presentation/sessions/screens/sessions_screen.dart';
 import 'package:skill_swap/desktop/presentation/setting/screens/setting.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
 
+import '../../../shared/bloc/delete_account_bloc/delete_account_bloc.dart';
 import '../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../shared/bloc/get_users_cubit/users_cubit.dart';
@@ -94,19 +93,19 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
                     sl<PublicChatBloc>()..add(GetPublicChatsEvent())),
           ],
           child: ChatListScreen(
-            onChannelSelected: (chatId, channelName) {
-              openSidePage(
-                body: currentBody ?? getBody(currentIndex),
-                rightPanel: BlocProvider.value(
-                  value: _chatMessagesCubit,
-                  child: ChatScreen(
-                    chatId: chatId,
-                    channelName: channelName,
-                  ),
-                ),
-              );
-            },
-          ),
+              // onChannelSelected: (chatId, channelName) {
+              //   openSidePage(
+              //     body: currentBody ?? getBody(currentIndex),
+              //     rightPanel: BlocProvider.value(
+              //       value: _chatMessagesCubit,
+              //       child: ChatScreen(
+              //         chatId: chatId,
+              //         channelName: channelName,
+              //       ),
+              //     ),
+              //   );
+              // },
+              ),
         );
 
       case 2:
@@ -120,10 +119,13 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
           providers: [
             BlocProvider(create: (_) => sl<GetBookingsCubit>()),
             BlocProvider(create: (_) => sl<StatusBookBloc>()),
-            BlocProvider(create: (_) => sl<PurchaseCubit>()),
+//            BlocProvider(create: (_) => sl<PurchaseCubit>()),
           ],
-          child: SessionsScreen(
-            initialTab: initialSessionTab,
+          child: BlocProvider(
+            create: (_) => sl<PurchaseCubit>(),
+            child: SessionsScreen(
+              initialTab: initialSessionTab,
+            ),
           ),
         );
 
@@ -144,7 +146,8 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   }
 
   final List<Widget?> rightPanels = [
-    NotificationDesktopPanel(),
+    //  NotificationDesktopPanel(),
+    null,
     null,
     null,
     null,
@@ -200,13 +203,8 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
   }
 
   void openProfile({int tab = 0}) {
-    setState(() {
-      currentIndex = 4;
-      initialProfileTab = tab;
-      currentBody = getBody(4);
-      currentRightPanel = rightPanels[4];
-      _history.clear();
-    });
+    initialProfileTab = tab;
+    openPage(index: 4);
   }
 
   @override
@@ -219,6 +217,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         BlocProvider(create: (_) => sl<UsersCubit>()),
         BlocProvider(create: (_) => sl<GetBookingsCubit>()),
         BlocProvider(create: (_) => sl<LogoutBloc>()),
+        BlocProvider(create: (_) => sl<DeleteAccountBloc>()),
       ],
       child: DesktopScaffold(
         sidebar: DesktopSidebar(

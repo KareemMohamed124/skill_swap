@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:skill_swap/desktop/presentation/profile/widgets/availability_card.dart';
 
 import '../../../../main.dart';
+import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/add_available_dates_bloc/add_available_dates_bloc.dart';
 import '../../../../shared/bloc/delete_available_dates/delete_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/get_upcoming_sat_bloc/get_upcoming_sat_bloc.dart';
+import '../../../../shared/bloc/set_available_dates_bloc/set_available_dates_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/user_repository.dart';
@@ -18,7 +20,9 @@ class OverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     return BlocBuilder<MyProfileCubit, MyProfileState>(
       builder: (context, state) {
@@ -38,13 +42,15 @@ class OverviewPage extends StatelessWidget {
           final helpProgress = (helpedHours / requiredHours).clamp(0.0, 1.0);
 
           final totalRequiredSkills =
-              profile.skills.length == 0 ? 1 : profile.skills.length;
+          profile.skills.length == 0 ? 1 : profile.skills.length;
 
           final verifiedSkills =
-              profile.skills.where((s) => s.isVerified).length;
+              profile.skills
+                  .where((s) => s.isVerified)
+                  .length;
 
           final verifyProgress =
-              (verifiedSkills / totalRequiredSkills).clamp(0.0, 1.0);
+          (verifiedSkills / totalRequiredSkills).clamp(0.0, 1.0);
           final isHoursCompleted = helpedHours >= requiredHours;
           final isSkillsVerified = verifiedSkills == totalRequiredSkills;
 
@@ -60,9 +66,13 @@ class OverviewPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: Theme
+                        .of(context)
+                        .cardColor,
                     borderRadius: BorderRadius.circular(32),
-                    border: Border.all(color: Theme.of(context).dividerColor),
+                    border: Border.all(color: Theme
+                        .of(context)
+                        .dividerColor),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -84,12 +94,16 @@ class OverviewPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: Theme
+                        .of(context)
+                        .cardColor,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(color: Colors.black12, blurRadius: 6)
                     ],
-                    border: Border.all(color: Theme.of(context).dividerColor),
+                    border: Border.all(color: Theme
+                        .of(context)
+                        .dividerColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +124,11 @@ class OverviewPage extends StatelessWidget {
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               color:
-                                  Theme.of(context).textTheme.bodyLarge!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .color,
                             ),
                           ),
                         ],
@@ -123,14 +141,22 @@ class OverviewPage extends StatelessWidget {
                             "Help others ($helpedHours/$requiredHours hours)",
                             style: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color,
                             ),
                           ),
                           Text(
                             "${(helpProgress * 100).round()}%",
                             style: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color,
                             ),
                           ),
                         ],
@@ -153,14 +179,22 @@ class OverviewPage extends StatelessWidget {
                             "Verify skills ($verifiedSkills/$totalRequiredSkills required)",
                             style: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color,
                             ),
                           ),
                           Text(
                             "${(verifyProgress * 100).round()}%",
                             style: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodyMedium!.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .color,
                             ),
                           ),
                         ],
@@ -206,14 +240,14 @@ class OverviewPage extends StatelessWidget {
                                 backgroundColor: isMentor
                                     ? Colors.grey.shade300
                                     : canApply
-                                        ? const Color(0XFFF2F5F8)
-                                        : Colors.grey.shade300,
+                                    ? const Color(0XFFF2F5F8)
+                                    : Colors.grey.shade300,
                                 side: BorderSide(
                                   color: isMentor
                                       ? Colors.grey
                                       : canApply
-                                          ? AppPalette.primary
-                                          : Colors.grey,
+                                      ? AppPalette.primary
+                                      : Colors.grey,
                                   width: 2,
                                 ),
                                 padding: const EdgeInsets.all(16),
@@ -225,27 +259,28 @@ class OverviewPage extends StatelessWidget {
                                 if (isMentor) {
                                   showDialog(
                                     context: context,
-                                    builder: (_) => AlertDialog(
-                                      title: const Text("Already a Mentor"),
-                                      content: const Text(
-                                        "You are already a mentor. No need to apply again.",
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: const Text("OK"),
+                                    builder: (_) =>
+                                        AlertDialog(
+                                          title: const Text("Already a Mentor"),
+                                          content: const Text(
+                                            "You are already a mentor. No need to apply again.",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text("OK"),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
                                   );
                                   return;
                                 }
 
                                 if (!canApply) {
                                   final remainingHours =
-                                      (requiredHours - helpedHours)
-                                          .clamp(0, requiredHours);
+                                  (requiredHours - helpedHours)
+                                      .clamp(0, requiredHours);
                                   final remainingSkills =
                                       totalRequiredSkills - verifiedSkills;
 
@@ -254,27 +289,29 @@ class OverviewPage extends StatelessWidget {
 
                                   if (!isHoursCompleted) {
                                     message +=
-                                        "- Complete $requiredHours help hours (You need $remainingHours more hours)\n";
+                                    "- Complete $requiredHours help hours (You need $remainingHours more hours)\n";
                                   }
 
                                   if (!isSkillsVerified) {
                                     message +=
-                                        "- Verify all your skills (You have $remainingSkills unverified skills)";
+                                    "- Verify all your skills (You have $remainingSkills unverified skills)";
                                   }
 
                                   showDialog(
                                     context: context,
-                                    builder: (_) => AlertDialog(
-                                      title: const Text("Requirements not met"),
-                                      content: Text(message),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: const Text("OK"),
+                                    builder: (_) =>
+                                        AlertDialog(
+                                          title: const Text(
+                                              "Requirements not met"),
+                                          content: Text(message),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text("OK"),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
                                   );
                                   return;
                                 }
@@ -284,12 +321,13 @@ class OverviewPage extends StatelessWidget {
                                   showDialog(
                                     context: context,
                                     barrierDismissible: false,
-                                    builder: (_) => const Center(
+                                    builder: (_) =>
+                                    const Center(
                                         child: CircularProgressIndicator()),
                                   );
 
                                   final message = await sl<UserRepository>()
-                                      .requestMentor();
+                                      .requestMentor(30);
 
                                   Navigator.pop(context);
 
@@ -312,8 +350,8 @@ class OverviewPage extends StatelessWidget {
                                   color: isMentor
                                       ? Colors.grey
                                       : canApply
-                                          ? AppPalette.primary
-                                          : Colors.grey,
+                                      ? AppPalette.primary
+                                      : Colors.grey,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -330,7 +368,9 @@ class OverviewPage extends StatelessWidget {
                     BlocProvider(create: (_) => sl<GetUpcomingSatBloc>()),
                     BlocProvider(create: (_) => sl<GetAvailableDatesBloc>()),
                     BlocProvider(create: (_) => sl<AddAvailableDatesBloc>()),
+                    BlocProvider(create: (_) => sl<SetAvailableDatesBloc>()),
                     BlocProvider(create: (_) => sl<DeleteAvailableDatesBloc>()),
+                    BlocProvider(create: (_) => sl<AcceptedBookingsCubit>()),
                   ],
                   child: Builder(
                     builder: (context) {
@@ -398,15 +438,27 @@ class OverviewPage extends StatelessWidget {
       child: Row(
         children: [
           Icon(Icons.circle,
-              size: 10, color: Theme.of(context).textTheme.bodyLarge!.color),
+              size: 10, color: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .color),
           const SizedBox(width: 10),
           Expanded(
               child: Text(title,
                   style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyMedium!.color))),
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .color))),
           Text(time,
               style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium!.color))
+                  color: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .color))
         ],
       ),
     );
@@ -417,7 +469,9 @@ class OverviewPage extends StatelessWidget {
     required String rate,
     required String info,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
     return Column(
       children: [
         Text(

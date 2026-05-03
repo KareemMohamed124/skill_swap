@@ -37,6 +37,7 @@ class _NotificationApi implements NotificationApi {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+
     return _result.data!;
   }
 
@@ -61,7 +62,8 @@ class _NotificationApi implements NotificationApi {
 
   @override
   Future<Map<String, dynamic>> sendNotification(
-      SendNotificationRequest body) async {
+    SendNotificationRequest body,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -78,6 +80,7 @@ class _NotificationApi implements NotificationApi {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+
     return _result.data!;
   }
 

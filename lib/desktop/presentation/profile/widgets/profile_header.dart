@@ -12,19 +12,19 @@ class ProfileHeader extends StatelessWidget {
       builder: (context, state) {
         String name = "User";
         String imagePath = '';
-        int freeHours = 0;
-        int helpHours = 0;
-        int rating = 0;
+        num freeHours = 0;
+        num helpHours = 0;
+        num rating = 0.0;
 
         if (state is MyProfileLoaded) {
           final profile = state.profile;
 
           name = profile.name.isNotEmpty ? profile.name : "User";
           imagePath = profile.userImage.secureUrl ?? '';
-          freeHours = profile.freeHours;
-          helpHours = profile.helpTotalHours;
+          freeHours = profile.freeHours ?? 0;
+          helpHours = profile.helpTotalHours ?? 0;
 
-          rating = profile.rate ?? 4;
+          rating = profile.rate ?? 0.0;
         }
 
         final hasImage = imagePath.isNotEmpty;

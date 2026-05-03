@@ -50,10 +50,14 @@
 
         </activity>
 
+        <service
+            android:name=".ScreenCaptureService"
+            android:foregroundServiceType="mediaProjection"
+            android:exported="false" />
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
     </application>
 
     <queries>

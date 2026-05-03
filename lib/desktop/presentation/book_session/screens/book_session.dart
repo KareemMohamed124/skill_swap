@@ -28,7 +28,7 @@ class Booking {
 class BookSessionDesktop extends StatefulWidget {
   final String userId;
   final String userName;
-  final int price;
+  final num price;
   final String? bookingId;
   final List<AvailableDates> availableDates;
   final String role;
@@ -84,7 +84,7 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
   Future<void> _init() async {
     myId = widget.userId;
 
-    await acceptedCubit.getAcceptedBookings();
+    await acceptedCubit.getAcceptedBookings(widget.userId);
 
     final firstAvailableDay = widget.availableDates.firstWhere(
       (day) => !isDayFullyBooked(day),
@@ -182,6 +182,12 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
 
   String to24Hour(DateTime time) {
     return DateFormat('HH:mm').format(time);
+  }
+
+  bool get isFreeSession {
+    if (widget.role != "Mentor") return true;
+
+    return paymentMethod == "barter";
   }
 
   bool isDayFullyBooked(AvailableDates day) {
@@ -289,7 +295,8 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
 
                     return Booking(
                       start: dateTime,
-                      end: dateTime.add(Duration(minutes: b.durationMins)),
+                      end: dateTime
+                          .add(Duration(minutes: b.durationMins.toInt())),
                       status: b.status,
                     );
                   }).toList();
@@ -317,8 +324,8 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
                       if (state is BookingCancelledSuccess) {
                         showAppDialog(
                           context: context,
-                          type: DialogType.warning,
-                          message: "Booking cancelled",
+                          type: DialogType.success,
+                          message: "Booking cancelled successfully",
                           autoCloseDuration: const Duration(seconds: 5),
                         );
                       }
@@ -521,9 +528,9 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
                                             date: selectedDate!,
                                             time: to24Hour(startTime!),
                                             duration_mins: durationMinutes,
-                                            price: paymentMethod == "pay"
-                                                ? widget.price
-                                                : 0,
+                                            // isFree: widget.role == "Mentor"
+                                            //     ? (paymentMethod == "barter")
+                                            //     : true,
                                           );
 
                                           context.read<ActiveBookingBloc>().add(
@@ -549,12 +556,9 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
                                               time: to24Hour(startTime!),
                                               duration_mins: durationMinutes,
                                               instructorId: widget.userId,
-                                              price: paymentMethod == "pay"
-                                                  ? calculateSessionPrice(
-                                                      hourlyRate: widget.price,
-                                                      durationInMinutes:
-                                                          durationMinutes)
-                                                  : 0,
+                                              isFree: widget.role == "Mentor"
+                                                  ? (paymentMethod == "barter")
+                                                  : true,
                                             );
 
                                             context

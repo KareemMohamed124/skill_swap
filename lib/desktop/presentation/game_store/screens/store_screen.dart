@@ -32,7 +32,6 @@ class _StoreScreenState extends State<StoreScreen> {
                 prev.successMessage != curr.successMessage ||
                 prev.errorMessage != curr.errorMessage,
             listener: (context, state) {
-              // ✅ SUCCESS DIALOG
               if (state.successMessage != null) {
                 showAppDialog(
                   context: context,

@@ -38,6 +38,15 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   @override
+  void didUpdateWidget(covariant ProfileScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.initialTab != widget.initialTab) {
+      _tabController.animateTo(widget.initialTab);
+    }
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();

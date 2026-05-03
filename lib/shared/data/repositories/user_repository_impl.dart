@@ -92,7 +92,16 @@ class UserRepositoryImpl extends UserRepository {
   @override
   Future<MyProfile> getMyProfile() async {
     final response = await api.getMyProfile();
-    return response.user;
+
+    // if (response.message.toLowerCase().contains('blocked')) {
+    //   throw Exception(response.message);
+    // }
+    //
+    // if (response.user == null) {
+    //   throw Exception("Invalid profile response");
+    // }
+
+    return response.user!;
   }
 
   String _getServerErrorMessage(DioException e) {
@@ -154,7 +163,7 @@ class UserRepositoryImpl extends UserRepository {
   Future<UpdateProfileResponse> updateProfile(
       UpdateProfileRequest request) async {
     try {
-      final response = await api.updateProfile(request);
+      final response = await api.updateProfile(request.toJson());
       return UpdateProfileData.fromJson(response);
     } on DioException catch (e) {
       String serverMessage = "Network Error";
@@ -240,9 +249,11 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<String> requestMentor() async {
+  Future<String> requestMentor(num hourlyPrice) async {
     try {
-      final response = await api.requestMentor();
+      final response = await api.requestMentor({
+        "hourlyPrice": hourlyPrice,
+      });
       return response['message'];
     } on DioException catch (e) {
       return _getServerErrorMessage(e);
@@ -252,7 +263,7 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
-  Future<void> setActiveTheme(String themeId) async {
-    await api.setActiveTheme(themeId);
+  Future<void> setActiveTheme(String? themeId) async {
+    await api.setActiveTheme({"themeId": themeId});
   }
 }

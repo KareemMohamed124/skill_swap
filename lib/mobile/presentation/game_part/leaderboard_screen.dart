@@ -41,8 +41,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Scaffold(
       body: Stack(
@@ -71,7 +77,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight * 0.85),
               decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Theme
+                    .of(context)
+                    .scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(screenWidth * 0.06),
                   topRight: Radius.circular(screenWidth * 0.06),
@@ -79,9 +87,22 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               ),
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: users.length,
+                  : Column(
+                children: [
+                  _buildTableHeader(),
+
+                  /// optional divider
+                  Container(
+                    height: 1,
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    color: Colors.grey.withOpacity(0.2),
+                  ),
+
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      itemCount: 10,
                       itemBuilder: (context, index) {
                         final user = users[index];
                         final rank = index + 1;
@@ -90,6 +111,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         return _buildItem(user, rank, isMe);
                       },
                     ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -98,16 +122,61 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 }
 
+/// 🔹 HEADER (Rank | Player | Score)
+Widget _buildTableHeader() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    child: Row(
+      children: [
+        SizedBox(
+          width: 60,
+          child: Text(
+            "RANK",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1.2,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            "PLAYER",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1.2,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 60,
+          child: Text(
+            "SCORE",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1.2,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// 🔹 Rank Color
 Color getRankColor(int rank) {
-  if (rank == 1) {
-    return Colors.amber.shade700;
-  } else if (rank == 2) {
-    return Colors.grey.shade500;
-  } else if (rank == 3) {
-    return Colors.deepOrange.shade700;
-  } else {
-    return AppPalette.primary;
-  }
+  if (rank == 1) return Colors.amber.shade700;
+  if (rank == 2) return Colors.grey.shade500;
+  if (rank == 3) return Colors.deepOrange.shade700;
+  return AppPalette.primary;
 }
 
 Widget _buildItem(UserModel user, int rank, bool isMe) {
@@ -123,8 +192,6 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
         Color(0xFFFFC107),
         Color(0xFFFFA000),
       ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
     );
   } else if (rank == 2) {
     backgroundGradient = const LinearGradient(
@@ -133,8 +200,6 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
         Color(0xFFB0BEC5),
         Color(0xFF90A4AE),
       ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
     );
   } else if (rank == 3) {
     backgroundGradient = const LinearGradient(
@@ -143,13 +208,10 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
         Color(0xFFF57C00),
         Color(0xFFE65100),
       ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
     );
   } else {
-    backgroundGradient = const LinearGradient(
-      colors: [Colors.white, Colors.white],
-    );
+    backgroundGradient =
+    const LinearGradient(colors: [Colors.white, Colors.white]);
   }
 
   return AnimatedContainer(
@@ -168,143 +230,87 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
       ],
       border: isMe ? Border.all(color: AppPalette.primary, width: 2) : null,
     ),
-    child: Stack(
+    child: Row(
       children: [
-        Row(
-          children: [
-            _buildRankBadge(rank),
-            const SizedBox(width: 14),
+        _buildRankBadge(rank),
+        const SizedBox(width: 14),
 
-            /// Avatar
-            Container(
-              decoration: rank <= 3
-                  ? BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: rankColor.withOpacity(0.6),
-                          blurRadius: 18,
-                          spreadRadius: 1,
-                        )
-                      ],
-                    )
-                  : null,
-              child: CircleAvatar(
-                radius: rank <= 3 ? 30 : 22,
-                backgroundColor: AppPalette.primary.withOpacity(0.15),
-                backgroundImage: (user.userImage.secureUrl != null &&
-                        user.userImage.secureUrl!.isNotEmpty)
-                    ? NetworkImage(user.userImage.secureUrl!)
-                    : null,
-                child: (user.userImage.secureUrl == null ||
-                        user.userImage.secureUrl!.isEmpty)
-                    ? Text(
-                        displayName[0].toUpperCase(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: rank <= 3 ? 22 : 14,
-                          color: AppPalette.primary,
-                        ),
-                      )
-                    : null,
-              ),
+        /// Avatar
+        CircleAvatar(
+          radius: rank <= 3 ? 30 : 22,
+          backgroundColor: AppPalette.primary.withOpacity(0.15),
+          backgroundImage: (user.userImage.secureUrl != null &&
+              user.userImage.secureUrl!.isNotEmpty)
+              ? NetworkImage(user.userImage.secureUrl!)
+              : null,
+          child: (user.userImage.secureUrl == null ||
+              user.userImage.secureUrl!.isEmpty)
+              ? Text(
+            displayName[0],
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: rank <= 3 ? 22 : 14,
+              color: AppPalette.primary,
             ),
-
-            const SizedBox(width: 14),
-
-            /// Name
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: TextStyle(
-                      fontSize: rank <= 3 ? 18 : 15,
-                      fontWeight: isMe ? FontWeight.bold : FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Score player",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            /// Score
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppPalette.primary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                user.totalScore.toString(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppPalette.primary,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ],
+          )
+              : null,
         ),
-        if (rank <= 3)
-          Positioned(
-            right: 80,
-            top: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: rankColor.withOpacity(0.7),
-                    blurRadius: 14,
-                    spreadRadius: 1,
-                  )
-                ],
-              ),
-              child: Icon(
-                Icons.emoji_events,
-                size: 30,
-                color: rankColor,
-              ),
+
+        const SizedBox(width: 14),
+
+        /// Name
+        Expanded(
+          child: Text(
+            displayName,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: rank <= 3 ? 18 : 15,
+              fontWeight: isMe ? FontWeight.bold : FontWeight.w600,
             ),
           ),
+        ),
+
+        if (rank <= 3)
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Icon(
+              Icons.emoji_events,
+              size: 30,
+              color: rankColor,
+            ),
+          ),
+
+        /// Score
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppPalette.primary.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Text(
+            user.totalScore.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppPalette.primary,
+              fontSize: 16,
+            ),
+          ),
+        ),
       ],
     ),
   );
 }
 
+/// 🔹 Rank Badge
 Widget _buildRankBadge(int rank) {
   final color = getRankColor(rank);
 
-  return AnimatedContainer(
-    duration: const Duration(milliseconds: 500),
-    curve: Curves.easeInOut,
+  return Container(
     width: rank <= 3 ? 52 : 44,
     height: rank <= 3 ? 52 : 44,
     decoration: BoxDecoration(
       color: color.withOpacity(0.25),
       borderRadius: BorderRadius.circular(14),
-      boxShadow: [
-        BoxShadow(
-          color: color.withOpacity(rank <= 3 ? 0.6 : 0.3),
-          blurRadius: rank <= 3 ? 14 : 8,
-          offset: const Offset(0, 4),
-        )
-      ],
-      gradient: rank <= 3
-          ? LinearGradient(
-              colors: [color.withOpacity(0.5), color.withOpacity(0.2)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            )
-          : null,
     ),
     alignment: Alignment.center,
     child: Text(

@@ -1,8 +1,6 @@
 // widgets/fantasy_store_header.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/utils.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
 import '../../../../main.dart';
@@ -18,7 +16,7 @@ class FantasyStoreHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final coins = context.select<MyProfileCubit, int>(
+    final coins = context.select<MyProfileCubit, num>(
       (cubit) => cubit.coins,
     );
     return Container(

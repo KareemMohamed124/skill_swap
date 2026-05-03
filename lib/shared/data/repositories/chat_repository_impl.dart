@@ -10,6 +10,7 @@ import '../models/join_track/join_response.dart';
 import '../models/join_track/join_track_error_response.dart';
 import '../models/join_track/join_track_success_response.dart';
 import '../models/public_chat/get_chat_model.dart';
+import '../models/public_chat/search_response.dart';
 import '../web_services/chat/chat_api_service.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -196,6 +197,19 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<void> leaveChat(String chatId) async {
     try {
       await api.leaveChat(chatId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<List<MessageModel>> searchMessages(String chatId, String query) async {
+    try {
+      final response = await api.searchMessages(chatId, query);
+
+      final searchResponse = SearchResponse.fromJson(response);
+
+      return searchResponse.results;
     } on DioException catch (e) {
       throw _extractError(e);
     }

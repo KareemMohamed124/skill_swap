@@ -83,12 +83,6 @@ class CustomHeader extends StatelessWidget {
             ),
 
             /// Notification Button
-            circleButton(
-              context: context,
-              icon: Icons.notifications_none,
-              onTap: onIcon2,
-              screenWidth: screenWidth,
-            ),
           ],
         ),
       ),

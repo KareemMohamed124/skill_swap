@@ -29,9 +29,11 @@ class _GameSectionState extends State<GameSection> {
   static const Color primaryColor = Color(0xFF3F51B5);
 
   final List<String> images = [
-    "assets/images/people_images/Ahmed Ibrahim.png",
-    "assets/images/people_images/Ahmed Ibrahim.png",
-    "assets/images/people_images/Ahmed Ibrahim.png",
+    "assets/images/leaderboard_images/image1.jpeg",
+    "assets/images/leaderboard_images/image2.jpeg",
+    "assets/images/leaderboard_images/image3.jpeg",
+    "assets/images/leaderboard_images/image4.jpeg",
+    "assets/images/leaderboard_images/image5.jpeg",
   ];
 
   @override

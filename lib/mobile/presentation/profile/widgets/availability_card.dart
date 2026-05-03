@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/add_available_dates_bloc/add_available_dates_bloc.dart';
 import '../../../../shared/bloc/delete_available_dates/delete_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_upcoming_sat_bloc/get_upcoming_sat_bloc.dart';
+import '../../../../shared/bloc/set_available_dates_bloc/set_available_dates_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
-import '../../../../shared/data/models/booking_availability/add_available_dates.dart';
 import '../../../../shared/data/models/booking_availability/available_dates.dart';
+import '../../../../shared/data/models/booking_availability/set_available_dates.dart';
 import 'availability_bottom_sheet.dart';
 import 'manage_bottom_sheet.dart';
 
@@ -41,6 +43,41 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
     return date.subtract(Duration(days: diff));
   }
 
+  List<String> generateMonthlyDates({
+    required String weekday,
+  }) {
+    final map = {
+      "Sun": DateTime.sunday,
+      "Mon": DateTime.monday,
+      "Tue": DateTime.tuesday,
+      "Wed": DateTime.wednesday,
+      "Thu": DateTime.thursday,
+      "Fri": DateTime.friday,
+      "Sat": DateTime.saturday,
+    };
+
+    final targetWeekday = map[weekday]!;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    List<String> result = [];
+
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+
+    for (int i = 1; i <= daysInMonth; i++) {
+      final date = DateTime(now.year, now.month, i);
+
+      if (date.weekday == targetWeekday && !date.isBefore(today)) {
+        result.add(
+          "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        );
+      }
+    }
+
+    return result;
+  }
+
   void openManageSheet(List availableDates, DateTime startOfWeek) {
     showModalBottomSheet(
       context: context,
@@ -53,8 +90,10 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
           BlocProvider.value(value: context.read<GetAvailableDatesBloc>()),
           BlocProvider.value(value: context.read<DeleteAvailableDatesBloc>()),
           BlocProvider.value(value: context.read<AddAvailableDatesBloc>()),
+          BlocProvider.value(value: context.read<AcceptedBookingsCubit>()),
         ],
         child: ManageAvailabilityBottomSheet(
+          instructorId: widget.instructorId,
           availableDates: availableDates,
           onAddPressed: () {
             Navigator.pop(bottomSheetContext);
@@ -77,7 +116,7 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
       builder: (_) => MultiBlocProvider(
         providers: [
           BlocProvider.value(
-            value: context.read<AddAvailableDatesBloc>(),
+            value: context.read<SetAvailableDatesBloc>(),
           ),
         ],
         child: AvailabilityBottomSheet(
@@ -96,23 +135,66 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
     );
 
     if (result != null) {
-      String day = result['day'];
-      String from = result['from'];
-      String to = result['to'];
-      String repeat = result['repeat'];
+      final days = result['days'] as List<String>;
+      final from = result['from'];
+      final to = result['to'];
+      final repeat = result['repeat'];
 
-      final date = _getDateFromDay(day, startOfWeek);
+      List<String> allDates = [];
 
-      context.read<AddAvailableDatesBloc>().add(
-            SubmitAvailableDates(
-              AddAvailableDates(
-                date: date,
-                from: _convertTo24(from),
-                to: _convertTo24(to),
-                rotationType: repeat,
-              ),
-            ),
-          );
+      for (final day in days) {
+        if (repeat == "weekly") {
+          final date = _getDateFromDay(day, startOfWeek);
+          allDates.add(date);
+        } else if (repeat == "monthly") {
+          final dates = generateMonthlyDates(weekday: day);
+
+          if (dates.isEmpty) {
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text("No Available Days"),
+                  content: Text(
+                    "There are no remaining $day days in this month.",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        "OK",
+                        style: TextStyle(color: AppPalette.primary),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return;
+          }
+
+          allDates.addAll(dates);
+        }
+      }
+
+      if (allDates.isNotEmpty) {
+        if (context.mounted) {
+          context.read<SetAvailableDatesBloc>().add(
+                SubmitSetAvailableDates(
+                  SetAvailableDates(
+                    availableDates: allDates.map((d) {
+                      return Dates(
+                        date: d,
+                        from: _convertTo24(from),
+                        to: _convertTo24(to),
+                      );
+                    }).toList(),
+                    rotationType: repeat,
+                  ),
+                ),
+              );
+        }
+      }
     }
   }
 
@@ -169,20 +251,19 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<AddAvailableDatesBloc, AddAvailableDatesState>(
+        BlocListener<SetAvailableDatesBloc, SetAvailableDatesState>(
           listener: (context, state) {
-            if (state is AddAvailableDatesSuccess) {
+            if (state is SetAvailableDatesSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Added successfully")),
+                const SnackBar(content: Text("Saved successfully")),
               );
 
-              // ✅ Refresh بدل الدمج
               context.read<GetAvailableDatesBloc>().add(
                     FetchAvailableDates(widget.instructorId),
                   );
             }
 
-            if (state is AddAvailableDatesError) {
+            if (state is SetAvailableDatesError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
@@ -264,11 +345,9 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                     ),
                   ),
                 const SizedBox(height: 12),
-
-                /// ✅ زرار فيه loading بس
-                BlocBuilder<AddAvailableDatesBloc, AddAvailableDatesState>(
+                BlocBuilder<SetAvailableDatesBloc, SetAvailableDatesState>(
                   builder: (context, addState) {
-                    final isLoading = addState is AddAvailableDatesLoading;
+                    final isLoading = addState is SetAvailableDatesLoading;
 
                     return SizedBox(
                       width: double.infinity,
@@ -305,7 +384,7 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                                   ),
                                   SizedBox(width: 10),
                                   Text(
-                                    "Adding...",
+                                    "Saving...",
                                     style: TextStyle(
                                       color: Color(0XFFF2F5F8),
                                       fontWeight: FontWeight.bold,
@@ -323,7 +402,7 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                       ),
                     );
                   },
-                ),
+                )
               ],
             ),
           );

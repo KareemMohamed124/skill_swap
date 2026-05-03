@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../book_session/screens/book_session.dart';
 import '../../book_session/screens/profile_mentor.dart';
 import '../models/details_model.dart';
 
@@ -262,11 +261,11 @@ class SessionDetailsPage extends StatelessWidget {
         trailing: Icon(Icons.arrow_forward_ios,
             size: 16, color: Theme.of(context).textTheme.bodyMedium!.color),
         onTap: () {
-          Get.to(BookSessionScreen(
-            userId: session.mentorId,
-            userName: session.mentorName,
-            price: 100,
-          ));
+          // Get.to(BookSessionScreen(
+          //   userId: session.mentorId,
+          //   userName: session.mentorName,
+          //   price: 100,
+          // ));
         },
       ),
     );

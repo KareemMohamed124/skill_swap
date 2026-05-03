@@ -5,6 +5,7 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../desktop/presentation/skill_verification/result_screen.dart';
 import '../../../mobile/presentation/skill_verification/result_screen.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 
@@ -30,7 +31,7 @@ class QuizQuestion {
 
 class QuizController extends GetxController {
   static const int totalTimeInSeconds = 15 * 60;
-  static const apiKey = "AIzaSyC01uAFY1ERFMEFDsLltnq6PQ4v1FsVS04";
+  static const apiKey = "AIzaSyCNE3eSwqFxqijj5KCA3aEaydNA4buFSPs";
   final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;
@@ -158,15 +159,29 @@ No explanation, no text outside the JSON.
   }
 
   void goToResult() {
-    Get.to(
-      () => ResultScreen(),
-      arguments: {
-        'score': correct.value,
-        'total': questions.length,
-        'skill': currentSkill.value,
-        'fromAddSkill': fromAddSkill.value
-      },
-    );
+    final isDesktop = GetPlatform.isDesktop;
+
+    if (isDesktop) {
+      Get.to(
+        () => ResultDesktop(),
+        arguments: {
+          'score': correct.value,
+          'total': questions.length,
+          'skill': currentSkill.value,
+          'fromAddSkill': fromAddSkill.value,
+        },
+      );
+    } else {
+      Get.to(
+        () => ResultScreen(),
+        arguments: {
+          'score': correct.value,
+          'total': questions.length,
+          'skill': currentSkill.value,
+          'fromAddSkill': fromAddSkill.value,
+        },
+      );
+    }
   }
 
   /// Sends the quiz score to the backend for skill verification.

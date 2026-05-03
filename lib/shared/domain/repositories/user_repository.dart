@@ -79,7 +79,7 @@ abstract class UserRepository {
 
   Future<DeleteAccountResponse> deleteAccount();
 
-  Future<String> requestMentor();
+  Future<String> requestMentor(num hourlyPrice);
 
-  Future<void> setActiveTheme(String themeId);
+  Future<void> setActiveTheme(String? themeId);
 }

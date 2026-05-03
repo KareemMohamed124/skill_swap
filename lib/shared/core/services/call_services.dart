@@ -1,33 +1,28 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class CallService {
   RTCPeerConnection? peerConnection;
   MediaStream? localStream;
   MediaStream? screenStream;
+
   bool isScreenSharing = false;
 
-  // ================= HELPER =================
-  bool get _isWindows =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
+  static const _channel = MethodChannel('skill_swap/screen_capture');
 
   bool get _isAndroid =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
+  // ================= LOCAL =================
   Future<void> initLocalStream() async {
-    if (_isWindows) {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        'video': true,
-        'audio': true,
-      });
-    } else {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        'video': {'facingMode': 'user'},
-        'audio': true,
-      });
-    }
+    localStream = await navigator.mediaDevices.getUserMedia({
+      'video': {'facingMode': 'user'},
+      'audio': true,
+    });
   }
 
+  // ================= PEER =================
   Future<void> initPeerConnection() async {
     peerConnection = await createPeerConnection({
       "iceServers": [
@@ -35,11 +30,6 @@ class CallService {
         {"urls": "stun:stun1.l.google.com:19302"},
         {
           "urls": "turn:openrelay.metered.ca:80",
-          "username": "openrelayproject",
-          "credential": "openrelayproject",
-        },
-        {
-          "urls": "turn:openrelay.metered.ca:443",
           "username": "openrelayproject",
           "credential": "openrelayproject",
         },
@@ -52,95 +42,81 @@ class CallService {
     }
   }
 
-  // ================= SCREEN SHARE =================
-  Future<void> startScreenShare() async {
-    try {
-      if (_isAndroid) {
-        screenStream = await navigator.mediaDevices.getDisplayMedia({
-          'video': true,
-          'audio': false,
-        });
-      }
-      // Windows يتعامل معاه من الـ UI عن طريق startScreenShareWithSource
-
-      if (screenStream == null) return;
-      await _replaceVideoTrack(screenStream!.getVideoTracks().first);
-      isScreenSharing = true;
-
-      screenStream!.getVideoTracks().first.onEnded = () {
-        stopScreenShare();
-      };
-    } catch (e) {
-      print('❌ Screen share error: $e');
-      isScreenSharing = false;
-    }
-  }
-
-  Future<List<DesktopCapturerSource>> getScreenSources() async {
-    if (_isWindows) {
-      return await desktopCapturer.getSources(
-        types: [SourceType.Screen, SourceType.Window],
-      );
-    }
-    return [];
-  }
-
-  Future<void> startScreenShareWithSource(DesktopCapturerSource source) async {
-    try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({
-        'video': {
-          'deviceId': {'exact': source.id},
-          'mandatory': {
-            'minWidth': 1280,
-            'minHeight': 720,
-            'minFrameRate': 15,
-          }
-        },
-        'audio': false,
-      });
-
-      if (screenStream == null) return;
-      await _replaceVideoTrack(screenStream!.getVideoTracks().first);
-      isScreenSharing = true;
-
-      screenStream!.getVideoTracks().first.onEnded = () {
-        stopScreenShare();
-      };
-    } catch (e) {
-      print('❌ Screen share with source error: $e');
-    }
-  }
-
-  // ================= HELPER - Replace Track =================
-  Future<void> _replaceVideoTrack(MediaStreamTrack newTrack) async {
+  // ================= REPLACE TRACK =================
+  Future<RTCSessionDescription?> replaceVideoTrack(
+      MediaStreamTrack newTrack) async {
     final senders = await peerConnection!.getSenders();
+
     for (var sender in senders) {
       if (sender.track?.kind == 'video') {
         await sender.replaceTrack(newTrack);
-        break;
+
+        final offer = await peerConnection!.createOffer();
+        await peerConnection!.setLocalDescription(offer);
+
+        return offer;
       }
+    }
+    return null;
+  }
+
+  // ================= SCREEN SHARE =================
+  Future<RTCSessionDescription?> startScreenShare() async {
+    try {
+      // ✅ Android فقط - Desktop مش محتاجها
+      if (_isAndroid) {
+        await _channel.invokeMethod('startScreenCaptureService');
+      }
+
+      screenStream = await navigator.mediaDevices.getDisplayMedia({
+        'video': true,
+        'audio': false,
+      });
+
+      if (screenStream == null) return null;
+
+      isScreenSharing = true;
+
+      screenStream!.getVideoTracks().first.onEnded = () {
+        stopScreenShare();
+      };
+
+      return await replaceVideoTrack(
+        screenStream!.getVideoTracks().first,
+      );
+    } catch (e) {
+      debugPrint("❌ Screen share error: $e");
+      isScreenSharing = false;
+      return null;
     }
   }
 
-  Future<void> stopScreenShare() async {
-    if (!isScreenSharing) return;
+  Future<RTCSessionDescription?> stopScreenShare() async {
+    if (!isScreenSharing) return null;
 
     final cameraTrack = localStream?.getVideoTracks().first;
+    RTCSessionDescription? offer;
+
     if (cameraTrack != null) {
-      await _replaceVideoTrack(cameraTrack);
+      offer = await replaceVideoTrack(cameraTrack);
     }
 
     await screenStream?.dispose();
     screenStream = null;
     isScreenSharing = false;
+
+    // ✅ Android فقط
+    if (_isAndroid) {
+      await _channel.invokeMethod('stopScreenCaptureService');
+    }
+
+    return offer;
   }
 
   Future<void> dispose() async {
-    await screenStream?.dispose();
     await localStream?.dispose();
+    await screenStream?.dispose();
     await peerConnection?.close();
     peerConnection = null;
-    localStream = null;
-    screenStream = null;
   }
 }

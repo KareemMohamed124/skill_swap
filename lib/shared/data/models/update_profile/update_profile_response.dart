@@ -17,7 +17,7 @@ class UpdateProfileData extends UpdateProfileResponse {
   factory UpdateProfileData.fromJson(Map<String, dynamic> json) {
     return UpdateProfileData(
       message: json['message'] ?? '',
-      user: UpdateUser.fromJson(json['user']),
+      user: UpdateUser.fromJson(json['user'] ?? {}),
     );
   }
 }

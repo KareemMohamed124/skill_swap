@@ -22,13 +22,10 @@ class StartScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Spacer(),
-
                   Image.asset(
                     'assets/logo/logoStart.png',
                   ),
-
                   const SizedBox(height: 16),
-
                   Text(
                     'Welcome to \nSkillSwap',
                     textAlign: TextAlign.center,
@@ -38,30 +35,24 @@ class StartScreen extends StatelessWidget {
                       color: AppPalette.primary,
                     ),
                   ),
-
                   const SizedBox(height: 64),
-
                   Text(
                     'Learn new skills, teach others, and grow together in our collaborative learning community',
                     textAlign: TextAlign.center,
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       height: 1.4,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
-
                   const Spacer(),
-
                   CustomButton(
                     text: 'Get Start',
                     onPressed: () {
-                      Get.to(SignUpScreen());
+                      Get.to(SignUpDesktop());
                     },
                   ),
-
                   const SizedBox(height: 16),
-
                   CustomButton(
                     text: 'I already have an account',
                     colorButton: Colors.white,
@@ -69,11 +60,11 @@ class StartScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignInDesktop()),
+                        MaterialPageRoute(
+                            builder: (context) => SignInDesktop()),
                       );
                     },
                   ),
-
                   const SizedBox(height: 32),
                 ],
               ),

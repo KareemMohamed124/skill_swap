@@ -6,6 +6,7 @@ import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../pages/pending_sessions_page.dart';
 import '../pages/requests_sessions_page.dart';
+import '../pages/rjected_session_page.dart';
 import '../pages/upcoming_sessions_page.dart';
 import '../widgets/session_header.dart';
 
@@ -25,6 +26,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
     UpcomingSessionsPage(),
     PendingSessionsPage(),
     RequestsSessionsPage(),
+    RejectedSessionsPage()
   ];
 
   String get currentStatus {
@@ -35,6 +37,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
         return "pending";
       case 2:
         return "pending";
+      case 3:
+        return "rejected";
       default:
         return "accepted";
     }
@@ -69,6 +73,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   context
                       .read<GetBookingsCubit>()
                       .fetchAllBookings(currentStatus);
+                  context.read<PurchaseCubit>().getPurchases();
                 },
                 title: "sessions".tr,
                 subtitle: "track_upcoming".tr,

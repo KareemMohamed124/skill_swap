@@ -29,22 +29,30 @@ class _SessionsScreenState extends State<SessionsScreen>
   void initState() {
     super.initState();
 
-    // ✅ مهم: initialTab هنا
     _tabController = TabController(
       length: 3,
       vsync: this,
       initialIndex: widget.initialTab,
     );
 
-    // أول تحميل حسب التاب الحالي
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchByIndex(_tabController.index);
-    });
-
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
       _fetchByIndex(_tabController.index);
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchByIndex(_tabController.index);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant SessionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.initialTab != widget.initialTab) {
+      _tabController.animateTo(widget.initialTab);
+      _fetchByIndex(widget.initialTab);
+    }
   }
 
   void _fetchByIndex(int index) {

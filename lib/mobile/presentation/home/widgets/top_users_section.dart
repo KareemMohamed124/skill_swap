@@ -15,7 +15,9 @@ class TopUsersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true, topUsers: true),
+      create: (_) =>
+      sl<UsersCubit>()
+        ..fetchUsers(reset: true, topUsers: true),
       child: const _TopUsersList(),
     );
   }
@@ -40,7 +42,7 @@ class _TopUsersListState extends State<_TopUsersList> {
   void _scrollListener() {
     final cubit = context.read<UsersCubit>();
     if (_controller.position.pixels >=
-            _controller.position.maxScrollExtent - 150 &&
+        _controller.position.maxScrollExtent - 150 &&
         cubit.state is UsersLoaded) {
       final state = cubit.state as UsersLoaded;
       if (!state.isLoadingMore && !state.isLastPage) {
@@ -58,7 +60,10 @@ class _TopUsersListState extends State<_TopUsersList> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
 
     return SizedBox(
       height: screenHeight * 0.18,
@@ -97,7 +102,7 @@ class _TopUsersListState extends State<_TopUsersList> {
                         role: u.role,
                         hoursAvailable: u.freeHours,
                         peopleHelped: u.helpTotalHours,
-                        hourlyRate: 0,
+                        hourlyRate: u.hourlyPrice,
                         reviews: u.reviews,
                       ));
                     },
@@ -116,8 +121,8 @@ class _TopUsersListState extends State<_TopUsersList> {
                     padding: EdgeInsets.symmetric(horizontal: 32),
                     child: Center(
                         child: CircularProgressIndicator(
-                      color: AppPalette.primary,
-                    )),
+                          color: AppPalette.primary,
+                        )),
                   );
                 }
               },

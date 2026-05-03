@@ -24,21 +24,21 @@ import '../../../shared/data/models/update_profile/update_profile_request.dart';
 import '../../../shared/data/models/update_profile/update_skill.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 
-class ResultScreen extends StatefulWidget {
+class ResultDesktop extends StatefulWidget {
   final bool fromAddSkill;
   final String? skillName;
 
-  const ResultScreen({
+  const ResultDesktop({
     super.key,
     this.fromAddSkill = false,
     this.skillName,
   });
 
   @override
-  State<ResultScreen> createState() => _ResultScreenState();
+  State<ResultDesktop> createState() => _ResultDesktopState();
 }
 
-class _ResultScreenState extends State<ResultScreen> {
+class _ResultDesktopState extends State<ResultDesktop> {
   late final int score;
   late final int total;
   late final String skillName;
@@ -79,7 +79,7 @@ class _ResultScreenState extends State<ResultScreen> {
     final canAdd = profileCubit.canAddSkill(skillName);
 
     return Scaffold(
-      backgroundColor: AppPalette.primary, // 👈 نفس الكويز
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),

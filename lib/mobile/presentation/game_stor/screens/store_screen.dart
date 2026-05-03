@@ -7,7 +7,6 @@ import '../../../../shared/bloc/store_cubit/store_state.dart';
 import '../../../../shared/common_ui/error_dialog.dart';
 import '../widgets/fantasy_store_header.dart';
 import '../widgets/store_item_card.dart';
-import '../widgets/timer_widget.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -74,16 +73,14 @@ class _StoreScreenState extends State<StoreScreen> {
                           );
                         }
 
-                        return GridView.builder(
-                          padding: const EdgeInsets.all(12),
+                        // const SizedBox(height: 10),
+                        return ListView.separated(
+                          shrinkWrap: true,
                           itemCount: state.items.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.75,
-                          ),
-                          itemBuilder: (_, i) {
-                            final item = state.items[i];
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 8),
+                          itemBuilder: (context, index) {
+                            final item = state.items[index];
 
                             return StoreItemCard(
                               item: item,
@@ -99,7 +96,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       },
                     ),
                   ),
-                  const TimerWidget(),
+                  //  const TimerWidget(),
                 ],
               );
             },

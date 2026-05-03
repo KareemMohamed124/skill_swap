@@ -72,7 +72,7 @@ class UsersCubit extends Cubit<UsersState> {
 
   Future<List<UserModel>> getLeaderboardUsers({
     required int page,
-    int limit = 10,
+    int limit = 100,
   }) async {
     final users = await repository.getUsersWithoutAdminOnly(
       page: page,

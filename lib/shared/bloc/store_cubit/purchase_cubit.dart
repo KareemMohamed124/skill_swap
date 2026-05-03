@@ -27,6 +27,16 @@ class PurchaseCubit extends Cubit<PurchaseState> {
     }
   }
 
+  List<Purchases> getAvailableVouchers() {
+    return state.purchases
+        .where((p) => p.type == "voucher")
+        .where((p) => p.isUsed == false)
+        .where((v) {
+      final date = DateTime.tryParse(v.validUntil ?? "");
+      return date == null || date.isAfter(DateTime.now());
+    }).toList();
+  }
+
   List<Purchases> getPurchasesByType(String type) {
     return state.purchases.where((purchase) => purchase.type == type).toList();
   }

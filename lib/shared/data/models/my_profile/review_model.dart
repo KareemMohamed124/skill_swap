@@ -1,7 +1,7 @@
 import 'reviewer_model.dart';
 
 class ReviewModel {
-  final int rating;
+  final num rating;
   final String review;
   final Reviewer reviewer;
   final String id;

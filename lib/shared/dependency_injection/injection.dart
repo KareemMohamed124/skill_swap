@@ -23,12 +23,14 @@ import '../bloc/join_session_bloc/join_session_bloc.dart';
 import '../bloc/login_bloc/login_bloc.dart';
 import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
 import '../bloc/pay_booking_bloc/pay_booking_bloc.dart';
+import '../bloc/public_chat/message_search_cubit.dart';
 import '../bloc/public_chat/public_chat_bloc.dart';
 import '../bloc/public_chat/public_chat_messages_cubit.dart';
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
+import '../bloc/set_available_dates_bloc/set_available_dates_bloc.dart';
 import '../bloc/status_book_bloc/status_book_bloc.dart';
 import '../bloc/store_cubit/purchase_cubit.dart';
 import '../bloc/store_cubit/store_cubit.dart';
@@ -163,6 +165,8 @@ Future<void> initDependencies() async {
       () => GetUpcomingSatBloc(sl<BookingRepository>()));
   sl.registerFactory<AddAvailableDatesBloc>(
       () => AddAvailableDatesBloc(sl<BookingRepository>()));
+  sl.registerFactory<SetAvailableDatesBloc>(
+      () => SetAvailableDatesBloc(sl<BookingRepository>()));
   sl.registerFactory<DeleteAvailableDatesBloc>(
       () => DeleteAvailableDatesBloc(sl<BookingRepository>()));
   sl.registerFactory<GetAvailableDatesBloc>(
@@ -191,6 +195,9 @@ Future<void> initDependencies() async {
       chatRepository: sl<ChatRepository>(),
       // notificationRepository: sl<NotificationRepository>(),
       pusherService: sl<PusherService>()));
+
+  sl.registerFactory<MessageSearchCubit>(
+      () => MessageSearchCubit(chatRepository: sl<ChatRepository>()));
 
   // Load users safely
   List<UserModel> users = [];

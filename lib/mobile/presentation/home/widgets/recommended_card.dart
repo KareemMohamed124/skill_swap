@@ -7,7 +7,7 @@ class RecommendedCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final double? rating;
+  final num? rating;
   final double? width;
   final double? imageHeight;
   final String? bio;

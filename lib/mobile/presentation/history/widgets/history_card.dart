@@ -34,11 +34,7 @@ class _HistoryCardState extends State<HistoryCard> {
 
   bool get isCancelled => widget.data.status == "Cancelled";
 
-  bool get isFinishedRated =>
-      widget.data.status == "Finished" && widget.data.rating > 0;
-
-  bool get isFinishedNotRated =>
-      widget.data.status == "Finished" && widget.data.rating == 0;
+  bool get isFinished => widget.data.status == "Finished";
 
   bool get isReviewReceived => widget.data.isReviewReceived == true;
 
@@ -261,7 +257,7 @@ class _HistoryCardState extends State<HistoryCard> {
     }
 
     // FINISHED & RATED
-    if (isFinishedRated) {
+    if (isFinished) {
       return Container(
         height: buttonHeight,
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
@@ -289,7 +285,7 @@ class _HistoryCardState extends State<HistoryCard> {
     }
 
     // FINISHED NOT RATED
-    if (isFinishedNotRated) {
+    if (isFinished) {
       return Row(
         children: [
           Expanded(

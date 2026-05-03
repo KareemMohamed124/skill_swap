@@ -14,8 +14,8 @@ class UserModel {
   final String role;
   final bool isActive;
   final bool confirmEmail;
-  final int warningCount;
-
+  final num warningCount;
+  final num hourlyPrice;
   final UserImage userImage;
   final Profile profile;
   final BlockInfo blockInfo;
@@ -24,19 +24,19 @@ class UserModel {
   final List<WarningModel> warnings;
   final String? activeTheme;
 
-  final double rate;
-  final int freeHours;
-  final int helpTotalHours;
-  final int wallet;
-  final int totalScore;
-  final int numberOfReviews;
+  final num rate;
+  final num freeHours;
+  final num helpTotalHours;
+  final num wallet;
+  final num totalScore;
+  final num numberOfReviews;
 
   final String? activationCode;
   final DateTime? activationCodeExpires;
   final String? fcmToken;
 
-  final int score;
-  final int varPoints;
+  final num score;
+  final num varPoints;
 
   final List<dynamic> challenges;
   final List<dynamic> messages;
@@ -70,6 +70,7 @@ class UserModel {
     required this.freeHours,
     required this.helpTotalHours,
     required this.wallet,
+    required this.hourlyPrice,
     required this.totalScore,
     required this.numberOfReviews,
     this.activationCode,
@@ -107,7 +108,7 @@ class UserModel {
       return int.tryParse(value.toString()) ?? 0;
     }
 
-    DateTime? parseDateTime(String? value) {
+    DateTime? parseDate(String? value) {
       if (value == null || value.isEmpty) return null;
       return DateTime.tryParse(value);
     }
@@ -119,45 +120,85 @@ class UserModel {
       role: json?['role'] ?? '',
       isActive: json?['isActive'] ?? false,
       confirmEmail: json?['confirmEmail'] ?? false,
+
       warningCount: parseInt(json?['warningCount']),
-      userImage: UserImage.fromJson(json?['userImage']),
-      profile: Profile.fromJson(json?['profile']),
-      blockInfo: BlockInfo.fromJson(json?['blockInfo']),
-      track: Track.fromJson(json?['track']),
-      skills: (json?['skills'] as List? ?? [])
-          .map((e) => Skill.fromJson(e))
-          .toList(),
+      hourlyPrice: parseInt(json?['hourlyPrice']),
+
+      /// 🔥 SAFE OBJECTS
+      userImage: json?['userImage'] != null
+          ? UserImage.fromJson(json?['userImage'])
+          : UserImage.empty(),
+
+      profile: json?['profile'] != null
+          ? Profile.fromJson(json?['profile'])
+          : Profile.empty(),
+
+      blockInfo: json?['blockInfo'] != null
+          ? BlockInfo.fromJson(json?['blockInfo'])
+          : BlockInfo.empty(),
+
+      track: json?['track'] != null
+          ? Track.fromJson(json?['track'])
+          : Track.empty(),
+
+      /// 🔥 SAFE LISTS
+      skills: json?['skills'] != null
+          ? (json?['skills'] as List)
+              .map((e) => e is Map<String, dynamic>
+                  ? Skill.fromJson(e)
+                  : Skill(
+                      skillName: e.toString(),
+                      isVerified: false,
+                      id: '',
+                      quizScore: 0,
+                      addedAt: '',
+                    ))
+              .toList()
+          : [],
+
       warnings: (json?['warnings'] as List? ?? [])
           .map((e) => WarningModel.fromJson(e))
           .toList(),
+
+      reviews: (json?['reviews'] as List? ?? [])
+          .map((e) => ReviewModel.fromJson(e))
+          .toList(),
+
+      /// 🔥 NUMBERS (FIXED)
       rate: parseDouble(json?['rate']),
-      freeHours: parseInt(json?['freeHours']),
-      helpTotalHours: parseInt(json?['helpTotalHours']),
-      activeTheme: json?['activeTheme'],
-      wallet: parseInt(json?['wallet']),
+      freeHours: parseDouble(json?['freeHours']),
+      helpTotalHours: parseDouble(json?['helpTotalHours']),
+      wallet: parseDouble(json?['wallet']),
+
       totalScore: parseInt(json?['totalScore']),
       numberOfReviews: parseInt(json?['numberOfReviews']),
-      activationCode: json?['activationCode'],
-      activationCodeExpires: parseDateTime(json?['activationCodeExpires']),
-      fcmToken: json?['fcmToken'],
       score: parseInt(json?['score']),
       varPoints: parseInt(json?['var_points']),
+      v: parseInt(json?['__v']),
+
+      /// ❗ كان ناقص عندك
+      // points (لو موجود في API)
+      // ضيفه لو محتاجه
+
+      /// 🔥 OPTIONAL
+      activeTheme: json?['activeTheme'],
+      activationCode: json?['activationCode'],
+      activationCodeExpires: parseDate(json?['activationCodeExpires']),
+      fcmToken: json?['fcmToken'],
+
+      /// 🔥 ARRAYS
       challenges: json?['challenges'] ?? [],
       messages: json?['messages'] ?? [],
-      purchasedThemes: json?['purchasedThemes'] ?? [],
       reports: json?['reports'] ?? [],
       requests: json?['requests'] ?? [],
       feedbackGiven: json?['feedbackGiven'] ?? [],
       feedbackReceived: json?['feedbackReceived'] ?? [],
       mentorSuggestions: json?['mentorSuggestions'] ?? [],
-      reviews: json?['reviews'] != null
-          ? (json?['reviews'] as List)
-              .map((x) => ReviewModel.fromJson(x))
-              .toList()
-          : [],
-      createdAt: parseDateTime(json?['createdAt']) ?? DateTime.now(),
-      updatedAt: parseDateTime(json?['updatedAt']) ?? DateTime.now(),
-      v: parseInt(json?['__v']),
+      purchasedThemes: json?['purchasedThemes'] ?? [],
+
+      /// 🔥 DATES
+      createdAt: parseDate(json?['createdAt']) ?? DateTime.now(),
+      updatedAt: parseDate(json?['updatedAt']) ?? DateTime.now(),
     );
   }
 
@@ -178,6 +219,7 @@ class UserModel {
       "warnings": warnings.map((e) => e.toJson()).toList(),
       "rate": rate,
       "freeHours": freeHours,
+      "hourlyPrice": hourlyPrice,
       "helpTotalHours": helpTotalHours,
       "wallet": wallet,
       "totalScore": totalScore,
@@ -218,6 +260,7 @@ class UserModel {
       warningCount: warningCount,
       userImage: userImage,
       profile: profile,
+      hourlyPrice: hourlyPrice,
       blockInfo: blockInfo,
       track: track,
       skills: skills,

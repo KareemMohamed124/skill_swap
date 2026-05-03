@@ -875,7 +875,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               if (tempSelectedSkills.isEmpty) return;
                               final selectedSkill = tempSelectedSkills.first;
                               Navigator.pop(context);
-                              Get.to(() => QuizDetailsScreen(
+                              Get.to(() => QuizDetailsDesktop(
                                     skillName: selectedSkill,
                                     fromAddSkill: true,
                                   ));

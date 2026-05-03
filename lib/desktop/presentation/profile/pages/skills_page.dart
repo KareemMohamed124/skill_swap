@@ -193,7 +193,7 @@ class SkillCard extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Get.to(() => QuizDetailsScreen(skillName: title));
+                  Get.to(() => QuizDetailsDesktop(skillName: title));
                 },
                 child: const Text(
                   "Take Assessment",

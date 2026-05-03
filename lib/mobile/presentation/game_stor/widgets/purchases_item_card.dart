@@ -40,6 +40,38 @@ class _PurchasesItemCardState extends State<PurchasesItemCard>
     )..repeat(reverse: true);
   }
 
+  Widget buildStatus(StoreItem item) {
+    final isUsed = item;
+
+    if (isUsed == true) {
+      return const Text(
+        "Purchased",
+        style: TextStyle(
+          color: Colors.green,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
+
+    if (isUsed == false) {
+      return const Text(
+        "Not Purchased",
+        style: TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
+
+    // default (null / undefined)
+    return const Text(
+      "Purchased",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
   @override
   void didUpdateWidget(covariant PurchasesItemCard oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -148,13 +180,7 @@ class _PurchasesItemCardState extends State<PurchasesItemCard>
               const SizedBox(height: 6),
 
               /// ✔ Purchased badge
-              const Text(
-                "Purchased",
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              buildStatus(item),
             ],
           ),
         );

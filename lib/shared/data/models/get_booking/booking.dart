@@ -9,14 +9,14 @@ class GetBookingModel {
 
   final DateTime date;
   final String time;
-  final int durationMins;
-  final int price;
+  final num durationMins;
+  final num price;
   final String bookingCode;
   final String status;
-  final int rate;
+  final num rate;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int v;
+  final num v;
 
   final String paymentStatus;
   final String? stripeSessionId;

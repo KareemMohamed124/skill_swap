@@ -104,6 +104,7 @@ flutter:
     - assets/images/
     - assets/images/onboarding_images/
     - assets/images/people_images/
+    - assets/images/leaderboard_images/
     - assets/images/store_images/
     - assets/icons/
 

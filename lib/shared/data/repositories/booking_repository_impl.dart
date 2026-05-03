@@ -124,7 +124,7 @@ class BookingRepositoryImpl extends BookingRepository {
     try {
       final response = await api.cancelBookSession(id);
 
-      if (response['message'] == 'Booking cancelled') {
+      if (response['message'] == 'Booking canceled successfully') {
         return CancelBookingSuccess(
           CancelBookingSuccessResponse.fromJson(response),
         );
@@ -151,12 +151,29 @@ class BookingRepositoryImpl extends BookingRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> confirmPayment(String id) async {
+    try {
+      final response = await api.confirmPayment(id);
+
+      return Map<String, dynamic>.from(response);
+    } on DioException catch (e) {
+      if (e.response?.data is Map<String, dynamic>) {
+        return Map<String, dynamic>.from(e.response!.data);
+      }
+
+      throw Exception(_getServerErrorMessage(e));
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   Future<UpdateBookingResponse> updateBookSession(
       String id, UpdateBookingRequest request) async {
     try {
       final response = await api.updateBookSession(id, request);
 
-      if (response['message'] == 'Booking updated') {
+      if (response['message'] == 'Booking updated successfully') {
         return UpdateBookingSuccess(
           UpdateBookingSuccessResponse.fromJson(response),
         );

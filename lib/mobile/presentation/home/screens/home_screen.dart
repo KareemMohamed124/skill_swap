@@ -75,10 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     name: 'Hi, $name',
                     subtitle: 'keep_learning'.tr,
                     avatarPath: avatarPath,
-                    onIcon1: () {},
-                    onIcon2: () {
-                      Get.to(() => const NotificationsScreen());
-                    },
+                    // onIcon1: () {},
+                    // onIcon2: () {
+                    // //  Get.to(() => const NotificationsScreen());
+                    // },
                   );
                 },
               ),

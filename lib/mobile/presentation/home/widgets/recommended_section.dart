@@ -10,6 +10,7 @@ import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../book_session/screens/profile_mentor.dart';
+import '../models/user_rank.dart';
 
 class RecommendedSection extends StatelessWidget {
   const RecommendedSection({super.key});
@@ -88,7 +89,11 @@ class _RecommendedListState extends State<_RecommendedList> {
       height: screenHeight * 0.22,
       child: BlocBuilder<UserFilterBloc, UserFilterState>(
         builder: (context, state) {
-          // loading skeleton
+          final rankedList = rankRecommendedUsers(
+            state.filteredList,
+            state.selectedTrack,
+          );
+
           if (state.isLoading && state.filteredList.isEmpty) {
             return ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -101,13 +106,12 @@ class _RecommendedListState extends State<_RecommendedList> {
           return ListView.separated(
             controller: _controller,
             scrollDirection: Axis.horizontal,
-            itemCount: state.isLastPage
-                ? state.filteredList.length
-                : state.filteredList.length + 1,
+            itemCount:
+                state.isLastPage ? rankedList.length : rankedList.length + 1,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              if (index < state.filteredList.length) {
-                final u = state.filteredList[index];
+              if (index < rankedList.length) {
+                final u = rankedList[index];
 
                 return InkWell(
                   onTap: () {
@@ -123,7 +127,7 @@ class _RecommendedListState extends State<_RecommendedList> {
                         skills: u.skills,
                         hoursAvailable: u.freeHours,
                         peopleHelped: u.helpTotalHours,
-                        hourlyRate: 0,
+                        hourlyRate: u.hourlyPrice,
                         reviews: u.reviews,
                       ),
                     );

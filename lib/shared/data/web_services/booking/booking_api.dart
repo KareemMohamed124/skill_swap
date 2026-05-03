@@ -31,6 +31,11 @@ abstract class BookingApi {
     @Path("id") String id,
   );
 
+  @PATCH("booking/{id}/confirm-payment")
+  Future<dynamic> confirmPayment(
+    @Path("id") String id,
+  );
+
   @PATCH("booking/{id}")
   Future<dynamic> updateBookSession(
     @Path("id") String id,

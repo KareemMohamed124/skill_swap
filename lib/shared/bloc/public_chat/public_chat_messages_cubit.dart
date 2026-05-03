@@ -26,17 +26,18 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   int? _participantsCount;
 
   int _currentPage = 1;
+  int _totalPages = 1;
   static const int _pageLimit = 20;
 
   List<ChatMessage> _messages = [];
   bool _hasMore = true;
+  bool _isLoadingMore = false;
 
   ChatMessage? _replyMessage;
   ChatMessage? _editingMessage;
 
   StreamSubscription<Map<String, dynamic>>? _messageSubscription;
 
-  // ✅ Cache بيخزن آخر theme لكل sender عشان الرسائل القديمة
   final Map<String, String> _senderThemeCache = {};
 
   PublicChatMessagesCubit({
@@ -52,54 +53,22 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   ChatMessage? get editingMessage => _editingMessage;
 
-  // ✅ Getter للـ cache عشان ChatScreen يقدر يوصله
   Map<String, String> get senderThemeCache => _senderThemeCache;
 
+  bool get hasMore => _hasMore;
+
   // ================= HELPER =================
-  PublicChatMessagesLoaded _emitLoaded() {
+  PublicChatMessagesLoaded _buildLoaded({bool isLoadingMore = false}) {
     return PublicChatMessagesLoaded(
       messages: List.from(_messages),
       hasMore: _hasMore,
+      isLoadingMore: isLoadingMore,
       replyMessage: _replyMessage,
       editingMessage: _editingMessage,
     );
   }
 
-  // ============= REPLY =============
-  void setReplyMessage(ChatMessage message) {
-    _replyMessage = message;
-    _editingMessage = null;
-    if (state is PublicChatMessagesLoaded) {
-      emit((state as PublicChatMessagesLoaded)
-          .copyWith(replyMessage: message, clearEditing: true));
-    }
-  }
-
-  void clearReply() {
-    _replyMessage = null;
-    if (state is PublicChatMessagesLoaded) {
-      emit((state as PublicChatMessagesLoaded).copyWith(clearReply: true));
-    }
-  }
-
-  // ============= EDITING =============
-  void setEditingMessage(ChatMessage message) {
-    _editingMessage = message;
-    _replyMessage = null;
-    if (state is PublicChatMessagesLoaded) {
-      emit((state as PublicChatMessagesLoaded)
-          .copyWith(editingMessage: message, clearReply: true));
-    }
-  }
-
-  void clearEditing() {
-    _editingMessage = null;
-    if (state is PublicChatMessagesLoaded) {
-      emit((state as PublicChatMessagesLoaded).copyWith(clearEditing: true));
-    }
-  }
-
-  // ============= INIT =============
+  // ================= INIT =================
   Future<void> init(
     String chatId, {
     bool isPrivate = false,
@@ -108,16 +77,25 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   }) async {
     _chatId = chatId;
     _isPrivate = isPrivate;
-    _partnerId = partnerId;
-    _participantsCount = participantsCount;
 
     _currentUserId = await LocalStorage.getUserId();
+
+    if (partnerId != null && partnerId != _currentUserId) {
+      _partnerId = partnerId;
+    } else {
+      _partnerId = null;
+    }
+
+    _participantsCount = participantsCount;
+
     _currentPage = 1;
+    _totalPages = 1;
     _messages = [];
     _hasMore = true;
+    _isLoadingMore = false;
     _replyMessage = null;
     _editingMessage = null;
-    _senderThemeCache.clear(); // ✅ clear الـ cache عند كل init
+    _senderThemeCache.clear();
 
     await _messageSubscription?.cancel();
 
@@ -133,12 +111,13 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     await markMessagesAsRead();
   }
 
-  // ============= LOAD MESSAGES =============
+  // ================= LOAD (أول مرة) =================
   Future<void> loadMessages() async {
     emit(PublicChatMessagesLoading());
 
     try {
       _currentPage = 1;
+
       final response = await chatRepository.getMessages(
         _chatId!,
         page: _currentPage,
@@ -146,25 +125,43 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       );
 
       _messages = response.messages.toList();
-      _hasMore = response.messages.length >= _pageLimit;
+      _totalPages = response.totalPages;
+      _hasMore = _currentPage < _totalPages;
 
-      _recomputeSeenFromReadBy();
-
-      // ✅ لو الـ history جابت theme في الرسائل، خزنها في الـ cache
-      for (final msg in _messages) {
-        if (msg.theme != null && msg.theme!.value.isNotEmpty) {
-          _senderThemeCache[msg.senderId.id] = msg.theme!.value;
-        }
-      }
-
-      emit(PublicChatMessagesLoaded(
-        messages: List.from(_messages),
-        hasMore: _hasMore,
-        replyMessage: _replyMessage,
-        editingMessage: _editingMessage,
-      ));
+      emit(_buildLoaded());
     } catch (e) {
       emit(PublicChatMessagesError(message: e.toString()));
+    }
+  }
+
+  // ================= LOAD MORE =================
+  Future<void> loadMoreMessages() async {
+    if (!_hasMore || _isLoadingMore || _chatId == null) return;
+
+    _isLoadingMore = true;
+    emit(_buildLoaded(isLoadingMore: true));
+
+    try {
+      final nextPage = _currentPage + 1;
+
+      final response = await chatRepository.getMessages(
+        _chatId!,
+        page: nextPage,
+        limit: _pageLimit,
+      );
+
+      _currentPage = nextPage;
+      _totalPages = response.totalPages;
+      _hasMore = _currentPage < _totalPages;
+
+      // الأقدم يتحط فوق
+      _messages.insertAll(0, response.messages);
+
+      _isLoadingMore = false;
+      emit(_buildLoaded());
+    } catch (e) {
+      _isLoadingMore = false;
+      emit(_buildLoaded());
     }
   }
 
@@ -208,10 +205,10 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     );
 
     _messages.add(optimisticMessage);
-    emit(_emitLoaded());
+    emit(_buildLoaded());
 
     final replyToId = _replyMessage?.id;
-    clearReply();
+    _replyMessage = null;
 
     _trySendMessage(tempId, optimisticMessage, replyToId);
   }
@@ -222,7 +219,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     final index = _messages.indexWhere((m) => m.id == tempId);
     if (index == -1) return;
 
-    bool _notificationSent = false;
+    bool notificationSent = false;
 
     try {
       final res = await chatRepository.sendMessage(
@@ -237,10 +234,16 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         status: MessageStatus.sent,
       );
 
-      emit(_emitLoaded());
+      emit(_buildLoaded());
 
-      if (!_notificationSent && _isPrivate && _partnerId != null) {
-        _notificationSent = true;
+      final shouldSendNotification = _isPrivate &&
+          _partnerId != null &&
+          _partnerId!.isNotEmpty &&
+          _partnerId != _currentUserId;
+
+      if (!notificationSent && shouldSendNotification) {
+        notificationSent = true;
+
         final senderName = _messages
                 .firstWhere(
                   (m) => m.senderId.id == _currentUserId,
@@ -249,12 +252,14 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
                 .senderId
                 .name ??
             'Someone';
-        sl<NotificationRepository>().sendNotification(
+
+        await sl<NotificationRepository>().sendNotification(
           receiverId: _partnerId!,
           type: NotificationTypes.chatMessage,
           payload: {
             'chatId': _chatId!,
             'senderName': senderName,
+            'senderId': _currentUserId ?? '',
             'messagePreview': message.content.length > 100
                 ? message.content.substring(0, 100)
                 : message.content,
@@ -263,7 +268,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       }
     } catch (e) {
       _messages[index] = message.copyWith(status: MessageStatus.failed);
-      emit(_emitLoaded());
+      emit(_buildLoaded());
 
       Future.delayed(const Duration(seconds: 3), () {
         final i = _messages.indexWhere((m) => m.id == tempId);
@@ -280,71 +285,71 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     if (index == -1) return;
 
     final message = _messages[index];
-
     _messages[index] = message.copyWith(status: MessageStatus.sending);
-    emit(_emitLoaded());
+    emit(_buildLoaded());
 
     _trySendMessage(tempId, message, replyToId);
   }
 
-  // ============= EDIT MESSAGE =============
+  // ================= REPLY / EDITING STATE =================
+  void setReplyMessage(ChatMessage message) {
+    _replyMessage = message;
+    emit(_buildLoaded());
+  }
+
+  void clearReply() {
+    _replyMessage = null;
+    emit(_buildLoaded());
+  }
+
+  void setEditingMessage(ChatMessage message) {
+    _editingMessage = message;
+    emit(_buildLoaded());
+  }
+
+  void clearEditing() {
+    _editingMessage = null;
+    emit(_buildLoaded());
+  }
+
+  // ================= EDIT =================
   Future<void> editMessage(String messageId, String content) async {
     if (_chatId == null) return;
 
     final index = _messages.indexWhere((m) => m.id == messageId);
     if (index == -1) return;
 
-    final originalMessage = _messages[index];
-    _messages[index] =
-        originalMessage.copyWith(content: content, isEdited: true);
-
+    final old = _messages[index];
+    _messages[index] = old.copyWith(content: content, isEdited: true);
     _editingMessage = null;
 
-    emit(PublicChatMessagesLoaded(
-      messages: List.from(_messages),
-      hasMore: _hasMore,
-      replyMessage: _replyMessage,
-    ));
+    emit(_buildLoaded());
 
     try {
       await chatRepository.editMessage(_chatId!, messageId, content);
     } catch (e) {
-      _messages[index] = originalMessage;
-      emit(PublicChatMessagesLoaded(
-        messages: List.from(_messages),
-        hasMore: _hasMore,
-        replyMessage: _replyMessage,
-      ));
+      _messages[index] = old;
+      emit(_buildLoaded());
     }
   }
 
-  // ============= DELETE MESSAGE =============
+  // ================= DELETE =================
   Future<void> deleteMessage(String messageId) async {
     if (_chatId == null) return;
 
     final index = _messages.indexWhere((m) => m.id == messageId);
     if (index == -1) return;
 
-    final originalMessage = _messages[index];
+    final old = _messages[index];
     _messages.removeAt(index);
 
-    emit(PublicChatMessagesLoaded(
-      messages: List.from(_messages),
-      hasMore: _hasMore,
-      replyMessage: _replyMessage,
-      editingMessage: _editingMessage,
-    ));
+    emit(_buildLoaded());
 
     try {
       await chatRepository.deleteMessage(_chatId!, messageId);
     } catch (e) {
-      _messages.insert(index, originalMessage);
-      emit(PublicChatMessagesLoaded(
-        messages: List.from(_messages),
-        hasMore: _hasMore,
-        replyMessage: _replyMessage,
-        editingMessage: _editingMessage,
-      ));
+      _messages.insert(index, old);
+      emit(_buildLoaded());
     }
   }
 
@@ -427,7 +432,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
       if (tempIndex != -1) {
         _messages[tempIndex] = newMessage.copyWith(status: MessageStatus.sent);
-        emit(_emitLoaded());
+        emit(_buildLoaded());
       }
       return;
     }
@@ -436,7 +441,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     if (exists) return;
 
     _messages.add(newMessage);
-    emit(_emitLoaded());
+    emit(_buildLoaded());
 
     markMessagesAsRead();
   }
@@ -482,43 +487,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       ));
     } catch (e) {
       print('❌ error handling message_deleted $e');
-    }
-  }
-
-  void _recomputeSeenFromReadBy() {
-    if (_currentUserId == null) return;
-
-    final required =
-        _isPrivate ? 1 : ((_participantsCount ?? 2) - 1).clamp(1, 1 << 30);
-
-    for (int i = 0; i < _messages.length; i++) {
-      final msg = _messages[i];
-      if (msg.senderId.id != _currentUserId) continue;
-
-      final uniqueOthers = msg.readBy
-          .map((e) {
-            if (e is Map) {
-              return (e['_id'] ?? e['id'] ?? '').toString();
-            }
-            return e.toString();
-          })
-          .where((id) => id.isNotEmpty && id != _currentUserId)
-          .toSet()
-          .length;
-
-      final newSeen = uniqueOthers >= required;
-      if (newSeen != msg.isSeen) {
-        _messages[i] = msg.copyWith(isSeen: newSeen);
-      }
-    }
-  }
-
-  Future<void> markMessagesAsRead() async {
-    if (_chatId == null) return;
-    try {
-      await chatRepository.markMessagesAsRead(_chatId!);
-    } catch (e) {
-      print('❌ error marking messages as read $e');
     }
   }
 
@@ -583,7 +551,11 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     }
   }
 
-  // ================= CLOSE =================
+  Future<void> markMessagesAsRead() async {
+    if (_chatId == null) return;
+    await chatRepository.markMessagesAsRead(_chatId!);
+  }
+
   @override
   Future<void> close() {
     _messageSubscription?.cancel();

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 
+import '../../../shared/bloc/public_chat/message_search_cubit.dart';
+import '../../../shared/bloc/public_chat/message_search_state.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
 import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
@@ -31,19 +35,36 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   late PublicChatMessagesCubit _chatCubit;
+  late MessageSearchCubit _searchCubit;
 
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final Map<String, GlobalKey> _messageKeys = {};
-
+  bool _isSearching = false;
   String? _highlightedMessageId;
+  Timer? _debounce;
+
+  final Map<String, GlobalKey> _messageKeys = {};
+  final Map<String, int> _messageIndexMap = {};
 
   @override
   void initState() {
     super.initState();
     _chatCubit = sl<PublicChatMessagesCubit>();
+    _searchCubit = sl<MessageSearchCubit>();
     _chatCubit.init(widget.chatId, isPrivate: false);
+
+    // ✅ scroll listener للـ load more
+    _scrollController.addListener(_onScroll);
+  }
+
+  // ✅ لما يوصل لأعلى الـ list يحمل صفحة أقدم
+  void _onScroll() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels <= 150) {
+      _chatCubit.loadMoreMessages();
+    }
   }
 
   bool _canEditMessage(ChatMessage message) {
@@ -80,22 +101,34 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  // ✅ scroll to message باستخدام GlobalKey بدل index * 80
   void _scrollToMessage(String messageId) {
     final key = _messageKeys[messageId];
-    if (key != null && key.currentContext != null) {
-      Scrollable.ensureVisible(
-        key.currentContext!,
-        duration: const Duration(milliseconds: 300),
-        alignment: 0.5,
-      );
+    if (key == null) return;
 
-      setState(() => _highlightedMessageId = messageId);
+    final context = key.currentContext;
+    if (context == null) return;
 
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (mounted) {
-          setState(() => _highlightedMessageId = null);
-        }
-      });
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      alignment: 0.3,
+    );
+
+    setState(() => _highlightedMessageId = messageId);
+
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) setState(() => _highlightedMessageId = null);
+    });
+  }
+
+  // ✅ حمّل صفحات لحد ما نلاقي الرسالة
+  Future<void> _loadUntilMessageFound(String messageId) async {
+    while (!_messageIndexMap.containsKey(messageId) && _chatCubit.hasMore) {
+      await _chatCubit.loadMoreMessages();
+      // استنى الـ state يتحدث والـ ListView يعمل build
+      await Future.delayed(const Duration(milliseconds: 400));
     }
   }
 
@@ -160,44 +193,52 @@ class _ChatScreenState extends State<ChatScreen> {
               Navigator.pop(ctx);
               _chatCubit.deleteMessage(message.id);
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
 
-  bool _isSameSender(ChatMessage a, ChatMessage b) {
-    return a.senderId.id == b.senderId.id;
-  }
+  bool _isSameSender(ChatMessage a, ChatMessage b) =>
+      a.senderId.id == b.senderId.id;
 
   bool _isFirstInGroup(List<ChatMessage> messages, int index) {
     if (index == 0) return true;
-
     return !_isSameSender(messages[index], messages[index - 1]);
   }
 
   bool _isLastInGroup(List<ChatMessage> messages, int index) {
     if (index == messages.length - 1) return true;
-
     return !_isSameSender(messages[index], messages[index + 1]);
   }
 
-  Widget _buildMessageList(List<ChatMessage> messages, String? myActiveTheme) {
+  Widget _buildMessageList(
+      List<ChatMessage> messages, String? myActiveTheme, bool isLoadingMore) {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(12),
-      itemCount: messages.length,
+      // ✅ item إضافي فوق للـ loading indicator
+      itemCount: messages.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
-        final message = messages[index];
-        final isMe = message.senderId.id == _chatCubit.currentUserId;
+        // ✅ أول item هو الـ loading indicator لما بيحمل صفحة أقدم
+        if (isLoadingMore && index == 0) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-        final isFirstInGroup = _isFirstInGroup(messages, index);
-        final isLastInGroup = _isLastInGroup(messages, index);
+        final messageIndex = isLoadingMore ? index - 1 : index;
+        final message = messages[messageIndex];
+
+        // ✅ حدّث الـ index map
+        _messageIndexMap[message.id] = messageIndex;
         _messageKeys.putIfAbsent(message.id, () => GlobalKey());
+
+        final isMe = message.senderId.id == _chatCubit.currentUserId;
+        final isFirstInGroup = _isFirstInGroup(messages, messageIndex);
+        final isLastInGroup = _isLastInGroup(messages, messageIndex);
 
         return SwipeableMessage(
           onSwipeReply: () => _chatCubit.setReplyMessage(message),
@@ -293,8 +334,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
+    _scrollController.removeListener(_onScroll);
     _chatCubit.close();
+    _searchCubit.close();
     _controller.dispose();
+    _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -303,8 +348,11 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) => scrollToBottom());
 
-    return BlocProvider.value(
-      value: _chatCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _chatCubit),
+        BlocProvider.value(value: _searchCubit),
+      ],
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
@@ -312,36 +360,66 @@ class _ChatScreenState extends State<ChatScreen> {
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => Get.back(),
+            onPressed: () {
+              if (_isSearching) {
+                setState(() {
+                  _isSearching = false;
+                  _searchController.clear();
+                  _searchCubit.clearSearch();
+                });
+              } else {
+                Get.back();
+              }
+            },
           ),
-          title: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: AppPalette.primary,
-                child: Text(
-                  widget.channelName[0],
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+          title: _isSearching
+              ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: "Search messages...",
+                    border: InputBorder.none,
                   ),
+                  onChanged: (value) {
+                    if (_debounce?.isActive ?? false) _debounce!.cancel();
+                    _debounce = Timer(const Duration(milliseconds: 400), () {
+                      _searchCubit.searchMessages(widget.chatId, value);
+                    });
+                  },
+                )
+              : Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: AppPalette.primary,
+                      child: Text(
+                        widget.channelName[0],
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.channelName,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppPalette.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  widget.channelName,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppPalette.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ],
-          ),
           actions: [
+            if (!_isSearching)
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () => setState(() => _isSearching = true),
+              ),
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
               onSelected: (value) {
@@ -360,43 +438,125 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
               },
               itemBuilder: (context) => const [
-                PopupMenuItem(
-                  value: 'theme',
-                  child: Text('Chat theme'),
-                ),
+                PopupMenuItem(value: 'theme', child: Text('Chat theme')),
               ],
             ),
           ],
         ),
-        body: BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
-          builder: (context, chatState) {
-            if (chatState is PublicChatMessagesLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        body: Stack(
+          children: [
+            BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
+              builder: (context, chatState) {
+                if (chatState is PublicChatMessagesLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            final messages = chatState is PublicChatMessagesLoaded
-                ? chatState.messages
-                : <ChatMessage>[];
+                final messages = chatState is PublicChatMessagesLoaded
+                    ? chatState.messages
+                    : <ChatMessage>[];
 
-            return Column(
-              children: [
-                Expanded(
-                  // ✅ BlocBuilder للـ MyProfileCubit عشان لما الثيم يتغير
-                  // الرسائل كلها تتحدث فوراً
-                  child: BlocBuilder<MyProfileCubit, MyProfileState>(
-                    builder: (context, profileState) {
-                      final myActiveTheme = profileState is MyProfileLoaded
-                          ? profileState.profile.activeTheme?.value
-                          : null;
+                final isLoadingMore = chatState is PublicChatMessagesLoaded &&
+                    chatState.isLoadingMore;
 
-                      return _buildMessageList(messages, myActiveTheme);
-                    },
-                  ),
+                return Column(
+                  children: [
+                    Expanded(
+                      child: BlocBuilder<MyProfileCubit, MyProfileState>(
+                        builder: (context, profileState) {
+                          final myActiveTheme = profileState is MyProfileLoaded
+                              ? profileState.profile.activeTheme?.value
+                              : null;
+
+                          return _buildMessageList(
+                              messages, myActiveTheme, isLoadingMore);
+                        },
+                      ),
+                    ),
+                    _messageInput(chatState),
+                  ],
+                );
+              },
+            ),
+            if (_isSearching)
+              Positioned.fill(
+                child: BlocBuilder<MessageSearchCubit, MessageSearchState>(
+                  builder: (context, searchState) {
+                    if (searchState is MessageSearchLoading) {
+                      return Container(
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.9),
+                        alignment: Alignment.topCenter,
+                        padding: const EdgeInsets.all(8.0),
+                        child: const CircularProgressIndicator(),
+                      );
+                    }
+                    if (searchState is MessageSearchLoaded) {
+                      if (searchState.results.isEmpty) {
+                        return Container(
+                          color: Theme.of(context)
+                              .scaffoldBackgroundColor
+                              .withOpacity(0.9),
+                          alignment: Alignment.topCenter,
+                          padding: const EdgeInsets.all(16.0),
+                          child: const Text("No messages found"),
+                        );
+                      }
+                      return Container(
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.95),
+                        child: ListView.separated(
+                          itemCount: searchState.results.length,
+                          separatorBuilder: (_, __) => const Divider(),
+                          itemBuilder: (context, index) {
+                            final msg = searchState.results[index];
+                            final sender = msg.senderId;
+                            final name = sender?.name ?? "Unknown";
+                            final imageUrl = sender?.userImage.secureUrl ?? "";
+                            final initial = name.isNotEmpty ? name[0] : "?";
+
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: imageUrl.isNotEmpty
+                                    ? NetworkImage(imageUrl)
+                                    : null,
+                                child: imageUrl.isEmpty ? Text(initial) : null,
+                              ),
+                              title: Text(
+                                name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                msg.content,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Text(
+                                "${msg.createdAt.hour}:${msg.createdAt.minute.toString().padLeft(2, '0')}",
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey),
+                              ),
+                              // ✅ لما تضغط على نتيجة، حمّل لحد ما تلاقيها
+                              onTap: () async {
+                                setState(() => _isSearching = false);
+                                await _loadUntilMessageFound(msg.id);
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  _scrollToMessage(msg.id);
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
-                _messageInput(chatState),
-              ],
-            );
-          },
+              ),
+          ],
         ),
       ),
     );

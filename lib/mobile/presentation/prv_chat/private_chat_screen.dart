@@ -3,13 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/prv_chat/prv_message_bubble.dart';
 
+import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
+import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../../../shared/common_ui/edit_preview_bar.dart';
 import '../../../shared/common_ui/reply_preview_bar.dart';
 import '../../../shared/common_ui/swipeable_message.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/public_chat/get_history_messages.dart';
+import '../../../shared/dependency_injection/injection.dart';
+import '../chat_channel/chat_theme_page.dart';
 
 class PrivateChatScreen extends StatefulWidget {
   final String chatId;
@@ -289,7 +293,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
               child: widget.partnerImage == null || widget.partnerImage!.isEmpty
                   ? Text(
                       widget.partnerName.isNotEmpty
-                          ? widget.partnerName[0].toUpperCase()
+                          ? widget.partnerName[0]
                           : '?',
                       style: const TextStyle(
                         color: Colors.white,
@@ -310,6 +314,32 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             ),
           ],
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'theme') {
+                Get.to(MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (_) => sl<PurchaseCubit>()..getPurchases(),
+                    ),
+                    BlocProvider.value(
+                      value: context.read<MyProfileCubit>(),
+                    ),
+                  ],
+                  child: const ChatThemePage(),
+                ));
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'theme',
+                child: Text('Chat theme'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: [

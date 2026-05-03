@@ -45,13 +45,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return Scaffold(
       body: Column(
         children: [
-
           /// 🔝 Top Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
             child: Row(
               children: [
-
                 /// Back
                 IconButton(
                   onPressed: widget.onBack,
@@ -106,15 +104,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   child: isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : ListView.builder(
-                    itemCount: users.length,
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      final rank = index + 1;
-                      final isMe = myId != null && user.id == myId;
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final user = users[index];
+                            final rank = index + 1;
+                            final isMe = myId != null && user.id == myId;
 
-                      return _buildItem(user, rank, isMe);
-                    },
-                  ),
+                            return _buildItem(user, rank, isMe);
+                          },
+                        ),
                 ),
               ),
             ),
@@ -206,33 +204,33 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
             Container(
               decoration: rank <= 3
                   ? BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: rankColor.withOpacity(0.6),
-                    blurRadius: 18,
-                    spreadRadius: 1,
-                  )
-                ],
-              )
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: rankColor.withOpacity(0.6),
+                          blurRadius: 18,
+                          spreadRadius: 1,
+                        )
+                      ],
+                    )
                   : null,
               child: CircleAvatar(
                 radius: rank <= 3 ? 30 : 22,
                 backgroundColor: AppPalette.primary.withOpacity(0.15),
                 backgroundImage: (user.userImage.secureUrl != null &&
-                    user.userImage.secureUrl!.isNotEmpty)
+                        user.userImage.secureUrl!.isNotEmpty)
                     ? NetworkImage(user.userImage.secureUrl!)
                     : null,
                 child: (user.userImage.secureUrl == null ||
-                    user.userImage.secureUrl!.isEmpty)
+                        user.userImage.secureUrl!.isEmpty)
                     ? Text(
-                  displayName[0].toUpperCase(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: rank <= 3 ? 22 : 14,
-                    color: AppPalette.primary,
-                  ),
-                )
+                        displayName[0],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: rank <= 3 ? 22 : 14,
+                          color: AppPalette.primary,
+                        ),
+                      )
                     : null,
               ),
             ),
@@ -263,6 +261,27 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
               ),
             ),
 
+            if (rank <= 3)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: rankColor.withOpacity(0.7),
+                        blurRadius: 14,
+                        spreadRadius: 1,
+                      )
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.emoji_events,
+                    size: 30,
+                    color: rankColor,
+                  ),
+                ),
+              ),
+
             /// Score
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -281,28 +300,6 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
             ),
           ],
         ),
-
-        if (rank <= 3)
-          Positioned(
-            right: 80,
-            top: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: rankColor.withOpacity(0.7),
-                    blurRadius: 14,
-                    spreadRadius: 1,
-                  )
-                ],
-              ),
-              child: Icon(
-                Icons.emoji_events,
-                size: 30,
-                color: rankColor,
-              ),
-            ),
-          ),
       ],
     ),
   );
@@ -328,10 +325,10 @@ Widget _buildRankBadge(int rank) {
       ],
       gradient: rank <= 3
           ? LinearGradient(
-        colors: [color.withOpacity(0.5), color.withOpacity(0.2)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      )
+              colors: [color.withOpacity(0.5), color.withOpacity(0.2)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            )
           : null,
     ),
     alignment: Alignment.center,

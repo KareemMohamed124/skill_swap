@@ -5,7 +5,7 @@ class RecommendedCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final double? rating;
+  final num? rating;
   final double? width;
   final double? imageHeight;
   final bool isLoading;
@@ -123,7 +123,6 @@ Widget _buildPlaceholder(double cardWidth) {
     width: double.infinity,
     height: cardWidth,
     decoration: const BoxDecoration(
-
       color: Colors.grey,
     ),
     child: const Icon(

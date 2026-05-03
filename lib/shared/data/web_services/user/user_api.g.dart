@@ -182,12 +182,12 @@ class _UserApi implements UserApi {
   }
 
   @override
-  Future<dynamic> updateProfile(UpdateProfileRequest body) async {
+  Future<dynamic> updateProfile(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
+    _data.addAll(body);
     final _options = _setStreamType<dynamic>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
@@ -279,11 +279,12 @@ class _UserApi implements UserApi {
   }
 
   @override
-  Future<dynamic> requestMentor() async {
+  Future<dynamic> requestMentor(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
     final _options = _setStreamType<dynamic>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -300,11 +301,12 @@ class _UserApi implements UserApi {
   }
 
   @override
-  Future<dynamic> setActiveTheme(String themeId) async {
+  Future<dynamic> setActiveTheme(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = themeId;
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
     final _options = _setStreamType<dynamic>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(

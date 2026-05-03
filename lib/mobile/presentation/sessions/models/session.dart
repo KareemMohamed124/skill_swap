@@ -1,12 +1,13 @@
 class SessionModel {
   final String sessionId;
   final String userId;
+  final String studentId;
   final String userImage;
   final String userName;
   final String userRole;
   final DateTime dateTime;
-  final int duration;
-  final int price;
+  final num duration;
+  final num price;
   final String status;
   final String rawStatus;
   final DateTime timeAgo;
@@ -19,6 +20,7 @@ class SessionModel {
   SessionModel(
       {required this.sessionId,
       required this.userId,
+      required this.studentId,
       required this.userImage,
       required this.userName,
       required this.userRole,
@@ -40,6 +42,7 @@ class SessionModel {
         sessionId: sessionId,
         bookingCode: bookingCode,
         userId: userId,
+        studentId: studentId,
         userName: userName,
         userRole: userRole,
         userImage: userImage,

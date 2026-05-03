@@ -4,6 +4,7 @@ import 'package:skill_swap/shared/data/models/join_track/tracks_response.dart';
 import '../../data/models/chat/chat_models.dart';
 import '../../data/models/public_chat/get_chat_model.dart';
 import '../../data/models/public_chat/get_history_messages.dart';
+import '../../data/models/public_chat/search_response.dart';
 import '../../data/models/public_chat/send_message_response.dart';
 
 abstract class ChatRepository {
@@ -31,4 +32,6 @@ abstract class ChatRepository {
   Future<void> deleteMessage(String chatId, String messageId);
 
   Future<void> leaveChat(String chatId);
+
+  Future<List<MessageModel>> searchMessages(String chatId, String query);
 }

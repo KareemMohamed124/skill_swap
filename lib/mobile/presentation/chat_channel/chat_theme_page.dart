@@ -6,16 +6,13 @@ import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../../../shared/bloc/store_cubit/purchase_state.dart';
 
 class ChatThemePage extends StatefulWidget {
-  const ChatThemePage({super.key}); // ✅ مش محتاج userId بعد كده
+  const ChatThemePage({super.key});
 
   @override
   State<ChatThemePage> createState() => _ChatThemePageState();
 }
 
 class _ChatThemePageState extends State<ChatThemePage> {
-  // ❌ امسح GetStorage خالص
-  // final GetStorage box = GetStorage();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,19 +29,23 @@ class _ChatThemePageState extends State<ChatThemePage> {
           return BlocBuilder<MyProfileCubit, MyProfileState>(
             builder: (context, profileState) {
               final activeThemeValue = profileState is MyProfileLoaded
-                  ? profileState.profile.activeTheme?.value ?? "default"
-                  : "default";
+                  ? profileState.profile.activeTheme?.value
+                  : null;
+
+              final groupValue = activeThemeValue ?? "default";
+
               return ListView(
                 padding: const EdgeInsets.all(12),
                 children: [
-                  // Default option
+                  /// ✅ Default Theme
                   RadioListTile<String>(
                     title: const Text("Default Theme"),
                     value: "default",
-                    groupValue: activeThemeValue,
+                    groupValue: groupValue,
                     onChanged: (val) {
-                      // ✅ لو default → clear الـ active theme
-                      context.read<MyProfileCubit>().setActiveTheme("default");
+                      context
+                          .read<MyProfileCubit>()
+                          .setActiveTheme(null); // 👈 الصح
                     },
                   ),
 
@@ -57,10 +58,9 @@ class _ChatThemePageState extends State<ChatThemePage> {
 
                     return RadioListTile<String>(
                       value: value,
-                      groupValue: activeThemeValue,
+                      groupValue: groupValue,
                       onChanged: (val) {
                         if (val != null) {
-                          // ✅ API call
                           context
                               .read<MyProfileCubit>()
                               .setActiveTheme(themeId);
@@ -73,7 +73,6 @@ class _ChatThemePageState extends State<ChatThemePage> {
                         height: 50,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.transparent,
                           image: image.isNotEmpty
                               ? DecorationImage(
                                   image: NetworkImage(image),

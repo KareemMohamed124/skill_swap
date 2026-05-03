@@ -64,7 +64,7 @@ class RecommendedSectionDesktop extends StatelessWidget {
                                 skills: user.skills,
                                 hoursAvailable: user.freeHours,
                                 peopleHelped: user.helpTotalHours,
-                                hourlyRate: 0,
+                                hourlyRate: user.hourlyPrice,
                                 reviews: user.reviews,
                               ),
                             );

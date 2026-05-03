@@ -16,7 +16,7 @@ class ProfileMentorHeader extends StatelessWidget {
   final String image;
   final String name;
   final String track;
-  final double rate;
+  final num rate;
   final VoidCallback? onButtonTap;
 
   const ProfileMentorHeader({

@@ -6,17 +6,16 @@ import 'package:get/get.dart';
 import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 
-
-class QuizScreen extends StatefulWidget {
+class QuizDesktop extends StatefulWidget {
   final bool fromAddSkill;
 
-  const QuizScreen({super.key, this.fromAddSkill = false});
+  const QuizDesktop({super.key, this.fromAddSkill = false});
 
   @override
-  State<QuizScreen> createState() => _QuizScreenState();
+  State<QuizDesktop> createState() => _QuizDesktopState();
 }
 
-class _QuizScreenState extends State<QuizScreen> {
+class _QuizDesktopState extends State<QuizDesktop> {
   final QuizController controller = Get.find<QuizController>();
 
   RxInt remainingSeconds = QuizController.totalTimeInSeconds.obs;
@@ -54,10 +53,6 @@ class _QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
-
     return Obx(() {
       if (controller.loading.value) {
         return const Scaffold(
@@ -74,260 +69,167 @@ class _QuizScreenState extends State<QuizScreen> {
       final q = controller.questions[controller.index.value];
 
       return Scaffold(
-        backgroundColor: AppPalette.primary,
+        backgroundColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor,
+
         appBar: AppBar(
-          backgroundColor: AppPalette.primary,
+          automaticallyImplyLeading: false,
+          backgroundColor: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
           elevation: 0,
           centerTitle: true,
-          automaticallyImplyLeading: false,
           title: const Text(
             "Quiz",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
+
         body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Theme
-                    .of(context)
-                    .scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: SingleChildScrollView(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Container(
+                margin: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: Theme
+                      .of(context)
+                      .scaffoldBackgroundColor
+                      .withValues(alpha: 0.5),
+                  border: Border.all(
+                    color: Theme
+                        .of(context)
+                        .dividerColor,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black12,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
+
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    /// Timer + question count
+                    /// TIMER + PROGRESS HEADER
                     Row(
                       children: [
-                        Icon(Icons.timer,
-                            color: isDark
-                                ? AppPalette.darkTextPrimary
-                                : AppPalette.primary),
+                        const Icon(Icons.timer),
                         const SizedBox(width: 8),
-                        Obx(
-                              () =>
-                              Text(
-                                formattedTime,
-                                style: TextStyle(
-                                  color: isDark
-                                      ? AppPalette.darkTextPrimary
-                                      : AppPalette.primary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                        ),
+                        Obx(() => Text(formattedTime)),
+
                         const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Theme
-                                    .of(context)
-                                    .dividerColor),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Obx(
-                                () =>
-                                Text(
-                                  "${controller.index.value + 1} of ${controller
-                                      .questions.length}",
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? AppPalette.darkTextPrimary
-                                        : AppPalette.primary,
-                                  ),
-                                ),
-                          ),
+
+                        Text(
+                          "${controller.index.value + 1}/${controller.questions
+                              .length}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    /// Progress
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: (controller.index.value + 1) /
-                            controller.questions.length,
-                        minHeight: 8,
-                        backgroundColor: const Color(0XFFF2F5F8),
-                        color: AppPalette.primary,
-                      ),
+                    LinearProgressIndicator(
+                      value: (controller.index.value + 1) /
+                          controller.questions.length,
+                      minHeight: 8,
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
-                    Text(
-                      "Question ${controller.index.value + 1} of ${controller
-                          .questions.length}",
-                      style: TextStyle(
-                        color: isDark
-                            ? AppPalette.darkTextPrimary
-                            : AppPalette.primary,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    /// Question Card (تم تصغيره)
+                    /// QUESTION CARD
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Theme
-                            .of(context)
-                            .cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border:
-                        Border.all(color: Theme
-                            .of(context)
-                            .dividerColor),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Theme
+                              .of(context)
+                              .dividerColor,
+                        ),
                       ),
                       child: Text(
                         q.question,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           height: 1.4,
-                          color: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .color,
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 24),
 
-                    /// Options (FIXED)
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth > 600;
+                    /// OPTIONS
+                    ...List.generate(q.options.length, (i) {
+                      final isSelected =
+                          controller.selectedOption.value == i;
 
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: q.options.length,
-                          gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: isWide ? 2 : 1,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            mainAxisExtent: 70, // 👈 FIX الارتفاع
+                      return GestureDetector(
+                        onTap: () =>
+                        controller.selectedOption.value = i,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.blue
+                                  : Theme
+                                  .of(context)
+                                  .dividerColor,
+                              width: isSelected ? 2 : 1,
+                            ),
                           ),
-                          itemBuilder: (context, i) {
-                            final isSelected =
-                                controller.selectedOption.value == i;
-
-                            return GestureDetector(
-                              behavior:
-                              HitTestBehavior.opaque, // 👈 FIX التاتش
-                              onTap: () =>
-                              controller.selectedOption.value = i,
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0XFFF2F5F8)
-                                      : Theme
-                                      .of(context)
-                                      .cardColor,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppPalette.primary
-                                        : Theme
-                                        .of(context)
-                                        .dividerColor,
-                                    width: isSelected ? 2 : 1,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    q.options[i],
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .color,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    /// Buttons
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: 400,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: controller.index.value == 0
-                                    ? null
-                                    : controller.previousQuestion,
-                                style: OutlinedButton.styleFrom(
-                                  padding:
-                                  const EdgeInsets.symmetric(vertical: 14),
-                                ),
-                                child: const Text(
-                                  "Previous",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: controller.nextQuestion,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppPalette.primary,
-                                  padding:
-                                  const EdgeInsets.symmetric(vertical: 14),
-                                ),
-                                child: Obx(
-                                      () =>
-                                      Text(
-                                        controller.index.value ==
-                                            controller.questions.length - 1
-                                            ? "Finish"
-                                            : "Next",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          child: Row(
+                            children: [
+                              Expanded(child: Text(q.options[i])),
+                            ],
+                          ),
                         ),
-                      ),
+                      );
+                    }),
+
+                    const SizedBox(height: 24),
+
+                    /// BUTTONS
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: controller.index.value == 0
+                                ? null
+                                : controller.previousQuestion,
+                            child: const Text("Previous"),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: controller.nextQuestion,
+                            child: Obx(
+                                  () =>
+                                  Text(
+                                    controller.index.value ==
+                                        controller.questions.length - 1
+                                        ? "Finish"
+                                        : "Next",
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

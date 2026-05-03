@@ -12,13 +12,18 @@ class AcceptedBookingsCubit extends Cubit<AcceptedBookingsState> {
   AcceptedBookingsCubit(this.bookingRepository)
       : super(AcceptedBookingsInitial());
 
-  Future<void> getAcceptedBookings() async {
+  Future<void> getAcceptedBookings(String instructorId) async {
     emit(AcceptedBookingsLoading());
 
     try {
       final response = await bookingRepository.getAcceptedBookings();
 
-      emit(AcceptedBookingsLoaded(bookings: response.bookings));
+      final filteredBookings = response.bookings.where((b) {
+        return b.instructor.id == instructorId &&
+            b.status.toLowerCase() == "accepted";
+      }).toList();
+
+      emit(AcceptedBookingsLoaded(bookings: filteredBookings));
     } catch (e) {
       emit(AcceptedBookingsError(error: e.toString()));
     }

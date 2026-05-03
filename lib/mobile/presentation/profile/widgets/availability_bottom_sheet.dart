@@ -10,15 +10,16 @@ class AvailabilityBottomSheet extends StatefulWidget {
   final DateTime startOfWeek;
   final List<String> disabledDays;
 
-  const AvailabilityBottomSheet(
-      {super.key,
-      required this.selectedDays,
-      required this.fromTime,
-      required this.toTime,
-      required this.repeatType,
-      required this.isEditMode,
-      required this.startOfWeek,
-      required this.disabledDays});
+  const AvailabilityBottomSheet({
+    super.key,
+    required this.selectedDays,
+    required this.fromTime,
+    required this.toTime,
+    required this.repeatType,
+    required this.isEditMode,
+    required this.startOfWeek,
+    required this.disabledDays,
+  });
 
   @override
   State<AvailabilityBottomSheet> createState() =>
@@ -30,6 +31,8 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   late String fromTime;
   late String toTime;
   late String repeat;
+  late DateTime currentWeekStart;
+  bool _hasAutoShifted = false;
 
   final allDays = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
   final Map<String, int> dayIndex = {
@@ -45,26 +48,110 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   @override
   void initState() {
     super.initState();
+
+    currentWeekStart = widget.startOfWeek;
+
     days = [...widget.selectedDays];
-    fromTime = widget.fromTime;
-    toTime = widget.toTime;
     repeat = widget.repeatType;
+
+    if (widget.fromTime.isNotEmpty && widget.toTime.isNotEmpty) {
+      fromTime = widget.fromTime;
+      toTime = widget.toTime;
+    } else {
+      final minFrom = DateTime.now().add(const Duration(hours: 12));
+      final minTo = minFrom.add(const Duration(hours: 2));
+
+      fromTime = _formatTime(TimeOfDay.fromDateTime(minFrom));
+      toTime = _formatTime(TimeOfDay.fromDateTime(minTo));
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _autoMoveToNextAvailableWeek();
+    });
+  }
+
+  void _autoMoveToNextAvailableWeek() {
+    DateTime tempWeek = currentWeekStart;
+    int safety = 0;
+
+    while (_isWeekDisabled(tempWeek) && safety < 10) {
+      tempWeek = tempWeek.add(const Duration(days: 7));
+      safety++;
+    }
+
+    if (tempWeek != currentWeekStart) {
+      setState(() {
+        currentWeekStart = tempWeek;
+      });
+    }
+  }
+
+  bool _isWeekDisabled(DateTime weekStart) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return allDays.every((day) {
+      final index = dayIndex[day]!;
+      final date = weekStart.add(Duration(days: index));
+
+      final isPastDay = date.isBefore(today);
+
+      return widget.disabledDays.contains(day) ||
+          isPastDay ||
+          !isDayAvailable(day, weekStart);
+    });
+  }
+
+  String _formatTime(TimeOfDay t) {
+    final hour = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
+    final minute = t.minute.toString().padLeft(2, '0');
+    final period = t.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
   }
 
   DateTime get minAllowedDateTime =>
       DateTime.now().add(const Duration(hours: 12));
 
-  bool isDayAvailable(String day) {
+  bool isDayAvailable(String day, DateTime weekStart) {
     final index = dayIndex[day]!;
-    final date = widget.startOfWeek.add(Duration(days: index));
+    final date = weekStart.add(Duration(days: index));
 
-    final now = DateTime.now();
-    final minAllowed = now.add(const Duration(hours: 12));
+    final minAllowed = DateTime.now().add(const Duration(hours: 12));
+    final endOfDay = DateTime(date.year, date.month, date.day, 23, 59);
 
-    final dayDate = DateTime(date.year, date.month, date.day);
-    final minDate = DateTime(minAllowed.year, minAllowed.month, minAllowed.day);
+    return endOfDay.isAfter(minAllowed);
+  }
 
-    return !dayDate.isBefore(minDate);
+  bool isDayAndTimeValid(String day) {
+    final index = dayIndex[day]!;
+    final date = currentWeekStart.add(Duration(days: index));
+
+    final fromParsed = _parseTime(fromTime);
+    final sessionDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      fromParsed.hour,
+      fromParsed.minute,
+    );
+
+    final minAllowed = DateTime.now().add(const Duration(hours: 12));
+    return sessionDateTime.isAfter(minAllowed);
+  }
+
+  int _timeToMinutes(String time) {
+    final lower = time.toLowerCase().trim();
+    final isPm = lower.contains('pm');
+
+    final clean = lower.replaceAll(RegExp(r'[apm\s]'), '');
+    final parts = clean.split(':');
+
+    int hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+
+    if (isPm && hour != 12) hour += 12;
+    if (!isPm && hour == 12) hour = 0;
+
+    return hour * 60 + minute;
   }
 
   int _toMinutes(String timeStr) {
@@ -86,14 +173,16 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   }
 
   bool get isTimeRangeValid {
-    final from = _toMinutes(fromTime);
-    final to = _toMinutes(toTime);
-    if (to <= from) return false;
-    if ((to - from) < 30) return false;
-    return true;
+    final from = _timeToMinutes(fromTime);
+    final to = _timeToMinutes(toTime);
+    final diff = to - from;
+    return diff >= 30 && to > from;
   }
 
-  bool get canSave => days.isNotEmpty && isTimeRangeValid;
+  bool get canSave {
+    if (days.isEmpty || !isTimeRangeValid) return false;
+    return days.every((day) => isDayAndTimeValid(day));
+  }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -109,18 +198,16 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
 
   void toggleDay(String day) {
     setState(() {
-      if (widget.isEditMode) {
-        if (days.contains(day)) {
-          days.remove(day);
-        } else {
-          days.add(day);
-        }
+      if (days.contains(day)) {
+        days.remove(day);
       } else {
-        if (days.contains(day)) {
-          days.clear();
-        } else {
-          days = [day];
+        if (!isDayAndTimeValid(day)) {
+          _showSnackBar(
+            "This day is too soon — choose a later time first",
+          );
+          return;
         }
+        days.add(day);
       }
     });
   }
@@ -140,10 +227,8 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   }
 
   Future<void> pickTime(bool isFrom) async {
-    final now = DateTime.now();
     final minAllowed = minAllowedDateTime;
-
-    final initial = TimeOfDay.fromDateTime(minAllowed);
+    final initial = isFrom ? _parseTime(fromTime) : _parseTime(toTime);
 
     final picked = await showTimePicker(
       context: context,
@@ -154,20 +239,19 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
             timePickerTheme: TimePickerThemeData(
               backgroundColor: Theme.of(context).cardColor,
               dialHandColor: AppPalette.primary,
+              entryModeIconColor: AppPalette.primary,
               dialBackgroundColor: AppPalette.primary.withOpacity(0.1),
               hourMinuteTextColor: AppPalette.primary,
               hourMinuteColor: AppPalette.primary.withOpacity(0.1),
               dayPeriodColor: MaterialStateColor.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
-                  return AppPalette.primary;
-                }
-                return Colors.grey.shade200;
+                return states.contains(MaterialState.selected)
+                    ? AppPalette.primary
+                    : Colors.grey.shade200;
               }),
               dayPeriodTextColor: MaterialStateColor.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
-                  return Colors.white;
-                }
-                return Colors.black;
+                return states.contains(MaterialState.selected)
+                    ? Colors.white
+                    : Colors.black;
               }),
             ),
             colorScheme: ColorScheme.light(
@@ -179,39 +263,56 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
       },
     );
 
-    if (picked != null) {
-      final selected = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        picked.hour,
-        picked.minute,
+    if (picked == null) return;
+
+    final today = DateTime.now();
+    final selected = DateTime(
+      today.year,
+      today.month,
+      today.day,
+      picked.hour,
+      picked.minute,
+    );
+    if (isFrom && selected.isBefore(minAllowed)) {
+      _showSnackBar(
+        "Minimum time is ${_formatTime(TimeOfDay.fromDateTime(minAllowed))} (12h from now)",
       );
+      return;
+    }
 
-      if (selected.isBefore(minAllowed)) {
-        _showSnackBar("You must select time at least 12 hours from now");
-        return;
-      }
+    final newTime = _formatTime(picked);
+    final newMinutes = _timeToMinutes(newTime);
+    final fromMinutes = _timeToMinutes(fromTime);
 
-      setState(() {
-        if (isFrom) {
-          fromTime = picked.format(context);
-        } else {
-          toTime = picked.format(context);
+    setState(() {
+      if (isFrom) {
+        fromTime = newTime;
+        // لو الـ toTime بقى أقل من الـ fromTime، اضبطه تلقائياً
+        if (_timeToMinutes(toTime) <= _timeToMinutes(fromTime)) {
+          final corrected = selected.add(const Duration(hours: 2));
+          toTime = _formatTime(TimeOfDay.fromDateTime(corrected));
         }
-      });
-
-      if (!isTimeRangeValid) {
-        _showSnackBar("Invalid time range (min 30 min & end > start)");
+        // لو في أيام مختارة مش هتبقى valid مع الوقت الجديد، شيلهم
+        days.removeWhere((day) => !isDayAndTimeValid(day));
       } else {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        if (newMinutes <= fromMinutes) {
+          _showSnackBar("End time must be after start time");
+          return;
+        }
+        toTime = newTime;
       }
+    });
+
+    if (!isTimeRangeValid) {
+      _showSnackBar("Invalid time range (minimum 30 minutes)");
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
   }
 
   String getDateForDay(String day) {
     final index = dayIndex[day]!;
-    final date = widget.startOfWeek.add(Duration(days: index));
+    final date = currentWeekStart.add(Duration(days: index));
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
@@ -259,25 +360,19 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                 spacing: 8,
                 children: allDays.map((day) {
                   final selected = days.contains(day);
-                  //  final isDisabled = widget.disabledDays.contains(day);
                   final now = DateTime.now();
-
                   final index = dayIndex[day]!;
-                  final date = widget.startOfWeek.add(Duration(days: index));
-
+                  final date = currentWeekStart.add(Duration(days: index));
                   final today = DateTime(now.year, now.month, now.day);
-
                   final isPastDay = date.isBefore(today);
 
                   final isDisabled = widget.disabledDays.contains(day) ||
-                      !isDayAvailable(day) ||
+                      !isDayAvailable(day, currentWeekStart) ||
                       isPastDay;
-                  final label = day;
-                  // "$day (${getDateForDay(day).split('-')[2]}/${getDateForDay(day).split('-')[1]})";
 
                   return ChoiceChip(
                     label: Text(
-                      label,
+                      day,
                       style: TextStyle(
                         color: isDisabled
                             ? Colors.grey
@@ -421,7 +516,6 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                         ),
                       ],
                     ),
-              // Spacer(),
               const SizedBox(height: 36),
               SizedBox(
                 width: double.infinity,
@@ -436,19 +530,26 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                   ),
                   onPressed: () {
                     if (!canSave) {
-                      final from = _toMinutes(fromTime);
-                      final to = _toMinutes(toTime);
-                      final message = days.isEmpty
-                          ? "Please select at least one day"
-                          : to <= from
-                              ? "End time must be later than start time"
-                              : "Time range must be at least 30 minutes";
-                      _showSnackBar(message);
+                      if (days.isEmpty) {
+                        _showSnackBar("Please select at least one day");
+                      } else if (!isTimeRangeValid) {
+                        final from = _timeToMinutes(fromTime);
+                        final to = _timeToMinutes(toTime);
+                        _showSnackBar(
+                          to <= from
+                              ? "End time must be after start time"
+                              : "Minimum duration is 30 minutes",
+                        );
+                      } else {
+                        _showSnackBar(
+                          "Selected day + time must be at least 12 hours from now",
+                        );
+                      }
                       return;
                     }
 
                     Navigator.pop(context, {
-                      "day": days.first,
+                      "days": days,
                       "from": fromTime,
                       "to": toTime,
                       "repeat": repeat,

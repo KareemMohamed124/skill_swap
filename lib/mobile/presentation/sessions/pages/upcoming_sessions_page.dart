@@ -15,9 +15,10 @@ class UpcomingSessionsPage extends StatelessWidget {
       builder: (context, state) {
         if (state is GetBookingsLoading) {
           return const Center(
-              child: CircularProgressIndicator(
-            color: AppPalette.primary,
-          ));
+            child: CircularProgressIndicator(
+              color: AppPalette.primary,
+            ),
+          );
         }
 
         if (state is GetBookingsError) {
@@ -29,14 +30,69 @@ class UpcomingSessionsPage extends StatelessWidget {
             return const Center(child: Text("No upcoming sessions"));
           }
 
-          return ListView.separated(
+          /// 🔥 check if there are unpaid sessions
+          final unpaidSessions = state.bookings.where((session) =>
+              session.paymentStatus == "unpaid" &&
+              session.price > 0 &&
+              session.isStudent);
+
+          final hasUnpaidSessions = unpaidSessions.isNotEmpty;
+          final unpaidCount = unpaidSessions.length;
+
+          return Padding(
             padding: const EdgeInsets.all(16),
-            itemCount: state.bookings.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, index) {
-              return SessionCard(
-                  session: state.bookings[index], currentStatus: "accepted");
-            },
+            child: Column(
+              children: [
+                if (hasUnpaidSessions)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border:
+                            Border.all(color: Theme.of(context).dividerColor)),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.attach_money, color: Colors.white),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Payment Required",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "You have $unpaidCount session(s) pending payment.\nTo avoid losing your booking, please complete payment no later than 6 hours before the session begins.",
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: state.bookings.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (_, index) {
+                      return SessionCard(
+                        session: state.bookings[index],
+                        currentStatus: "accepted",
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         }
 

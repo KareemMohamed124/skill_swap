@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../../main.dart';
+import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/delete_available_dates/delete_available_dates_bloc.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
+import '../../../../shared/core/theme/app_palette.dart';
 
 class ManageAvailabilityBottomSheet extends StatefulWidget {
   final List availableDates;
   final VoidCallback onAddPressed;
+  final String instructorId;
 
   const ManageAvailabilityBottomSheet({
     super.key,
     required this.availableDates,
     required this.onAddPressed,
+    required this.instructorId,
   });
 
   @override
@@ -28,6 +33,14 @@ class _ManageAvailabilityBottomSheetState
   void initState() {
     super.initState();
     localDates = List.from(widget.availableDates);
+
+    context
+        .read<AcceptedBookingsCubit>()
+        .getAcceptedBookings(widget.instructorId);
+  }
+
+  bool isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String _getDayName(int weekday) {
@@ -58,11 +71,8 @@ class _ManageAvailabilityBottomSheetState
             "Success",
             "Deleted successfully",
             snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.white.withOpacity(0.2),
+            backgroundColor: Colors.black.withOpacity(0.2),
             colorText: Colors.white,
-            margin: const EdgeInsets.all(16),
-            borderRadius: 16,
-            duration: const Duration(seconds: 2),
           );
         }
 
@@ -71,11 +81,8 @@ class _ManageAvailabilityBottomSheetState
             "Error",
             state.message,
             snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.white.withOpacity(0.2),
+            backgroundColor: Colors.black.withOpacity(0.2),
             colorText: Colors.white,
-            margin: const EdgeInsets.all(16),
-            borderRadius: 16,
-            duration: const Duration(seconds: 2),
           );
         }
       },
@@ -90,12 +97,12 @@ class _ManageAvailabilityBottomSheetState
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            BlocBuilder<GetAvailableDatesBloc, GetAvailableDatesState>(
-              builder: (context, state) {
-                List availableDates = [];
+            BlocBuilder<AcceptedBookingsCubit, AcceptedBookingsState>(
+              builder: (context, acceptedState) {
+                List acceptedBookings = [];
 
-                if (state is GetAvailableDatesSuccess) {
-                  availableDates = state.data.availableDates;
+                if (acceptedState is AcceptedBookingsLoaded) {
+                  acceptedBookings = acceptedState.bookings;
                 }
 
                 return Wrap(
@@ -105,21 +112,62 @@ class _ManageAvailabilityBottomSheetState
                     ...localDates.map((item) {
                       final date = DateTime.parse(item.date);
 
-                      return Chip(
-                          label: Text(
-                            "${_getDayName(date.weekday)} ${date.day}/${date.month} "
-                            "(${_formatTime(item.from)} - ${_formatTime(item.to)})",
-                          ),
-                          deleteIcon: const Icon(Icons.close, size: 18),
-                          onDeleted: () {
-                            setState(() {
-                              localDates.remove(item);
-                            });
+                      final bookingsOnDay = acceptedBookings.where((booking) {
+                        final bookingDate =
+                            DateTime.parse(booking.date.toString()).toLocal();
+                        return isSameDay(date, bookingDate);
+                      }).toList();
 
-                            context.read<DeleteAvailableDatesBloc>().add(
-                                  DeleteAvailableDates(idOrDate: item.date),
-                                );
+                      final hasBookings = bookingsOnDay.isNotEmpty;
+
+                      return Chip(
+                        avatar: hasBookings
+                            ? const Icon(Icons.lock, size: 16)
+                            : null,
+                        backgroundColor:
+                            hasBookings ? Colors.grey.withOpacity(0.2) : null,
+                        label: Text(
+                          "${_getDayName(date.weekday)} ${date.day}/${date.month} "
+                          "(${_formatTime(item.from)} - ${_formatTime(item.to)})",
+                        ),
+                        deleteIcon: const Icon(Icons.close, size: 18),
+                        onDeleted: () {
+                          if (hasBookings) {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: const Text("Can't Delete Day"),
+                                content: Text(
+                                  "This day has ${bookingsOnDay.length} booking(s).",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("OK"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      desktopKey.currentState
+                                          ?.openSessions(tab: 0);
+                                    },
+                                    child: const Text("View Bookings"),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          }
+
+                          setState(() {
+                            localDates.remove(item);
                           });
+
+                          context.read<DeleteAvailableDatesBloc>().add(
+                                DeleteAvailableDates(idOrDate: item.date),
+                              );
+                        },
+                      );
                     }).toList(),
                     ActionChip(
                       avatar: const Icon(Icons.add),

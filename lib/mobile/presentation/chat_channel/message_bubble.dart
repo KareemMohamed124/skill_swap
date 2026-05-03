@@ -26,21 +26,20 @@ class MessageBubble extends StatelessWidget {
   final bool isFirstInGroup;
   final bool isLastInGroup;
 
-  const MessageBubble(
-      {super.key,
-      required this.message,
-      required this.isMe,
-      required this.senderName,
-      this.senderImage,
-      this.showAvatar = true,
-      this.showName = true,
-      this.isTyping = false,
-      this.onLongPress,
-      this.onTapReply,
-      this.isHighlighted = false,
-      this.isFirstInGroup = true,
-      this.isLastInGroup = true,
-      this.senderThemeValue});
+  const MessageBubble({super.key,
+    required this.message,
+    required this.isMe,
+    required this.senderName,
+    this.senderImage,
+    this.showAvatar = true,
+    this.showName = true,
+    this.isTyping = false,
+    this.onLongPress,
+    this.onTapReply,
+    this.isHighlighted = false,
+    this.isFirstInGroup = true,
+    this.isLastInGroup = true,
+    this.senderThemeValue});
 
   String _formatTime(DateTime date) {
     return DateFormat('hh:mm a').format(date);
@@ -54,12 +53,12 @@ class MessageBubble extends StatelessWidget {
           : null,
       child: (senderImage == null || senderImage!.isEmpty)
           ? Text(
-              senderName.isNotEmpty ? senderName[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            )
+        senderName.isNotEmpty ? senderName[0] : '?',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      )
           : null,
     );
   }
@@ -131,8 +130,9 @@ class MessageBubble extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
+
           /// Avatar
           if (!isMe)
             Padding(
@@ -155,7 +155,10 @@ class MessageBubble extends StatelessWidget {
                       vertical: 6,
                     ),
                     constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      maxWidth: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.7,
                     ),
                     decoration: BoxDecoration(
                       color: isHighlighted
@@ -191,10 +194,10 @@ class MessageBubble extends StatelessWidget {
                         isTyping
                             ? const TypingIndicator()
                             : Text(
-                                message.content,
-                                style: TextStyle(color: textColor),
-                                softWrap: true,
-                              ),
+                          message.content,
+                          style: TextStyle(color: textColor),
+                          softWrap: true,
+                        ),
 
                         const SizedBox(height: 3),
 
@@ -210,7 +213,7 @@ class MessageBubble extends StatelessWidget {
                                     fontSize: 9,
                                     fontStyle: FontStyle.italic,
                                     color:
-                                        isMe ? Colors.white70 : Colors.black54,
+                                    isMe ? Colors.white70 : Colors.black54,
                                   ),
                                 ),
                               Text(

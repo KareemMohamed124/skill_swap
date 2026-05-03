@@ -1,11 +1,15 @@
 part of 'submit_review_bloc.dart';
 
 @immutable
-sealed class SubmitReviewEvent {}
+abstract class SubmitReviewEvent {}
 
+// submit normal review
 class ConfirmSubmit extends SubmitReviewEvent {
   final String id;
   final SubmitReviewRequest request;
 
-  ConfirmSubmit({required this.id, required this.request});
+  ConfirmSubmit({
+    required this.id,
+    required this.request,
+  });
 }

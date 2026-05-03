@@ -6,7 +6,7 @@ part 'cancel_booking_success_response.g.dart';
 class CancelBookingSuccessResponse {
   final String message;
 
-  // @JsonKey(name: 'booking') // ← أهم سطر
+  // @JsonKey(name: 'booking')
   // final Booking bookSession;
 
   CancelBookingSuccessResponse({

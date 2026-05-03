@@ -28,7 +28,7 @@ class Booking {
 class BookingBottomSheet extends StatefulWidget {
   final String userId;
   final String userName;
-  final int price;
+  final num price;
   final String? bookingId;
   final List<AvailableDates> availableDates;
   final String role;
@@ -94,7 +94,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   Future<void> _init() async {
     myId = widget.userId;
 
-    await acceptedCubit.getAcceptedBookings();
+    await acceptedCubit.getAcceptedBookings(widget.userId);
 
     final firstAvailableDay = widget.availableDates.firstWhere(
       (day) => !isDayFullyBooked(day),
@@ -192,6 +192,12 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     return DateFormat('HH:mm').format(time);
   }
 
+  bool get isFreeSession {
+    if (widget.role != "Mentor") return true;
+
+    return paymentMethod == "barter";
+  }
+
   bool isDayFullyBooked(AvailableDates day) {
     final date = DateTime.parse(day.date);
 
@@ -263,7 +269,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
               .where((b) => b.instructor.id == myId && b.status == "accepted")
               .map((b) {
             final baseDate = b.date.toLocal();
-
             final timeParts = b.time.split(":");
 
             final dateTime = DateTime(
@@ -276,292 +281,300 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
             return Booking(
               start: dateTime,
-              end: dateTime.add(Duration(minutes: b.durationMins)),
+              end: dateTime.add(Duration(minutes: b.durationMins.toInt())),
               status: b.status,
             );
           }).toList();
 
-          return BlocConsumer<ActiveBookingBloc, ActiveBookingState>(
-            listener: (context, state) {
-              if (state is BookingCreatedSuccess) {
-                //  Get.snackbar("Success", "Booking created successfully");
-                showAppDialog(
-                  context: context,
-                  type: DialogType.success,
-                  message: "Booking created successfully",
-                  autoCloseDuration: const Duration(seconds: 5),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                );
-              }
-              if (state is BookingUpdatedSuccess) {
-                //Get.snackbar("Success", "Booking updated successfully");
-                showAppDialog(
-                  context: context,
-                  type: DialogType.success,
-                  message: "Booking updated successfully",
-                  autoCloseDuration: const Duration(seconds: 2),
-                );
-              }
+          return DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.4,
+            maxChildSize: 0.95,
+            expand: false,
+            builder: (context, scrollController) {
+              return BlocConsumer<ActiveBookingBloc, ActiveBookingState>(
+                listener: (context, state) {
+                  if (state is BookingCreatedSuccess) {
+                    showAppDialog(
+                      context: context,
+                      type: DialogType.success,
+                      message: "Booking created successfully",
+                      autoCloseDuration: const Duration(seconds: 5),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    );
+                  }
 
-              if (state is BookingCancelledSuccess) {
-                // Get.snackbar("Success", "Booking cancelled");
-                showAppDialog(
-                  context: context,
-                  type: DialogType.warning,
-                  message: "Booking cancelled",
-                  autoCloseDuration: const Duration(seconds: 5),
-                );
-              }
+                  if (state is BookingUpdatedSuccess) {
+                    showAppDialog(
+                      context: context,
+                      type: DialogType.success,
+                      message: "Booking updated successfully",
+                      autoCloseDuration: const Duration(seconds: 2),
+                    );
+                  }
 
-              if (state is BookingError) {
-                //   Get.snackbar("Error", state.message);
+                  if (state is BookingCancelledSuccess) {
+                    showAppDialog(
+                      context: context,
+                      type: DialogType.success,
+                      message: "Booking cancelled successfully",
+                      autoCloseDuration: const Duration(seconds: 5),
+                    );
+                  }
 
-                showAppDialog(
-                  context: context,
-                  type: DialogType.error,
-                  message: state.message,
-                );
-              }
+                  if (state is BookingError) {
+                    showAppDialog(
+                      context: context,
+                      type: DialogType.error,
+                      message: state.message,
+                    );
+                  }
 
-              if (state is BookingLoaded) {
-                selectedDate =
-                    DateFormat('yyyy-MM-dd').format(state.booking.date!);
+                  if (state is BookingLoaded) {
+                    selectedDate =
+                        DateFormat('yyyy-MM-dd').format(state.booking.date!);
 
-                startTime = DateTime(
-                  state.booking.date!.year,
-                  state.booking.date!.month,
-                  state.booking.date!.day,
-                  int.parse(state.booking.time.split(":")[0]),
-                  int.parse(state.booking.time.split(":")[1]),
-                );
+                    startTime = DateTime(
+                      state.booking.date!.year,
+                      state.booking.date!.month,
+                      state.booking.date!.day,
+                      int.parse(state.booking.time.split(":")[0]),
+                      int.parse(state.booking.time.split(":")[1]),
+                    );
 
-                selectedDuration = state.booking.duration_mins.toString();
-              }
+                    selectedDuration = state.booking.duration_mins.toString();
+                  }
 
-              setState(() {});
-            },
-            builder: (context, state) {
-              final isLoading = state is BookingLoading;
-              final booking = state is BookingLoaded ? state.booking : null;
+                  setState(() {});
+                },
+                builder: (context, state) {
+                  final isLoading = state is BookingLoading;
+                  final booking = state is BookingLoaded ? state.booking : null;
 
-              return Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 50,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Text("select_date".tr,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: widget.availableDates.map((day) {
-                        final isSelected = selectedDate == day.date;
-                        final isDisabled = isDayFullyBooked(day);
-
-                        return ChoiceChip(
-                          label: Text(formatDay(day.date)),
-                          selected: isSelected,
-                          selectedColor: AppPalette.primary,
-                          onSelected: isDisabled
-                              ? null
-                              : (_) {
-                                  setState(() {
-                                    selectedDate = day.date;
-                                    startTime = null;
-                                  });
-                                },
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 16),
-                    Text("select_duration".tr,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 50,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: durations.length,
-                        itemBuilder: (_, index) {
-                          final d = durations[index];
-                          final selected = selectedDuration == d;
-
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: ChoiceChip(
-                              label: Text("$d min"),
-                              selected: selected,
-                              selectedColor: AppPalette.primary,
-                              onSelected: (_) {
-                                setState(() {
-                                  selectedDuration = d;
-                                  startTime = null;
-                                });
-                              },
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Container(
+                              width: 50,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text("select_time".tr,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: 8),
-                    if (selectedDate == null)
-                      const Text("Select a day first")
-                    else
-                      SizedBox(
-                        height: 50,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: slots.length,
-                          itemBuilder: (_, index) {
-                            final slot = slots[index];
+                          ),
+                          const SizedBox(height: 16),
+                          Text("select_date".tr,
+                              style: Theme.of(context).textTheme.bodyLarge),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            children: widget.availableDates.map((day) {
+                              final isSelected = selectedDate == day.date;
+                              final isDisabled = isDayFullyBooked(day);
 
-                            final disabled = !canSelectSlot(slot);
-                            final inRange = isInSelectedRange(slot);
+                              return ChoiceChip(
+                                label: Text(formatDay(day.date)),
+                                selected: isSelected,
+                                selectedColor: AppPalette.primary,
+                                onSelected: isDisabled
+                                    ? null
+                                    : (_) {
+                                        setState(() {
+                                          selectedDate = day.date;
+                                          startTime = null;
+                                        });
+                                      },
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 16),
+                          Text("select_duration".tr,
+                              style: Theme.of(context).textTheme.bodyLarge),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 50,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: durations.length,
+                              itemBuilder: (_, index) {
+                                final d = durations[index];
+                                final selected = selectedDuration == d;
 
-                            return GestureDetector(
-                              onTap: disabled
-                                  ? null
-                                  : () {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: ChoiceChip(
+                                    label: Text("$d min"),
+                                    selected: selected,
+                                    selectedColor: AppPalette.primary,
+                                    onSelected: (_) {
                                       setState(() {
-                                        startTime = slot;
+                                        selectedDuration = d;
+                                        startTime = null;
                                       });
                                     },
-                              child: Container(
-                                width: 75,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                decoration: BoxDecoration(
-                                  color: disabled
-                                      ? Colors.grey.shade800
-                                      : inRange
-                                          ? AppPalette.primary
-                                          : Colors.grey.shade900,
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  formatTime(slot),
-                                  style: TextStyle(
-                                    color:
-                                        disabled ? Colors.grey : Colors.white,
-                                    fontWeight: inRange
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text("select_time".tr,
+                              style: Theme.of(context).textTheme.bodyLarge),
+                          const SizedBox(height: 8),
+                          if (selectedDate == null)
+                            const Text("Select a day first")
+                          else
+                            SizedBox(
+                              height: 50,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: slots.length,
+                                itemBuilder: (_, index) {
+                                  final slot = slots[index];
+                                  final disabled = !canSelectSlot(slot);
+                                  final inRange = isInSelectedRange(slot);
+
+                                  return GestureDetector(
+                                    onTap: disabled
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              startTime = slot;
+                                            });
+                                          },
+                                    child: Container(
+                                      width: 75,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      decoration: BoxDecoration(
+                                        color: disabled
+                                            ? Colors.grey.shade800
+                                            : inRange
+                                                ? AppPalette.primary
+                                                : Colors.grey.shade900,
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        formatTime(slot),
+                                        style: TextStyle(
+                                          color: disabled
+                                              ? Colors.grey
+                                              : Colors.white,
+                                          fontWeight: inRange
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          if (widget.role == "Mentor" && booking == null) ...[
+                            Text(
+                              "Session type",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            RadioListTile(
+                              value: "barter",
+                              groupValue: paymentMethod,
+                              onChanged: (v) =>
+                                  setState(() => paymentMethod = v!),
+                              title: const Text("Exchange hours"),
+                            ),
+                            RadioListTile(
+                              value: "pay",
+                              groupValue: paymentMethod,
+                              onChanged: (v) =>
+                                  setState(() => paymentMethod = v!),
+                              title: const Text("Pay by price"),
+                            ),
+                          ],
+                          const SizedBox(height: 16),
+                          if (isLoading)
+                            const Center(child: CircularProgressIndicator())
+                          else if (booking != null &&
+                              booking.status != "accepted")
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      context
+                                          .read<ActiveBookingBloc>()
+                                          .add(CancelBooking(booking.id));
+                                    },
+                                    child: const Text("Cancel"),
                                   ),
                                 ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      final request = UpdateBookingRequest(
+                                        date: selectedDate!,
+                                        time: to24Hour(startTime!),
+                                        duration_mins: durationMinutes,
+                                      );
+
+                                      context.read<ActiveBookingBloc>().add(
+                                            UpdateBooking(
+                                              booking.id.toString(),
+                                              request,
+                                            ),
+                                          );
+                                    },
+                                    child: const Text("Update"),
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed:
+                                    startTime == null || selectedDate == null
+                                        ? null
+                                        : () {
+                                            final request = BookingRequest(
+                                              date: selectedDate!,
+                                              time: to24Hour(startTime!),
+                                              duration_mins: durationMinutes,
+                                              instructorId: widget.userId,
+                                              isFree: widget.role == "Mentor"
+                                                  ? (paymentMethod == "barter")
+                                                  : true,
+                                            );
+
+                                            context
+                                                .read<ActiveBookingBloc>()
+                                                .add(CreateBooking(request));
+                                          },
+                                child: const Text("Confirm Booking"),
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    if (widget.role == "Mentor") ...[
-                      Text(
-                        "Session type",
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      RadioListTile(
-                        value: "barter",
-                        groupValue: paymentMethod,
-                        onChanged: (v) => setState(() => paymentMethod = v!),
-                        title: const Text("Exchange hours"),
-                      ),
-                      RadioListTile(
-                        value: "pay",
-                        groupValue: paymentMethod,
-                        onChanged: (v) => setState(() => paymentMethod = v!),
-                        title: const Text("Pay by price"),
-                      ),
-                    ],
-                    const Spacer(),
-                    if (isLoading)
-                      const Center(child: CircularProgressIndicator())
-                    else if (booking != null && booking.status != "accepted")
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                context
-                                    .read<ActiveBookingBloc>()
-                                    .add(CancelBooking(booking.id));
-                              },
-                              child: const Text("Cancel"),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final request = UpdateBookingRequest(
-                                  date: selectedDate!,
-                                  time: to24Hour(startTime!),
-                                  duration_mins: durationMinutes,
-                                  price:
-                                      paymentMethod == "pay" ? widget.price : 0,
-                                );
-
-                                context.read<ActiveBookingBloc>().add(
-                                    UpdateBooking(
-                                        booking.id.toString(), request));
-                              },
-                              child: const Text("Update"),
-                            ),
-                          ),
                         ],
-                      )
-                    else
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: startTime == null || selectedDate == null
-                              ? null
-                              : () {
-                                  final request = BookingRequest(
-                                    date: selectedDate!,
-                                    time: to24Hour(startTime!),
-                                    duration_mins: durationMinutes,
-                                    instructorId: widget.userId,
-                                    price: paymentMethod == "pay"
-                                        ? calculateSessionPrice(
-                                            hourlyRate: widget.price,
-                                            durationInMinutes: durationMinutes)
-                                        : 0,
-                                  );
-
-                                  context
-                                      .read<ActiveBookingBloc>()
-                                      .add(CreateBooking(request));
-                                },
-                          child: const Text("Confirm Booking"),
-                        ),
                       ),
-                  ],
-                ),
+                    ),
+                  );
+                },
               );
             },
           );

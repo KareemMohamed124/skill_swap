@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/desktop/presentation/forget_password/screens/reset_password_screen.dart';
+import 'package:skill_swap/desktop/presentation/sign/widgets/custom_button.dart';
 
 import '../../../../shared/bloc/send_code_bloc/send_code_bloc.dart';
 import '../../../../shared/bloc/verify_code_bloc/verify_code_bloc.dart';
 import '../../../../shared/dependency_injection/injection.dart';
-import '../widgets/custom_auth.dart';
 
-class VerifyScreen extends StatefulWidget {
+class VerifyDesktop extends StatefulWidget {
   final String email;
 
-  const VerifyScreen({super.key, required this.email});
+  const VerifyDesktop({super.key, required this.email});
 
   @override
-  State<VerifyScreen> createState() => _VerifyScreenState();
+  State<VerifyDesktop> createState() => _VerifyDesktopState();
 }
 
-class _VerifyScreenState extends State<VerifyScreen> {
+class _VerifyDesktopState extends State<VerifyDesktop> {
   bool isResend = false;
   int secondsRemaining = 900;
   late Timer timer;
@@ -44,7 +44,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
   }
 
   void startTimer() {
-    timer = Timer.periodic(Duration(seconds: 1), (t) {
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() {
         if (secondsRemaining > 0) {
           secondsRemaining--;
@@ -66,15 +66,10 @@ class _VerifyScreenState extends State<VerifyScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => sl<VerifyCodeBloc>(),
-        ),
-        BlocProvider(
-          create: (context) => sl<SendCodeBloc>(),
-        )
+        BlocProvider(create: (_) => sl<VerifyCodeBloc>()),
+        BlocProvider(create: (_) => sl<SendCodeBloc>()),
       ],
       child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocConsumer<VerifyCodeBloc, VerifyCodeState>(
           listener: (context, state) {
             if (state is VerifyCodeFailureState) {
@@ -87,111 +82,176 @@ class _VerifyScreenState extends State<VerifyScreen> {
               );
 
               final code = codeDigits.join();
-              Get.to(ResetPasswordScreen(
-                email: widget.email,
-                code: code,
-              ));
+
+              Get.to(
+                ResetPasswordDesktop(
+                  email: widget.email,
+                  code: code,
+                ),
+              );
             }
           },
           builder: (context, state) {
-            return CustomAuth(
-              title: 'Verify Your Email',
-              subTitle: 'Enter the 6-digit code sent to ${widget.email}.',
-              childWidget: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                      6,
-                      (index) => Container(
-                        width: 45,
-                        height: 50,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Color(0xFFE6E7FF)),
-                        ),
-                        child: TextField(
-                          focusNode: focusNodes[index],
-                          textAlign: TextAlign.center,
-                          maxLength: 1,
-                          keyboardType: TextInputType.number,
-                          style: TextStyle(fontSize: 20, color: Colors.black),
-                          decoration: InputDecoration(
-                            counterText: "",
-                            border: InputBorder.none,
-                          ),
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              codeDigits[index] = value;
+            final isLoading = state is VerifyCodeLoading;
 
-                              if (index < 5) {
-                                FocusScope.of(context)
-                                    .requestFocus(focusNodes[index + 1]);
-                              } else {
-                                FocusScope.of(context).unfocus();
-                              }
-                            } else {
-                              codeDigits[index] = "";
-
-                              if (index > 0) {
-                                FocusScope.of(context)
-                                    .requestFocus(focusNodes[index - 1]);
-                              }
-                            }
-                          },
-                        ),
-                      ),
+            return Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  width: 450,
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .scaffoldBackgroundColor
+                        .withValues(alpha: 0.5),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor,
+                      width: 2,
                     ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        blurRadius: 20,
+                        color: Colors.black12,
+                        offset: Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  if (codeError != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        codeError!,
-                        style: TextStyle(color: Colors.red, fontSize: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Verify Your Email",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                ],
-              ),
-              buttonText:
-                  state is VerifyCodeLoading ? 'Verification' : 'Verify',
-              onPressed: state is VerifyCodeLoading
-                  ? null
-                  : () {
-                      if (codeDigits.any((digit) => digit.isEmpty)) {
-                        setState(() {
-                          codeError = "Please enter all 6 digits";
-                        });
-                        return;
-                      }
 
-                      final code = codeDigits.join();
+                      const SizedBox(height: 8),
 
-                      context.read<VerifyCodeBloc>().add(
-                            SubmitVerify(
-                              widget.email,
-                              code,
+                      Text(
+                        "Enter the 6-digit code sent to ${widget.email}.",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      /// OTP Fields
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(
+                          6,
+                          (index) => Container(
+                            width: 45,
+                            height: 50,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
                             ),
-                          );
-                    },
-              bottomText: isResend
-                  ? "Didn't receive the code? "
-                  : "Resend code in ${timerText}",
-              bottomActionText: isResend ? 'Resend' : '',
-              onBottomTap: isResend
-                  ? () {
-                      setState(() {
-                        isResend = false;
-                        secondsRemaining = 900; // 15 دقيقة
-                      });
-                      startTimer();
-                      context
-                          .read<SendCodeBloc>()
-                          .add(ResendCode(widget.email));
-                    }
-                  : () {},
+                            child: TextField(
+                              focusNode: focusNodes[index],
+                              textAlign: TextAlign.center,
+                              maxLength: 1,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                counterText: "",
+                                border: InputBorder.none,
+                              ),
+                              onChanged: (value) {
+                                if (value.isNotEmpty) {
+                                  codeDigits[index] = value;
+
+                                  if (index < 5) {
+                                    FocusScope.of(context).requestFocus(
+                                      focusNodes[index + 1],
+                                    );
+                                  } else {
+                                    FocusScope.of(context).unfocus();
+                                  }
+                                } else {
+                                  codeDigits[index] = "";
+
+                                  if (index > 0) {
+                                    FocusScope.of(context).requestFocus(
+                                      focusNodes[index - 1],
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      if (codeError != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          codeError!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ],
+
+                      const SizedBox(height: 32),
+
+                      /// Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: CustomButton(
+                          text: isLoading ? "Verifying..." : "Verify",
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  if (codeDigits.any((d) => d.isEmpty)) {
+                                    setState(() {
+                                      codeError = "Please enter all 6 digits";
+                                    });
+                                    return;
+                                  }
+
+                                  final code = codeDigits.join();
+
+                                  context.read<VerifyCodeBloc>().add(
+                                        SubmitVerify(widget.email, code),
+                                      );
+                                },
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      /// Bottom
+                      Center(
+                        child: GestureDetector(
+                          onTap: isResend
+                              ? () {
+                                  setState(() {
+                                    isResend = false;
+                                    secondsRemaining = 900;
+                                  });
+                                  startTimer();
+                                  context
+                                      .read<SendCodeBloc>()
+                                      .add(ResendCode(widget.email));
+                                }
+                              : null,
+                          child: Text(
+                            isResend
+                                ? "Didn't receive the code? Resend"
+                                : "Resend code in $timerText",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: isResend ? Colors.blue : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           },
         ),

@@ -25,14 +25,14 @@ class DesktopScaffold extends StatelessWidget {
           if (sidebar != null)
             Container(
               width: 250,
-              color: colors.surfaceVariant, // 👈 لون ثابت للسايدبار
+              color: colors.surfaceVariant,
               child: sidebar!,
             ),
 
           /// Main Content
           Expanded(
             child: Container(
-              color: colors.surface, // 👈 لون النص (الميدل)
+              color: colors.surface,
               child: body,
             ),
           ),
@@ -41,7 +41,7 @@ class DesktopScaffold extends StatelessWidget {
           if (width >= 1200 && rightPanel != null)
             Container(
               width: 320,
-              color: colors.surfaceVariant, // 👈 نفس لون السايدبار
+              color: colors.surfaceVariant,
               child: rightPanel!,
             ),
         ],

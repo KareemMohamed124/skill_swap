@@ -16,7 +16,7 @@ class StatusFilter extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final statusList = ["accepted".tr, "pending".tr, "request".tr];
+    final statusList = ["accepted".tr, "pending".tr, "request".tr, "rejected"];
 
     return Wrap(
       spacing: screenWidth * 0.02,

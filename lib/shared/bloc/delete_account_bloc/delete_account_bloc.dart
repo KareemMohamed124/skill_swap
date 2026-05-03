@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/bloc/delete_account_bloc/delete_account_event.dart';
 
+import '../../core/services/notification_service.dart';
 import '../../data/models/delete_account/delete_account_response.dart';
 import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/user_repository.dart';
@@ -21,6 +22,7 @@ class DeleteAccountBloc extends Bloc<DeleteAccountEvent, DeleteAccountState> {
         case DeleteAccountSuccess():
           await LocalStorage.clearAllTokens();
           await LocalStorage.clearUserId();
+          await NotificationService.deleteToken();
           sl<MyProfileCubit>().clearProfile();
           emit(DeleteAccountSuccessState());
           break;

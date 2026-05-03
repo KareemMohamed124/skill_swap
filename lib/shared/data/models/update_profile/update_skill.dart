@@ -1,24 +1,22 @@
 class UpdateSkill {
-  final String skillName;
+  final String? skillName;
 
-  // final String experienceLevel;
-
-  UpdateSkill({
-    required this.skillName,
-    // required this.experienceLevel,
-  });
+  UpdateSkill({this.skillName});
 
   factory UpdateSkill.fromJson(Map<String, dynamic>? json) {
     return UpdateSkill(
-      skillName: json?['skillName'] ?? '',
-      // experienceLevel: json?['experienceLevel'] ?? '',
+      skillName: json?['skillName']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'skillName': skillName,
-      //'experienceLevel': experienceLevel,
-    };
+    final data = <String, dynamic>{};
+
+    final value = skillName?.trim();
+    if (value != null && value.isNotEmpty) {
+      data['skillName'] = value;
+    }
+
+    return data;
   }
 }

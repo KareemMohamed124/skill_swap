@@ -29,11 +29,11 @@ class ProfileMentor extends StatefulWidget {
   final String name;
   final String track;
   final String role;
-  final double rate;
+  final num rate;
   final String bio;
-  final int hoursAvailable;
-  final int peopleHelped;
-  final int hourlyRate;
+  final num hoursAvailable;
+  final num peopleHelped;
+  final num hourlyRate;
   final List<ReviewModel> reviews;
   final List<Skill> skills;
 
@@ -172,7 +172,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                               mentorInfo(
                                   context: context,
                                   rate: widget.role == "Mentor"
-                                      ? "${calculateHourlyRate(widget.peopleHelped, widget.role)}\$"
+                                      ? "${widget.hourlyRate}\$"
                                       : "Free",
                                   info: "hourly_rate".tr),
                             ],
@@ -355,8 +355,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                   child: BookingBottomSheet(
                                     userId: widget.id,
                                     userName: widget.name,
-                                    price: calculateHourlyRate(
-                                        widget.peopleHelped, widget.role),
+                                    price: widget.hourlyRate,
                                     availableDates: state.data.availableDates,
                                     role: widget.role,
                                   ),

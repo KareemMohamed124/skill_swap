@@ -10,15 +10,16 @@ class AvailabilityBottomSheet extends StatefulWidget {
   final DateTime startOfWeek;
   final List<String> disabledDays;
 
-  const AvailabilityBottomSheet(
-      {super.key,
-      required this.selectedDays,
-      required this.fromTime,
-      required this.toTime,
-      required this.repeatType,
-      required this.isEditMode,
-      required this.startOfWeek,
-      required this.disabledDays});
+  const AvailabilityBottomSheet({
+    super.key,
+    required this.selectedDays,
+    required this.fromTime,
+    required this.toTime,
+    required this.repeatType,
+    required this.isEditMode,
+    required this.startOfWeek,
+    required this.disabledDays,
+  });
 
   @override
   State<AvailabilityBottomSheet> createState() =>
@@ -45,10 +46,67 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   @override
   void initState() {
     super.initState();
+
     days = [...widget.selectedDays];
-    fromTime = widget.fromTime;
-    toTime = widget.toTime;
     repeat = widget.repeatType;
+
+    final minFrom = DateTime.now().add(const Duration(hours: 12));
+    final minTo = minFrom.add(const Duration(hours: 2));
+
+    fromTime = _formatTime(TimeOfDay.fromDateTime(minFrom));
+    toTime = _formatTime(TimeOfDay.fromDateTime(minTo));
+  }
+
+  String _formatTime(TimeOfDay t) {
+    final hour = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
+    final minute = t.minute.toString().padLeft(2, '0');
+    final period = t.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
+
+  DateTime get minAllowedDateTime =>
+      DateTime.now().add(const Duration(hours: 12));
+
+  bool isDayAvailable(String day) {
+    final index = dayIndex[day]!;
+    final date = widget.startOfWeek.add(Duration(days: index));
+    final minAllowed = DateTime.now().add(const Duration(hours: 12));
+
+    final endOfDay = DateTime(date.year, date.month, date.day, 23, 59);
+    return endOfDay.isAfter(minAllowed);
+  }
+
+  bool isDayAndTimeValid(String day) {
+    final index = dayIndex[day]!;
+    final date = widget.startOfWeek.add(Duration(days: index));
+
+    final fromParsed = _parseTime(fromTime);
+    final sessionDateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      fromParsed.hour,
+      fromParsed.minute,
+    );
+
+    final minAllowed = DateTime.now().add(const Duration(hours: 12));
+    return sessionDateTime.isAfter(minAllowed);
+  }
+
+  int _timeToMinutes(String time) {
+    final lower = time.toLowerCase().trim();
+    final isPm = lower.contains('pm');
+
+    final clean = lower.replaceAll(RegExp(r'[apm\s]'), '');
+    final parts = clean.split(':');
+
+    int hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+
+    if (isPm && hour != 12) hour += 12;
+    if (!isPm && hour == 12) hour = 0;
+
+    return hour * 60 + minute;
   }
 
   int _toMinutes(String timeStr) {
@@ -70,14 +128,16 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   }
 
   bool get isTimeRangeValid {
-    final from = _toMinutes(fromTime);
-    final to = _toMinutes(toTime);
-    if (to <= from) return false;
-    if ((to - from) < 30) return false;
-    return true;
+    final from = _timeToMinutes(fromTime);
+    final to = _timeToMinutes(toTime);
+    final diff = to - from;
+    return diff >= 30 && to > from;
   }
 
-  bool get canSave => days.isNotEmpty && isTimeRangeValid;
+  bool get canSave {
+    if (days.isEmpty || !isTimeRangeValid) return false;
+    return days.every((day) => isDayAndTimeValid(day));
+  }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -93,18 +153,16 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
 
   void toggleDay(String day) {
     setState(() {
-      if (widget.isEditMode) {
-        if (days.contains(day)) {
-          days.remove(day);
-        } else {
-          days.add(day);
-        }
+      if (days.contains(day)) {
+        days.remove(day);
       } else {
-        if (days.contains(day)) {
-          days.clear();
-        } else {
-          days = [day];
+        if (!isDayAndTimeValid(day)) {
+          _showSnackBar(
+            "This day is too soon — choose a later time first",
+          );
+          return;
         }
+        days.add(day);
       }
     });
   }
@@ -124,17 +182,9 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   }
 
   Future<void> pickTime(bool isFrom) async {
-    TimeOfDay initial;
+    final minAllowed = minAllowedDateTime;
+    final initial = isFrom ? _parseTime(fromTime) : _parseTime(toTime);
 
-    if (isFrom) {
-      initial = TimeOfDay.now();
-    } else {
-      final from = _parseTime(fromTime);
-      initial = TimeOfDay(
-        hour: (from.hour + 2) % 24,
-        minute: from.minute,
-      );
-    }
     final picked = await showTimePicker(
       context: context,
       initialTime: initial,
@@ -144,20 +194,19 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
             timePickerTheme: TimePickerThemeData(
               backgroundColor: Theme.of(context).cardColor,
               dialHandColor: AppPalette.primary,
+              entryModeIconColor: AppPalette.primary,
               dialBackgroundColor: AppPalette.primary.withOpacity(0.1),
               hourMinuteTextColor: AppPalette.primary,
               hourMinuteColor: AppPalette.primary.withOpacity(0.1),
               dayPeriodColor: MaterialStateColor.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
-                  return AppPalette.primary;
-                }
-                return Colors.grey.shade200;
+                return states.contains(MaterialState.selected)
+                    ? AppPalette.primary
+                    : Colors.grey.shade200;
               }),
               dayPeriodTextColor: MaterialStateColor.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
-                  return Colors.white;
-                }
-                return Colors.black;
+                return states.contains(MaterialState.selected)
+                    ? Colors.white
+                    : Colors.black;
               }),
             ),
             colorScheme: ColorScheme.light(
@@ -169,27 +218,46 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
       },
     );
 
-    if (picked != null) {
-      final newTime = picked.format(context);
-      setState(() {
-        if (isFrom) {
-          fromTime = newTime;
-        } else {
-          toTime = newTime;
-        }
-      });
+    if (picked == null) return;
 
-      if (!isTimeRangeValid) {
-        final from = _toMinutes(fromTime);
-        final to = _toMinutes(toTime);
-        if (to <= from) {
-          _showSnackBar("End time must be later than start time");
-        } else {
-          _showSnackBar("Time range must be at least 30 minutes");
+    final now = DateTime.now();
+    final selected =
+        DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+
+    if (isFrom && selected.isBefore(minAllowed)) {
+      _showSnackBar(
+        "Minimum time is ${_formatTime(TimeOfDay.fromDateTime(minAllowed))} (12h from now)",
+      );
+      return;
+    }
+
+    final newTime = _formatTime(picked);
+    final newMinutes = _timeToMinutes(newTime);
+    final fromMinutes = _timeToMinutes(fromTime);
+
+    setState(() {
+      if (isFrom) {
+        fromTime = newTime;
+        // لو الـ toTime بقى أقل من الـ fromTime، اضبطه تلقائياً
+        if (_timeToMinutes(toTime) <= _timeToMinutes(fromTime)) {
+          final corrected = selected.add(const Duration(hours: 2));
+          toTime = _formatTime(TimeOfDay.fromDateTime(corrected));
         }
+        // لو في أيام مختارة مش هتبقى valid مع الوقت الجديد، شيلهم
+        days.removeWhere((day) => !isDayAndTimeValid(day));
       } else {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        if (newMinutes <= fromMinutes) {
+          _showSnackBar("End time must be after start time");
+          return;
+        }
+        toTime = newTime;
       }
+    });
+
+    if (!isTimeRangeValid) {
+      _showSnackBar("Invalid time range (minimum 30 minutes)");
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
   }
 
@@ -239,33 +307,23 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                   color: Theme.of(context).textTheme.bodyMedium!.color,
                 ),
               ),
-              SizedBox(
-                height: 8,
-              ),
               Wrap(
                 spacing: 8,
-                runSpacing: 8,
                 children: allDays.map((day) {
                   final selected = days.contains(day);
-                  //  final isDisabled = widget.disabledDays.contains(day);
                   final now = DateTime.now();
-
                   final index = dayIndex[day]!;
                   final date = widget.startOfWeek.add(Duration(days: index));
-
                   final today = DateTime(now.year, now.month, now.day);
-
                   final isPastDay = date.isBefore(today);
 
-                  final isDisabled =
-                      widget.disabledDays.contains(day) || isPastDay;
-
-                  final label =
-                      "$day (${getDateForDay(day).split('-')[2]}/${getDateForDay(day).split('-')[1]})";
+                  final isDisabled = widget.disabledDays.contains(day) ||
+                      !isDayAvailable(day) ||
+                      isPastDay;
 
                   return ChoiceChip(
                     label: Text(
-                      label,
+                      day,
                       style: TextStyle(
                         color: isDisabled
                             ? Colors.grey
@@ -300,9 +358,6 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                   color: Theme.of(context).textTheme.bodyMedium!.color,
                 ),
               ),
-              SizedBox(
-                height: 8,
-              ),
               widget.isEditMode
                   ? Row(
                       children: [
@@ -313,7 +368,7 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          "$fromTime - $toTime (Locked)",
+                          "$fromTime - $toTime",
                           style: TextStyle(
                             color:
                                 Theme.of(context).textTheme.bodyMedium!.color,
@@ -357,83 +412,61 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                     ),
                   ),
                 ),
-              // const SizedBox(height: 20),
-              // Text(
-              //   "3. Repeat",
-              //   style: TextStyle(
-              //     color: Theme
-              //         .of(context)
-              //         .textTheme
-              //         .bodyMedium!
-              //         .color,
-              //   ),
-              // ),
-              // SizedBox(height: 8,),
-              //
-              // widget.isEditMode
-              //     ? Row(
-              //   children: [
-              //     Icon(
-              //       Icons.lock,
-              //       size: 18,
-              //       color: Theme
-              //           .of(context)
-              //           .textTheme
-              //           .bodyMedium!
-              //           .color,
-              //     ),
-              //     const SizedBox(width: 6),
-              //     Text(
-              //       repeat == "weekly" ? "Repeats weekly" : repeat,
-              //       style: TextStyle(
-              //         color:
-              //         Theme
-              //             .of(context)
-              //             .textTheme
-              //             .bodyMedium!
-              //             .color,
-              //       ),
-              //     ),
-              //   ],
-              // )
-              //     : Column(
-              //   children: [
-              //     RadioListTile(
-              //       activeColor: AppPalette.primary,
-              //       value: "weekly",
-              //       groupValue: repeat,
-              //       onChanged: (v) => setState(() => repeat = v!),
-              //       title: Text(
-              //         "weekly",
-              //         style: TextStyle(
-              //           color:
-              //           Theme
-              //               .of(context)
-              //               .textTheme
-              //               .bodyMedium!
-              //               .color,
-              //         ),
-              //       ),
-              //     ),
-              //     RadioListTile(
-              //       activeColor: AppPalette.primary,
-              //       value: "monthly",
-              //       groupValue: repeat,
-              //       onChanged: (v) => setState(() => repeat = v!),
-              //       title: Text(
-              //         "Monthly",
-              //         style: TextStyle(
-              //           color:
-              //           Theme
-              //               .of(context)
-              //               .textTheme
-              //               .bodyMedium!
-              //               .color,
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
+              const SizedBox(height: 20),
+              Text(
+                "3. Repeat",
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                ),
+              ),
+              widget.isEditMode
+                  ? Row(
+                      children: [
+                        Icon(
+                          Icons.lock,
+                          size: 18,
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          repeat == "weekly" ? "No Repeat" : repeat,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyMedium!.color,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        RadioListTile(
+                          activeColor: AppPalette.primary,
+                          value: "weekly",
+                          groupValue: repeat,
+                          onChanged: (v) => setState(() => repeat = v!),
+                          title: Text(
+                            "No Repeat",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyMedium!.color,
+                            ),
+                          ),
+                        ),
+                        RadioListTile(
+                          activeColor: AppPalette.primary,
+                          value: "monthly",
+                          groupValue: repeat,
+                          onChanged: (v) => setState(() => repeat = v!),
+                          title: Text(
+                            "This month",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyMedium!.color,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
               const SizedBox(height: 36),
               SizedBox(
                 width: double.infinity,
@@ -448,19 +481,26 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                   ),
                   onPressed: () {
                     if (!canSave) {
-                      final from = _toMinutes(fromTime);
-                      final to = _toMinutes(toTime);
-                      final message = days.isEmpty
-                          ? "Please select at least one day"
-                          : to <= from
-                              ? "End time must be later than start time"
-                              : "Time range must be at least 30 minutes";
-                      _showSnackBar(message);
+                      if (days.isEmpty) {
+                        _showSnackBar("Please select at least one day");
+                      } else if (!isTimeRangeValid) {
+                        final from = _timeToMinutes(fromTime);
+                        final to = _timeToMinutes(toTime);
+                        _showSnackBar(
+                          to <= from
+                              ? "End time must be after start time"
+                              : "Minimum duration is 30 minutes",
+                        );
+                      } else {
+                        _showSnackBar(
+                          "Selected day + time must be at least 12 hours from now",
+                        );
+                      }
                       return;
                     }
 
                     Navigator.pop(context, {
-                      "day": days.first,
+                      "days": days,
                       "from": fromTime,
                       "to": toTime,
                       "repeat": repeat,

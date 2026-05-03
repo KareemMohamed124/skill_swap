@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/mobile/presentation/sign/screens/sign_up_screen.dart';
+import 'package:skill_swap/desktop/presentation/sign/screens/sign_up_screen.dart';
 
 import '../../../../main.dart';
 import '../../../../shared/bloc/login_bloc/login_bloc.dart';
@@ -201,7 +201,7 @@ class _SignInDesktopState extends State<SignInDesktop> {
                       /// Forget Password
                       Center(
                         child: TextButton(
-                          onPressed: () => Get.to(ForgetPassword()),
+                          onPressed: () => Get.to(ForgetPasswordDesktop()),
                           child: const Text("Forget Password?"),
                         ),
                       ),
@@ -214,7 +214,7 @@ class _SignInDesktopState extends State<SignInDesktop> {
                         children: [
                           const Text("Don’t have an account? "),
                           GestureDetector(
-                            onTap: () => Get.to(SignUpScreen()),
+                            onTap: () => Get.to(SignUpDesktop()),
                             child: const Text(
                               "Sign Up",
                               style: TextStyle(

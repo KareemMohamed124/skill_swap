@@ -7,7 +7,7 @@ class TopUserCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final int? hours;
+  final num? hours;
   final double? widthCard;
   final bool isLoading;
 

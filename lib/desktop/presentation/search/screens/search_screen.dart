@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final bloc = context.read<UserFilterBloc>();
 
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
+        _scrollController.position.maxScrollExtent - 200 &&
         !bloc.state.isLastPage &&
         !bloc.state.isLoadingMore) {
       bloc.add(LoadMoreUsersEvent(
@@ -93,8 +93,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Scaffold(
       body: SafeArea(
@@ -114,7 +119,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   /// Title
                   Text(
                     'search'.tr,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .titleLarge,
                   ),
 
                   const SizedBox(height: 20),
@@ -141,7 +149,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                               _debounce = Timer(
                                 const Duration(milliseconds: 600),
-                                () {
+                                    () {
                                   context
                                       .read<UserFilterBloc>()
                                       .add(SearchUserEvent(value));
@@ -165,7 +173,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border:
-                              Border.all(color: Theme.of(context).dividerColor),
+                          Border.all(color: Theme
+                              .of(context)
+                              .dividerColor),
                         ),
                         child: IconButton(
                             icon: Icon(Icons.tune_outlined,
@@ -177,7 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               desktopKey.currentState?.openSidePage(
                                 body: context
                                     .findAncestorStateOfType<
-                                        DesktopScreenManagerState>()!
+                                    DesktopScreenManagerState>()!
                                     .currentBody!,
                                 rightPanel: BlocProvider.value(
                                   value: bloc,
@@ -207,41 +217,41 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                             builder: (context, state) {
-                          int count = 0;
+                              int count = 0;
 
-                          final isPriceFiltered =
-                              state.minPrice != 20 || state.maxPrice != 60;
+                              final isPriceFiltered =
+                                  state.minPrice != 20 || state.maxPrice != 60;
 
-                          if (isPriceFiltered) count++;
-                          if (state.selectedRate != null) count++;
-                          if (state.selectedRole != null) count++;
-                          if (state.selectedTrack != null) count++;
+                              if (isPriceFiltered) count++;
+                              if (state.selectedRate != null) count++;
+                              if (state.selectedRole != null) count++;
+                              if (state.selectedTrack != null) count++;
 
-                          return FilterButton(
-                            activeFilters: count,
-                            onPressed: () {
-                              final bloc = context.read<UserFilterBloc>();
-                              final state = bloc.state;
+                              return FilterButton(
+                                activeFilters: count,
+                                onPressed: () {
+                                  final bloc = context.read<UserFilterBloc>();
+                                  final state = bloc.state;
 
-                              desktopKey.currentState?.openSidePage(
-                                body: context
-                                    .findAncestorStateOfType<
+                                  desktopKey.currentState?.openSidePage(
+                                    body: context
+                                        .findAncestorStateOfType<
                                         DesktopScreenManagerState>()!
-                                    .currentBody!,
-                                rightPanel: BlocProvider.value(
-                                  value: bloc,
-                                  child: MentorFilterPanel(
-                                    initialMinPrice: state.minPrice,
-                                    initialMaxPrice: state.maxPrice,
-                                    initialRate: state.selectedRate,
-                                    initialRole: state.selectedRole,
-                                    initialTrack: state.selectedTrack,
-                                  ),
-                                ),
+                                        .currentBody!,
+                                    rightPanel: BlocProvider.value(
+                                      value: bloc,
+                                      child: MentorFilterPanel(
+                                        initialMinPrice: state.minPrice,
+                                        initialMaxPrice: state.maxPrice,
+                                        initialRate: state.selectedRate,
+                                        initialRole: state.selectedRole,
+                                        initialTrack: state.selectedTrack,
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
-                            },
-                          );
-                        }),
+                            }),
                       ),
                     ],
                   ),
@@ -262,7 +272,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           controller: _scrollController,
                           padding: const EdgeInsets.all(12),
                           gridDelegate:
-                              SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: getCrossAxisCount(screenWidth),
                           ),
                           mainAxisSpacing: 16,
@@ -287,8 +297,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       skills: user.skills,
                                       hoursAvailable: user.freeHours,
                                       peopleHelped: user.helpTotalHours,
-                                      hourlyRate: calculateHourlyRate(
-                                          user.helpTotalHours, user.role),
+                                      hourlyRate: user.hourlyPrice,
                                       reviews: user.reviews,
                                     ),
                                   );
@@ -299,8 +308,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   role: user.role,
                                   rate: user.rate,
                                   hours: user.helpTotalHours,
-                                  price: calculateHourlyRate(
-                                      user.helpTotalHours, user.role),
+                                  price: user.hourlyPrice,
                                   track: user.track.name,
                                   skills: user.skills,
                                   responseTime: "9",

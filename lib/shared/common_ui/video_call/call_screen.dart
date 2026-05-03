@@ -1,12 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:get/get.dart' hide navigator;
+import 'package:skill_swap/shared/common_ui/video_call/rateSession.dart';
 
 import '../../../mobile/presentation/sessions/models/session.dart';
-import '../../../mobile/presentation/video_call/rateSession.dart';
 import '../../bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../../core/services/call_services.dart';
 import '../../core/theme/app_palette.dart';
@@ -27,17 +27,19 @@ class _CallScreenState extends State<CallScreen> {
 
   final localRenderer = RTCVideoRenderer();
   final remoteRenderer = RTCVideoRenderer();
-  bool _isRemoteDescriptionSet = false;
-  bool screenSharing = false;
 
   final callRef = FirebaseFirestore.instance.collection('calls');
 
-  late final String callId;
-  late final String currentUserId;
+  late String callId;
+  late String currentUserId;
 
   bool mic = true;
   bool cam = true;
-  bool _navigated = false;
+  bool screenSharing = false;
+
+  bool _remoteSet = false;
+
+  final List<RTCIceCandidate> _pending = [];
 
   @override
   void initState() {
@@ -53,155 +55,185 @@ class _CallScreenState extends State<CallScreen> {
 
     await service.initLocalStream();
     localRenderer.srcObject = service.localStream;
-    setState(() {});
 
     await service.initPeerConnection();
 
-    service.peerConnection!.onTrack = (event) {
-      print("✅ TRACK RECEIVED: ${event.track.kind}");
-      if (event.streams.isNotEmpty) {
-        remoteRenderer.srcObject = event.streams[0];
+    // ✅ FIX onTrack
+// ================= TRACK FIX =================
+    service.peerConnection!.onTrack = (event) async {
+      print("TRACK: ${event.track.kind}");
+
+      if (event.track.kind == 'video') {
+        final stream = await createLocalMediaStream("remote");
+        stream.addTrack(event.track);
+
+        remoteRenderer.srcObject = stream;
         setState(() {});
       }
     };
 
-    service.peerConnection!.onIceCandidate = (candidate) {
-      if (candidate != null) {
-        callRef.doc(callId).collection('candidates').add({
-          'candidate': candidate.candidate,
-          'sdpMid': candidate.sdpMid,
-          'sdpMLineIndex': candidate.sdpMLineIndex,
-          'senderId': currentUserId,
-        });
-      }
+    service.peerConnection!.onIceCandidate = (c) {
+      if (c == null) return;
+
+      callRef.doc(callId).collection('candidates').add({
+        'candidate': c.candidate,
+        'sdpMid': c.sdpMid,
+        'sdpMLineIndex': c.sdpMLineIndex,
+        'senderId': currentUserId,
+      });
     };
 
     await handleCallFlow();
 
-    listenForAnswer();
-    listenForCandidates();
-    listenForEndCall();
+    listenCall();
+    listenCandidates();
   }
 
   // ================= CALL FLOW =================
   Future<void> handleCallFlow() async {
     final doc = callRef.doc(callId);
-    final snapshot = await doc.get();
+    final snap = await doc.get();
 
-    if (!snapshot.exists) {
-      /// FIRST USER
+    if (!snap.exists) {
       final offer = await service.peerConnection!.createOffer();
       await service.peerConnection!.setLocalDescription(offer);
 
-      await doc.set({
-        'offer': offer.toMap(),
-        'status': 'ringing',
-      });
+      await doc.set({'offer': offer.toMap()});
     } else {
-      final data = snapshot.data()!;
+      final data = snap.data()!;
 
-      /// SECOND USER
       final offer = RTCSessionDescription(
         data['offer']['sdp'],
         data['offer']['type'],
       );
 
       await service.peerConnection!.setRemoteDescription(offer);
+      _remoteSet = true;
 
       final answer = await service.peerConnection!.createAnswer();
       await service.peerConnection!.setLocalDescription(answer);
 
-      await doc.update({
-        'answer': answer.toMap(),
-        'status': 'connected',
-      });
+      await doc.update({'answer': answer.toMap()});
     }
   }
 
-  // ================= ANSWER =================
-  void listenForAnswer() {
-    callRef.doc(callId).snapshots().listen((snapshot) async {
-      final data = snapshot.data();
+  // ================= LISTEN =================
+  void listenCall() {
+    callRef.doc(callId).snapshots().listen((snap) async {
+      final data = snap.data();
+      if (data == null) return;
 
-      if (data?['answer'] != null && !_isRemoteDescriptionSet) {
+      if (data['status'] == 'ended') {
+        _handleCallEnded(data['endedBy']);
+        return;
+      }
+
+      // ANSWER
+      if (data['answer'] != null && !_remoteSet) {
         final answer = RTCSessionDescription(
-          data!['answer']['sdp'],
+          data['answer']['sdp'],
           data['answer']['type'],
         );
 
         await service.peerConnection!.setRemoteDescription(answer);
+        _remoteSet = true;
 
-        _isRemoteDescriptionSet = true;
+        for (var c in _pending) {
+          await service.peerConnection!.addCandidate(c);
+        }
+        _pending.clear();
+      }
+
+      // 🔥 RENEGOTIATION
+      if (data['renegotiate'] == true && data['offer'] != null) {
+        final offer = RTCSessionDescription(
+          data['offer']['sdp'],
+          data['offer']['type'],
+        );
+
+        await service.peerConnection!.setRemoteDescription(offer);
+
+        final answer = await service.peerConnection!.createAnswer();
+        await service.peerConnection!.setLocalDescription(answer);
+
+        await callRef.doc(callId).update({
+          'answer': answer.toMap(),
+          'renegotiate': false,
+        });
       }
     });
   }
 
-  // ================= ICE =================
-  void listenForCandidates() {
-    callRef.doc(callId).collection('candidates').snapshots().listen((snapshot) {
-      for (var change in snapshot.docChanges) {
-        final data = change.doc.data();
+  void _handleCallEnded(String? endedBy) async {
+    await service.dispose();
 
-        if (data != null && data['senderId'] != currentUserId) {
-          service.peerConnection!.addCandidate(
-            RTCIceCandidate(
-              data['candidate'],
-              data['sdpMid'],
-              (data['sdpMLineIndex'] as num).toInt(),
-            ),
-          );
+    if (!mounted) return;
+
+    // 👇 هنا التحكم في navigation
+    if (widget.session.isStudent) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => sl<SubmitReviewBloc>(),
+            child: RateSessionScreen(session: widget.session),
+          ),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ScreenManager(
+            initialIndex: 3,
+          ),
+        ),
+      );
+    }
+  }
+
+  // ================= ICE =================
+  void listenCandidates() {
+    callRef.doc(callId).collection('candidates').snapshots().listen((snap) {
+      for (var c in snap.docChanges) {
+        final data = c.doc.data();
+        if (data == null || data['senderId'] == currentUserId) continue;
+
+        final candidate = RTCIceCandidate(
+          data['candidate'],
+          data['sdpMid'],
+          data['sdpMLineIndex'],
+        );
+
+        if (service.peerConnection!.setRemoteDescription != null) {
+          service.peerConnection!.addCandidate(candidate);
+        } else {
+          _pending.add(candidate);
         }
       }
     });
   }
 
-  // ================= END =================
-  void listenForEndCall() {
-    callRef.doc(callId).snapshots().listen((snapshot) {
-      final data = snapshot.data();
+  // ================= SCREEN SHARE =================
+  Future<void> toggleScreenShare() async {
+    RTCSessionDescription? offer;
 
-      if (data?['status'] == 'ended') {
-        final endedBy = data?['endedBy'];
-        _handleCallEnded(endedBy);
-      }
-    });
-  }
-
-  Future<void> _handleCallEnded(String? endedBy) async {
-    if (_navigated) return;
-    _navigated = true;
-
-    await service.dispose();
-
-    if (!mounted) return;
-
-    // if (endedBy == currentUserId) {
-    //   Get.back();
-    //   return;
-    // }
-
-    if (widget.session.isStudent) {
-      Get.to(
-        () => BlocProvider(
-          create: (_) => sl<SubmitReviewBloc>(),
-          child: RateSessionScreen(session: widget.session),
-        ),
-      );
+    if (screenSharing) {
+      offer = await service.stopScreenShare();
+      screenSharing = false;
     } else {
-      Get.to(() => ScreenManager(
-            initialIndex: 3,
-            initialSessionTab: 0,
-          ));
+      offer = await service.startScreenShare();
+      screenSharing = true;
     }
-  }
 
-  void endCall() async {
-    await callRef.doc(callId).set({
-      'status': 'ended',
-      'endedBy': currentUserId,
-    }, SetOptions(merge: true));
+    setState(() {});
 
-    await service.dispose();
+    if (offer != null) {
+      await callRef.doc(callId).update({
+        'offer': offer.toMap(),
+        'renegotiate': true,
+      });
+    }
   }
 
   // ================= CONTROLS =================
@@ -209,90 +241,6 @@ class _CallScreenState extends State<CallScreen> {
     mic = !mic;
     service.localStream?.getAudioTracks().first.enabled = mic;
     setState(() {});
-  }
-
-  void toggleScreenShare() async {
-    if (screenSharing) {
-      await service.stopScreenShare();
-      setState(() => screenSharing = false);
-      return;
-    }
-
-    // استخدم defaultTargetPlatform بدل Platform.isWindows
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
-      final sources = await service.getScreenSources();
-      if (sources.isEmpty) return;
-
-      final selected = await showDialog<DesktopCapturerSource>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          backgroundColor: Colors.grey[900],
-          title: const Text(
-            'Choose Screen',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: SizedBox(
-            width: 500,
-            height: 400,
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: sources.length,
-              itemBuilder: (ctx, i) {
-                final source = sources[i];
-                return GestureDetector(
-                  onTap: () => Navigator.pop(ctx, source),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (source.thumbnail != null)
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: Image.memory(
-                                source.thumbnail!,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Text(
-                            source.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      );
-
-      if (selected == null) return;
-      await service.startScreenShareWithSource(selected);
-    } else {
-      await service.startScreenShare();
-    }
-
-    setState(() => screenSharing = service.isScreenSharing);
   }
 
   void toggleCam() {
@@ -308,11 +256,16 @@ class _CallScreenState extends State<CallScreen> {
     }
   }
 
+  void endCall() async {
+    await callRef.doc(callId).set({
+      'status': 'ended',
+      'endedBy': currentUserId,
+    }, SetOptions(merge: true));
+  }
+
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
-    final isConnected = remoteRenderer.srcObject != null;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -344,7 +297,6 @@ class _CallScreenState extends State<CallScreen> {
               ],
             ),
           ),
-          if (!isConnected) _waitingUI(),
         ],
       ),
     );
@@ -364,19 +316,6 @@ class _CallScreenState extends State<CallScreen> {
                     ? Colors.grey
                     : Colors.white24),
         child: Icon(icon, color: Colors.white),
-      ),
-    );
-  }
-
-  Widget _waitingUI() {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 20),
-          Text("Connecting...", style: TextStyle(color: Colors.white)),
-        ],
       ),
     );
   }

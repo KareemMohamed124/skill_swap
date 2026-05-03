@@ -58,4 +58,6 @@ abstract class BookingRepository {
   Future<GetAvailableDates> getAvailableDates(String instructorId);
 
   Future<AcceptedBookingsResponse> getAcceptedBookings();
+
+  Future<Map<String, dynamic>> confirmPayment(String id);
 }

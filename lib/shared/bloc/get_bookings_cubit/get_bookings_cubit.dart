@@ -60,6 +60,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             sessionId: booking.id,
             bookingCode: booking.bookingCode,
             userId: otherUser.id,
+            studentId: booking.studentId.id,
             userName: otherUser.name,
             userRole: otherUser.role,
             userImage: otherUser.userImage.secureUrl,
@@ -255,7 +256,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             booking.instructorId.id == currentUserId;
 
         final duration = booking.durationMins ?? 0;
-        final endTime = dateTime.add(Duration(minutes: duration));
+        final endTime = dateTime.add(Duration(minutes: duration.toInt()));
 
         final isNotFinished = now.isBefore(endTime);
 

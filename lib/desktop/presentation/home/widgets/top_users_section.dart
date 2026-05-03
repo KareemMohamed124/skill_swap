@@ -111,7 +111,7 @@ class _TopUsersListState extends State<_TopUsersList> {
                           skills: u.skills,
                           hoursAvailable: u.freeHours,
                           peopleHelped: u.helpTotalHours,
-                          hourlyRate: 0,
+                          hourlyRate: u.hourlyPrice,
                           reviews: u.reviews,
                         ),
                       );

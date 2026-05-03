@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ReviewCard extends StatefulWidget {
   final String name;
   final String review;
-  final int rating;
+  final num rating;
   final String image;
   final String role;
   final DateTime time;
@@ -97,7 +97,7 @@ class _ReviewCardState extends State<ReviewCard> {
                     ),
                     Row(
                       children: List.generate(
-                        widget.rating,
+                        widget.rating.toInt(),
                         (i) => const Icon(
                           Icons.star,
                           color: Colors.amber,

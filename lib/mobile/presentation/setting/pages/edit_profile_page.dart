@@ -318,25 +318,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (!hasSeenMentorDialog) {
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("Verification Required"),
-          content: const Text(
-              "To add a skill, you need to pass an assessment with at least 85%."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+        builder: (_) =>
+            AlertDialog(
+              title: const Text("Verification Required"),
+              content: const Text(
+                  "To add a skill, you need to pass an assessment with at least 85%."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    hasSeenMentorDialog = true;
+                    showSkillsPicker(isMentorFlow: true);
+                  },
+                  child: const Text("Continue"),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                hasSeenMentorDialog = true;
-                showSkillsPicker(isMentorFlow: true);
-              },
-              child: const Text("Continue"),
-            ),
-          ],
-        ),
       );
     } else {
       showSkillsPicker(isMentorFlow: true);
@@ -345,12 +346,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final padding = screenWidth * 0.04;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       body: BlocListener<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
           if (state is UpdateProfileSuccessState) {
@@ -396,6 +402,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               padding: EdgeInsets.all(padding),
               child: Column(
                 children: [
+
                   /// Profile Picture
                   containerWrapper(
                     context: context,
@@ -410,31 +417,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor:
-                                  AppPalette.primary.withValues(alpha: 0.25),
+                              AppPalette.primary.withValues(alpha: 0.25),
                               backgroundImage: selectedImage != null
                                   ? FileImage(selectedImage!) as ImageProvider
                                   : (profile?.userImage.secureUrl.isNotEmpty ??
-                                          false)
-                                      ? NetworkImage(
-                                              profile!.userImage.secureUrl)
-                                          as ImageProvider
-                                      : null,
+                                  false)
+                                  ? NetworkImage(
+                                  profile!.userImage.secureUrl)
+                              as ImageProvider
+                                  : null,
                               child: (selectedImage == null &&
-                                      (profile?.userImage.secureUrl.isEmpty ??
-                                          true))
+                                  (profile?.userImage.secureUrl.isEmpty ??
+                                      true))
                                   ? (isLoading
-                                      ? SizedBox(
-                                          width: avatarRadius * 1.2,
-                                          height: avatarRadius * 1.2,
-                                          child:
-                                              const CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : Icon(Icons.person,
-                                          size: avatarRadius,
-                                          color: Colors.white))
+                                  ? SizedBox(
+                                width: avatarRadius * 1.2,
+                                height: avatarRadius * 1.2,
+                                child:
+                                const CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: Colors.white,
+                                ),
+                              )
+                                  : Icon(Icons.person,
+                                  size: avatarRadius,
+                                  color: Colors.white))
                                   : null,
                             ),
                             SizedBox(width: spacing),
@@ -449,7 +456,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       size: fontSizeTitle),
                                   label: Text("change_photo".tr,
                                       style:
-                                          TextStyle(fontSize: fontSizeTitle)),
+                                      TextStyle(fontSize: fontSizeTitle)),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -490,29 +497,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             text: "save_changes".tr,
                             onPressed: _hasChanges
                                 ? () {
-                                    final skillsList =
-                                        selectedSkillsNew.isNotEmpty
-                                            ? selectedSkillsNew
-                                                .map((skillName) => UpdateSkill(
-                                                    skillName: skillName))
-                                                .toList()
-                                            : null;
+                              final skillsList =
+                              selectedSkillsNew.isNotEmpty
+                                  ? selectedSkillsNew
+                                  .map((skillName) =>
+                                  UpdateSkill(
+                                      skillName: skillName))
+                                  .toList()
+                                  : null;
 
-                                    final updateRequest = UpdateProfileRequest(
-                                      name: nameController.text.trim().isEmpty
-                                          ? null
-                                          : nameController.text.trim(),
-                                      profile: UpdateProfile(
-                                        bio: bioController.text.trim().isEmpty
-                                            ? null
-                                            : bioController.text.trim(),
-                                      ),
-                                      skills: skillsList,
-                                    );
+                              final bioText = bioController.text.trim();
+                              final nameText = nameController.text.trim();
 
-                                    context.read<UpdateProfileBloc>().add(
-                                        SubmitUpdateProfile(updateRequest));
-                                  }
+                              final updateRequest = UpdateProfileRequest(
+                                name: nameText.isEmpty ? null : nameText,
+                                profile: bioText.isEmpty
+                                    ? null
+                                    : UpdateProfile(bio: bioText),
+                                skills: skillsList,
+                              );
+
+                              context.read<UpdateProfileBloc>().add(
+                                  SubmitUpdateProfile(updateRequest));
+                            }
                                 : null,
                           ),
                         ),
@@ -611,9 +618,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           "member_since".tr,
                           profile != null
                               ? profile.createdAt
-                                  .toLocal()
-                                  .toString()
-                                  .split(' ')[0]
+                              .toLocal()
+                              .toString()
+                              .split(' ')[0]
                               : '',
                           fontSizeTitle,
                         ),
@@ -633,13 +640,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget containerWrapper(
       {required BuildContext context, required Widget child}) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme
+            .of(context)
+            .cardColor,
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        border: Border.all(color: Theme
+            .of(context)
+            .dividerColor),
       ),
       child: child,
     );
@@ -652,7 +666,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).textTheme.bodyLarge!.color)),
+              color: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .color)),
     );
   }
 
@@ -717,48 +735,50 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text("Delete Account"),
-        content: const Text(
-            "Are you sure you want to delete your account? This action cannot be undone."),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text("Cancel")),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<DeleteAccountBloc>().add(DeleteAccountSubmit());
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text("Delete"),
+      builder: (dialogContext) =>
+          AlertDialog(
+            title: const Text("Delete Account"),
+            content: const Text(
+                "Are you sure you want to delete your account? This action cannot be undone."),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text("Cancel")),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  context.read<DeleteAccountBloc>().add(DeleteAccountSubmit());
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text("Delete"),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text("Log Out"),
-        content:
+      builder: (dialogContext) =>
+          AlertDialog(
+            title: const Text("Log Out"),
+            content:
             const Text("Are you sure you want to log out from your account?"),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text("Cancel")),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<LogoutBloc>().add(LogoutRequested());
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text("Log Out"),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text("Cancel")),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  context.read<LogoutBloc>().add(LogoutRequested());
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text("Log Out"),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -771,7 +791,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            ...selectedSkillsNew.map((skill) => Chip(
+            ...selectedSkillsNew.map((skill) =>
+                Chip(
                   label: Text(skill),
                   deleteIcon: const Icon(Icons.close, size: 18),
                   onDeleted: () {
@@ -819,7 +840,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     const Text(
                       "Select Skills",
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -828,7 +849,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       children: trackSkills.map((skill) {
                         final isAlreadyMine = selectedSkills.contains(skill);
                         final isSelectedNew =
-                            tempSelectedSkills.contains(skill);
+                        tempSelectedSkills.contains(skill);
 
                         return FilterChip(
                           label: Text(skill),
@@ -837,19 +858,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           onSelected: isAlreadyMine
                               ? null
                               : (selected) {
-                                  setModalState(() {
-                                    if (isMentorFlow) {
-                                      tempSelectedSkills.clear();
-                                      tempSelectedSkills.add(skill);
-                                    } else {
-                                      if (selected) {
-                                        tempSelectedSkills.add(skill);
-                                      } else {
-                                        tempSelectedSkills.remove(skill);
-                                      }
-                                    }
-                                  });
-                                },
+                            setModalState(() {
+                              if (isMentorFlow) {
+                                tempSelectedSkills.clear();
+                                tempSelectedSkills.add(skill);
+                              } else {
+                                if (selected) {
+                                  tempSelectedSkills.add(skill);
+                                } else {
+                                  tempSelectedSkills.remove(skill);
+                                }
+                              }
+                            });
+                          },
                           selectedColor: isAlreadyMine ? Colors.grey : null,
                         );
                       }).toList(),
@@ -868,7 +889,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               if (tempSelectedSkills.isEmpty) return;
                               final selectedSkill = tempSelectedSkills.first;
                               Navigator.pop(context);
-                              Get.to(() => QuizDetailsScreen(
+                              Get.to(() =>
+                                  QuizDetailsScreen(
                                     skillName: selectedSkill,
                                     fromAddSkill: true,
                                   ));

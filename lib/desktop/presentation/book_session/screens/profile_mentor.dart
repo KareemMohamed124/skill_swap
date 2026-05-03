@@ -18,6 +18,7 @@ import '../../../../shared/data/models/my_profile/review_model.dart';
 import '../../../../shared/data/models/report_user/report_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/chat_repository.dart';
+import '../../common/desktop_screen_manager.dart';
 import '../../sign/widgets/custom_button.dart';
 import 'book_session.dart';
 
@@ -26,12 +27,12 @@ class ProfileMentorDesktop extends StatefulWidget {
   final String image;
   final String name;
   final String track;
-  final double rate;
+  final num rate;
   final String role;
   final String bio;
-  final int hoursAvailable;
-  final int peopleHelped;
-  final int hourlyRate;
+  final num hoursAvailable;
+  final num peopleHelped;
+  final num hourlyRate;
   final List<Skill> skills;
   final List<ReviewModel> reviews;
 
@@ -255,7 +256,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                   mentorInfo(
                       context: context,
                       rate: widget.role == "Mentor"
-                          ? "${calculateHourlyRate(widget.peopleHelped, widget.role)}\$"
+                          ? "${widget.hourlyRate}\$"
                           : "Free",
                       info: "hourly_rate".tr),
                 ],
@@ -355,7 +356,10 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                             await chatRepo.createOrGetPrivateChat(widget.id);
 
                         desktopKey.currentState?.openSidePage(
-                          body: widget,
+                          body: context
+                              .findAncestorStateOfType<
+                                  DesktopScreenManagerState>()!
+                              .currentBody!,
                           rightPanel: BlocProvider(
                             create: (_) => sl<PublicChatMessagesCubit>()
                               ..init(chatId,
@@ -424,8 +428,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                                   userId: widget.id,
                                   bookingId: null,
                                   userName: widget.name,
-                                  price: calculateHourlyRate(
-                                      widget.peopleHelped, widget.role),
+                                  price: widget.hourlyRate,
                                   availableDates: state.data.availableDates,
                                   role: widget.role,
                                 ),

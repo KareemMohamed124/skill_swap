@@ -8,6 +8,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import '../../common_ui/screen_manager/screen_manager.dart';
 import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/notification_repository.dart';
+import '../../helper/local_storage.dart';
 
 class NotificationService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -123,6 +124,17 @@ class NotificationService {
       log("FOREGROUND MESSAGE ARRIVED");
       log("NOTIFICATION: ${message.notification}");
       log("DATA: ${message.data}");
+
+      // Don't show notification if the current user is the sender
+      final senderId =
+          message.data['senderId'] ?? message.data['sender_id'] ?? '';
+      final currentUserId = LocalStorage.getUserId() ?? '';
+      if (senderId.toString().isNotEmpty &&
+          currentUserId.isNotEmpty &&
+          senderId.toString() == currentUserId) {
+        log("Skipping notification — sent by current user");
+        return;
+      }
 
       _showLocalNotification(message);
     });

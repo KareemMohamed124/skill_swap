@@ -29,17 +29,63 @@ class UpcomingSessionsPage extends StatelessWidget {
             return const Center(child: Text("No upcoming sessions"));
           }
 
-          return ListView.separated(
+          return Padding(
             padding: const EdgeInsets.all(16),
-            itemCount: state.bookings.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, index) {
-              return SessionCard(
-                  session: state.bookings[index], currentStatus: "accepted");
-            },
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.attach_money, color: Colors.white),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Payment Required",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "You have sessions that require payment.\nComplete payment to secure your booking.",
+                              style: TextStyle(
+                                //  color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: state.bookings.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (_, index) {
+                      return SessionCard(
+                        session: state.bookings[index],
+                        currentStatus: "accepted",
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         }
-
         return const SizedBox();
       },
     );

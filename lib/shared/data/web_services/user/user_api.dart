@@ -44,7 +44,7 @@ abstract class UserApi {
 
   @PATCH("user/profile")
   Future<dynamic> updateProfile(
-    @Body() UpdateProfileRequest body,
+    @Body() Map<String, dynamic> body,
   );
 
   @PATCH("user/profile")
@@ -61,10 +61,10 @@ abstract class UserApi {
   Future<void> deleteAccount();
 
   @POST("user/request-mentor")
-  Future<dynamic> requestMentor();
+  Future<dynamic> requestMentor(@Body() Map<String, dynamic> body);
 
   @PATCH("user/select-theme")
   Future<dynamic> setActiveTheme(
-    @Body() String themeId,
+    @Body() Map<String, dynamic> body,
   );
 }

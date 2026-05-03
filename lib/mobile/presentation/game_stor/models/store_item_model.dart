@@ -4,7 +4,7 @@ class StoreItem {
   final int price;
   final String image;
   final String rarity;
-
+  final bool isUsed;
   final bool isLocked; // 👈 NEW
   final bool isPurchased;
 
@@ -14,6 +14,7 @@ class StoreItem {
     required this.price,
     required this.image,
     required this.rarity,
+    this.isUsed = false,
     this.isLocked = false,
     this.isPurchased = false,
   });
@@ -25,6 +26,7 @@ class StoreItem {
     String? image,
     String? rarity,
     bool? isLocked,
+    bool? isUsed,
     bool? isPurchased,
   }) {
     return StoreItem(
@@ -34,6 +36,7 @@ class StoreItem {
       image: image ?? this.image,
       rarity: rarity ?? this.rarity,
       isLocked: isLocked ?? this.isLocked,
+      isUsed: isUsed ?? this.isUsed,
       isPurchased: isPurchased ?? this.isPurchased,
     );
   }

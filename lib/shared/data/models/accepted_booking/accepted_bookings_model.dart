@@ -8,8 +8,8 @@ class AcceptedBookingsModel {
 
   final DateTime date;
   final String time;
-  final int durationMins;
-  final int price;
+  final num durationMins;
+  final num price;
 
   final String bookingCode;
   final String status;
@@ -17,7 +17,7 @@ class AcceptedBookingsModel {
 
   final String? stripeSessionId;
 
-  final double rate;
+  final num rate;
   final String review;
   final bool isRated;
 
@@ -30,7 +30,7 @@ class AcceptedBookingsModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  final int version;
+  final num version;
 
   AcceptedBookingsModel({
     required this.id,
