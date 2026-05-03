@@ -16,6 +16,30 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
+  /// Tracks notification types that we recently SENT, so we can suppress
+  /// them when they bounce back to us via FCM.
+  static final Map<String, DateTime> _suppressedTypes = {};
+  static const Duration _suppressionWindow = Duration(seconds: 3);
+
+  /// Call this right before sending a notification to suppress that type
+  /// from showing up on this device.
+  static void suppressType(String type) {
+    _suppressedTypes[type] = DateTime.now();
+    log('🔕 Suppressing notification type: $type');
+  }
+
+  /// Check if a notification type is currently suppressed.
+  static bool _isSuppressed(String type) {
+    final suppressedAt = _suppressedTypes[type];
+    if (suppressedAt == null) return false;
+
+    if (DateTime.now().difference(suppressedAt) > _suppressionWindow) {
+      _suppressedTypes.remove(type);
+      return false;
+    }
+    return true;
+  }
+
   /// INIT
   static Future<void> init() async {
     print("🔥 INIT STARTED");
@@ -125,14 +149,22 @@ class NotificationService {
       log("NOTIFICATION: ${message.notification}");
       log("DATA: ${message.data}");
 
-      // Don't show notification if the current user is the sender
+      // 1) Check senderId from data payload
       final senderId =
           message.data['senderId'] ?? message.data['sender_id'] ?? '';
       final currentUserId = LocalStorage.getUserId() ?? '';
       if (senderId.toString().isNotEmpty &&
           currentUserId.isNotEmpty &&
           senderId.toString() == currentUserId) {
-        log("Skipping notification — sent by current user");
+        log("Skipping notification — sent by current user (senderId match)");
+        return;
+      }
+
+      // 2) Check local suppression (for when Backend doesn't forward senderId)
+      final notificationType = message.data['type'] ?? '';
+      if (notificationType.toString().isNotEmpty &&
+          _isSuppressed(notificationType.toString())) {
+        log("Skipping notification — type '$notificationType' is locally suppressed");
         return;
       }
 

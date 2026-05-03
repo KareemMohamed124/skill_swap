@@ -259,7 +259,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
           payload: {
             'chatId': _chatId!,
             'senderName': senderName,
-            'senderId': _currentUserId ?? '',
             'messagePreview': message.content.length > 100
                 ? message.content.substring(0, 100)
                 : message.content,

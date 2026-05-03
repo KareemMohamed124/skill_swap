@@ -34,7 +34,6 @@ class CancelBookBloc extends Bloc<CancelBookEvent, CancelBookState> {
                 type: NotificationTypes.bookingCancelled,
                 payload: {
                   'bookingId': event.id,
-                  'senderId': currentUserId ?? '',
                 },
               );
             }

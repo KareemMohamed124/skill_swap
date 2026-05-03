@@ -50,7 +50,6 @@ class StatusBookBloc extends Bloc<StatusBookEvent, StatusBookState> {
                   type: type,
                   payload: {
                     'bookingId': event.id,
-                    'senderId': currentUserId ?? '',
                   },
                 );
               }
