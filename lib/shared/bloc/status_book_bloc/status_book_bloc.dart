@@ -8,7 +8,6 @@ import '../../data/models/status_booking/status_booking_response.dart';
 import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/booking_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
-import '../../helper/local_storage.dart';
 
 part 'status_book_event.dart';
 part 'status_book_state.dart';
@@ -42,17 +41,13 @@ class StatusBookBloc extends Bloc<StatusBookEvent, StatusBookState> {
                   ? NotificationTypes.requestAccepted
                   : NotificationTypes.requestRejected;
 
-              final currentUserId = await LocalStorage.getUserId();
-              if (event.studentId != currentUserId) {
-                await sl<NotificationRepository>().sendNotification(
-                  receiverId: event.studentId!,
-                  type: type,
-                  payload: {
-                    'bookingId': event.id,
-                    'senderId': currentUserId ?? '',
-                  },
-                );
-              }
+              sl<NotificationRepository>().sendNotification(
+                receiverId: event.studentId!,
+                type: type,
+                payload: {
+                  'bookingId': event.id,
+                },
+              );
             }
             break;
           case StatusBookingFailure f:

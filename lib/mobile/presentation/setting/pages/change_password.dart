@@ -15,7 +15,8 @@ class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
 
   @override
-  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+  State<ChangePasswordScreen> createState() =>
+      _ChangePasswordScreenState();
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
@@ -30,56 +31,83 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final formKey = GlobalKey<FormState>();
 
   @override
+  void dispose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  String? passwordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Password is required";
+    }
+
+    if (!RegExp(
+      r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
+    ).hasMatch(value)) {
+      return "Password must contain uppercase, lowercase and number";
+    }
+
+    return null;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    double titleFontSize = 22;
-    double subtitleFontSize = 16;
-    double paddingAll = 16;
-    double spacing = 32;
-
-    if (screenWidth >= 800) {
-      titleFontSize = 28;
-      subtitleFontSize = 18;
-      paddingAll = 24;
-      spacing = 40;
-    }
+    double subtitleFontSize = screenWidth >= 800 ? 18 : 16;
+    double paddingAll = screenWidth >= 800 ? 24 : 16;
 
     return BlocProvider(
       create: (_) => sl<ChangePasswordBloc>(),
       child: BaseScreen(
         title: "Change Password",
         child: BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
-          listener: (context, state) async {
+          listener: (context, state) {
+            /// FAILURE
             if (state is ChangePasswordFailureState) {
               Get.snackbar('Error', state.error.message);
+
               setState(() {
                 oldPasswordError = null;
                 passwordError = null;
                 confirmPasswordError = null;
 
                 final errors = state.error.validationErrors;
+
                 if (errors != null && errors.isNotEmpty) {
                   for (var err in errors) {
                     switch (err.field) {
                       case "oldPassword":
                         oldPasswordError = err.message;
+                        break;
+
                       case "newPassword":
                         passwordError = err.message;
                         break;
+
                       case "confirmPassword":
                         confirmPasswordError = err.message;
                         break;
                     }
                   }
                 } else {
-                  passwordError = state.error.message;
+                  oldPasswordError = state.error.message;
                 }
               });
-              formKey.currentState?.validate();
-            } else if (state is ChangePasswordSuccessState) {
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  formKey.currentState?.validate();
+                }
+              });
+            }
+
+            /// SUCCESS
+            if (state is ChangePasswordSuccessState) {
               Get.snackbar('Success', state.success.message);
-              Get.to(SignInScreen());
+              Get.offAll(() => SignInScreen());
             }
           },
           builder: (context, state) {
@@ -87,110 +115,114 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               child: Padding(
                 padding: EdgeInsets.all(paddingAll),
                 child: Form(
-                    key: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ///Old Password
-                        CustomTextField(
-                          controller: oldPasswordController,
-                          labelText: "Old Password",
-                          hintText: "Enter old password",
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Old password is required";
-                            } else if (!RegExp(
-                              r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
-                            ).hasMatch(value)) {
-                              return "Password must contain at least 8 characters, uppercase, lowercase, and a number";
-                            } else if (value.length < 8) {
-                              return "Password must be at least 8 characters";
-                            }
-                            return oldPasswordError;
-                          },
-                        ),
-                        const SizedBox(height: 16),
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// OLD PASSWORD
+                      CustomTextField(
+                        controller: oldPasswordController,
+                        labelText: "Old Password",
+                        hintText: "Enter old password",
+                        obscureText: true,
+                        validator: (value) {
+                          final localError = passwordValidator(value);
+                          if (localError != null) return localError;
+                          return oldPasswordError;
+                        },
+                      ),
 
-                        /// New Password
-                        CustomTextField(
-                          controller: newPasswordController,
-                          labelText: "New Password",
-                          hintText: "Enter new password",
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Password is required";
-                            } else if (!RegExp(
-                              r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
-                            ).hasMatch(value)) {
-                              return "Password must contain at least 8 characters, uppercase, lowercase, and a number";
-                            } else if (value.length < 8) {
-                              return "Password must be at least 8 characters";
-                            }
-                            return passwordError;
-                          },
-                        ),
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                        /// Confirm Password
-                        CustomTextField(
-                          controller: confirmPasswordController,
-                          labelText: "Confirm Password",
-                          hintText: "Re-enter password",
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Confirm password is required";
-                            }
-                            if (value != newPasswordController.text) {
-                              return "Passwords do not match";
-                            }
-                            return confirmPasswordError;
-                          },
-                        ),
-                        const SizedBox(height: 24),
+                      /// NEW PASSWORD
+                      CustomTextField(
+                        controller: newPasswordController,
+                        labelText: "New Password",
+                        hintText: "Enter new password",
+                        obscureText: true,
+                        validator: (value) {
+                          final localError = passwordValidator(value);
+                          if (localError != null) return localError;
+                          return passwordError;
+                        },
+                      ),
 
-                        /// Confirm Button
-                        CustomButton(
-                          text: state is ChangePasswordLoading
-                              ? "Changing..."
-                              : "Change Password",
-                          onPressed: state is ChangePasswordLoading
-                              ? null
-                              : () {
-                                  if (formKey.currentState!.validate()) {
-                                    context.read<ChangePasswordBloc>().add(
-                                          ConfirmSubmit(
-                                            ChangePasswordRequest(
-                                                oldPassword:
-                                                    oldPasswordController.text
-                                                        .trim(),
-                                                newPassword:
-                                                    newPasswordController.text
-                                                        .trim(),
-                                                confirmPassword:
-                                                    confirmPasswordController
-                                                        .text
-                                                        .trim()),
+                      const SizedBox(height: 16),
+
+                      /// CONFIRM PASSWORD
+                      CustomTextField(
+                        controller: confirmPasswordController,
+                        labelText: "Confirm Password",
+                        hintText: "Re-enter password",
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Confirm password is required";
+                          }
+
+                          if (value != newPasswordController.text) {
+                            return "Passwords do not match";
+                          }
+
+                          return confirmPasswordError;
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      /// BUTTON
+                      CustomButton(
+                        text: state is ChangePasswordLoading
+                            ? "Changing..."
+                            : "Change Password",
+                        onPressed: state is ChangePasswordLoading
+                            ? null
+                            : () {
+                                setState(() {
+                                  oldPasswordError = null;
+                                  passwordError = null;
+                                  confirmPasswordError = null;
+                                });
+
+                                if (formKey.currentState!.validate()) {
+                                  context
+                                      .read<ChangePasswordBloc>()
+                                      .add(
+                                        ConfirmSubmit(
+                                          ChangePasswordRequest(
+                                            oldPassword:
+                                                oldPasswordController.text
+                                                    .trim(),
+                                            newPassword:
+                                                newPasswordController.text
+                                                    .trim(),
+                                            confirmPassword:
+                                                confirmPasswordController.text
+                                                    .trim(),
                                           ),
-                                        );
-                                  }
-                                },
-                        ),
-                        const SizedBox(height: 16),
+                                        ),
+                                      );
+                                }
+                              },
+                      ),
 
-                        Center(
-                          child: TextButton(
-                            onPressed: () => Get.to(ForgetPassword()),
-                            child: Text(
-                              "Forget Old Password?",
-                              style: TextStyle(fontSize: subtitleFontSize),
-                            ),
+                      const SizedBox(height: 16),
+
+                      /// FORGET PASSWORD
+                      Center(
+                        child: TextButton(
+                          onPressed: () =>
+                              Get.to(() => ForgetPassword()),
+                          child: Text(
+                            "Forget Old Password?",
+                            style:
+                                TextStyle(fontSize: subtitleFontSize),
                           ),
                         ),
-                      ],
-                    )),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },

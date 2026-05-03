@@ -55,17 +55,13 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
           emit(BookingCreatedSuccess(s.data.bookSession));
 
           // 🔔 Notify the INSTRUCTOR about new booking request
-          final currentUserIdForBooking = await LocalStorage.getUserId();
-          if (event.request.instructorId != currentUserIdForBooking) {
-            await sl<NotificationRepository>().sendNotification(
-              receiverId: event.request.instructorId,
-              type: NotificationTypes.newBooking,
-              payload: {
-                'bookingId': s.data.bookSession.id ?? '',
-                'senderId': currentUserIdForBooking ?? '',
-              },
-            );
-          }
+          sl<NotificationRepository>().sendNotification(
+            receiverId: event.request.instructorId,
+            type: NotificationTypes.newBooking,
+            payload: {
+              'bookingId': s.data.bookSession.id ?? '',
+            },
+          );
 
           /// UI يكمل طبيعي
           emit(BookingLoaded(s.data.bookSession));
@@ -124,16 +120,13 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
                 ? _cachedBooking!.instructorId
                 : _cachedBooking!.studentId;
 
-            if (recipientId != currentUserId) {
-              await sl<NotificationRepository>().sendNotification(
-                receiverId: recipientId,
-                type: NotificationTypes.bookingCancelled,
-                payload: {
-                  'bookingId': _cachedBooking!.id,
-                  'senderId': currentUserId ?? '',
-                },
-              );
-            }
+            sl<NotificationRepository>().sendNotification(
+              receiverId: recipientId ?? '',
+              type: NotificationTypes.bookingCancelled,
+              payload: {
+                'bookingId': _cachedBooking!.id ?? '',
+              },
+            );
           }
 
           _cachedBooking = null;
