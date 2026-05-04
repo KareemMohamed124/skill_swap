@@ -5,6 +5,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../../../mobile/presentation/sessions/models/session.dart';
 import '../../core/services/call_services_desktop.dart';
+import '../../helper/local_storage.dart';
 
 class DesktopCallScreen extends StatefulWidget {
   final SessionModel session;
@@ -34,7 +35,8 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
   void initState() {
     super.initState();
     callId = widget.session.bookingCode;
-    userId = widget.session.userId;
+    // Use the actual logged-in user's ID so each peer tags candidates uniquely
+    userId = LocalStorage.getUserId() ?? widget.session.userId;
     init();
   }
 
@@ -53,11 +55,19 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
 
     await service.initPeerConnection();
 
-    // ✅ FIX (no crash)
-    service.peerConnection!.onTrack = (event) {
-      if (event.streams.isNotEmpty) {
-        remoteRenderer.srcObject = event.streams.first;
-        setState(() {});
+    service.peerConnection!.onTrack = (event) async {
+      debugPrint(
+          "📹 onTrack: kind=${event.track.kind}, streams=${event.streams.length}");
+
+      if (event.track.kind == 'video') {
+        if (event.streams.isNotEmpty) {
+          remoteRenderer.srcObject = event.streams.first;
+        } else {
+          final stream = await createLocalMediaStream("remote_desktop");
+          await stream.addTrack(event.track);
+          remoteRenderer.srcObject = stream;
+        }
+        if (mounted) setState(() {});
       }
     };
 
@@ -111,6 +121,14 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
       final data = snap.data();
       if (data == null) return;
 
+      // ✅ Handle call ended by other side
+      if (data['status'] == 'ended') {
+        await service.dispose();
+        if (mounted) Navigator.pop(context);
+        return;
+      }
+
+      // ANSWER
       if (data['answer'] != null && !_remoteSet) {
         final answer = RTCSessionDescription(
           data['answer']['sdp'],
@@ -124,6 +142,24 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
           await service.peerConnection!.addCandidate(c);
         }
         _pending.clear();
+      }
+
+      // 🔄 RENEGOTIATION (screen share, track changes)
+      if (data['renegotiate'] == true && data['offer'] != null) {
+        final offer = RTCSessionDescription(
+          data['offer']['sdp'],
+          data['offer']['type'],
+        );
+
+        await service.peerConnection!.setRemoteDescription(offer);
+
+        final answer = await service.peerConnection!.createAnswer();
+        await service.peerConnection!.setLocalDescription(answer);
+
+        await callRef.doc(callId).update({
+          'answer': answer.toMap(),
+          'renegotiate': false,
+        });
       }
     });
   }
@@ -152,9 +188,12 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
 
   // ================= END =================
   void endCall() async {
-    await callRef.doc(callId).delete();
+    await callRef.doc(callId).set({
+      'status': 'ended',
+      'endedBy': userId,
+    }, SetOptions(merge: true));
     await service.dispose();
-    Navigator.pop(context);
+    if (mounted) Navigator.pop(context);
   }
 
   @override
