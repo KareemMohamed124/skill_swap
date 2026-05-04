@@ -22,12 +22,6 @@ class StoreItemCard extends StatefulWidget {
 
 class _StoreItemCardState extends State<StoreItemCard>
     with TickerProviderStateMixin {
-  late int selectedHours;
-
-  final int minHours = 1;
-  final int maxHours = 8;
-  final int pricePerHour = 10;
-
   late AnimationController rotateController;
   late AnimationController buyEffectController;
   late AnimationController floatingController;
@@ -38,13 +32,11 @@ class _StoreItemCardState extends State<StoreItemCard>
   void initState() {
     super.initState();
 
-    selectedHours = minHours;
-
     rotateController =
         AnimationController(vsync: this, duration: const Duration(seconds: 3));
 
     buyEffectController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500));
+        vsync: this, duration: const Duration(milliseconds: 400));
 
     floatingController = AnimationController(
       vsync: this,
@@ -54,7 +46,7 @@ class _StoreItemCardState extends State<StoreItemCard>
     )..repeat(reverse: true);
 
     coinFlyController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 700));
+        vsync: this, duration: const Duration(milliseconds: 600));
 
     coinFlyAnimation = Tween<double>(begin: 0, end: -80).animate(
       CurvedAnimation(parent: coinFlyController, curve: Curves.easeOut),
@@ -108,7 +100,20 @@ class _StoreItemCardState extends State<StoreItemCard>
   Widget build(BuildContext context) {
     final item = widget.item;
     final color = getRarityColor();
-    final isDisabled = item.isLocked || item.isPurchased;
+
+    /// ✅ Disable logic
+    final isDisabled =
+        item.isLocked || (item.isPurchased && item.type == "theme");
+
+    /// ✅ Button text logic
+    String buttonText;
+    if (item.isPurchased && item.type == "theme") {
+      buttonText = "Owned";
+    } else if (item.isPurchased) {
+      buttonText = "Purchased";
+    } else {
+      buttonText = "Buy";
+    }
 
     return AnimatedBuilder(
       animation: Listenable.merge(
@@ -117,10 +122,10 @@ class _StoreItemCardState extends State<StoreItemCard>
         final glow = buyEffectController.value;
 
         return Container(
-          // ✅ غيرنا AnimatedContainer لـ Container عادي
           width: double.infinity,
+          height: 120,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(22),
             gradient: LinearGradient(
@@ -129,12 +134,11 @@ class _StoreItemCardState extends State<StoreItemCard>
                 Theme.of(context).scaffoldBackgroundColor,
               ],
             ),
-            border: Border.all(color: color.withOpacity(0.8)),
+            border: Border.all(color: color.withOpacity(0.7)),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.15 + glow),
-                blurRadius: 25,
-                spreadRadius: glow * 10,
+                color: color.withOpacity(0.2),
+                blurRadius: 20,
               )
             ],
           ),
@@ -165,25 +169,52 @@ class _StoreItemCardState extends State<StoreItemCard>
                 },
               ),
 
-              /// ✨ Glow
-              if (buyEffectController.value > 0)
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: color.withOpacity(0.15 * (1 - glow)),
+              /// 🔄 Refresh Icon (for non-theme purchased items)
+              if (item.isPurchased && item.type != "theme")
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: Tooltip(
+                    message: "This item refreshes weekly",
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                        child: const Icon(
+                          Icons.refresh,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
 
-              /// 🔥 MAIN LAYOUT (50 / 50)
+              /// ✨ Glow
+              if (glow > 0)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22),
+                        color: color.withOpacity(0.1 * (1 - glow)),
+                      ),
+                    ),
+                  ),
+                ),
+
+              /// 🔥 CONTENT
               LayoutBuilder(
                 builder: (context, constraints) {
                   final half = constraints.maxWidth / 2;
 
                   return Row(
                     children: [
-                      /// 🔹 LEFT IMAGE
+                      /// IMAGE
                       SizedBox(
                         width: half,
                         child: Center(
@@ -198,8 +229,8 @@ class _StoreItemCardState extends State<StoreItemCard>
                                       ? rotateController.value * 6.28
                                       : 0,
                                   child: item.image.startsWith("http")
-                                      ? Image.network(item.image, height: 80)
-                                      : Image.asset(item.image, height: 80),
+                                      ? Image.network(item.image, height: 70)
+                                      : Image.asset(item.image, height: 70),
                                 ),
                               );
                             },
@@ -207,6 +238,7 @@ class _StoreItemCardState extends State<StoreItemCard>
                         ),
                       ),
 
+                      /// DETAILS
                       SizedBox(
                         width: half,
                         child: Column(
@@ -217,31 +249,27 @@ class _StoreItemCardState extends State<StoreItemCard>
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 15,
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // 💰 السعر
                                 Text(
                                   item.price.toString(),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 15,
+                                    fontSize: 14,
                                     color: isDisabled ? Colors.grey : color,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-
-                                // 🛒 زرار الشراء
                                 GestureDetector(
                                   onTap: isDisabled ? null : onBuyPressed,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
+                                  child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 14, vertical: 8),
+                                        horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
                                       gradient: isDisabled
@@ -259,11 +287,11 @@ class _StoreItemCardState extends State<StoreItemCard>
                                             ),
                                     ),
                                     child: Text(
-                                      item.isPurchased ? "Owned" : "Buy",
+                                      buttonText,
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 13,
+                                        fontSize: 12,
                                       ),
                                     ),
                                   ),

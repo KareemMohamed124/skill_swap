@@ -34,15 +34,20 @@ class NextSessionSection extends StatelessWidget {
               SectionHeader(
                 sectionTitle: 'your_next_session'.tr,
                 onTop: () {
-                  Get.to(NextSessionViewAll());
+                  Get.to(
+                    () => BlocProvider.value(
+                      value: context.read<GetBookingsCubit>(),
+                      child: const NextSessionViewAll(),
+                    ),
+                  );
                 },
               ),
-              const SizedBox(height: 10),
+              //  const SizedBox(height: 10),
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: state.sessions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final s = state.sessions[index];
 

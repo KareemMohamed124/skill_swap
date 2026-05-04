@@ -9,7 +9,6 @@ import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 
 part 'cancel_book_event.dart';
-
 part 'cancel_book_state.dart';
 
 class CancelBookBloc extends Bloc<CancelBookEvent, CancelBookState> {
@@ -34,7 +33,6 @@ class CancelBookBloc extends Bloc<CancelBookEvent, CancelBookState> {
                 type: NotificationTypes.bookingCancelled,
                 payload: {
                   'bookingId': event.id,
-                  'senderId': currentUserId ?? '',
                 },
               );
             }

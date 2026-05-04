@@ -62,7 +62,6 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
               type: NotificationTypes.newBooking,
               payload: {
                 'bookingId': s.data.bookSession.id ?? '',
-                'senderId': currentUserIdForBooking ?? '',
               },
             );
           }
@@ -130,7 +129,6 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
                 type: NotificationTypes.bookingCancelled,
                 payload: {
                   'bookingId': _cachedBooking!.id,
-                  'senderId': currentUserId ?? '',
                 },
               );
             }

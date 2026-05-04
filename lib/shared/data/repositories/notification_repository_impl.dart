@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import '../../core/services/notification_service.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../web_services/notification/notification_api.dart';
 import '../web_services/notification/notification_request.dart';
@@ -29,6 +30,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
     Map<String, dynamic> payload = const {},
   }) async {
     try {
+      // Locally suppress this type so our own device ignores the bounce-back
+      NotificationService.suppressType(type);
+
       await api.sendNotification(
         SendNotificationRequest(
           receiverId: receiverId,

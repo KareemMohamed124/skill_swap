@@ -1,6 +1,7 @@
 class StoreItem {
   final String id;
   final String title;
+  final String type;
   final int price;
   final String image;
   final String rarity;
@@ -11,6 +12,7 @@ class StoreItem {
   StoreItem({
     required this.id,
     required this.title,
+    required this.type,
     required this.price,
     required this.image,
     required this.rarity,
@@ -23,6 +25,7 @@ class StoreItem {
     String? id,
     String? title,
     int? price,
+    String? type,
     String? image,
     String? rarity,
     bool? isLocked,
@@ -32,6 +35,7 @@ class StoreItem {
     return StoreItem(
       id: id ?? this.id,
       title: title ?? this.title,
+      type: type ?? this.type,
       price: price ?? this.price,
       image: image ?? this.image,
       rarity: rarity ?? this.rarity,

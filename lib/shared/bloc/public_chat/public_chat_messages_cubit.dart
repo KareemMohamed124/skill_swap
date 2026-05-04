@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:skill_swap/shared/bloc/private_chats_bloc/private_chats_event.dart';
 
 import '../../../shared/core/network/pusher_service.dart';
 import '../../constants/not_type.dart';
@@ -12,12 +13,13 @@ import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
+import '../private_chats_bloc/private_chats_bloc.dart';
 import 'public_chat_messages_state.dart';
 
 class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   final ChatRepository chatRepository;
   final PusherService pusherService;
-
+  final PrivateChatsBloc privateChatsBloc;
   String? _chatId;
   String? _currentUserId;
 
@@ -40,10 +42,11 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
 
   final Map<String, String> _senderThemeCache = {};
 
-  PublicChatMessagesCubit({
-    required this.chatRepository,
-    required this.pusherService,
-  }) : super(PublicChatMessagesInitial());
+  PublicChatMessagesCubit(
+      {required this.chatRepository,
+      required this.pusherService,
+      required this.privateChatsBloc})
+      : super(PublicChatMessagesInitial());
 
   String? get chatId => _chatId;
 
@@ -235,7 +238,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       );
 
       emit(_buildLoaded());
-
+      privateChatsBloc.add(GetPrivateChatsEvent());
       final shouldSendNotification = _isPrivate &&
           _partnerId != null &&
           _partnerId!.isNotEmpty &&
@@ -259,7 +262,6 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
           payload: {
             'chatId': _chatId!,
             'senderName': senderName,
-            'senderId': _currentUserId ?? '',
             'messagePreview': message.content.length > 100
                 ? message.content.substring(0, 100)
                 : message.content,

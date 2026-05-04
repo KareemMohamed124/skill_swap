@@ -9,6 +9,7 @@ import '../../../../shared/common_ui/base_screen.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../book_session/screens/profile_mentor.dart';
+import '../models/user_rank.dart';
 import '../widgets/recommended_card.dart';
 
 class RecommendedViewAll extends StatefulWidget {
@@ -26,7 +27,6 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
   @override
   void initState() {
     super.initState();
-
     _scrollController.addListener(_scrollListener);
   }
 
@@ -56,7 +56,20 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
 
   @override
   Widget build(BuildContext context) {
-    double padding = 16;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding = 16.0;
+
+    /// 🎯 Responsive Aspect Ratio (موبايل فقط)
+    double aspectRatio;
+    if (screenWidth < 360) {
+      aspectRatio = 0.6;
+    } else if (screenWidth < 400) {
+      aspectRatio = 0.65;
+    } else if (screenWidth < 450) {
+      aspectRatio = 0.7;
+    } else {
+      aspectRatio = 0.75;
+    }
 
     return BlocProvider(
       create: (_) => UserFilterBloc(
@@ -69,6 +82,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
         title: "Recommend for You",
         child: BlocBuilder<UserFilterBloc, UserFilterState>(
           builder: (context, state) {
+            /// 🔄 Loading أول مرة
             if (state.isLoading && state.filteredList.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -77,20 +91,26 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
               return const Center(child: Text("No users found"));
             }
 
+            /// 🔥 نفس ترتيب السكشن (IMPORTANT)
+            final rankedList = rankRecommendedUsers(
+              state.filteredList,
+              state.selectedTrack,
+            );
+
             return GridView.builder(
               controller: _scrollController,
               padding: EdgeInsets.all(padding),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.55,
+                childAspectRatio: 0.75,
               ),
-              itemCount: state.isLastPage
-                  ? state.filteredList.length
-                  : state.filteredList.length + 1,
+              itemCount:
+                  state.isLastPage ? rankedList.length : rankedList.length + 1,
               itemBuilder: (context, index) {
-                if (index >= state.filteredList.length) {
+                /// 🔄 Loading pagination
+                if (index >= rankedList.length) {
                   return const Center(
                     child: CircularProgressIndicator(
                       color: AppPalette.primary,
@@ -98,7 +118,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                   );
                 }
 
-                final u = state.filteredList[index];
+                final u = rankedList[index];
 
                 return InkWell(
                   onTap: () {

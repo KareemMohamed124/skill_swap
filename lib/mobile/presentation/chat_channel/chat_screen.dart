@@ -93,7 +93,7 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          _scrollController.position.minScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -215,11 +215,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList(
       List<ChatMessage> messages, String? myActiveTheme, bool isLoadingMore) {
+    // ✅ زي PrivateChatScreen بالظبط - بنعكس الـ list الأول
+    final reversedMessages = messages.reversed.toList();
+
     return ListView.builder(
+      reverse: true,
       controller: _scrollController,
       padding: const EdgeInsets.all(12),
-      // ✅ item إضافي فوق للـ loading indicator
-      itemCount: messages.length + (isLoadingMore ? 1 : 0),
+      // ✅ itemCount على reversedMessages
+      itemCount: reversedMessages.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         // ✅ أول item هو الـ loading indicator لما بيحمل صفحة أقدم
         if (isLoadingMore && index == 0) {
@@ -230,15 +234,17 @@ class _ChatScreenState extends State<ChatScreen> {
         }
 
         final messageIndex = isLoadingMore ? index - 1 : index;
-        final message = messages[messageIndex];
+        // ✅ بنجيب من reversedMessages مش messages
+        final message = reversedMessages[messageIndex];
 
         // ✅ حدّث الـ index map
         _messageIndexMap[message.id] = messageIndex;
         _messageKeys.putIfAbsent(message.id, () => GlobalKey());
 
         final isMe = message.senderId.id == _chatCubit.currentUserId;
-        final isFirstInGroup = _isFirstInGroup(messages, messageIndex);
-        final isLastInGroup = _isLastInGroup(messages, messageIndex);
+        // ✅ _isFirstInGroup و _isLastInGroup على reversedMessages
+        final isFirstInGroup = _isFirstInGroup(reversedMessages, messageIndex);
+        final isLastInGroup = _isLastInGroup(reversedMessages, messageIndex);
 
         return SwipeableMessage(
           onSwipeReply: () => _chatCubit.setReplyMessage(message),
@@ -538,7 +544,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                 style: const TextStyle(
                                     fontSize: 12, color: Colors.grey),
                               ),
-                              // ✅ لما تضغط على نتيجة، حمّل لحد ما تلاقيها
                               onTap: () async {
                                 setState(() => _isSearching = false);
                                 await _loadUntilMessageFound(msg.id);

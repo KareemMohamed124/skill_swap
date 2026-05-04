@@ -55,6 +55,18 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
       padding = 24;
     }
 
+    double aspectRatio;
+
+    if (screenWidth < 360) {
+      aspectRatio = 0.6; // موبايلات صغيرة قوي
+    } else if (screenWidth < 400) {
+      aspectRatio = 0.65;
+    } else if (screenWidth < 450) {
+      aspectRatio = 0.7;
+    } else {
+      aspectRatio = 0.75; // موبايلات كبيرة
+    }
+
     return BaseScreen(
       title: "Top Users",
       child: BlocBuilder<UsersCubit, UsersState>(
@@ -77,7 +89,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
-                  childAspectRatio: 0.55),
+                  childAspectRatio: 0.75),
               itemCount:
                   state.isLastPage ? usersList.length : usersList.length + 1,
               itemBuilder: (context, index) {

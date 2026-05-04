@@ -75,7 +75,7 @@ class _GameSectionState extends State<GameSection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "🎮 Challenge",
+                  "Our Game",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextButton.icon(
@@ -93,12 +93,13 @@ class _GameSectionState extends State<GameSection> {
                             Future.delayed(
                               const Duration(milliseconds: 300),
                               () {
-                                showStoreDialog(
-                                  _,
-                                  isFirstTime: true,
-                                  title: "Leaderboard",
-                                  subtitle: "leaderboard",
-                                );
+                                showStoreDialog(_,
+                                    isFirstTime: true,
+                                    title: "Leaderboard",
+                                    subtitle: "leaderboard",
+                                    rules:
+                                        "• Only the Top 10 players are displayed on the leaderboard\n"
+                                        "• Your score is based on your performance in the Challenge Rooms.\n");
                                 box.write("leaderBoardFirst", false);
                                 isFirst = false;
                               },
@@ -135,8 +136,8 @@ class _GameSectionState extends State<GameSection> {
                 itemBuilder: (context, index) {
                   final bool isActive = index == _currentPage;
 
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
+                  return Container(
+                    // duration: const Duration(milliseconds: 400),
                     margin: EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: isActive ? 10 : 25,

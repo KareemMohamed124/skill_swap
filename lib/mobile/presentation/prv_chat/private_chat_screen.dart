@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/prv_chat/prv_message_bubble.dart';
 
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../shared/bloc/public_chat/message_search_cubit.dart';
+import '../../../shared/bloc/public_chat/message_search_state.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_state.dart';
 import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
@@ -39,18 +43,28 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final Map<String, GlobalKey> _messageKeys = {};
   String? _highlightedMessageId;
+  late MessageSearchCubit _searchCubit;
+
+  final TextEditingController _searchController = TextEditingController();
+
+  bool _isSearching = false;
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     _chatCubit = context.read<PublicChatMessagesCubit>();
+    _searchCubit = sl<MessageSearchCubit>();
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
+    _searchCubit.close();
     _controller.dispose();
+    _searchController.dispose();
     _scrollController.dispose();
-    _chatCubit.close();
+    // _chatCubit.close();
     super.dispose();
   }
 
@@ -272,133 +286,180 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   @override
   Widget build(BuildContext context) {
     // ✅ شيلنا الـ scrollToBottom من هنا
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
+    return BlocProvider.value(
+      value: _searchCubit,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: AppPalette.primary,
-              backgroundImage:
-                  widget.partnerImage != null && widget.partnerImage!.isNotEmpty
-                      ? NetworkImage(widget.partnerImage!)
-                      : null,
-              child: widget.partnerImage == null || widget.partnerImage!.isEmpty
-                  ? Text(
-                      widget.partnerName.isNotEmpty
-                          ? widget.partnerName[0]
-                          : '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  : null,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              widget.partnerName,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppPalette.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (_isSearching) {
+                setState(() {
+                  _isSearching = false;
+                  _searchController.clear();
+                  _searchCubit.clearSearch();
+                });
+              } else {
+                Get.back();
+              }
+            },
+          ),
+          title: _isSearching
+              ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: "Search messages...",
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) {
+                    if (_debounce?.isActive ?? false) _debounce!.cancel();
+                    _debounce = Timer(const Duration(milliseconds: 400), () {
+                      _searchCubit.searchMessages(widget.chatId, value);
+                    });
+                  },
+                )
+              : Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: AppPalette.primary,
+                      backgroundImage: widget.partnerImage != null &&
+                              widget.partnerImage!.isNotEmpty
+                          ? NetworkImage(widget.partnerImage!)
+                          : null,
+                      child: widget.partnerImage == null ||
+                              widget.partnerImage!.isEmpty
+                          ? Text(widget.partnerName[0])
+                          : null,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(widget.partnerName),
+                  ],
+                ),
+          actions: [
+            if (!_isSearching)
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () => setState(() => _isSearching = true),
               ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'theme') {
+                  Get.to(MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) => sl<PurchaseCubit>()..getPurchases(),
+                      ),
+                      BlocProvider.value(
+                        value: context.read<MyProfileCubit>(),
+                      ),
+                    ],
+                    child: const ChatThemePage(),
+                  ));
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: 'theme',
+                  child: Text('Chat theme'),
+                ),
+              ],
             ),
           ],
         ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              if (value == 'theme') {
-                Get.to(MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                      create: (_) => sl<PurchaseCubit>()..getPurchases(),
-                    ),
-                    BlocProvider.value(
-                      value: context.read<MyProfileCubit>(),
-                    ),
-                  ],
-                  child: const ChatThemePage(),
-                ));
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                value: 'theme',
-                child: Text('Chat theme'),
+        body: Stack(
+          children: [
+            /// 🔹 الشات الأساسي (زي ما هو)
+            Column(
+              children: [
+                Expanded(
+                  child: BlocConsumer<PublicChatMessagesCubit,
+                      PublicChatMessagesState>(
+                    listener: (context, state) {
+                      if (state is PublicChatMessagesLoaded) {
+                        _scrollToBottom();
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is PublicChatMessagesLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (state is PublicChatMessagesLoaded) {
+                        if (state.messages.isEmpty) {
+                          return const Center(child: Text('No messages yet'));
+                        }
+                        return _buildMessageList(state.messages);
+                      }
+
+                      if (state is PublicChatMessagesError) {
+                        return const Center(child: Text('Error'));
+                      }
+
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+
+                /// 🔹 input زي ما هو
+                Material(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: BlocBuilder<PublicChatMessagesCubit,
+                      PublicChatMessagesState>(
+                    builder: (context, state) {
+                      return _messageInput(state);
+                    },
+                  ),
+                ),
+              ],
+            ),
+
+            /// 🔥 ده بقى الـ Search Overlay
+            if (_isSearching)
+              Positioned.fill(
+                child: Container(
+                  color: Theme.of(context)
+                      .scaffoldBackgroundColor
+                      .withOpacity(0.95),
+                  child: BlocBuilder<MessageSearchCubit, MessageSearchState>(
+                    builder: (context, searchState) {
+                      if (searchState is MessageSearchLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (searchState is MessageSearchLoaded) {
+                        if (searchState.results.isEmpty) {
+                          return const Center(child: Text("No messages found"));
+                        }
+
+                        return ListView.builder(
+                          itemCount: searchState.results.length,
+                          itemBuilder: (context, index) {
+                            final msg = searchState.results[index];
+
+                            return ListTile(
+                              title: Text(msg.content),
+                              onTap: () {
+                                setState(() => _isSearching = false);
+                                _scrollToMessage(msg.id);
+                              },
+                            );
+                          },
+                        );
+                      }
+
+                      return const SizedBox();
+                    },
+                  ),
+                ),
               ),
-            ],
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child:
-                BlocConsumer<PublicChatMessagesCubit, PublicChatMessagesState>(
-              listener: (context, state) {
-                if (state is PublicChatMessagesLoaded) {
-                  _scrollToBottom(); // ✅ هنا بس
-                }
-              },
-              builder: (context, state) {
-                if (state is PublicChatMessagesLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is PublicChatMessagesLoaded) {
-                  if (state.messages.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No messages yet',
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
-                        ),
-                      ),
-                    );
-                  }
-                  return _buildMessageList(state.messages);
-                }
-                if (state is PublicChatMessagesError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Failed to load messages'),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: () => context
-                              .read<PublicChatMessagesCubit>()
-                              .loadMessages(),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
-          ),
-          Material(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child:
-                BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
-              builder: (context, state) {
-                return _messageInput(state);
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

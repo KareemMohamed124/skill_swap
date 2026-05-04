@@ -11,16 +11,20 @@ import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../book_session/screens/profile_mentor.dart';
 import '../models/user_rank.dart';
+import '../widgets/section_header.dart';
+import '../pages/recommended_view_all.dart';
 
 class RecommendedSection extends StatelessWidget {
   const RecommendedSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return BlocBuilder<MyProfileCubit, MyProfileState>(
       builder: (context, profileState) {
         if (profileState is! MyProfileLoaded) {
-          return const Center(child: CircularProgressIndicator());
+          return const SizedBox(); // ❌ متظهريش حاجة لحد ما البروفايل ييجي
         }
 
         final currentTrack = profileState.profile.track.name ?? '';
@@ -34,7 +38,43 @@ class RecommendedSection extends StatelessWidget {
                 track: currentTrack,
               ),
             ),
-          child: const _RecommendedList(),
+
+          /// 🔥 هنا بقى بنحط الهيدر + الليست
+          child: BlocBuilder<UserFilterBloc, UserFilterState>(
+            builder: (context, state) {
+              final rankedList = rankRecommendedUsers(
+                state.filteredList,
+                state.selectedTrack,
+              );
+
+              /// ❌ لو مفيش داتا → اخفي السكشن كله
+              if (!state.isLoading && rankedList.isEmpty) {
+                return const SizedBox();
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// 🔥 HEADER
+                  SectionHeader(
+                    sectionTitle: 'recommended_for_you'.tr,
+                    onTop: () {
+                      Get.to(
+                        RecommendedViewAll(track: currentTrack),
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: screenHeight * 0.01),
+
+                  /// 🔥 LIST (زي ما هي)
+                  const _RecommendedList(),
+
+                  SizedBox(height: screenHeight * 0.01),
+                ],
+              );
+            },
+          ),
         );
       },
     );
@@ -94,6 +134,7 @@ class _RecommendedListState extends State<_RecommendedList> {
             state.selectedTrack,
           );
 
+          /// 🔄 Loading أول مرة
           if (state.isLoading && state.filteredList.isEmpty) {
             return ListView.separated(
               scrollDirection: Axis.horizontal,
@@ -141,6 +182,7 @@ class _RecommendedListState extends State<_RecommendedList> {
                   ),
                 );
               } else {
+                /// 🔄 Loading pagination
                 return const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32),
                   child: Center(

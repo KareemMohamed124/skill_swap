@@ -79,12 +79,13 @@ class FantasyStoreHeader extends StatelessWidget {
                   /// Help Button
                   GestureDetector(
                     onTap: () {
-                      showStoreDialog(
-                        context,
-                        isFirstTime: false,
-                        title: "Skill Swap Store",
-                        subtitle: "store",
-                      );
+                      showStoreDialog(context,
+                          isFirstTime: false,
+                          title: "Skill Swap Store",
+                          subtitle: "store",
+                          rules: "• Store items are refreshed every Saturday.\n"
+                              "• Earn points by completing Challenge Rooms.\n"
+                              "• Some items can only be purchased once, while others refresh weekly.\n");
                     },
                     child: Container(
                       padding: const EdgeInsets.all(6),

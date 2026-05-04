@@ -309,11 +309,11 @@ class BookingRepositoryImpl extends BookingRepository {
       String id, SubmitReviewRequest request) async {
     try {
       final response = await api.submitReview(id, request);
-      if (response.message == "Booking completed and review submitted") {
-        return SubmitReviewSuccess(success: response);
-      }
-      return SubmitReviewFailure(
-          error: SubmitReviewErrorResponse(message: response.message));
+
+      // ❌ ممنوع نربط النجاح برسالة
+      // ✔ أي response 200 = success
+
+      return SubmitReviewSuccess(success: response);
     } on DioException catch (e) {
       if (e.response?.data != null &&
           e.response!.data is Map<String, dynamic>) {
@@ -322,7 +322,14 @@ class BookingRepositoryImpl extends BookingRepository {
       }
 
       return SubmitReviewFailure(
-          error: SubmitReviewErrorResponse(message: _getServerErrorMessage(e)));
+        error: SubmitReviewErrorResponse(
+          message: _getServerErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      return SubmitReviewFailure(
+        error: SubmitReviewErrorResponse(message: e.toString()),
+      );
     }
   }
 

@@ -66,7 +66,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           listener: (context, state) {
             /// FAILURE
             if (state is ChangePasswordFailureState) {
-              Get.snackbar('Error', state.error.message);
+              //  Get.snackbar('Error', state.error.message);
 
               setState(() {
                 oldPasswordError = null;

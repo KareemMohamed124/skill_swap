@@ -41,14 +41,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Stack(
@@ -58,12 +52,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               LeaderBoardHeader(
                 name: 'Leaderboard',
                 onIcon1: () {
-                  showStoreDialog(
-                    context,
-                    isFirstTime: false,
-                    title: "Leaderboard",
-                    subtitle: "leaderboard",
-                  );
+                  showStoreDialog(context,
+                      isFirstTime: false,
+                      title: "Leaderboard",
+                      subtitle: "leaderboard",
+                      rules:
+                          "• Only the Top 10 players are displayed on the leaderboard\n"
+                          "• Your score is based on your performance in the Challenge Rooms.\n");
                 },
               )
             ],
@@ -77,9 +72,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight * 0.85),
               decoration: BoxDecoration(
-                color: Theme
-                    .of(context)
-                    .scaffoldBackgroundColor,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(screenWidth * 0.06),
                   topRight: Radius.circular(screenWidth * 0.06),
@@ -88,32 +81,32 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Column(
-                children: [
-                  _buildTableHeader(),
+                      children: [
+                        _buildTableHeader(),
 
-                  /// optional divider
-                  Container(
-                    height: 1,
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    color: Colors.grey.withOpacity(0.2),
-                  ),
+                        /// optional divider
+                        Container(
+                          height: 1,
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          color: Colors.grey.withOpacity(0.2),
+                        ),
 
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        final user = users[index];
-                        final rank = index + 1;
-                        final isMe = myId != null && user.id == myId;
+                        Expanded(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            itemCount: 10,
+                            itemBuilder: (context, index) {
+                              final user = users[index];
+                              final rank = index + 1;
+                              final isMe = myId != null && user.id == myId;
 
-                        return _buildItem(user, rank, isMe);
-                      },
+                              return _buildItem(user, rank, isMe);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ),
         ],
@@ -211,7 +204,7 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
     );
   } else {
     backgroundGradient =
-    const LinearGradient(colors: [Colors.white, Colors.white]);
+        const LinearGradient(colors: [Colors.white, Colors.white]);
   }
 
   return AnimatedContainer(
@@ -240,19 +233,19 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
           radius: rank <= 3 ? 30 : 22,
           backgroundColor: AppPalette.primary.withOpacity(0.15),
           backgroundImage: (user.userImage.secureUrl != null &&
-              user.userImage.secureUrl!.isNotEmpty)
+                  user.userImage.secureUrl!.isNotEmpty)
               ? NetworkImage(user.userImage.secureUrl!)
               : null,
           child: (user.userImage.secureUrl == null ||
-              user.userImage.secureUrl!.isEmpty)
+                  user.userImage.secureUrl!.isEmpty)
               ? Text(
-            displayName[0],
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: rank <= 3 ? 22 : 14,
-              color: AppPalette.primary,
-            ),
-          )
+                  displayName[0],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: rank <= 3 ? 22 : 14,
+                    color: AppPalette.primary,
+                  ),
+                )
               : null,
         ),
 

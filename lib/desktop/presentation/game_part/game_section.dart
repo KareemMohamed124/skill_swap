@@ -90,12 +90,13 @@ class _GameSectionState extends State<GameSection> {
                               Future.delayed(
                                 const Duration(milliseconds: 300),
                                 () {
-                                  showStoreDialog(
-                                    context,
-                                    isFirstTime: true,
-                                    title: "Leaderboard",
-                                    subtitle: "leaderboard",
-                                  );
+                                  showStoreDialog(context,
+                                      isFirstTime: true,
+                                      title: "Leaderboard",
+                                      subtitle: "leaderboard",
+                                      rules:
+                                          "• Only the Top 10 players are displayed on the leaderboard\n"
+                                          "• Your score is based on your performance in the Challenge Rooms.\n");
                                   box.write("leaderBoardFirst", false);
                                   isFirst = false;
                                 },

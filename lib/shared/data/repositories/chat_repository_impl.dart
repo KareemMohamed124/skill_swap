@@ -121,6 +121,49 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+  Future<List<GetChatModel>> getPrivateChats() async {
+    try {
+      final currentUserId = await LocalStorage.getUserId() ?? '';
+
+      final response = await api.getMyChatsPublic();
+
+      final chats = response.chats.where((chat) {
+        final isPrivate = chat.type == "private";
+
+        final hasOtherUser =
+            chat.participants.any((p) => p.id.trim() != currentUserId.trim());
+
+        final hasMessage = chat.lastMessage != null;
+
+        return isPrivate && hasOtherUser && hasMessage;
+      }).toList();
+
+      return chats;
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<int> getUnreadCount(String chatId) async {
+    final currentUserId = await LocalStorage.getUserId() ?? '';
+
+    final response = await api.getMessages(chatId, page: 1, limit: 1000);
+
+    final messages = response['messages'] ?? [];
+
+    return (messages as List).where((msg) {
+      final senderId = msg['senderId']?['_id'];
+
+      if (senderId == currentUserId) return false;
+
+      final readBy = List<String>.from(msg['readBy'] ?? []);
+
+      return !readBy.contains(currentUserId);
+    }).length;
+  }
+
+  @override
   Future<ChatHistoryResponse> getMessages(String chatId,
       {int page = 1, int limit = 20}) async {
     try {

@@ -135,7 +135,10 @@ class _ScreenManagerState extends State<ScreenManager> {
                 showStoreDialog(context,
                     isFirstTime: true,
                     title: "Skill Swap Store",
-                    subtitle: "score");
+                    subtitle: "score",
+                    rules: "• Store items are refreshed every Saturday.\n"
+                        "• Earn points by completing Challenge Rooms.\n"
+                        "• Some items can only be purchased once, while others refresh weekly.\n");
               });
               box.write("storeFirst", false);
             }

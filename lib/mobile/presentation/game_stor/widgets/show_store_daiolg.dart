@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
 
-void showStoreDialog(BuildContext context,
-    {required bool isFirstTime,
-    required String title,
-    required String subtitle}) {
+void showStoreDialog(
+  BuildContext context, {
+  required bool isFirstTime,
+  required String title,
+  required String subtitle,
+  required String rules,
+}) {
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -106,10 +109,7 @@ void showStoreDialog(BuildContext context,
 
                         ///  Rules
                         Text(
-                          "• Skill Swap\n"
-                          "• Skill Swap\n"
-                          "• Skill Swap\n"
-                          "• Skill Swap\n",
+                          rules,
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 13,
