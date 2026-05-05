@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/desktop/presentation/chat_channel/pages/chat_list.dart';
 import 'package:skill_swap/desktop/presentation/game_store/screens/store_screen.dart';
+import '../../../shared/bloc/store_cubit/store_cubit.dart';
 import 'package:skill_swap/desktop/presentation/profile/screens/profile_screen.dart';
 import 'package:skill_swap/desktop/presentation/search/screens/search_screen.dart';
 import 'package:skill_swap/desktop/presentation/sessions/screens/sessions_screen.dart';
@@ -135,7 +136,10 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         );
 
       case 5:
-        return StoreScreen();
+        return BlocProvider(
+          create: (_) => sl<StoreCubit>()..getStoreItems(),
+          child: const StoreScreen(),
+        );
 
       case 6:
         return SettingScreen();

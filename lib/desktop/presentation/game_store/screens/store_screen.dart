@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:skill_swap/desktop/presentation/game_store/widgets/fantasy_store_header.dart';
-import 'package:skill_swap/desktop/presentation/game_store/widgets/store_item_card.dart';
-import 'package:skill_swap/desktop/presentation/game_store/widgets/timer_widget.dart';
 
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
 import '../../../../shared/common_ui/error_dialog.dart';
-import '../../../../shared/dependency_injection/injection.dart';
+import '../widgets/fantasy_store_header.dart';
+import '../widgets/store_item_card.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -19,41 +17,37 @@ class StoreScreen extends StatefulWidget {
 
 class _StoreScreenState extends State<StoreScreen> {
   String? selectedId;
-  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<StoreCubit>()..getStoreItems(),
+    return BlocListener<StoreCubit, StoreState>(
+      listenWhen: (prev, curr) =>
+          prev.successMessage != curr.successMessage ||
+          prev.errorMessage != curr.errorMessage,
+      listener: (context, state) {
+        if (state.successMessage != null) {
+          showAppDialog(
+            context: context,
+            message: state.successMessage!,
+            type: DialogType.success,
+            autoCloseDuration: const Duration(seconds: 2),
+          );
+          context.read<MyProfileCubit>().fetchMyProfile();
+          context.read<StoreCubit>().clearMessage();
+        }
+
+        if (state.errorMessage != null) {
+          showAppDialog(
+            context: context,
+            message: state.errorMessage!,
+            type: DialogType.error,
+          );
+          context.read<StoreCubit>().clearMessage();
+        }
+      },
       child: Scaffold(
         body: SafeArea(
-          child: BlocConsumer<StoreCubit, StoreState>(
-            listenWhen: (prev, curr) =>
-                prev.successMessage != curr.successMessage ||
-                prev.errorMessage != curr.errorMessage,
-            listener: (context, state) {
-              if (state.successMessage != null) {
-                showAppDialog(
-                  context: context,
-                  message: state.successMessage!,
-                  type: DialogType.success,
-                  autoCloseDuration: const Duration(seconds: 2),
-                );
-
-                context.read<StoreCubit>().clearMessage();
-              }
-
-              // ❌ ERROR DIALOG
-              if (state.errorMessage != null) {
-                showAppDialog(
-                  context: context,
-                  message: state.errorMessage!,
-                  type: DialogType.error,
-                );
-
-                context.read<StoreCubit>().clearMessage();
-              }
-            },
+          child: BlocBuilder<StoreCubit, StoreState>(
             builder: (context, state) {
               return Column(
                 children: [
@@ -77,26 +71,18 @@ class _StoreScreenState extends State<StoreScreen> {
                           );
                         }
 
-                        return GridView.builder(
-                          padding: const EdgeInsets.all(12),
+                        return ListView.separated(
+                          shrinkWrap: true,
                           itemCount: state.items.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 300,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 0.8,
-                          ),
-                          itemBuilder: (_, i) {
-                            final item = state.items[i];
-
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 8),
+                          itemBuilder: (context, index) {
+                            final item = state.items[index];
                             return StoreItemCard(
                               item: item,
                               isSelected: selectedId == item.id,
                               onTap: () {
-                                setState(() {
-                                  selectedId = item.id;
-                                });
+                                setState(() => selectedId = item.id);
                               },
                             );
                           },
@@ -104,7 +90,6 @@ class _StoreScreenState extends State<StoreScreen> {
                       },
                     ),
                   ),
-                  const TimerWidget(),
                 ],
               );
             },
