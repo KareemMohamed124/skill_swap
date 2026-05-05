@@ -97,18 +97,31 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _editingMessage = null;
     _senderThemeCache.clear();
 
-    await _messageSubscription?.cancel();
+    // Emit initial state to show loader in UI
+    emit(PublicChatMessagesInitial());
 
+    // Setup Pusher in background to avoid blocking history loading
     if (_currentUserId != null) {
-      await pusherService.init(userId: _currentUserId!);
-      await pusherService.whenConnected;
+      _setupPusher(chatId);
     }
 
-    await pusherService.subscribeToChat(chatId: chatId);
-    _messageSubscription = pusherService.messageStream.listen(_onPusherEvent);
-
+    // Load history and mark as read
     await loadMessages();
     await markMessagesAsRead();
+  }
+
+  Future<void> _setupPusher(String chatId) async {
+    await _messageSubscription?.cancel();
+    
+    try {
+      await pusherService.init(userId: _currentUserId!);
+      await pusherService.whenConnected;
+      await pusherService.subscribeToChat(chatId: chatId);
+      
+      _messageSubscription = pusherService.messageStream.listen(_onPusherEvent);
+    } catch (e) {
+      print("❌ Error setting up Pusher: $e");
+    }
   }
 
   // ================= LOAD (أول مرة) =================

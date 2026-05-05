@@ -6,7 +6,7 @@ import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
 import '../../../../desktop/presentation/profile/widgets/review_card.dart';
 import '../../../../main.dart';
-import '../../../../mobile/presentation/prv_chat/private_chat_screen.dart';
+import '../../prv_chat/private_chat_screen.dart';
 import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/book_session/book_session_bloc.dart';
 import '../../../../shared/bloc/book_session/book_session_event.dart';
@@ -361,6 +361,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                                   DesktopScreenManagerState>()!
                               .currentBody!,
                           rightPanel: BlocProvider(
+                            key: ValueKey(chatId),
                             create: (_) => sl<PublicChatMessagesCubit>()
                               ..init(chatId,
                                   partnerId: widget.id, isPrivate: true),

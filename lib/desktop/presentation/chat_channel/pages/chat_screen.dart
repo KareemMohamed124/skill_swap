@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 
 import '../../../../main.dart';
@@ -41,14 +40,21 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _highlightedMessageId;
 
   @override
-  @override
   void initState() {
     super.initState();
     _chatCubit = sl<PublicChatMessagesCubit>();
-    // لا تـ await هنا، init هي async
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _chatCubit.init(widget.chatId, isPrivate: false);
+  }
+
+  @override
+  void didUpdateWidget(ChatScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.chatId != oldWidget.chatId) {
+      _chatCubit.close();
+      _messageKeys.clear();
+      _chatCubit = sl<PublicChatMessagesCubit>();
       _chatCubit.init(widget.chatId, isPrivate: false);
-    });
+    }
   }
 
   bool _canEditMessage(ChatMessage message) {
@@ -77,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          _scrollController.position.minScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -192,16 +198,18 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageList(List<ChatMessage> messages, String? myActiveTheme) {
+    final reversed = messages.reversed.toList();
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(12),
-      itemCount: messages.length,
+      reverse: true,
+      itemCount: reversed.length,
       itemBuilder: (context, index) {
-        final message = messages[index];
+        final message = reversed[index];
         final isMe = message.senderId.id == _chatCubit.currentUserId;
 
-        final isFirstInGroup = _isFirstInGroup(messages, index);
-        final isLastInGroup = _isLastInGroup(messages, index);
+        final isFirstInGroup = _isFirstInGroup(reversed, index);
+        final isLastInGroup = _isLastInGroup(reversed, index);
         _messageKeys.putIfAbsent(message.id, () => GlobalKey());
 
         return SwipeableMessage(
@@ -351,17 +359,20 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: const Icon(Icons.more_vert),
               onSelected: (value) {
                 if (value == 'theme') {
-                  Get.to(MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (_) => sl<PurchaseCubit>()..getPurchases(),
-                      ),
-                      BlocProvider.value(
-                        value: context.read<MyProfileCubit>(),
-                      ),
-                    ],
-                    child: const ChatThemePage(),
-                  ));
+                  desktopKey.currentState?.openSidePage(
+                    body: widget,
+                    rightPanel: MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (_) => sl<PurchaseCubit>()..getPurchases(),
+                        ),
+                        BlocProvider.value(
+                          value: context.read<MyProfileCubit>(),
+                        ),
+                      ],
+                      child: const ChatThemePage(),
+                    ),
+                  );
                 }
               },
               itemBuilder: (context) => const [
@@ -375,8 +386,25 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         body: BlocBuilder<PublicChatMessagesCubit, PublicChatMessagesState>(
           builder: (context, chatState) {
-            if (chatState is PublicChatMessagesLoading) {
+            if (chatState is PublicChatMessagesLoading ||
+                chatState is PublicChatMessagesInitial) {
               return const Center(child: CircularProgressIndicator());
+            }
+
+            if (chatState is PublicChatMessagesError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Failed to load messages'),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () => _chatCubit.loadMessages(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
             }
 
             final messages = chatState is PublicChatMessagesLoaded

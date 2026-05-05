@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/prv_chat/prv_message_bubble.dart';
+
+import '../../../main.dart';
 
 import '../../../mobile/presentation/chat_channel/chat_theme_page.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
@@ -50,7 +51,6 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-    _chatCubit.close();
     super.dispose();
   }
 
@@ -174,15 +174,14 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
     );
   }
 
-  Widget _buildMessageList(List messages) {
+  Widget _buildMessageList(List<ChatMessage> messages) {
     final currentUserId = _chatCubit.currentUserId;
-    final reversedMessages = messages.reversed.toList(); // ✅ عكس الترتيب
+    final reversedMessages = messages.reversed.toList();
 
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(12),
       reverse: true,
-      // ✅ الحل الأساسي
       itemCount: reversedMessages.length,
       itemBuilder: (context, index) {
         final ChatMessage message = reversedMessages[index];
@@ -280,7 +279,7 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
+          onPressed: () => desktopKey.currentState?.goBack(),
         ),
         title: Row(
           children: [
@@ -319,17 +318,20 @@ class _PrivateChatScreenState extends State<PrivateChatScreen> {
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               if (value == 'theme') {
-                Get.to(MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                      create: (_) => sl<PurchaseCubit>()..getPurchases(),
-                    ),
-                    BlocProvider.value(
-                      value: context.read<MyProfileCubit>(),
-                    ),
-                  ],
-                  child: const ChatThemePage(),
-                ));
+                desktopKey.currentState?.openSidePage(
+                  body: widget,
+                  rightPanel: MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) => sl<PurchaseCubit>()..getPurchases(),
+                      ),
+                      BlocProvider.value(
+                        value: context.read<MyProfileCubit>(),
+                      ),
+                    ],
+                    child: const ChatThemePage(),
+                  ),
+                );
               }
             },
             itemBuilder: (context) => const [

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../main.dart';
-import '../../../../mobile/presentation/chat_channel/chat_screen.dart';
+import 'chat_screen.dart';
 import '../../../../shared/bloc/public_chat/public_chat_bloc.dart';
 import '../../../../shared/bloc/public_chat/public_chat_event.dart';
 import '../../../../shared/bloc/public_chat/public_chat_state.dart';
@@ -54,6 +54,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void initState() {
     super.initState();
     _loadUser();
+    _loadDialogFlags();
 
     context.read<TracksBloc>().add(LoadTracksEvent());
     context.read<PublicChatBloc>().add(GetPublicChatsEvent());
@@ -71,6 +72,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             .findAncestorStateOfType<DesktopScreenManagerState>()!
             .currentBody!,
         rightPanel: ChatScreen(
+          key: ValueKey(chatId),
           chatId: chatId,
           channelName: channel,
         ));
@@ -230,15 +232,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           if (trackState is JoinTracksLoaded) {
                             final tracks = trackState.tracks;
 
-                            final publicChatState =
-                                context
-                                    .watch<PublicChatBloc>()
-                                    .state;
+                            final publicChatState = context.watch<PublicChatBloc>().state;
 
-                            final publicChats =
-                            publicChatState is PublicChatsLoaded
+                            final List<GetChatModel> publicChats = publicChatState is PublicChatsLoaded
                                 ? publicChatState.chats.chats
-                                : <dynamic>[];
+                                : [];
 
                             final filteredTracks = tracks
                                 .where((track) =>
