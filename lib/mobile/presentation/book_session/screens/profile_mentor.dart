@@ -10,34 +10,41 @@ import 'package:skill_swap/shared/bloc/book_session/book_session_bloc.dart';
 import 'package:skill_swap/shared/bloc/book_session/book_session_event.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
-import '../../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
+import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
+import '../../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/data/models/my_profile/review_model.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/chat_repository.dart';
-import '../../profile/pages/reviews_page.dart';
+import '../../profile/widgets/review_card.dart';
 import '../../prv_chat/private_chat_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 import '../widgets/profile_mentor_header.dart';
-import 'book_session.dart';
+import '../widgets/session_booking_page.dart';
 
 class ProfileMentor extends StatefulWidget {
   final String id;
   final String image;
   final String name;
   final String track;
-  final int rate;
+  final String role;
+  final num rate;
   final String bio;
-  final int hoursAvailable;
-  final int peopleHelped;
-  final int hourlyRate;
+  final num hoursAvailable;
+  final num peopleHelped;
+  final num hourlyRate;
+  final List<ReviewModel> reviews;
   final List<Skill> skills;
 
   const ProfileMentor(
       {super.key,
+      required this.reviews,
       required this.id,
       required this.image,
       required this.name,
       required this.track,
+      required this.role,
       required this.rate,
       required this.bio,
       required this.hoursAvailable,
@@ -50,18 +57,31 @@ class ProfileMentor extends StatefulWidget {
 }
 
 class _ProfileMentorState extends State<ProfileMentor> {
-  final List<String> skills = [
-    "Node.js",
-    "Html",
-    "JavaScript",
-    "TypeScript",
-    "Responsive Design",
-    "React",
-    "Css",
-    "Testing",
-    "Web Services API",
-    "C++",
-  ];
+  int calculateHourlyRate(int hours, String role) {
+    if (role.toLowerCase() != 'mentor') {
+      return 0;
+    }
+
+    if (hours < 100) return 0;
+
+    if (hours < 120) return 30;
+
+    if (hours < 140) return 35;
+
+    if (hours < 160) return 40;
+
+    if (hours < 180) return 45;
+
+    return 50;
+  }
+
+  int calculateSessionPrice({
+    required int hourlyRate,
+    required int durationInMinutes,
+  }) {
+    final pricePerMinute = hourlyRate / 60;
+    return (pricePerMinute * durationInMinutes).round();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +90,6 @@ class _ProfileMentorState extends State<ProfileMentor> {
     final screenWidth = media.size.width;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // =========================================
-    // CircleAvatar helper function
     Widget buildAvatar(String? avatarPath) {
       final hasImage = avatarPath != null && avatarPath.isNotEmpty;
 
@@ -91,7 +109,6 @@ class _ProfileMentorState extends State<ProfileMentor> {
             : null,
       );
     }
-    // =========================================
 
     return Scaffold(
       body: SafeArea(
@@ -137,6 +154,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                             color: Theme.of(context).cardColor,
                             borderRadius:
                                 BorderRadius.circular(screenWidth * 0.08),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -151,7 +171,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                   info: "people_helped".tr),
                               mentorInfo(
                                   context: context,
-                                  rate: "${widget.hourlyRate}\$",
+                                  rate: widget.role == "Mentor"
+                                      ? "${widget.hourlyRate}\$"
+                                      : "Free",
                                   info: "hourly_rate".tr),
                             ],
                           ),
@@ -215,7 +237,25 @@ class _ProfileMentorState extends State<ProfileMentor> {
                         Text("reviews".tr,
                             style: Theme.of(context).textTheme.bodyLarge),
                         const SizedBox(height: 8),
-                        ReviewsPage()
+                        Column(
+                          children: widget.reviews.isNotEmpty
+                              ? widget.reviews.map((review) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: ReviewCard(
+                                      name: review.reviewer.name,
+                                      review: review.review,
+                                      rating: review.rating,
+                                      image:
+                                          review.reviewer.userImage.secureUrl ??
+                                              '',
+                                      role: review.reviewer.role,
+                                      time: review.createdAt,
+                                    ),
+                                  );
+                                }).toList()
+                              : [],
+                        )
                       ],
                     ),
                   ),
@@ -247,12 +287,14 @@ class _ProfileMentorState extends State<ProfileMentor> {
                     final chatId =
                         await chatRepo.createOrGetPrivateChat(widget.id);
                     Get.to(
-                      BlocProvider(
-                        create: (_) =>
-                            sl<PrivateChatMessagesCubit>()..init(chatId),
+                      () => BlocProvider(
+                        create: (_) => sl<PublicChatMessagesCubit>()
+                          ..init(chatId, partnerId: widget.id, isPrivate: true),
                         child: PrivateChatScreen(
                           chatId: chatId,
                           partnerName: widget.name,
+                          partnerId: widget.id,
+                          partnerImage: widget.image,
                         ),
                       ),
                     );
@@ -265,20 +307,64 @@ class _ProfileMentorState extends State<ProfileMentor> {
             const SizedBox(width: 8),
             Expanded(
               child: CustomButton(
-                text: "session_details".tr,
-                onPressed: () {
-                  Get.to(BlocProvider(
-                    create: (_) => sl<ActiveBookingBloc>()
-                      ..add(LoadMyBookingWithMentor(widget.id)),
-                    child: BookSessionScreen(
-                      userId: widget.id,
-                      bookingId: null,
-                      userName: widget.name,
-                      price: widget.hourlyRate,
-                    ),
-                  ));
-                },
-              ),
+                  text: "session_details".tr,
+                  onPressed: () async {
+                    final bloc = sl<GetAvailableDatesBloc>();
+
+                    bloc.add(FetchAvailableDates(widget.id));
+
+                    final state = await bloc.stream.firstWhere(
+                      (state) =>
+                          state is GetAvailableDatesSuccess ||
+                          state is GetAvailableDatesError,
+                    );
+
+                    if (state is GetAvailableDatesSuccess) {
+                      if (state.data.availableDates.isEmpty) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: Text("Oops"),
+                            content: Text(
+                                "${widget.name} hasn't set any available days for this week yet"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("OK"),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider(
+                                      create: (_) => sl<ActiveBookingBloc>()
+                                        ..add(
+                                            LoadMyBookingWithMentor(widget.id)),
+                                    ),
+                                    BlocProvider(
+                                      create: (_) =>
+                                          sl<AcceptedBookingsCubit>(),
+                                    ),
+                                  ],
+                                  child: BookingBottomSheet(
+                                    userId: widget.id,
+                                    userName: widget.name,
+                                    price: widget.hourlyRate,
+                                    availableDates: state.data.availableDates,
+                                    role: widget.role,
+                                  ),
+                                ));
+                      }
+                    } else if (state is GetAvailableDatesError) {
+                      Get.snackbar("Error", state.message);
+                    }
+                  }),
             ),
           ],
         ),

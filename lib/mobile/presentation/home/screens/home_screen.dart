@@ -16,7 +16,6 @@ import '../widgets/custom_header.dart';
 import '../widgets/recommended_section.dart';
 import '../widgets/section_header.dart';
 import '../widgets/top_users_section.dart';
-import '../widgets/unreal_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -65,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (state is MyProfileLoaded) {
                     name = state.profile.name ?? name;
                     id = state.profile.id ?? id;
+
                     if (state.profile.userImage?.secureUrl?.isNotEmpty ==
                         true) {
                       avatarPath = state.profile.userImage!.secureUrl!;
@@ -75,10 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     name: 'Hi, $name',
                     subtitle: 'keep_learning'.tr,
                     avatarPath: avatarPath,
-                    onIcon1: () {},
-                    onIcon2: () {
-                      Get.to(() => const NotificationsScreen());
-                    },
+                    // onIcon1: () {},
+                    // onIcon2: () {
+                    // //  Get.to(() => const NotificationsScreen());
+                    // },
                   );
                 },
               ),
@@ -104,73 +104,55 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(screenWidth * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: controller.showGameFirst.value
-                        ? [
-                            GameSection(),
-                            SizedBox(height: screenHeight * 0.03),
-                            SectionHeader(
-                              sectionTitle: 'top_users'.tr,
-                              onTop: () {
-                                Get.to(BlocProvider(
-                                  create: (_) =>
-                                      sl<UsersCubit>()..fetchUsers(reset: true),
-                                  child: TopUsersViewAll(),
-                                ));
-                              },
+                    children: [
+                      if (controller.showGameFirst.value) ...[
+                        GameSection(),
+                        SizedBox(height: screenHeight * 0.03),
+                      ],
+                      SectionHeader(
+                        sectionTitle: 'top_users'.tr,
+                        onTop: () {
+                          Get.to(
+                            BlocProvider(
+                              create: (_) =>
+                                  sl<UsersCubit>()..fetchUsers(reset: true),
+                              child: TopUsersViewAll(),
                             ),
-                            SizedBox(height: screenHeight * 0.01),
-                            TopUsersSection(),
-                            SizedBox(height: screenHeight * 0.03),
-                            NextSessionSection(),
-                            SizedBox(height: screenHeight * 0.03),
-                            SectionHeader(
-                              sectionTitle: 'recommended_for_you'.tr,
-                              onTop: () {
-                                Get.to(BlocProvider(
-                                  create: (_) =>
-                                      sl<UsersCubit>()..fetchUsers(reset: true),
-                                  child: RecommendedViewAll(),
-                                ));
-                              },
-                            ),
-                            SizedBox(height: screenHeight * 0.01),
-                            RecommendedSection(),
-                            SizedBox(height: screenHeight * 0.01),
-                            UnrealExperienceCard(),
-                          ]
-                        : [
-                            SectionHeader(
-                              sectionTitle: 'top_users'.tr,
-                              onTop: () {
-                                Get.to(BlocProvider(
-                                  create: (_) =>
-                                      sl<UsersCubit>()..fetchUsers(reset: true),
-                                  child: TopUsersViewAll(),
-                                ));
-                              },
-                            ),
-                            SizedBox(height: screenHeight * 0.01),
-                            TopUsersSection(),
-                            SizedBox(height: screenHeight * 0.03),
-                            NextSessionSection(),
-                            SizedBox(height: screenHeight * 0.03),
-                            SectionHeader(
-                              sectionTitle: 'recommended_for_you'.tr,
-                              onTop: () {
-                                Get.to(BlocProvider(
-                                  create: (_) =>
-                                      sl<UsersCubit>()..fetchUsers(reset: true),
-                                  child: RecommendedViewAll(),
-                                ));
-                              },
-                            ),
-                            SizedBox(height: screenHeight * 0.01),
-                            RecommendedSection(),
-                            SizedBox(height: screenHeight * 0.01),
-                            // UnrealExperienceCard(),
-                            // SizedBox(height: screenHeight * 0.03),
-                            GameSection(),
-                          ],
+                          );
+                        },
+                      ),
+                      SizedBox(height: screenHeight * 0.01),
+                      TopUsersSection(),
+                      SizedBox(height: screenHeight * 0.03),
+                      NextSessionSection(),
+                      SizedBox(height: screenHeight * 0.03),
+                      BlocBuilder<MyProfileCubit, MyProfileState>(
+                        builder: (context, state) {
+                          String track = '';
+
+                          if (state is MyProfileLoaded) {
+                            track = state.profile.track.name ?? '';
+                          }
+
+                          return SectionHeader(
+                            sectionTitle: 'recommended_for_you'.tr,
+                            onTop: () {
+                              Get.to(
+                                RecommendedViewAll(track: track),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      SizedBox(height: screenHeight * 0.01),
+                      RecommendedSection(),
+                      SizedBox(height: screenHeight * 0.01),
+                      // UnrealExperienceCard(),
+                      if (!controller.showGameFirst.value) ...[
+                        SizedBox(height: screenHeight * 0.03),
+                        GameSection(),
+                      ],
+                    ],
                   ),
                 ),
               ),

@@ -38,11 +38,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.labelText,
-          style:  TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-              color: Theme.of(context).textTheme.bodyLarge!.color
-          ),
+          style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).textTheme.bodyLarge!.color),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -54,6 +53,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintStyle: Theme.of(context).textTheme.bodyMedium,
             filled: true,
             fillColor: Theme.of(context).cardColor,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
+              borderRadius: BorderRadius.circular(16),
+            ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -64,21 +71,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             errorText: widget.errorText,
             errorMaxLines: 3,
-
             suffixIcon: widget.obscureText
                 ? IconButton(
-              icon: Icon(
-                _isObscure
-                    ? Icons.visibility_off
-                    : Icons.visibility,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _isObscure = !_isObscure;
-                });
-              },
-            )
+                    icon: Icon(
+                      _isObscure ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
+                  )
                 : null,
           ),
         ),

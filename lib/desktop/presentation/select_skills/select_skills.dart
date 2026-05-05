@@ -6,8 +6,9 @@ import 'package:get_it/get_it.dart';
 import '../../../shared/bloc/complete_profile_bloc/complete_profile_bloc.dart';
 import '../../../shared/bloc/complete_profile_bloc/complete_profile_event.dart';
 import '../../../shared/bloc/complete_profile_bloc/complete_profile_state.dart';
-import '../../../shared/common_ui/screen_manager/screen_manager.dart';
+import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/complete_profile/complete_profile_request.dart';
+import '../sign/screens/sign_in_screen.dart';
 
 class SelectSkillsScreen extends StatefulWidget {
   final String trackId;
@@ -38,7 +39,7 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
       child: BlocConsumer<CompleteProfileBloc, CompleteProfileState>(
         listener: (context, state) {
           if (state is CompleteProfileSuccess) {
-            Get.offAll(() => ScreenManager(initialIndex: 0));
+            Get.offAll(() => SignInDesktop());
           } else if (state is CompleteProfileFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -108,12 +109,12 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? const Color(0xff0D0B5C)
+                                          ? AppPalette.primary
                                           : Theme.of(context).cardColor,
                                       borderRadius: BorderRadius.circular(25),
                                       border: Border.all(
                                         color: isSelected
-                                            ? const Color(0xff0D0B5C)
+                                            ? AppPalette.primary
                                             : Theme.of(context).dividerColor,
                                       ),
                                     ),
@@ -143,8 +144,19 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                       onPressed: (isLoading || selectedSkills.isEmpty)
                           ? null
                           : () {
-                              // Convert selected skill strings to SkillItem objects
-                              final skillItems = selectedSkills
+                              final Set<String> uniqueSkills = {};
+
+                              for (var skill in selectedSkills) {
+                                final parts = skill.split('&');
+                                for (var part in parts) {
+                                  final trimmed = part.trim();
+                                  if (trimmed.isNotEmpty) {
+                                    uniqueSkills.add(trimmed);
+                                  }
+                                }
+                              }
+
+                              final skillItems = uniqueSkills
                                   .map((s) => SkillItem(
                                         skillName: s,
                                         experienceLevel: null,
@@ -153,13 +165,13 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
 
                               context.read<CompleteProfileBloc>().add(
                                     CompleteProfileSubmitted(
-                                      track: widget.trackId, // ObjectId
+                                      track: widget.trackId,
                                       skills: skillItems,
                                     ),
                                   );
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff0D0B5C),
+                        backgroundColor: AppPalette.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),

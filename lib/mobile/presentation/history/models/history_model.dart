@@ -6,7 +6,7 @@ class HistoryModel {
   final String time;
   final String duration;
   final String status;
-  final int rating;
+  final double rating;
   final String? errorMessage;
   final String imageUrl;
   final String? reviewComment;

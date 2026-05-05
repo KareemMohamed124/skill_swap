@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
+import '../../../mobile/presentation/history/models/history_model.dart';
 import '../../../mobile/presentation/home/models/next_session.dart';
 import '../../../mobile/presentation/notification/models/notification_model.dart';
 import '../../../mobile/presentation/sessions/models/session.dart';
+import '../../data/models/get_booking/booking.dart';
 import '../../helper/local_storage.dart';
 import 'get_bookings_state.dart';
 
@@ -13,6 +15,23 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
   final BookingRepository bookingRepository;
 
   GetBookingsCubit(this.bookingRepository) : super(GetBookingsInitial());
+
+  Future<List<GetBookingModel>> fetchAcceptedBookingsRaw() async {
+    try {
+      final response = await bookingRepository.getAllBookings("all");
+
+      print("=== ALL bookings from API ===");
+      for (var b in response.bookings) {
+        print(
+            "date=${b.date} | time=${b.time} | status=${b.status} | instructorId=${b.instructorId.id}");
+      }
+
+      return response.bookings;
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
 
   Future<void> fetchAllBookings(String status) async {
     emit(GetBookingsLoading());
@@ -40,23 +59,94 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         return SessionModel(
             sessionId: booking.id,
             bookingCode: booking.bookingCode,
-            instructorId: otherUser.id,
-            name: otherUser.name,
-            role: otherUser.role,
-            image: otherUser.userImage.secureUrl,
+            userId: otherUser.id,
+            studentId: booking.studentId.id,
+            userName: otherUser.name,
+            userRole: otherUser.role,
+            userImage: otherUser.userImage.secureUrl,
             dateTime: dateTime,
+            duration: booking.durationMins,
             price: booking.price,
+            paymentStatus: booking.paymentStatus,
             status: displayStatus,
             rawStatus: displayStatus,
             timeAgo: booking.createdAt,
-            isStudent: isMeSender
-        );
+            isStudent: isMeSender);
       }).toList();
 
       emit(GetBookingsLoaded(bookings: sessions));
     } catch (e) {
       emit(GetBookingsError(message: e.toString()));
     }
+  }
+
+  Future<List<HistoryModel>> getCompletedHistory() async {
+    final response = await bookingRepository.getAllBookings("completed");
+    final currentUserId = await LocalStorage.getUserId();
+
+    return response.bookings.where((booking) {
+      return booking.status == "completed" &&
+          booking.studentId.id == currentUserId;
+    }).map((booking) {
+      final otherUser = booking.instructorId;
+
+      final dateTime = DateTime(
+        booking.date.year,
+        booking.date.month,
+        booking.date.day,
+        int.parse(booking.time.split(":")[0]),
+        int.parse(booking.time.split(":")[1]),
+      );
+
+      return HistoryModel(
+        id: booking.id,
+        name: otherUser.name,
+        role: otherUser.role,
+        imageUrl: otherUser.userImage.secureUrl,
+        date: "${dateTime.day}/${dateTime.month}/${dateTime.year}",
+        time: booking.time,
+        duration: "${booking.durationMins} min",
+        status: "Finished",
+        rating: booking.rate.toDouble(),
+        isReviewReceived: false,
+        reviewComment: booking.review,
+      );
+    }).toList();
+  }
+
+  Future<List<HistoryModel>> getReviewHistory() async {
+    final response = await bookingRepository.getAllBookings("completed");
+    final currentUserId = await LocalStorage.getUserId();
+
+    return response.bookings.where((booking) {
+      return booking.status == "completed" &&
+          booking.instructorId.id == currentUserId &&
+          booking.isRated == true;
+    }).map((booking) {
+      final otherUser = booking.studentId;
+
+      final dateTime = DateTime(
+        booking.date.year,
+        booking.date.month,
+        booking.date.day,
+        int.parse(booking.time.split(":")[0]),
+        int.parse(booking.time.split(":")[1]),
+      );
+
+      return HistoryModel(
+        id: booking.id,
+        name: otherUser.name,
+        role: otherUser.role,
+        imageUrl: otherUser.userImage.secureUrl,
+        date: "${dateTime.day}/${dateTime.month}/${dateTime.year}",
+        time: booking.time,
+        duration: "${booking.durationMins} min",
+        status: "Finished",
+        rating: booking.rate.toDouble(),
+        isReviewReceived: true,
+        reviewComment: booking.review,
+      );
+    }).toList();
   }
 
   Future<List<NotificationModel>> fetchNotifications() async {
@@ -88,13 +178,9 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             tagColor = Colors.green;
             icon = Icons.check_circle_outline;
             if (dateTime.isAfter(now) &&
-                dateTime
-                    .difference(now)
-                    .inMinutes <= 30) {
+                dateTime.difference(now).inMinutes <= 30) {
               title =
-              "Reminder: Your mentorship session starts in ${dateTime
-                  .difference(now)
-                  .inMinutes} minutes.";
+                  "Reminder: Your mentorship session starts in ${dateTime.difference(now).inMinutes} minutes.";
             } else {
               title = "Your session has been Approved!";
             }
@@ -130,8 +216,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
           title: title,
           mentorName: otherUser.name,
           sessionTime:
-          "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(
-              dateTime)}",
+              "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
           icon: icon,
           dateTime: dateTime,
         );
@@ -170,9 +255,12 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         final isRelated = booking.studentId.id == currentUserId ||
             booking.instructorId.id == currentUserId;
 
-        final isUpcoming = dateTime.isAfter(now);
+        final duration = booking.durationMins ?? 0;
+        final endTime = dateTime.add(Duration(minutes: duration.toInt()));
 
-        return isToday && isRelated && isUpcoming;
+        final isNotFinished = now.isBefore(endTime);
+
+        return isToday && isRelated && isNotFinished;
       }).map((booking) {
         final dateTime = DateTime(
           booking.date.year,
@@ -188,20 +276,15 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         final diff = dateTime.difference(now);
 
         return NextSession(
-          image: "assets/images/people_images/Ahmed Ibrahim.png",
           name: otherUser.name,
+          sessionTime: dateTime,
           dateTime: "Today, ${DateFormat('h:mm a').format(dateTime)}",
-          duration: "${booking.durationMins ?? 1}h",
-          startsIn: diff.inMinutes < 60
-              ? "Starts in ${diff.inMinutes}m"
-              : "Starts in ${diff.inHours}h",
+          duration: "${booking.durationMins ?? 1} min",
           isMentor: isMentor,
-          remainingMinutes: diff.inMinutes,
         );
       }).toList();
 
-      sessions.sort((a, b) => a.remainingMinutes.compareTo(b.remainingMinutes));
-
+      sessions.sort((a, b) => a.sessionTime.compareTo(b.sessionTime));
       emit(GetTodaySessionsLoaded(sessions: sessions));
     } catch (e) {
       emit(GetBookingsError(message: e.toString()));
@@ -214,5 +297,35 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
     if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
     if (diff.inHours < 24) return "${diff.inHours}h ago";
     return "${diff.inDays}d ago";
+  }
+
+  void updateBookingStatus(String sessionId, String newStatus) {
+    if (state is GetBookingsLoaded) {
+      final current = state as GetBookingsLoaded;
+
+      final updated = current.bookings.map((s) {
+        if (s.sessionId.toString() == sessionId) {
+          return s.copyWith(
+            status: newStatus,
+            rawStatus: newStatus,
+          );
+        }
+        return s;
+      }).toList();
+
+      emit(GetBookingsLoaded(bookings: updated));
+    }
+  }
+
+  void removeBooking(String sessionId) {
+    if (state is GetBookingsLoaded) {
+      final current = state as GetBookingsLoaded;
+
+      final updated = current.bookings
+          .where((s) => s.sessionId.toString() != sessionId)
+          .toList();
+
+      emit(GetBookingsLoaded(bookings: updated));
+    }
   }
 }

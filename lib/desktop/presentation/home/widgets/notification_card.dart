@@ -26,6 +26,8 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: double.infinity),
@@ -33,7 +35,7 @@ class NotificationCard extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            //color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Theme.of(context).dividerColor,
@@ -63,25 +65,19 @@ class NotificationCard extends StatelessWidget {
                     ),
                     child: Text(
                       tag,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                        fontSize: 11,
-                        color: tagColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 11,
+                            color: tagColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                   ),
                   const Spacer(),
                   Text(
                     timeAgo,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(
-                      fontSize: 11,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 11,
+                        ),
                   ),
                 ],
               ),
@@ -93,13 +89,10 @@ class NotificationCard extends StatelessWidget {
                 title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
-                  fontSize: 13,
-                  height: 1.3,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 13,
+                      height: 1.3,
+                    ),
               ),
 
               const SizedBox(height: 6),
@@ -107,13 +100,10 @@ class NotificationCard extends StatelessWidget {
               /// MENTOR
               Text(
                 "Mentor: $mentorName",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
 
               if (sessionTime.isNotEmpty) ...[
@@ -123,20 +113,14 @@ class NotificationCard extends StatelessWidget {
                     Icon(
                       Icons.access_time,
                       size: 14,
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.color,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       sessionTime,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontSize: 12,
+                          ),
                     ),
                   ],
                 ),

@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:skill_swap/desktop/presentation/select_skills/select_skills.dart';
 
 import '../../../shared/bloc/track_cubit/track_cubit.dart';
+import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/models/track/track_model.dart';
 
 /// Local map: track name → list of skills (API only returns id + name)
@@ -49,7 +50,7 @@ const Map<String, List<String>> tracksWithSkillsMap = {
     "C++ & Unreal Engine",
     "Blender & 3D Design",
   ],
-  "Cybersecurity": [
+  "CyberSecurity": [
     "Linux & Networking",
     "Python & Security Automation",
     "Penetration Testing & OWASP",
@@ -172,12 +173,12 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                               ),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? const Color(0xff0D0B5C)
+                                    ? AppPalette.primary
                                     : Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(25),
                                 border: Border.all(
                                   color: isSelected
-                                      ? const Color(0xff0D0B5C)
+                                      ? AppPalette.primary
                                       : Theme.of(context).dividerColor,
                                 ),
                               ),
@@ -225,7 +226,7 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                           );
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff0D0B5C),
+                    backgroundColor: AppPalette.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),

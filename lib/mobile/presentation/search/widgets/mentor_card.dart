@@ -7,9 +7,9 @@ class MentorCard extends StatelessWidget {
   final String image;
   final String name;
   final String role;
-  final int rate;
-  final int hours;
-  final double price;
+  final num rate;
+  final num hours;
+  final num price;
   final String track;
   final List<Skill> skills;
   final String responseTime;
@@ -67,7 +67,7 @@ class MentorCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            name,
+                            "$name • $track",
                             style: Theme.of(context).textTheme.titleMedium,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -102,7 +102,7 @@ class MentorCard extends StatelessWidget {
                         SizedBox(width: width * 0.01),
                         Flexible(
                           child: Text(
-                            "${rate.toString()} • $hours hours • \$$price/hr",
+                            "${rate.toString()} • $hours hours • ${price == 0 ? 'Free' : '\$$price/hr'}",
                             style: Theme.of(context).textTheme.bodySmall,
                             overflow: TextOverflow.ellipsis,
                           ),

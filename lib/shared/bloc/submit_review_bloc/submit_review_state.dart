@@ -1,16 +1,16 @@
 part of 'submit_review_bloc.dart';
 
 @immutable
-sealed class SubmitReviewState {}
+abstract class SubmitReviewState {}
 
-final class SubmitReviewInitial extends SubmitReviewState {}
+class SubmitReviewInitial extends SubmitReviewState {}
 
 class SubmitReviewLoading extends SubmitReviewState {}
 
 class SubmitReviewSuccessState extends SubmitReviewState {
-  final SubmitReviewSuccessResponse success;
+  final String message;
 
-  SubmitReviewSuccessState(this.success);
+  SubmitReviewSuccessState(this.message);
 }
 
 class SubmitReviewFailureState extends SubmitReviewState {

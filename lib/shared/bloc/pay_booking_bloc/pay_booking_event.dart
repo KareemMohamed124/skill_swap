@@ -5,6 +5,7 @@ sealed class PayBookingEvent {}
 
 class PayBookingRequested extends PayBookingEvent {
   final String bookingId;
+  final String? voucherId;
 
-  PayBookingRequested({required this.bookingId});
+  PayBookingRequested({required this.bookingId, this.voucherId});
 }

@@ -4,14 +4,12 @@ class Profile extends Equatable {
   final String bio;
   final String skillSummary;
   final int reputationScore;
-  final String location;
   final String lastUpdated;
 
   Profile({
     required this.bio,
     required this.skillSummary,
     required this.reputationScore,
-    required this.location,
     required this.lastUpdated,
   });
 
@@ -20,7 +18,6 @@ class Profile extends Equatable {
         bio,
         skillSummary,
         reputationScore,
-        location,
         lastUpdated,
       ];
 
@@ -29,18 +26,13 @@ class Profile extends Equatable {
       bio: json?['bio'] ?? '',
       skillSummary: json?['skillSummary'] ?? '',
       reputationScore: json?['reputationScore'] ?? 0,
-      location: json?['location'] ?? '',
       lastUpdated: json?['lastUpdated'] ?? '',
     );
   }
 
   factory Profile.empty() {
     return Profile(
-        bio: "",
-        skillSummary: "",
-        reputationScore: 0,
-        location: "",
-        lastUpdated: "");
+        bio: "", skillSummary: "", reputationScore: 0, lastUpdated: "");
   }
 
   Map<String, dynamic> toJson() {
@@ -48,7 +40,6 @@ class Profile extends Equatable {
       'bio': bio,
       'skillSummary': skillSummary,
       'reputationScore': reputationScore,
-      'location': location,
       'lastUpdated': lastUpdated
     };
   }

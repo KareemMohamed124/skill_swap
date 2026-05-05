@@ -4,15 +4,21 @@ import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
+import '../../../../desktop/presentation/profile/widgets/review_card.dart';
 import '../../../../main.dart';
-import '../../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import '../../prv_chat/private_chat_screen.dart';
+import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
+import '../../../../shared/bloc/book_session/book_session_bloc.dart';
+import '../../../../shared/bloc/book_session/book_session_event.dart';
+import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
+import '../../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../../shared/bloc/report_bloc/report_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/data/models/my_profile/review_model.dart';
 import '../../../../shared/data/models/report_user/report_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/chat_repository.dart';
-import '../../profile/pages/reviews_page.dart';
-import '../../prv_chat/private_chat_screen.dart';
+import '../../common/desktop_screen_manager.dart';
 import '../../sign/widgets/custom_button.dart';
 import 'book_session.dart';
 
@@ -21,12 +27,14 @@ class ProfileMentorDesktop extends StatefulWidget {
   final String image;
   final String name;
   final String track;
-  final int rate;
+  final num rate;
+  final String role;
   final String bio;
-  final int hoursAvailable;
-  final int peopleHelped;
-  final int hourlyRate;
+  final num hoursAvailable;
+  final num peopleHelped;
+  final num hourlyRate;
   final List<Skill> skills;
+  final List<ReviewModel> reviews;
 
   const ProfileMentorDesktop({
     super.key,
@@ -35,11 +43,13 @@ class ProfileMentorDesktop extends StatefulWidget {
     required this.name,
     required this.track,
     required this.rate,
+    required this.role,
     required this.bio,
     required this.hoursAvailable,
     required this.peopleHelped,
     required this.hourlyRate,
     required this.skills,
+    required this.reviews,
   });
 
   @override
@@ -47,9 +57,45 @@ class ProfileMentorDesktop extends StatefulWidget {
 }
 
 class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
+  int calculateHourlyRate(int hours, String role) {
+    if (role.toLowerCase() != 'mentor') {
+      return 0;
+    }
+
+    if (hours < 100) return 0;
+
+    if (hours < 120) return 30;
+
+    if (hours < 140) return 35;
+
+    if (hours < 160) return 40;
+
+    if (hours < 180) return 45;
+
+    return 50;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    Widget _buildAvatar(String? imagePath) {
+      if (imagePath == null || imagePath.isEmpty) {
+        return const Icon(Icons.person, size: 48, color: Colors.white);
+      }
+
+      if (imagePath.startsWith("http")) {
+        return Image.network(
+          imagePath,
+          width: 48,
+          height: 48,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) =>
+              const Icon(Icons.person, size: 48, color: Colors.white),
+        );
+      }
+
+      return const Icon(Icons.person, size: 48, color: Colors.white);
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -57,14 +103,12 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// Report Bloc
+            /// Header + Report
             BlocProvider(
               create: (_) => sl<ReportBloc>(),
               child: Stack(
                 children: [
-                  /// Header Row: Back button + Avatar + Name/Track/Rate
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back),
@@ -77,37 +121,48 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                         },
                       ),
                       const SizedBox(width: 4),
-                      ClipOval(
-                        child: Image.asset(
-                          widget.image,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.white24,
+                        child: ClipOval(
+                          child: _buildAvatar(widget.image),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(widget.name,
-                                style: const TextStyle(
-                                    fontSize: 18, color: Colors.white)),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color,
+                                )),
                             const SizedBox(height: 4),
                             Row(
                               children: [
                                 Text("${widget.track} Developer • ",
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color,
+                                    )),
                                 Row(
                                   children: [
                                     const Icon(Icons.star,
                                         size: 14, color: Color(0xFFFFCE31)),
                                     const SizedBox(width: 4),
                                     Text("${widget.rate}",
-                                        style: const TextStyle(
-                                            fontSize: 14, color: Colors.white)),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        )),
                                   ],
                                 )
                               ],
@@ -118,7 +173,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                     ],
                   ),
 
-                  /// Report Button BlocListener
+                  /// Report Button
                   BlocListener<ReportBloc, ReportState>(
                     listener: (context, state) {
                       if (state is ReportSuccessState) {
@@ -130,113 +185,45 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                     child: Positioned(
                       top: 0,
                       right: 0,
-                      child: Material(
-                        color: Theme.of(context).cardColor,
-                        shape: const CircleBorder(),
-                        elevation: 3,
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () {
-                            final TextEditingController controller =
-                                TextEditingController();
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (dialogContext) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Container(
-                                    width: MediaQuery.of(dialogContext)
-                                            .size
-                                            .width *
-                                        0.4,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(dialogContext)
-                                          .scaffoldBackgroundColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Why are you reporting ${widget.name}?",
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        TextField(
-                                          controller: controller,
-                                          maxLines: 5,
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                "Write your reason here...",
-                                            filled: true,
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
+                      child: IconButton(
+                        icon: const Icon(Icons.report, color: Colors.red),
+                        onPressed: () {
+                          final controller = TextEditingController();
+
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: Text("Report ${widget.name}"),
+                              content: TextField(
+                                controller: controller,
+                                maxLines: 4,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text("Cancel"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (controller.text.trim().isEmpty) return;
+
+                                    context.read<ReportBloc>().add(
+                                          ConfirmSubmit(
+                                            ReportRequest(
+                                              reason: controller.text.trim(),
+                                              reportedUser: widget.id,
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(height: 25),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: OutlinedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(dialogContext);
-                                                },
-                                                child: const Text("Cancel"),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  if (controller.text
-                                                      .trim()
-                                                      .isEmpty) return;
+                                        );
 
-                                                  final request = ReportRequest(
-                                                    reason:
-                                                        controller.text.trim(),
-                                                    reportedUser: widget.id,
-                                                  );
-
-                                                  context
-                                                      .read<ReportBloc>()
-                                                      .add(
-                                                        ConfirmSubmit(request),
-                                                      );
-
-                                                  Navigator.pop(dialogContext);
-                                                },
-                                                child: const Text("Send"),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.report_outlined,
-                              size: 24,
-                              color: Colors.red,
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Send"),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -246,13 +233,15 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
 
             const SizedBox(height: 16),
 
-            /// Mentor Info Stats
+            /// Stats
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(32),
-              ),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor,
+                  )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -266,17 +255,23 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                       info: "people_helped".tr),
                   mentorInfo(
                       context: context,
-                      rate: "${widget.hourlyRate}\$",
+                      rate: widget.role == "Mentor"
+                          ? "${widget.hourlyRate}\$"
+                          : "Free",
                       info: "hourly_rate".tr),
                 ],
               ),
             ),
 
             const SizedBox(height: 16),
+
+            /// About
             Text("about".tr, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 8),
             Text(
-              widget.bio.isEmpty ? "Tell others about yourself..." : widget.bio,
+              widget.bio == ""
+                  ? "I'm ${widget.track ?? 'Mobile Development'}."
+                  : widget.bio,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -288,37 +283,60 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
             ),
 
             const SizedBox(height: 16),
+
+            /// Skills
             Text("skills".tr, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: widget.skills
-                  .map((skill) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD6D6D6).withAlpha(64),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(skill.skillName,
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .color,
-                                fontWeight: FontWeight.w600)),
-                      ))
-                  .toList(),
+              children: widget.skills.map((skill) {
+                return Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6D6D6).withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    skill.skillName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-            const SizedBox(height: 16),
-            Text("reviews".tr, style: Theme.of(context).textTheme.bodyLarge),
-            const SizedBox(height: 8),
-            ReviewsPage(),
+
             const SizedBox(height: 16),
 
-            /// Action Buttons: Chat & Session Details
+            /// Reviews
+            Text("reviews".tr, style: Theme.of(context).textTheme.bodyLarge),
+            const SizedBox(height: 8),
+
+            if (widget.reviews.isEmpty)
+              const Text("No reviews yet")
+            else
+              Column(
+                children: widget.reviews.map((review) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ReviewCard(
+                      name: review.reviewer.name,
+                      review: review.review,
+                      rating: review.rating,
+                      image: review.reviewer.userImage.secureUrl ?? '',
+                      role: review.reviewer.role,
+                      time: review.createdAt,
+                    ),
+                  );
+                }).toList(),
+              ),
+
+            const SizedBox(height: 16),
+
+            /// Actions
             Row(
               children: [
                 Container(
@@ -326,7 +344,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                   width: 50,
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: AppPalette.primary),
                   ),
                   child: IconButton(
@@ -336,14 +354,22 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                         final chatRepo = sl<ChatRepository>();
                         final chatId =
                             await chatRepo.createOrGetPrivateChat(widget.id);
+
                         desktopKey.currentState?.openSidePage(
-                          body: widget,
+                          body: context
+                              .findAncestorStateOfType<
+                                  DesktopScreenManagerState>()!
+                              .currentBody!,
                           rightPanel: BlocProvider(
-                            create: (_) =>
-                                sl<PrivateChatMessagesCubit>()..init(chatId),
+                            key: ValueKey(chatId),
+                            create: (_) => sl<PublicChatMessagesCubit>()
+                              ..init(chatId,
+                                  partnerId: widget.id, isPrivate: true),
                             child: PrivateChatScreen(
                               chatId: chatId,
                               partnerName: widget.name,
+                              partnerId: widget.id,
+                              partnerImage: widget.image,
                             ),
                           ),
                         );
@@ -353,23 +379,68 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(
+                  width: 8,
+                ),
                 Expanded(
                   child: CustomButton(
-                    text: "session_details".tr,
-                    onPressed: () {
-                      desktopKey.currentState?.openSidePage(
-                        body: widget,
-                        rightPanel: BookSessionDesktop(
-                          userId: widget.id,
-                          bookingId: null,
-                          userName: widget.name,
-                          price: widget.hourlyRate,
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                      text: "session_details".tr,
+                      onPressed: () async {
+                        final bloc = sl<GetAvailableDatesBloc>();
+
+                        bloc.add(FetchAvailableDates(widget.id));
+
+                        final state = await bloc.stream.firstWhere(
+                          (state) =>
+                              state is GetAvailableDatesSuccess ||
+                              state is GetAvailableDatesError,
+                        );
+
+                        if (state is GetAvailableDatesSuccess) {
+                          if (state.data.availableDates.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: Text("Oops"),
+                                content: Text(
+                                    "${widget.name} hasn't set any available days for this week yet"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            desktopKey.currentState?.openSidePage(
+                              body: widget,
+                              rightPanel: MultiBlocProvider(
+                                providers: [
+                                  BlocProvider(
+                                    create: (_) => sl<ActiveBookingBloc>()
+                                      ..add(LoadMyBookingWithMentor(widget.id)),
+                                  ),
+                                  BlocProvider(
+                                    create: (_) => sl<AcceptedBookingsCubit>(),
+                                  ),
+                                ],
+                                child: BookSessionDesktop(
+                                  userId: widget.id,
+                                  bookingId: null,
+                                  userName: widget.name,
+                                  price: widget.hourlyRate,
+                                  availableDates: state.data.availableDates,
+                                  role: widget.role,
+                                ),
+                              ),
+                            );
+                          }
+                        } else if (state is GetAvailableDatesError) {
+                          Get.snackbar("Error", state.message);
+                        }
+                      }),
+                )
               ],
             ),
           ],

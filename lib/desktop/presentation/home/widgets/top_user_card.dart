@@ -5,7 +5,7 @@ class TopUserCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final int? hours;
+  final num? hours;
   final double? widthCard;
   final bool isLoading;
 
@@ -22,17 +22,15 @@ class TopUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cardWidth = widthCard ?? 180;
+
     if (isLoading) {
       return Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        width: cardWidth,
         decoration: BoxDecoration(
-          color: Theme
-              .of(context)
-              .cardColor,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme
-              .of(context)
-              .dividerColor),
+          border: Border.all(color: Theme.of(context).dividerColor),
         ),
         child: const Center(
           child: CircularProgressIndicator(strokeWidth: 2),
@@ -40,82 +38,86 @@ class TopUserCard extends StatelessWidget {
       );
     }
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: cardWidth,
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: Theme
-            .of(context)
-            .cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme
-            .of(context)
-            .dividerColor),
+        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          /// Avatar
           ClipOval(
             child: (image != null && image!.startsWith("http"))
                 ? Image.network(
-              image!,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _buildPlaceholder(40),
-            )
-                : _buildPlaceholder(40),
+                    image!,
+                    width: cardWidth * 0.25,
+                    height: cardWidth * 0.25,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(cardWidth),
+                  )
+                : _buildPlaceholder(cardWidth),
           ),
-          const SizedBox(height: 12),
+
+          SizedBox(height: cardWidth * 0.08),
+
           Text(
             name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme
-                .of(context)
-                .textTheme
-                .bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
+
+          SizedBox(height: 4),
+
           Text(
-            "${track ?? ''} ",
-            style: Theme
-                .of(context)
-                .textTheme
-                .titleSmall,
+            track ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
-          const SizedBox(height: 8),
+
+          SizedBox(height: cardWidth * 0.06),
+
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: EdgeInsets.symmetric(
+              horizontal: cardWidth * 0.1,
+              vertical: cardWidth * 0.03,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme
-                  .of(context)
-                  .dividerColor),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Text(
               "$hours",
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodySmall,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
         ],
       ),
     );
   }
-}
 
-Widget _buildPlaceholder(double cardWidth) {
-  return Container(
-    width: 40,
-    height: 40,
-    decoration: const BoxDecoration(
-      shape: BoxShape.circle,
-      color: Colors.grey,
-    ),
-    child: const Icon(
-      Icons.person,
-      color: Colors.white,
-    ),
-  );
+  Widget _buildPlaceholder(double cardWidth) {
+    return Container(
+      width: cardWidth * 0.25,
+      height: cardWidth * 0.25,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.grey,
+      ),
+      child: const Icon(Icons.person, color: Colors.white),
+    );
+  }
 }

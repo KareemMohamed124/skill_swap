@@ -10,9 +10,9 @@ BookingRequest _$BookingRequestFromJson(Map<String, dynamic> json) =>
     BookingRequest(
       time: json['time'] as String,
       date: json['date'] as String,
-      duration_mins: (json['duration_mins'] as num).toInt(),
+      duration_mins: json['duration_mins'] as num,
       instructorId: json['instructorId'] as String,
-      price: (json['price'] as num).toInt(),
+      isFree: json['isFree'] as bool,
     );
 
 Map<String, dynamic> _$BookingRequestToJson(BookingRequest instance) =>
@@ -21,5 +21,5 @@ Map<String, dynamic> _$BookingRequestToJson(BookingRequest instance) =>
       'time': instance.time,
       'date': instance.date,
       'duration_mins': instance.duration_mins,
-      'price': instance.price,
+      'isFree': instance.isFree,
     };

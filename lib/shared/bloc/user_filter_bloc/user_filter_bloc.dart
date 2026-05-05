@@ -10,25 +10,27 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
   final int limit;
 
   int _currentPage = 1;
-  bool _isLastPage = false;
   bool _isLoadingMore = false;
 
   int get currentPage => _currentPage;
 
-  UserFilterBloc(
-      {required this.userRepository,
-      required List<UserModel> allUsers,
-      this.limit = 10,
-      int initialPage = 1})
-      : _currentPage = initialPage,
+  UserFilterBloc({
+    required this.userRepository,
+    required List<UserModel> allUsers,
+    this.limit = 10,
+    int initialPage = 1,
+  })  : _currentPage = initialPage,
         super(UserFilterState(filteredList: allUsers)) {
     on<SearchUserEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(
+        isLoading: true,
+        filteredList: [],
+        isLastPage: false,
+      ));
 
       _currentPage = 1;
-      _isLastPage = false;
 
       final users = await userRepository.searchUsers(
         query: event.query,
@@ -36,19 +38,25 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         limit: limit,
       );
 
+      final isLastPage = users.isEmpty || users.length < limit;
+
       emit(state.copyWith(
         filteredList: users,
         isLoading: false,
+        isLastPage: isLastPage,
       ));
     });
 
     on<ApplyFiltersEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(
+        isLoading: true,
+        filteredList: [],
+        isLastPage: false,
+      ));
 
       _currentPage = 1;
-      _isLastPage = false;
 
       final users = await userRepository.filterUsers(
         role: event.role,
@@ -60,24 +68,29 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         limit: limit,
       );
 
+      final isLastPage = users.isEmpty || users.length < limit;
+
       emit(state.copyWith(
         filteredList: users,
         isLoading: false,
-        minPrice: event.minPrice ?? state.minPrice,
-        maxPrice: event.maxPrice ?? state.maxPrice,
-        selectedRate: event.minRate?.toInt(),
+        isLastPage: isLastPage,
+        minPrice: event.minPrice ?? 20,
+        maxPrice: event.maxPrice ?? 60,
+        selectedRate: event.minRate != null ? event.minRate!.toInt() : null,
         selectedRole: event.role,
         selectedTrack: event.track,
       ));
     });
-
     on<SortUserEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(
+        isLoading: true,
+        filteredList: [],
+        isLastPage: false,
+      ));
 
       _currentPage = 1;
-      _isLastPage = false;
 
       final users = await userRepository.sortUsers(
         query: _mapSortType(event.type),
@@ -85,30 +98,52 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         limit: limit,
       );
 
+      final isLastPage = users.isEmpty || users.length < limit;
+
       emit(state.copyWith(
         filteredList: users,
         isLoading: false,
+        isLastPage: isLastPage,
       ));
     });
 
     on<ResetFiltersEvent>((event, emit) async {
       if (_isLoadingMore) return;
 
-      emit(state.copyWith(isLoading: true));
+      emit(state.copyWith(
+        isLoading: true,
+        filteredList: [],
+        isLastPage: false,
+        selectedRole: null,
+        selectedTrack: null,
+        selectedRate: null,
+        minPrice: 20,
+        maxPrice: 60,
+      ));
 
       _currentPage = 1;
-      _isLastPage = false;
 
       final users =
           await userRepository.getAllUsers(page: _currentPage, limit: limit);
+      final isLastPage = users.isEmpty || users.length < limit;
 
-      emit(UserFilterState(filteredList: users));
+      emit(state.copyWith(
+        filteredList: users,
+        isLoading: false,
+        isLastPage: isLastPage,
+        selectedRole: null,
+        selectedTrack: null,
+        selectedRate: null,
+        minPrice: 20,
+        maxPrice: 60,
+      ));
     });
 
     on<LoadMoreUsersEvent>((event, emit) async {
-      if (_isLastPage || _isLoadingMore) return;
+      if (state.isLastPage || _isLoadingMore) return;
 
       _isLoadingMore = true;
+
       emit(state.copyWith(isLoadingMore: true));
 
       final nextPage = _currentPage + 1;
@@ -141,16 +176,20 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         );
       }
 
-      _isLastPage = newUsers.length < limit;
+      final isLastPage = newUsers.isEmpty || newUsers.length < limit;
+
       _currentPage = nextPage;
 
       final allUsers = [...state.filteredList, ...newUsers];
+
+      // إزالة التكرار
       final uniqueUsers = {for (var u in allUsers) u.id: u}.values.toList();
 
       _isLoadingMore = false;
+
       emit(state.copyWith(
         filteredList: uniqueUsers,
-        isLastPage: _isLastPage,
+        isLastPage: isLastPage,
         isLoadingMore: false,
       ));
     });

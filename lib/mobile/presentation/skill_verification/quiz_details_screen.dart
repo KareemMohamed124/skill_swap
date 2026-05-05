@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 import 'quiz_screen.dart';
 
 class QuizDetailsScreen extends StatelessWidget {
   final String skillName;
+  final bool fromAddSkill;
 
-  QuizDetailsScreen({super.key, required this.skillName});
+  QuizDetailsScreen(
+      {super.key, required this.skillName, this.fromAddSkill = false});
 
   final QuizController controller = Get.put(QuizController(), permanent: true);
 
@@ -25,7 +28,7 @@ class QuizDetailsScreen extends StatelessWidget {
           icon: Icon(
             Icons.arrow_back,
             color: Theme.of(context).textTheme.bodyLarge!.color,
-            size: screenWidth * 0.06, // حجم الأيقونة نسبي
+            size: screenWidth * 0.06,
           ),
           onPressed: () => Get.back(),
         ),
@@ -194,7 +197,7 @@ class QuizDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0XFF0D035F),
+                    backgroundColor: AppPalette.primary,
                     padding:
                         EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                     shape: RoundedRectangleBorder(
@@ -205,10 +208,12 @@ class QuizDetailsScreen extends StatelessWidget {
                       ? null
                       : () async {
                           controller.loading.value = true;
-                          await controller.generateQuiz(skillName);
+                          await controller.generateQuiz(skillName,
+                              isAddSkill: fromAddSkill);
                           controller.loading.value = false;
                           if (controller.questions.isNotEmpty) {
-                            Get.to(() => QuizScreen());
+                            Get.to(
+                                () => QuizScreen(fromAddSkill: fromAddSkill));
                           } else {
                             Get.snackbar(
                               'Error',

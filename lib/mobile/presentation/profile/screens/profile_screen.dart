@@ -8,7 +8,9 @@ import '../widgets/profile_header.dart';
 import '../widgets/profile_tabs.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final int initialTab;
+
+  const ProfileScreen({super.key, this.initialTab = 0});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -21,7 +23,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController =
+        TabController(length: 3, vsync: this, initialIndex: widget.initialTab);
   }
 
   @override
@@ -32,7 +35,10 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
     return Scaffold(
       body: Stack(
         children: [
@@ -51,7 +57,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
               decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Theme
+                    .of(context)
+                    .scaffoldBackgroundColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
@@ -64,18 +72,18 @@ class _ProfileScreenState extends State<ProfileScreen>
                       tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]),
                   Expanded(
                       child: TabBarView(
-                    controller: _tabController,
-                    children: const [
-                      OverviewPage(),
-                      SkillsPage(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                        child: ReviewsPage(),
-                      ),
-                    ],
-                  )),
+                        controller: _tabController,
+                        children: const [
+                          OverviewPage(),
+                          SkillsPage(),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: ReviewsPage(),
+                          ),
+                        ],
+                      )),
                 ],
               ),
             ),

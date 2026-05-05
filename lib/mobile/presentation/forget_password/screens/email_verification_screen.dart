@@ -80,6 +80,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     final fontSize = screenWidth * 0.05;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocProvider(
         create: (context) => sl<ActivationBloc>(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skill_swap/desktop/presentation/history/models/history_model.dart';
+import 'package:skill_swap/mobile/presentation/history/models/history_model.dart';
 
 import '../widgets/history_card.dart';
 

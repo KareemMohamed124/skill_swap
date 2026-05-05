@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../../shared/dependency_injection/injection.dart';
+import '../game_stor/widgets/show_store_daiolg.dart';
 import 'leaderboard_screen.dart';
 
 class GameSection extends StatefulWidget {
@@ -13,7 +18,10 @@ class GameSection extends StatefulWidget {
 }
 
 class _GameSectionState extends State<GameSection> {
-  final PageController _controller = PageController(viewportFraction: 0.82);
+  final PageController _controller = PageController(viewportFraction: 0.85);
+  final box = GetStorage();
+
+  late bool isFirst = box.read("leaderBoardFirst") ?? true;
 
   int _currentPage = 0;
   Timer? _timer;
@@ -21,9 +29,11 @@ class _GameSectionState extends State<GameSection> {
   static const Color primaryColor = Color(0xFF3F51B5);
 
   final List<String> images = [
-    "assets/images/people_images/Ahmed Ibrahim.png",
-    "assets/images/people_images/Ahmed Ibrahim.png",
-    "assets/images/people_images/Ahmed Ibrahim.png",
+    "assets/images/leaderboard_images/image1.jpeg",
+    "assets/images/leaderboard_images/image2.jpeg",
+    "assets/images/leaderboard_images/image3.jpeg",
+    "assets/images/leaderboard_images/image4.jpeg",
+    "assets/images/leaderboard_images/image5.jpeg",
   ];
 
   @override
@@ -54,93 +64,121 @@ class _GameSectionState extends State<GameSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        /// Title + Button
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "🎮 Challenge",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const LeaderboardScreen(),
+            /// Title + Button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "🎮 Challenge",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) {
+                          final page = BlocProvider(
+                            create: (_) => sl<UsersCubit>(),
+                            child: const LeaderboardScreen(),
+                          );
+
+                          if (isFirst) {
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () {
+                                showStoreDialog(
+                                  _,
+                                  isFirstTime: true,
+                                  title: "Leaderboard",
+                                  subtitle: "leaderboard",
+                                );
+                                box.write("leaderBoardFirst", false);
+                                isFirst = false;
+                              },
+                            );
+                          }
+
+                          return page;
+                        },
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.emoji_events, color: primaryColor),
+                  label: Text(
+                    "View Leaderboard",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                );
-              },
-              icon: const Icon(Icons.emoji_events, color: primaryColor),
-              label: Text(
-                "View Leaderboard",
-                style: Theme.of(context).textTheme.bodyLarge,
+                )
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Carousel
+            SizedBox(
+              height: 220,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: images.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final bool isActive = index == _currentPage;
+
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: isActive ? 10 : 25,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        if (isActive)
+                          BoxShadow(
+                            color: primaryColor.withValues(alpha: 0.25),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                      ],
+                      image: DecorationImage(
+                        image: AssetImage(images[index]),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
               ),
-            )
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Indicator
+            Center(
+              child: SmoothPageIndicator(
+                controller: _controller,
+                count: images.length,
+                effect: WormEffect(
+                  dotHeight: 8,
+                  dotWidth: 8,
+                  activeDotColor: primaryColor,
+                  dotColor: Colors.grey.shade300,
+                ),
+              ),
+            ),
           ],
         ),
-
-        const SizedBox(height: 15),
-
-        /// Carousel
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _controller,
-            itemCount: images.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              final bool isActive = index == _currentPage;
-
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                margin: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: isActive ? 10 : 25,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    if (isActive)
-                      BoxShadow(
-                        color: primaryColor.withValues(alpha: 0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                  image: DecorationImage(
-                    image: AssetImage(images[index]),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-
-        const SizedBox(height: 15),
-
-        /// Indicator
-        Center(
-          child: SmoothPageIndicator(
-            controller: _controller,
-            count: images.length,
-            effect: WormEffect(
-              dotHeight: 8,
-              dotWidth: 8,
-              activeDotColor: primaryColor,
-              dotColor: Colors.grey.shade300,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

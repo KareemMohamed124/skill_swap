@@ -6,14 +6,13 @@ part 'update_booking_request.g.dart';
 class UpdateBookingRequest {
   final String time;
   final String date;
-  final int duration_mins;
-  final int price;
+  final num duration_mins;
 
-  UpdateBookingRequest(
-      {required this.time,
-      required this.date,
-      required this.duration_mins,
-      required this.price});
+  UpdateBookingRequest({
+    required this.time,
+    required this.date,
+    required this.duration_mins,
+  });
 
   Map<String, dynamic> toJson() => _$UpdateBookingRequestToJson(this);
 }

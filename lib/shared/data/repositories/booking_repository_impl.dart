@@ -1,10 +1,17 @@
 import 'package:dio/dio.dart';
+import 'package:skill_swap/shared/data/models/accepted_booking/accepted_booking_response.dart';
+import 'package:skill_swap/shared/data/models/booking_availability/available_dates_response.dart';
+import 'package:skill_swap/shared/data/models/booking_availability/get_available_dates.dart';
+import 'package:skill_swap/shared/data/models/booking_availability/get_upcoming_sat.dart';
+import 'package:skill_swap/shared/data/models/booking_availability/set_available_dates.dart';
+import 'package:skill_swap/shared/data/models/join_session/join_session_response.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
 import '../models/booking/booking_error_response.dart';
 import '../models/booking/booking_request.dart';
 import '../models/booking/booking_response.dart';
 import '../models/booking/booking_success_response.dart';
+import '../models/booking_availability/add_available_dates.dart';
 import '../models/booking_details/booking_details_error_response.dart';
 import '../models/booking_details/booking_details_response.dart';
 import '../models/booking_details/booking_details_success_response.dart';
@@ -90,24 +97,20 @@ class BookingRepositoryImpl extends BookingRepository {
     try {
       final response = await api.statusBookSession(id, request);
 
-      if (response['message'] == 'Booking status updated') {
-        return StatusBookingSuccess(
-          StatusBookingSuccessResponse.fromJson(response),
-        );
+      if (response['message'] != null) {
+        final msg = response['message'].toString().toLowerCase();
+
+        if (msg.contains('updated') ||
+            msg.contains('accepted') ||
+            msg.contains('success')) {
+          return StatusBookingSuccess(
+            StatusBookingSuccessResponse.fromJson(response),
+          );
+        }
       }
 
       return StatusBookingFailure(
         StatusBookingErrorResponse.fromJson(response),
-      );
-    } on DioException catch (e) {
-      if (e.response?.data != null &&
-          e.response!.data is Map<String, dynamic>) {
-        final error = StatusBookingErrorResponse.fromJson(e.response!.data);
-        return StatusBookingFailure(error);
-      }
-
-      return StatusBookingFailure(
-        StatusBookingErrorResponse(message: _getServerErrorMessage(e)),
       );
     } catch (e) {
       return StatusBookingFailure(
@@ -121,7 +124,7 @@ class BookingRepositoryImpl extends BookingRepository {
     try {
       final response = await api.cancelBookSession(id);
 
-      if (response['message'] == 'Booking cancelled') {
+      if (response['message'] == 'Booking canceled successfully') {
         return CancelBookingSuccess(
           CancelBookingSuccessResponse.fromJson(response),
         );
@@ -148,12 +151,29 @@ class BookingRepositoryImpl extends BookingRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> confirmPayment(String id) async {
+    try {
+      final response = await api.confirmPayment(id);
+
+      return Map<String, dynamic>.from(response);
+    } on DioException catch (e) {
+      if (e.response?.data is Map<String, dynamic>) {
+        return Map<String, dynamic>.from(e.response!.data);
+      }
+
+      throw Exception(_getServerErrorMessage(e));
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   Future<UpdateBookingResponse> updateBookSession(
       String id, UpdateBookingRequest request) async {
     try {
       final response = await api.updateBookSession(id, request);
 
-      if (response['message'] == 'Booking updated') {
+      if (response['message'] == 'Booking updated successfully') {
         return UpdateBookingSuccess(
           UpdateBookingSuccessResponse.fromJson(response),
         );
@@ -303,6 +323,89 @@ class BookingRepositoryImpl extends BookingRepository {
 
       return SubmitReviewFailure(
           error: SubmitReviewErrorResponse(message: _getServerErrorMessage(e)));
+    }
+  }
+
+  String _extractError(DioException e) {
+    try {
+      final data = e.response?.data;
+      if (data is Map && data['message'] != null) {
+        return data['message'].toString();
+      }
+      if (data is String) return data;
+    } catch (_) {}
+    return e.message ?? 'Network Error';
+  }
+
+  @override
+  Future<JoinSessionResponse> joinSession(String id) async {
+    try {
+      final response = await api.joinSession(id);
+      return JoinSessionResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<GetAvailableDates> getAvailableDates(String instructorId) async {
+    try {
+      final response = await api.getAvailableDates(instructorId);
+      return GetAvailableDates.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<GetUpcomingSat> getUpcomingSat() async {
+    try {
+      final response = await api.getUpcomingSat();
+      return GetUpcomingSat.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<AvailableDatesResponse> setAvailableDates(
+      SetAvailableDates body) async {
+    try {
+      final response = await api.setAvailableDates(body);
+      return AvailableDatesResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<AvailableDatesResponse> addAvailableDates(
+      AddAvailableDates body) async {
+    try {
+      final response = await api.addAvailableDates(body);
+      return AvailableDatesResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<AvailableDatesResponse> deleteAvailableDate(String idOrDate) async {
+    try {
+      final response = await api.deleteAvailableDate(idOrDate);
+      return AvailableDatesResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<AcceptedBookingsResponse> getAcceptedBookings() async {
+    try {
+      final response = await api.getAcceptedBookings();
+      return AcceptedBookingsResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
     }
   }
 }

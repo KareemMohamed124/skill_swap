@@ -7,7 +7,9 @@ import '../../../shared/core/theme/app_palette.dart';
 import '../../../shared/data/quiz/quiz_controller.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  final bool fromAddSkill;
+
+  const QuizScreen({super.key, this.fromAddSkill = false});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -65,9 +67,9 @@ class _QuizScreenState extends State<QuizScreen> {
       final isDark = Theme.of(context).brightness == Brightness.dark;
 
       return Scaffold(
-        backgroundColor: const Color(0xFF0D035F),
+        backgroundColor: AppPalette.primary,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0D035F),
+          backgroundColor: AppPalette.primary,
           elevation: 0,
           centerTitle: true,
           automaticallyImplyLeading: false,
@@ -102,7 +104,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       Icon(Icons.timer,
                           color: isDark
                               ? AppPalette.darkTextPrimary
-                              : Color(0xFF0D035F)),
+                              : AppPalette.primary),
                       const SizedBox(width: 8),
                       Obx(
                         () => Text(
@@ -110,7 +112,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           style: TextStyle(
                             color: isDark
                                 ? AppPalette.darkTextPrimary
-                                : Color(0xFF0D035F),
+                                : AppPalette.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -132,7 +134,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             style: TextStyle(
                                 color: isDark
                                     ? AppPalette.darkTextPrimary
-                                    : Color(0xFF0D035F)),
+                                    : AppPalette.primary),
                           ),
                         ),
                       ),
@@ -149,7 +151,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           controller.questions.length,
                       minHeight: 8,
                       backgroundColor: const Color(0XFFF2F5F8),
-                      color: const Color(0xFF0D035F),
+                      color: AppPalette.primary,
                     ),
                   ),
 
@@ -160,7 +162,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     style: TextStyle(
                         color: isDark
                             ? AppPalette.darkTextPrimary
-                            : Color(0xFF0D035F)),
+                            : AppPalette.primary),
                   ),
 
                   const SizedBox(height: 16),
@@ -202,7 +204,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF0D035F)
+                                ? AppPalette.primary
                                 : Theme.of(context).dividerColor,
                             width: isSelected ? 2 : 1,
                           ),
@@ -215,7 +217,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                 child: Icon(
                                   Icons.circle,
                                   size: 10,
-                                  color: Color(0xFF0D035F),
+                                  color: AppPalette.primary,
                                 ),
                               ),
                             Expanded(
@@ -249,7 +251,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             side: BorderSide(
                                 color: isDark
                                     ? Theme.of(context).dividerColor
-                                    : Color(0xFF0D035F)),
+                                    : AppPalette.primary),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -260,7 +262,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             style: TextStyle(
                               color: isDark
                                   ? AppPalette.darkTextPrimary
-                                  : Color(0xFF0D035F),
+                                  : AppPalette.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -271,7 +273,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         child: ElevatedButton(
                           onPressed: controller.nextQuestion,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0D035F),
+                            backgroundColor: AppPalette.primary,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),

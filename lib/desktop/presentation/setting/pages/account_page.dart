@@ -31,34 +31,48 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final sectionPadding = const EdgeInsets.all(8.0);
-    final sectionMargin = const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
+    final sectionMargin =
+    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
     final sectionRadius = BorderRadius.circular(12);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Container(
-          //  margin: sectionMargin,
+            //  margin: sectionMargin,
             padding: sectionPadding,
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              border: Border.all(color: Theme.of(context).dividerColor),
+              color: Theme
+                  .of(context)
+                  .cardColor,
+              border: Border.all(color: Theme
+                  .of(context)
+                  .dividerColor),
               borderRadius: sectionRadius,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Section 1: Notifications
-                 Text(
+                Text(
                   'notifications'.tr,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.bodyLarge!.color
-                  ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .color),
                 ),
                 const SizedBox(height: 8),
                 customSwitch(
@@ -88,13 +102,16 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 const SizedBox(height: 16),
                 // Section 2: Privacy
-                 Text(
+                Text(
                   'privacy'.tr,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color
-                  ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .color),
                 ),
                 const SizedBox(height: 8),
                 customSwitch(
@@ -121,30 +138,57 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 const SizedBox(height: 16),
                 // Section 3: App Preferences
-                 Text(
+                Text(
                   'app_preferences'.tr,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color
-
-                  ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .color),
                 ),
                 const SizedBox(height: 8),
-                GetBuilder<ThemeController>(
-                    builder: (controller) {
-                      return  customSwitch(
-                        title: 'dark_mode'.tr,
-                        icon: Icons.dark_mode_outlined,
-                        value: controller.themeMode == ThemeMode.dark,
-                        onChanged: (v) {
-                          controller.changeTheme(
-                            v ? ThemeMode.dark : ThemeMode.light
-                          );
+                GetBuilder<ThemeController>(builder: (controller) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.dark_mode_outlined,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'theme'.tr,
+                          ),
+                        ],
+                      ),
+                      DropdownButton<ThemeMode>(
+                        value: controller.themeMode,
+                        underline: const SizedBox(),
+                        items: const [
+                          DropdownMenuItem(
+                            value: ThemeMode.system,
+                            child: Text('System'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.light,
+                            child: Text('Light'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.dark,
+                            child: Text('Dark'),
+                          ),
+                        ],
+                        onChanged: (mode) {
+                          controller.changeTheme(mode!);
                         },
-                      );
-                    }
-                ),
+                      ),
+                    ],
+                  );
+                }),
                 const SizedBox(height: 8),
                 GetBuilder<LanguageController>(
                   builder: (controller) {
@@ -153,17 +197,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.language_outlined),
-                            SizedBox(width: 12),
-                            Text('language'.tr),
+                            Icon(
+                              Icons.language_outlined,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'language'.tr,
+                            ),
                           ],
                         ),
                         DropdownButton<String>(
                           value: controller.currentLangCode,
                           underline: const SizedBox(),
                           items: const [
-                            DropdownMenuItem(value: 'en', child: Text('English')),
-                            DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                            DropdownMenuItem(
+                                value: 'en', child: Text('English')),
+                            DropdownMenuItem(
+                                value: 'ar', child: Text('العربية')),
                           ],
                           onChanged: (value) {
                             controller.changeLanguage(value!);
@@ -199,7 +249,9 @@ class _SettingsPageState extends State<SettingsPage> {
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12)) : null,
+      subtitle: subtitle != null
+          ? Text(subtitle, style: const TextStyle(fontSize: 12))
+          : null,
       secondary: Icon(icon),
       value: value,
       onChanged: onChanged,

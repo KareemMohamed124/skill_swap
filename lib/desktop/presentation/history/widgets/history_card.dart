@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/main.dart';
+
+import '../../../../mobile/presentation/history/models/history_model.dart';
 import '../../details/models/details_model.dart';
 import '../../details/screens/session_details.dart';
-import '../models/history_model.dart';
 
 class HistoryCard extends StatelessWidget {
   final HistoryModel data;
@@ -23,10 +24,13 @@ class HistoryCard extends StatelessWidget {
   }
 
   bool get isIssue => data.errorMessage != null;
+
   bool get isCancelled => data.status == "Cancelled";
+
   bool get isFinishedRated => data.status == "Finished" && data.rating > 0;
-  bool get isFinishedNotRated =>
-      data.status == "Finished" && data.rating == 0;
+
+  bool get isFinishedNotRated => data.status == "Finished" && data.rating == 0;
+
   bool get isReviewReceived => data.isReviewReceived == true;
 
   @override
@@ -53,15 +57,12 @@ class HistoryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      data.name,
-                      style: Theme.of(context).textTheme.titleMedium
-                    ),
+                    Text(data.name,
+                        style: Theme.of(context).textTheme.titleMedium),
                     Text(
                       data.role,
                       style: Theme.of(context).textTheme.bodySmall,
@@ -69,11 +70,10 @@ class HistoryCard extends StatelessWidget {
                   ],
                 ),
               ),
-
               if (!isReviewReceived)
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                   decoration: BoxDecoration(
                     color: getStatusColor().withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -88,29 +88,35 @@ class HistoryCard extends StatelessWidget {
                 )
             ],
           ),
-
           const SizedBox(height: 16),
-
           Row(
             children: [
-              Icon(Icons.calendar_month, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color,),
+              Icon(
+                Icons.calendar_month,
+                size: 20,
+                color: Theme.of(context).textTheme.bodyMedium!.color,
+              ),
               const SizedBox(width: 8),
-              Text(data.date, style: Theme.of(context).textTheme.bodyMedium,),
+              Text(
+                data.date,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
-
           const SizedBox(height: 4),
-
           Row(
             children: [
-              Icon(Icons.access_time, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color),
+              Icon(Icons.access_time,
+                  size: 20,
+                  color: Theme.of(context).textTheme.bodyMedium!.color),
               const SizedBox(width: 8),
-              Text("${data.time} – ${data.duration}", style: Theme.of(context).textTheme.bodyMedium,),
+              Text(
+                "${data.time} – ${data.duration}",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           buildBottomSection(context),
         ],
       ),
@@ -118,7 +124,6 @@ class HistoryCard extends StatelessWidget {
   }
 
   Widget buildBottomSection(BuildContext context) {
-
     // REVIEW RECEIVED
     if (isReviewReceived) {
       return Container(
@@ -132,7 +137,7 @@ class HistoryCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                 Text(
+                Text(
                   "Their rating:",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -140,7 +145,7 @@ class HistoryCard extends StatelessWidget {
                 Row(
                   children: List.generate(
                     5,
-                        (i) => Icon(
+                    (i) => Icon(
                       i < data.rating ? Icons.star : Icons.star_border,
                       size: 18,
                       color: Colors.amber,
@@ -176,9 +181,9 @@ class HistoryCard extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 16),
-             Text(
+            Text(
               "Error: ",
-               style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.black),
             ),
             Text(
               data.errorMessage!,
@@ -198,7 +203,7 @@ class HistoryCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFD6D6D6)),
           borderRadius: BorderRadius.circular(14),
         ),
-        child:  Center(
+        child: Center(
           child: Text(
             "View Details",
             style: Theme.of(context).textTheme.titleMedium,
@@ -225,7 +230,7 @@ class HistoryCard extends StatelessWidget {
             Row(
               children: List.generate(
                 5,
-                    (i) => Icon(
+                (i) => Icon(
                   i < data.rating ? Icons.star : Icons.star_border,
                   size: 18,
                   color: Colors.amber,
@@ -250,12 +255,15 @@ class HistoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFD6D6D6)),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child:  Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.star_border_outlined),
                     SizedBox(width: 4),
-                    Text("Rate Session", style: Theme.of(context).textTheme.titleMedium,),
+                    Text(
+                      "Rate Session",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ],
                 ),
               ),
@@ -265,21 +273,21 @@ class HistoryCard extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-               desktopKey.currentState?.openSidePage(body: SessionDetailsPage(
-                 session: SessionModel(
-                     mentorId: data.id,
-                     mentorImage: data.imageUrl,
-                     mentorName: data.name,
-                     mentorTrack: data.role,
-                     status: data.status,
-                     date: DateTime(2025,10,6),
-                     time: data.time,
-                     duration: data.duration,
-                     rating: data.rating,
-                     review: 'Great session, learned a lot!',
-                     notes: 'Covered Flutter BLoC basics'
-
-                 ),));
+                desktopKey.currentState?.openSidePage(
+                    body: SessionDetailsPage(
+                  session: SessionModel(
+                      mentorId: data.id,
+                      mentorImage: data.imageUrl,
+                      mentorName: data.name,
+                      mentorTrack: data.role,
+                      status: data.status,
+                      date: DateTime(2025, 10, 6),
+                      time: data.time,
+                      duration: data.duration,
+                      rating: data.rating,
+                      review: 'Great session, learned a lot!',
+                      notes: 'Covered Flutter BLoC basics'),
+                ));
                 // Get.to(SessionDetailsPage(
                 //   session: SessionModel(
                 //     mentorId: data.id,
@@ -302,12 +310,15 @@ class HistoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFD6D6D6)),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child:  Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.description_outlined),
                     SizedBox(width: 4),
-                    Text("View Details", style: Theme.of(context).textTheme.titleMedium,),
+                    Text(
+                      "View Details",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ],
                 ),
               ),

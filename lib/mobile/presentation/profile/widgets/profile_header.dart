@@ -40,16 +40,18 @@ class ProfileHeader extends StatelessWidget {
       builder: (context, state) {
         String name = "User";
         String imagePath = '';
-        int freeHours = 0;
-        int helpHours = 0;
+        num freeHours = 0;
+        num helpHours = 0;
+        num rate = 0.0;
 
         if (state is MyProfileLoaded) {
           final profile = state.profile;
 
           name = profile.name.isNotEmpty ? profile.name : "User";
           imagePath = profile.userImage.secureUrl;
-          freeHours = profile.freeHours;
-          helpHours = profile.helpTotalHours;
+          rate = profile.rate ?? 0;
+          freeHours = profile.freeHours ?? 0;
+          helpHours = profile.helpTotalHours ?? 0;
         }
 
         final hasImage = imagePath.isNotEmpty;
@@ -97,12 +99,12 @@ class ProfileHeader extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Row(
+                            Row(
                               children: [
                                 Icon(Icons.star,
                                     color: Colors.yellow, size: 16),
                                 SizedBox(width: 4),
-                                Text('4.9',
+                                Text("$rate",
                                     style: TextStyle(color: Colors.white)),
                               ],
                             ),
@@ -127,7 +129,7 @@ class ProfileHeader extends StatelessWidget {
                           freeHours.toString(), 'hours_available'.tr),
                       _buildMetricItem(
                           helpHours.toString(), 'people_helped'.tr),
-                      _buildMetricItem('3', 'achievements'.tr),
+                      //    _buildMetricItem('3', 'achievements'.tr),
                     ],
                   ),
                 ),

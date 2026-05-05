@@ -1,28 +1,21 @@
 class UpdateProfile {
   final String? bio;
 
-  //final String? skillSummary;
-
-  //final String location;
-
-  UpdateProfile({
-    required this.bio,
-    //required this.skillSummary,
-    //required this.location,
-  });
+  UpdateProfile({this.bio});
 
   factory UpdateProfile.fromJson(Map<String, dynamic>? json) {
     return UpdateProfile(
-      bio: json?['bio'] ?? '',
-      //skillSummary: json?['skillSummary'] ?? '',
-      //location: json?['location'] ?? '',
+      bio: json?['bio']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    if (bio != null) data['bio'] = bio;
-    //if (skillSummary != null) data['skillSummary'] = skillSummary;
+
+    if (bio != null && bio!.trim().isNotEmpty) {
+      data['bio'] = bio;
+    }
+
     return data;
   }
 }

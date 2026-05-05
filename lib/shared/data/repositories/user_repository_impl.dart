@@ -31,16 +31,77 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
+  Future<List<UserModel>> getUsers({
+    required int page,
+    int limit = 10,
+    String? query,
+    String? role,
+    String? track,
+    double? minPrice,
+    double? maxPrice,
+    double? minRate,
+    String? sort,
+  }) {
+    if (query != null && query.isNotEmpty) {
+      return searchUsers(query: query, page: page, limit: limit);
+    }
+
+    if (role != null ||
+        track != null ||
+        minPrice != null ||
+        maxPrice != null ||
+        minRate != null) {
+      return filterUsers(
+        role: role,
+        track: track,
+        minPrice: minPrice?.toInt(),
+        maxPrice: maxPrice?.toInt(),
+        minRating: minRate?.toInt(),
+        page: page,
+        limit: limit,
+      );
+    }
+
+    if (sort != null) {
+      return sortUsers(query: sort, page: page, limit: limit);
+    }
+
+    return getAllUsers(page: page, limit: limit);
+  }
+
+  @override
   Future<List<UserModel>> getAllUsers(
       {required int page, int limit = 10}) async {
     final response = await api.getAllUsers(page, limit);
     return _excludeMyAccountAndAdmin(response.data.users);
   }
 
+  Future<List<UserModel>> getUsersWithoutAdminOnly({
+    required int page,
+    int limit = 10,
+  }) async {
+    final response = await api.getAllUsers(page, limit);
+
+    final users = response.data.users;
+
+    return users.where((user) {
+      return user.role?.toLowerCase() != "admin";
+    }).toList();
+  }
+
   @override
   Future<MyProfile> getMyProfile() async {
     final response = await api.getMyProfile();
-    return response.user;
+
+    // if (response.message.toLowerCase().contains('blocked')) {
+    //   throw Exception(response.message);
+    // }
+    //
+    // if (response.user == null) {
+    //   throw Exception("Invalid profile response");
+    // }
+
+    return response.user!;
   }
 
   String _getServerErrorMessage(DioException e) {
@@ -102,7 +163,7 @@ class UserRepositoryImpl extends UserRepository {
   Future<UpdateProfileResponse> updateProfile(
       UpdateProfileRequest request) async {
     try {
-      final response = await api.updateProfile(request);
+      final response = await api.updateProfile(request.toJson());
       return UpdateProfileData.fromJson(response);
     } on DioException catch (e) {
       String serverMessage = "Network Error";
@@ -185,5 +246,24 @@ class UserRepositoryImpl extends UserRepository {
     } catch (e) {
       return UpdateProfileFailure(error: e.toString());
     }
+  }
+
+  @override
+  Future<String> requestMentor(num hourlyPrice) async {
+    try {
+      final response = await api.requestMentor({
+        "hourlyPrice": hourlyPrice,
+      });
+      return response['message'];
+    } on DioException catch (e) {
+      return _getServerErrorMessage(e);
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  @override
+  Future<void> setActiveTheme(String? themeId) async {
+    await api.setActiveTheme({"themeId": themeId});
   }
 }

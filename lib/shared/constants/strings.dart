@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../mobile/presentation/book_session/models/session_type_model.dart';
 import '../../mobile/presentation/history/models/history_model.dart';
-import '../../mobile/presentation/home/models/next_session.dart';
 import '../../mobile/presentation/home/models/recommended_mentor.dart';
 import '../../mobile/presentation/home/models/top_user.dart';
 import '../../mobile/presentation/search/models/mentor_model.dart';
@@ -39,24 +38,24 @@ class AppData {
     ),
   ];
 
-  static List<NextSession> nextSessions = [
-    NextSession(
-        image: "assets/images/people_images/Lisa Wang.png",
-        name: "Lisa Wang",
-        dateTime: "Today, 2:00 PM",
-        duration: "1h",
-        startsIn: "Starts in 10m",
-        isMentor: false,
-        remainingMinutes: 50),
-    NextSession(
-        image: "assets/images/people_images/Liyan Alex.png",
-        name: "Liyan Alex",
-        dateTime: "Today, 6:00 PM",
-        duration: "30m",
-        startsIn: "Starts in 4h",
-        isMentor: true,
-        remainingMinutes: 50),
-  ];
+  // static List<NextSession> nextSessions = [
+  //   NextSession(
+  //       image: "assets/images/people_images/Lisa Wang.png",
+  //       name: "Lisa Wang",
+  //       dateTime: "Today, 2:00 PM",
+  //       duration: "1h",
+  //       startsIn: "Starts in 10m",
+  //       isMentor: false,
+  //       remainingMinutes: 50),
+  //   NextSession(
+  //       image: "assets/images/people_images/Liyan Alex.png",
+  //       name: "Liyan Alex",
+  //       dateTime: "Today, 6:00 PM",
+  //       duration: "30m",
+  //       startsIn: "Starts in 4h",
+  //       isMentor: true,
+  //       remainingMinutes: 50),
+  // ];
 
   static List<RecommendedMentor> recommendedMentors = [
     RecommendedMentor(

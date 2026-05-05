@@ -7,7 +7,7 @@ class RecommendedCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final int? rating;
+  final num? rating;
   final double? width;
   final double? imageHeight;
   final String? bio;
@@ -76,33 +76,34 @@ class RecommendedCard extends StatelessWidget {
 
           SizedBox(height: screenWidth * 0.01),
 
-          Text(
-            name ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-
-          rating != null
-              ? Row(
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
                   children: [
-                    Icon(Icons.star,
-                        size: screenWidth * 0.03,
-                        color: const Color(0xFFFFCE31)),
-                    SizedBox(width: screenWidth * 0.01),
-                    Text(
-                      "$rating",
-                      style: Theme.of(context).textTheme.bodySmall,
+                    Expanded(
+                      child: Text(
+                        name ?? '',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                    const Icon(Icons.star, size: 16, color: Color(0xFFFFCE31)),
+                    const SizedBox(width: 4),
+                    Text("$rating",
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
-                )
-              : const SizedBox(),
-
-          Text(
-            track ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  track!,
+                  style: Theme.of(context).textTheme.titleSmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ],
       ),

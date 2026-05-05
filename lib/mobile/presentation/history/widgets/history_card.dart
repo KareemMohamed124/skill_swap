@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -5,13 +7,18 @@ import '../../details/models/details_model.dart';
 import '../../details/screens/session_details.dart';
 import '../models/history_model.dart';
 
-class HistoryCard extends StatelessWidget {
+class HistoryCard extends StatefulWidget {
   final HistoryModel data;
 
   const HistoryCard({super.key, required this.data});
 
+  @override
+  State<HistoryCard> createState() => _HistoryCardState();
+}
+
+class _HistoryCardState extends State<HistoryCard> {
   Color getStatusColor() {
-    switch (data.status) {
+    switch (widget.data.status) {
       case "Finished":
         return Colors.green;
       case "Rejected":
@@ -23,15 +30,62 @@ class HistoryCard extends StatelessWidget {
     }
   }
 
-  bool get isIssue => data.errorMessage != null;
+  bool get isIssue => widget.data.errorMessage != null;
 
-  bool get isCancelled => data.status == "Cancelled";
+  bool get isCancelled => widget.data.status == "Cancelled";
 
-  bool get isFinishedRated => data.status == "Finished" && data.rating > 0;
+  bool get isFinished => widget.data.status == "Finished";
 
-  bool get isFinishedNotRated => data.status == "Finished" && data.rating == 0;
+  bool get isReviewReceived => widget.data.isReviewReceived == true;
 
-  bool get isReviewReceived => data.isReviewReceived == true;
+  Widget _buildPlaceholder(double cardWidth) {
+    return Container(
+      width: cardWidth,
+      height: cardWidth,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.grey,
+      ),
+      child: const Icon(Icons.person, color: Colors.white),
+    );
+  }
+
+  Widget _buildUserImage(double cardWidth) {
+    final image = widget.data.imageUrl;
+
+    if (image == null || image.isEmpty) {
+      return _buildPlaceholder(cardWidth);
+    }
+
+    if (image.startsWith("http") || image.startsWith("https")) {
+      return Image.network(
+        image,
+        width: cardWidth,
+        height: cardWidth,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildPlaceholder(cardWidth),
+      );
+    }
+
+    if (image.startsWith("data:image")) {
+      try {
+        final base64Str = image.split(',')[1];
+        final bytes = base64Decode(base64Str);
+
+        return Image.memory(
+          bytes,
+          width: cardWidth,
+          height: cardWidth,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _buildPlaceholder(cardWidth),
+        );
+      } catch (e) {
+        return _buildPlaceholder(cardWidth);
+      }
+    }
+
+    return _buildPlaceholder(cardWidth);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,22 +106,15 @@ class HistoryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              ClipOval(
-                child: Image.asset(
-                  data.imageUrl,
-                  width: screenWidth * 0.1, // بدل 40
-                  height: screenWidth * 0.1,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              ClipOval(child: _buildUserImage(screenWidth * 0.1)),
               SizedBox(width: screenWidth * 0.02),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(data.name,
+                    Text(widget.data.name,
                         style: Theme.of(context).textTheme.titleMedium),
-                    Text(data.role,
+                    Text(widget.data.role,
                         style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
@@ -82,7 +129,7 @@ class HistoryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(screenWidth * 0.03),
                   ),
                   child: Text(
-                    data.status,
+                    widget.data.status,
                     style: TextStyle(
                       color: getStatusColor(),
                       fontWeight: FontWeight.bold,
@@ -99,7 +146,8 @@ class HistoryCard extends StatelessWidget {
                   size: screenWidth * 0.05,
                   color: Theme.of(context).textTheme.bodyMedium!.color),
               SizedBox(width: screenWidth * 0.02),
-              Text(data.date, style: Theme.of(context).textTheme.bodyMedium),
+              Text(widget.data.date,
+                  style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
           SizedBox(height: screenHeight * 0.005),
@@ -109,7 +157,7 @@ class HistoryCard extends StatelessWidget {
                   size: screenWidth * 0.05,
                   color: Theme.of(context).textTheme.bodyMedium!.color),
               SizedBox(width: screenWidth * 0.02),
-              Text("${data.time} – ${data.duration}",
+              Text("${widget.data.time} – ${widget.data.duration}",
                   style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
@@ -144,7 +192,7 @@ class HistoryCard extends StatelessWidget {
                   children: List.generate(
                     5,
                     (i) => Icon(
-                      i < data.rating ? Icons.star : Icons.star_border,
+                      i < widget.data.rating ? Icons.star : Icons.star_border,
                       size: screenWidth * 0.045,
                       color: Colors.amber,
                     ),
@@ -152,11 +200,11 @@ class HistoryCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (data.reviewComment != null &&
-                data.reviewComment!.isNotEmpty) ...[
+            if (widget.data.reviewComment != null &&
+                widget.data.reviewComment!.isNotEmpty) ...[
               SizedBox(height: screenHeight * 0.01),
               Text(
-                "“${data.reviewComment}”",
+                "“${widget.data.reviewComment}”",
                 style: TextStyle(
                   fontSize: screenWidth * 0.033,
                   fontStyle: FontStyle.italic,
@@ -182,7 +230,7 @@ class HistoryCard extends StatelessWidget {
             Text("Error: ", style: TextStyle(color: Colors.black)),
             Expanded(
               child: Text(
-                data.errorMessage!,
+                widget.data.errorMessage!,
                 style: TextStyle(color: Colors.red),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -209,7 +257,7 @@ class HistoryCard extends StatelessWidget {
     }
 
     // FINISHED & RATED
-    if (isFinishedRated) {
+    if (isFinished) {
       return Container(
         height: buttonHeight,
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
@@ -225,7 +273,7 @@ class HistoryCard extends StatelessWidget {
               children: List.generate(
                 5,
                 (i) => Icon(
-                  i < data.rating ? Icons.star : Icons.star_border,
+                  i < widget.data.rating ? Icons.star : Icons.star_border,
                   size: screenWidth * 0.045,
                   color: Colors.amber,
                 ),
@@ -237,7 +285,7 @@ class HistoryCard extends StatelessWidget {
     }
 
     // FINISHED NOT RATED
-    if (isFinishedNotRated) {
+    if (isFinished) {
       return Row(
         children: [
           Expanded(
@@ -267,15 +315,15 @@ class HistoryCard extends StatelessWidget {
               onTap: () {
                 Get.to(SessionDetailsPage(
                   session: SessionModel(
-                      mentorId: data.id,
-                      mentorImage: data.imageUrl,
-                      mentorName: data.name,
-                      mentorTrack: data.role,
-                      status: data.status,
+                      mentorId: widget.data.id,
+                      mentorImage: widget.data.imageUrl,
+                      mentorName: widget.data.name,
+                      mentorTrack: widget.data.role,
+                      status: widget.data.status,
                       date: DateTime(2025, 10, 6),
-                      time: data.time,
-                      duration: data.duration,
-                      rating: data.rating,
+                      time: widget.data.time,
+                      duration: widget.data.duration,
+                      rating: widget.data.rating,
                       review: 'Great session, learned a lot!',
                       notes: 'Covered Flutter BLoC basics',
                       bio: "",

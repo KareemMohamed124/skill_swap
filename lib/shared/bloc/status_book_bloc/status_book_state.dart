@@ -19,7 +19,7 @@ class StatusBookSuccess extends StatusBookState {
 }
 
 class StatusBookFailure extends StatusBookState {
-  final StatusBookingErrorResponse error; // بدل StatusBookingFailure
+  final StatusBookingErrorResponse error;
   final String sessionId;
 
   StatusBookFailure({required this.error, required this.sessionId});

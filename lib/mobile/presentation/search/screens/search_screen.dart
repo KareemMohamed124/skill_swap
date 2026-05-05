@@ -29,6 +29,24 @@ class _SearchScreenState extends State<SearchScreen> {
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
 
+  int calculateHourlyRate(int hours, String role) {
+    if (role.toLowerCase() != 'mentor') {
+      return 0;
+    }
+
+    if (hours < 100) return 0;
+
+    if (hours < 120) return 30;
+
+    if (hours < 140) return 35;
+
+    if (hours < 160) return 40;
+
+    if (hours < 180) return 45;
+
+    return 50;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void _scrollListener() {
     final bloc = context.read<UserFilterBloc>();
     if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
+        _scrollController.position.maxScrollExtent - 200 &&
         !bloc.state.isLastPage &&
         !bloc.state.isLoadingMore) {
       bloc.add(LoadMoreUsersEvent(
@@ -67,11 +85,19 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -90,21 +116,17 @@ class _SearchScreenState extends State<SearchScreen> {
                       /// Top Bar
                       Row(
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back,
-                                size: isDesktop ? 28 : 24),
-                            onPressed: () => Get.back(),
-                          ),
                           Expanded(
                             child: Center(
                               child: Text(
                                 'search'.tr,
-                                style: Theme.of(context)
+                                style: Theme
+                                    .of(context)
                                     .textTheme
                                     .titleLarge
                                     ?.copyWith(
-                                      fontSize: isDesktop ? 24 : 20,
-                                    ),
+                                  fontSize: isDesktop ? 24 : 20,
+                                ),
                               ),
                             ),
                           ),
@@ -123,16 +145,20 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: TextField(
                                 controller: searchTextController,
                                 cursorColor:
-                                    isDark ? Colors.white : Colors.black,
+                                isDark ? Colors.white : Colors.black,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Theme.of(context).dividerColor),
+                                        color: Theme
+                                            .of(context)
+                                            .dividerColor),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Theme.of(context).dividerColor),
+                                        color: Theme
+                                            .of(context)
+                                            .dividerColor),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   prefixIcon: Icon(Icons.search,
@@ -163,10 +189,14 @@ class _SearchScreenState extends State<SearchScreen> {
                             width: isDesktop ? 55 : 50,
                             child: DecoratedBox(
                               decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
+                                color: Theme
+                                    .of(context)
+                                    .cardColor,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                    color: Theme.of(context).dividerColor),
+                                    color: Theme
+                                        .of(context)
+                                        .dividerColor),
                               ),
                               child: IconButton(
                                 icon: Icon(Icons.tune_outlined,
@@ -177,9 +207,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                   final state = bloc.state;
 
                                   final activeFilters =
-                                      await showModalSideSheet<int>(
+                                  await showModalSideSheet<int>(
                                     context: context,
-                                    withCloseControll: false,
+                                    withCloseControll: true,
                                     barrierColor: const Color(0xFFD6D6D6)
                                         .withOpacity(0.3),
                                     width: isDesktop ? 500 : screenWidth * 0.85,
@@ -222,11 +252,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                 final state = bloc.state;
 
                                 final activeFilters =
-                                    await showModalSideSheet<int>(
+                                await showModalSideSheet<int>(
                                   context: context,
-                                  withCloseControll: false,
+                                  withCloseControll: true,
                                   barrierColor:
-                                      const Color(0xFFD6D6D6).withOpacity(0.3),
+                                  const Color(0xFFD6D6D6).withOpacity(0.3),
                                   width: isDesktop ? 500 : screenWidth * 0.85,
                                   body: BlocProvider.value(
                                     value: bloc,
@@ -257,6 +287,38 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
+                            if (state.filteredList.isEmpty &&
+                                !state.isLoading) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search_off,
+                                      size: 80,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      "No results found",
+                                      textAlign: TextAlign.center,
+                                      style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                    // SizedBox(height: 8),
+                                    // Text(
+                                    //   "Try searching with different keywords",
+                                    //   style:
+                                    //       Theme.of(context).textTheme.bodySmall,
+                                    //   textAlign: TextAlign.center,
+                                    // ),
+                                  ],
+                                ),
+                              );
+                            }
+
                             return ListView.builder(
                               controller: _scrollController,
                               padding: EdgeInsets.zero,
@@ -277,7 +339,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                         skills: user.skills,
                                         hoursAvailable: user.freeHours,
                                         peopleHelped: user.helpTotalHours,
-                                        hourlyRate: 0,
+                                        hourlyRate: user.hourlyPrice,
+                                        reviews: user.reviews,
+                                        role: user.role,
                                       ));
                                     },
                                     child: MentorCard(
@@ -285,8 +349,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                       name: user.name,
                                       role: user.role,
                                       rate: user.rate,
-                                      hours: 5,
-                                      price: 0,
+                                      hours: user.helpTotalHours,
+                                      price: user.hourlyPrice,
                                       track: user.track.name,
                                       skills: user.skills,
                                       responseTime: "9",
@@ -297,8 +361,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     padding: EdgeInsets.all(16.0),
                                     child: Center(
                                         child: CircularProgressIndicator(
-                                      color: AppPalette.primary,
-                                    )),
+                                          color: AppPalette.primary,
+                                        )),
                                   );
                                 }
                               },

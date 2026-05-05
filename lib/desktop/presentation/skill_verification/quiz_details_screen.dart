@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../main.dart';
+import 'package:skill_swap/desktop/presentation/sign/widgets/custom_button.dart';
+
 import '../../../shared/data/quiz/quiz_controller.dart';
 import 'quiz_screen.dart';
 
-class QuizDetailsScreen extends StatelessWidget {
+class QuizDetailsDesktop extends StatelessWidget {
   final String skillName;
-  QuizDetailsScreen({super.key, required this.skillName});
+  final bool fromAddSkill;
 
-  final QuizController controller = Get.put(QuizController(), permanent: true);
+  QuizDetailsDesktop({
+    super.key,
+    required this.skillName,
+    this.fromAddSkill = false,
+  });
+
+  final QuizController controller = Get.put(
+    QuizController(),
+    permanent: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -17,268 +27,165 @@ class QuizDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge!.color,
-          ),
-          onPressed: () {
-            final didGoBack = desktopKey.currentState?.goBack();
-            if(didGoBack == false) {
-              desktopKey.currentState?.openPage(index: 0);
-            }
-          },
-        ),
-        title:  Text(
-          "Quiz Details",
-          style: TextStyle(
-            color: Theme.of(context).textTheme.bodyLarge!.color,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         centerTitle: true,
+        title: const Text(
+          "Quiz Details",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
+      body: Center(
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: Container(
+              margin: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: Theme.of(context)
+                    .scaffoldBackgroundColor
+                    .withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Theme.of(context).dividerColor),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 2,
+                ),
                 boxShadow: const [
                   BoxShadow(
+                    blurRadius: 20,
                     color: Colors.black12,
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
+                    offset: Offset(0, 10),
                   ),
                 ],
               ),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// TITLE
                   Text(
                     skillName,
-                    style: TextStyle(
-                      fontSize: 16,
+                    style: const TextStyle(
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  /// CHIPS
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: const [
+                      Chip(label: Text("Beginner")),
+                      Chip(label: Text("15 Questions")),
+                      Chip(label: Text("15 Minutes")),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  /// DESCRIPTION
+                  const Text(
+                    "Test your knowledge of basics including variables, functions and control structures.",
+                    style: TextStyle(fontSize: 15),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  /// DETAILS
+                  _row("Questions", "15"),
+                  _row("Time Limit", "15 minutes"),
+                  _row("Passing Score", "85%"),
+                  _row("Difficulty", "Beginner"),
+
+                  const SizedBox(height: 24),
+
+                  /// NOTES
+                  const Text(
+                    "Important Notes:",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
                   const SizedBox(height: 12),
 
-                  Row(
-                    children: [
-                      Chip(
-                        label: Text(
-                          "Beginner",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                  _note("You cannot pause once started"),
+                  _note("Questions are randomly selected"),
+                  _note("You need 80% to pass"),
+                  _note("You can retake the quiz if needed"),
 
-                          ),
-                        ),
-                        backgroundColor: Color(0XFFF2F5F8),
+                  const SizedBox(height: 28),
+
+                  /// BUTTON
+                  Obx(
+                    () => SizedBox(
+                      width: double.infinity,
+                      child: CustomButton(
+                        text: controller.loading.value
+                            ? "Loading..."
+                            : "Start Quiz",
+                        onPressed: controller.loading.value
+                            ? null
+                            : () async {
+                                controller.loading.value = true;
+
+                                await controller.generateQuiz(
+                                  skillName,
+                                  isAddSkill: fromAddSkill,
+                                );
+
+                                controller.loading.value = false;
+
+                                if (controller.questions.isNotEmpty) {
+                                  Get.to(
+                                    () => QuizDesktop(
+                                      fromAddSkill: fromAddSkill,
+                                    ),
+                                  );
+                                } else {
+                                  Get.snackbar(
+                                    "Error",
+                                    "Failed to generate quiz",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                }
+                              },
                       ),
-                      SizedBox(width: 8),
-                      Chip(
-                        label: Text(
-                          "15 Q",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
-                          ),
-                        ),
-                        backgroundColor: Color(0XFFF2F5F8),
-                      ),
-                      SizedBox(width: 8),
-                      Chip(
-                        label: Text(
-                          "15m",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyMedium!.color,
-                          ),
-                        ),
-                        backgroundColor: Color(0XFFF2F5F8),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Text(
-                    "Test your knowledge of basics including variables, "
-                        "functions and control structures.",
-                    style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-                  rowDetails(context, "Questions:", "15"),
-                  SizedBox(height: 8),
-                  rowDetails(context, "Time Limit:", "15 minutes"),
-                  SizedBox(height: 8),
-                  rowDetails(context, "Passing Score:", "85%"),
-                  SizedBox(height: 8),
-                  rowDetails(context, "Difficulty:", "Beginner"),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 25),
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child:  Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Important Notes:",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "• You cannot pause once started",
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "• Questions are randomly selected",
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "• You need 80% to pass and get verified",
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "• You can retake if you don't pass",
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 30),
-
-            Obx(
-                  () => SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0XFF0D035F),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed:
-                  controller.loading.value
-                      ? null
-                      : () async {
-                    controller.loading.value = true;
-
-                    await controller.generateQuiz(skillName);
-
-                    controller.loading.value = false;
-
-                    if (controller.questions.isNotEmpty) {
-                      Get.to(() => QuizScreen());
-                    } else {
-                      Get.snackbar(
-                        'Error',
-                        'Failed to generate quiz.',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    }
-                  },
-                  child:
-                  controller.loading.value
-                      ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                      : const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.timer, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        "Start Quiz",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget rowDetails(
-      BuildContext context,
-      String title,
-      String subTitle
-      ) {
-      return Row(
+  /// ================= HELPERS =================
+
+  Widget _row(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:  [
-          //"Time Limit:"
-          Text( title,
-               style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).textTheme.bodyMedium!.color
-          )),
-          //"15 minutes"
-          Text(subTitle, style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).textTheme.bodyMedium!.color
-          )),
+        children: [
+          Text(title),
+          Text(
+            value,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ],
-      );
+      ),
+    );
+  }
+
+  Widget _note(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text("• $text"),
+    );
   }
 }

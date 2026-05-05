@@ -2,9 +2,9 @@ import '../../data/models/booking/booking_model.dart';
 
 sealed class ActiveBookingState {}
 
-class BookingIdle extends ActiveBookingState {} // مفيش أي booking
+class BookingIdle extends ActiveBookingState {}
 
-class BookingLoading extends ActiveBookingState {} // loading لأي عملية
+class BookingLoading extends ActiveBookingState {}
 
 class BookingLoaded extends ActiveBookingState {
   final Booking booking;
@@ -23,3 +23,7 @@ class BookingCreatedSuccess extends ActiveBookingState {
 
   BookingCreatedSuccess(this.booking);
 }
+
+class BookingUpdatedSuccess extends ActiveBookingState {}
+
+class BookingCancelledSuccess extends ActiveBookingState {}

@@ -55,16 +55,16 @@ class _NotificationDesktopPanelState extends State<NotificationDesktopPanel> {
 
     return Scaffold(
       backgroundColor:
-          isDark ? AppPalette.darkSurface : AppPalette.lightSurface,
+          isDark ? AppPalette.darkElevated : AppPalette.lightElevated,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(16),
             child: Text(
               "Notifications",
               style: TextStyle(
-                color: Color(0xFFD6D6D6),
+                color: Theme.of(context).textTheme.bodyLarge!.color,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),
@@ -137,7 +137,7 @@ class _NotificationDesktopPanelState extends State<NotificationDesktopPanel> {
                       tagColor: tagColor,
                       timeAgo: _formatTimeAgo(dateTime),
                       title: title,
-                      mentorName: session.name,
+                      mentorName: session.userName,
                       sessionTime:
                           "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
                       icon: icon,

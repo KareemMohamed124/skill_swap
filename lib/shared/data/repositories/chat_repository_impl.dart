@@ -1,10 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:skill_swap/shared/data/models/public_chat/tracks_response.dart';
+import 'package:skill_swap/shared/data/models/join_track/tracks_response.dart';
+import 'package:skill_swap/shared/data/models/public_chat/get_history_messages.dart';
+import 'package:skill_swap/shared/data/models/public_chat/send_message_response.dart';
 
 import '../../domain/repositories/chat_repository.dart';
 import '../../helper/local_storage.dart';
 import '../models/chat/chat_models.dart';
-import '../models/public_chat/join_response.dart';
+import '../models/join_track/join_response.dart';
+import '../models/join_track/join_track_error_response.dart';
+import '../models/join_track/join_track_success_response.dart';
+import '../models/public_chat/get_chat_model.dart';
+import '../models/public_chat/search_response.dart';
 import '../web_services/chat/chat_api_service.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -45,41 +51,6 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  @override
-  Future<List<ChatMessageModel>> getMessages(String chatId,
-      {int page = 1, int limit = 20}) async {
-    try {
-      final response = await api.getMessages(chatId, page: page, limit: limit);
-      final messages =
-          response['messages'] ?? response['data'] ?? response['docs'] ?? [];
-      if (messages is List) {
-        return messages
-            .where((item) => item is Map<String, dynamic>)
-            .map((item) =>
-                ChatMessageModel.fromJson(item as Map<String, dynamic>))
-            .toList();
-      }
-      return [];
-    } on DioException catch (e) {
-      throw _extractError(e);
-    }
-  }
-
-  @override
-  Future<ChatMessageModel> sendMessage(
-      String chatId, String content, String type) async {
-    try {
-      final response = await api.sendMessage(chatId, content, type);
-      // The response may wrap the message in a key
-      final messageData = response['message'] is Map<String, dynamic>
-          ? response['message'] as Map<String, dynamic>
-          : response;
-      return ChatMessageModel.fromJson(messageData);
-    } on DioException catch (e) {
-      throw _extractError(e);
-    }
-  }
-
   String _extractError(DioException e) {
     try {
       final data = e.response?.data;
@@ -92,7 +63,6 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  @override
   Future<TracksResponse> getTracks() async {
     try {
       final response = await api.getTracks();
@@ -103,10 +73,143 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<JoinResponse> joinTrack(String trackId) async {
+  Future<JoinTrackResponse> joinTrack(String trackId) async {
     try {
       final response = await api.joinTrack(trackId);
-      return JoinResponse.fromJson(response);
+
+      return JoinTrackSuccess(
+        JoinTrackSuccessResponse.fromJson(response),
+      );
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = JoinTrackErrorResponse.fromJson(e.response!.data);
+        return JoinTrackFailure(error);
+      }
+
+      return JoinTrackFailure(
+        JoinTrackErrorResponse(message: _getServerErrorMessage(e)),
+      );
+    } catch (e) {
+      return JoinTrackFailure(
+        JoinTrackErrorResponse(message: e.toString()),
+      );
+    }
+  }
+
+  String _getServerErrorMessage(DioException e) {
+    try {
+      final data = e.response?.data;
+      if (data != null) {
+        if (data is Map && data['message'] != null) {
+          return data['message'].toString();
+        } else if (data is String) {
+          return data;
+        }
+      }
+    } catch (_) {}
+    return e.message ?? "Network Error";
+  }
+
+  @override
+  Future<List<GetChatModel>> getPublicChats() async {
+    final response = await api.getMyChatsPublic();
+
+    final chats = response.chats.where((chat) => chat.type == "track").toList();
+
+    return chats;
+  }
+
+  @override
+  Future<ChatHistoryResponse> getMessages(String chatId,
+      {int page = 1, int limit = 20}) async {
+    try {
+      final response = await api.getMessages(chatId, page: page, limit: limit);
+
+      final messagesJson =
+          response['messages'] ?? response['data'] ?? response['docs'] ?? [];
+
+      final messages = <ChatMessage>[];
+      if (messagesJson is List) {
+        for (var item in messagesJson) {
+          if (item is Map<String, dynamic>) {
+            messages.add(ChatMessage.fromJson(item));
+          }
+        }
+      }
+
+      return ChatHistoryResponse(
+        message: response['message']?.toString() ?? 'Done',
+        userId: response['userId']?.toString() ?? '',
+        messages: messages,
+        total: response['total'] ?? messages.length,
+        page: response['page'] ?? page,
+        totalPages: response['totalPages'] ?? 1,
+      );
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<SendMessageResponse> sendMessage(
+      String chatId, String content, String type,
+      {String? replyTo}) async {
+    try {
+      final response =
+          await api.sendMessage(chatId, content, type, replyTo: replyTo);
+
+      return SendMessageResponse.fromJson(response);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<void> markMessagesAsRead(String chatId) async {
+    try {
+      await api.markMessagesAsRead(chatId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<void> editMessage(
+      String chatId, String messageId, String content) async {
+    try {
+      await api.editMessage(chatId, messageId, content);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    try {
+      await api.deleteMessage(chatId, messageId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<void> leaveChat(String chatId) async {
+    try {
+      await api.leaveChat(chatId);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<List<MessageModel>> searchMessages(String chatId, String query) async {
+    try {
+      final response = await api.searchMessages(chatId, query);
+
+      final searchResponse = SearchResponse.fromJson(response);
+
+      return searchResponse.results;
     } on DioException catch (e) {
       throw _extractError(e);
     }

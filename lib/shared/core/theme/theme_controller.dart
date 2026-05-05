@@ -1,26 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'theme_helper.dart';
 
 class ThemeController extends GetxController {
   final _box = GetStorage();
 
   ThemeMode themeMode = ThemeMode.system;
 
+  @override
+  void onInit() {
+    super.onInit();
+    loadSavedTheme();
+  }
+
   void changeTheme(ThemeMode mode) {
     themeMode = mode;
-
-    _box.write('theme', saveThemeToString(mode));
-
+    _box.write('theme', mode.name);
     update();
   }
 
   void loadSavedTheme() {
-    final savedTheme = _box.read<String>('theme');
+    final savedTheme = _box.read('theme');
 
-    themeMode = loadThemeFromString(savedTheme);
+    if (savedTheme != null) {
+      themeMode = ThemeMode.values.firstWhere(
+        (e) => e.name == savedTheme,
+        orElse: () => ThemeMode.system,
+      );
+    }
+  }
 
-    update();
+  bool isDarkMode(BuildContext context) {
+    if (themeMode == ThemeMode.system) {
+      return MediaQuery.of(context).platformBrightness == Brightness.dark;
+    }
+    return themeMode == ThemeMode.dark;
   }
 }

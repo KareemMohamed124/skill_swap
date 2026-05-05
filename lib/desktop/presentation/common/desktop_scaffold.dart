@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DesktopScaffold extends StatelessWidget {
   final Widget body;
   final Widget? rightPanel;
-  final Widget? sidebar; // الجديد: Sidebar اختياري
+  final Widget? sidebar;
 
   const DesktopScaffold({
     super.key,
@@ -15,25 +15,33 @@ class DesktopScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
+      backgroundColor: colors.background, // 👈 الخلفية العامة
       body: Row(
         children: [
+          /// Sidebar
           if (sidebar != null)
-            SizedBox(
-              width: 220,
+            Container(
+              width: 250,
+              color: colors.surfaceVariant,
               child: sidebar!,
             ),
 
           /// Main Content
           Expanded(
-            child: body,
+            child: Container(
+              color: colors.surface,
+              child: body,
+            ),
           ),
 
-          /// Right Panel (Notifications أو أي حاجة ثانية)
-          if (width >= 1200 && rightPanel != null)
-            SizedBox(
-              width: 320,
+          /// Right Panel
+          if (width >= 900 && rightPanel != null)
+            Container(
+              width: 350,
+              color: colors.surfaceVariant,
               child: rightPanel!,
             ),
         ],

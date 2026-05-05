@@ -31,8 +31,12 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery
+        .of(context)
+        .size;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     return BlocProvider(
       create: (_) => GetIt.instance<CompleteProfileBloc>(),
@@ -80,60 +84,64 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                   Expanded(
                     child: widget.skills.isEmpty
                         ? const Center(
-                            child: Text("No skills available for this track."),
-                          )
+                      child: Text("No skills available for this track."),
+                    )
                         : SingleChildScrollView(
-                            child: Wrap(
-                              spacing: size.width * 0.02,
-                              runSpacing: size.height * 0.015,
-                              children: widget.skills.map((skill) {
-                                final isSelected =
-                                    selectedSkills.contains(skill);
+                      child: Wrap(
+                        spacing: size.width * 0.02,
+                        runSpacing: size.height * 0.015,
+                        children: widget.skills.map((skill) {
+                          final isSelected =
+                          selectedSkills.contains(skill);
 
-                                return GestureDetector(
-                                  onTap: isLoading
-                                      ? null
-                                      : () {
-                                          setState(() {
-                                            if (isSelected) {
-                                              selectedSkills.remove(skill);
-                                            } else {
-                                              selectedSkills.add(skill);
-                                            }
-                                          });
-                                        },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: size.width * 0.04,
-                                      vertical: size.height * 0.012,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? AppPalette.primary
-                                          : Theme.of(context).cardColor,
-                                      borderRadius: BorderRadius.circular(25),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? AppPalette.primary
-                                            : Theme.of(context).dividerColor,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      skill,
-                                      style: TextStyle(
-                                        fontSize: size.width * 0.035,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : (isDark
-                                                ? Colors.white
-                                                : Colors.black),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
+                          return GestureDetector(
+                            onTap: isLoading
+                                ? null
+                                : () {
+                              setState(() {
+                                if (isSelected) {
+                                  selectedSkills.remove(skill);
+                                } else {
+                                  selectedSkills.add(skill);
+                                }
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: size.width * 0.04,
+                                vertical: size.height * 0.012,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppPalette.primary
+                                    : Theme
+                                    .of(context)
+                                    .cardColor,
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? AppPalette.primary
+                                      : Theme
+                                      .of(context)
+                                      .dividerColor,
+                                ),
+                              ),
+                              child: Text(
+                                skill,
+                                style: TextStyle(
+                                  fontSize: size.width * 0.035,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : (isDark
+                                      ? Colors.white
+                                      : Colors.black),
+                                ),
+                              ),
                             ),
-                          ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
 
                   /// 🔥 Continue Button
@@ -144,21 +152,33 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                       onPressed: (isLoading || selectedSkills.isEmpty)
                           ? null
                           : () {
-                              // Convert selected skill strings to SkillItem objects
-                              final skillItems = selectedSkills
-                                  .map((s) => SkillItem(
-                                        skillName: s,
-                                        experienceLevel: null,
-                                      ))
-                                  .toList();
+                        final Set<String> uniqueSkills = {};
 
-                              context.read<CompleteProfileBloc>().add(
-                                    CompleteProfileSubmitted(
-                                      track: widget.trackId, // ObjectId
-                                      skills: skillItems,
-                                    ),
-                                  );
-                            },
+                        for (var skill in selectedSkills) {
+                          final parts = skill.split('&');
+                          for (var part in parts) {
+                            final trimmed = part.trim();
+                            if (trimmed.isNotEmpty) {
+                              uniqueSkills.add(trimmed);
+                            }
+                          }
+                        }
+
+                        final skillItems = uniqueSkills
+                            .map((s) =>
+                            SkillItem(
+                              skillName: s,
+                              experienceLevel: null,
+                            ))
+                            .toList();
+
+                        context.read<CompleteProfileBloc>().add(
+                          CompleteProfileSubmitted(
+                            track: widget.trackId,
+                            skills: skillItems,
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.primary,
                         shape: RoundedRectangleBorder(
@@ -167,17 +187,17 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                       ),
                       child: isLoading
                           ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
                           : const Text(
-                              "Continue",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                        "Continue",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],

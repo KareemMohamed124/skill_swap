@@ -6,7 +6,6 @@ import '../../data/models/pay_booking/pay_booking_response.dart';
 import '../../domain/repositories/booking_repository.dart';
 
 part 'pay_booking_event.dart';
-
 part 'pay_booking_state.dart';
 
 class PayBookingBloc extends Bloc<PayBookingEvent, PayBookingState> {
@@ -18,10 +17,11 @@ class PayBookingBloc extends Bloc<PayBookingEvent, PayBookingState> {
 
       try {
         final request = PayBookingRequest(
-          successUrl:
-              'skillswap://payment/success?bookingId=${event.bookingId}',
-          cancelUrl: 'skillswap://payment/cancel?bookingId=${event.bookingId}',
-        );
+            successUrl:
+                'skillswap://payment/success?bookingId=${event.bookingId}',
+            cancelUrl:
+                'skillswap://payment/cancel?bookingId=${event.bookingId}',
+            voucherId: event.voucherId);
 
         final response = await repo.payBooking(event.bookingId, request);
 

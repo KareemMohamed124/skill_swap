@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 
+import '../../constants/not_type.dart';
 import '../../data/models/booking/booking_model.dart' as bookingModel;
 import '../../data/models/booking/booking_model.dart';
 import '../../data/models/booking/booking_response.dart';
@@ -7,7 +8,9 @@ import '../../data/models/booking_details/booking_details_response.dart';
 import '../../data/models/cancel_booking/cancel_booking_response.dart';
 import '../../data/models/get_booking/booking.dart';
 import '../../data/models/update_booking/update_booking_response.dart';
+import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/booking_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 import 'book_session_event.dart';
 import 'book_session_state.dart';
@@ -32,11 +35,13 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
         case BookingDetailsSuccess d:
           _cachedBooking = d.data.booking;
           emit(BookingLoaded(d.data.booking));
+
         case BookingDetailsFailure f:
           emit(BookingError(f.error.message));
       }
     });
 
+    /// 🔥 CREATE BOOKING
     on<CreateBooking>((event, emit) async {
       emit(BookingLoading());
 
@@ -45,26 +50,50 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
       switch (response) {
         case BookingSuccess s:
           _cachedBooking = s.data.bookSession;
+
+          /// ✅ ADD THIS
+          emit(BookingCreatedSuccess(s.data.bookSession));
+
+          // 🔔 Notify the INSTRUCTOR about new booking request
+          final currentUserIdForBooking = await LocalStorage.getUserId();
+          if (event.request.instructorId != currentUserIdForBooking) {
+            await sl<NotificationRepository>().sendNotification(
+              receiverId: event.request.instructorId,
+              type: NotificationTypes.newBooking,
+              payload: {
+                'bookingId': s.data.bookSession.id ?? '',
+              },
+            );
+          }
+
+          /// UI يكمل طبيعي
           emit(BookingLoaded(s.data.bookSession));
+
         case BookingFailure f:
           emit(BookingError(f.error.message));
       }
     });
 
+    /// 🔥 UPDATE BOOKING
     on<UpdateBooking>((event, emit) async {
       emit(BookingLoading());
 
       final updateResponse =
-          await repo.updateBookSession(event.id, event.request);
+      await repo.updateBookSession(event.id, event.request);
 
       switch (updateResponse) {
         case UpdateBookingSuccess _:
+
+        /// ✅ ADD THIS
+          emit(BookingUpdatedSuccess());
+
           final detailsResponse = await repo.getBookingDetails(event.id);
 
           switch (detailsResponse) {
             case BookingDetailsSuccess d:
               _cachedBooking = d.data.booking;
               emit(BookingLoaded(d.data.booking));
+
             case BookingDetailsFailure f:
               emit(BookingError(f.error.message));
           }
@@ -75,6 +104,7 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
       }
     });
 
+    /// 🔥 CANCEL BOOKING
     on<CancelBooking>((event, emit) async {
       emit(BookingLoading());
 
@@ -82,9 +112,30 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
 
       switch (response) {
         case CancelBookingSuccess _:
+
+        /// ✅ ADD THIS
+          emit(BookingCancelledSuccess());
+
+          // 🔔 Notify the other party about cancellation
+          if (_cachedBooking != null) {
+            final currentUserId = await LocalStorage.getUserId();
+            final recipientId = currentUserId == _cachedBooking!.studentId
+                ? _cachedBooking!.instructorId
+                : _cachedBooking!.studentId;
+
+            if (recipientId != currentUserId) {
+              await sl<NotificationRepository>().sendNotification(
+                receiverId: recipientId,
+                type: NotificationTypes.bookingCancelled,
+                payload: {
+                  'bookingId': _cachedBooking!.id,
+                },
+              );
+            }
+          }
+
           _cachedBooking = null;
           emit(BookingIdle());
-          break;
 
         case CancelBookingFailure f:
           emit(BookingError(f.error.message));

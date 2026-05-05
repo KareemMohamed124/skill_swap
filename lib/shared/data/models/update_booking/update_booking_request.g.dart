@@ -11,8 +11,7 @@ UpdateBookingRequest _$UpdateBookingRequestFromJson(
     UpdateBookingRequest(
       time: json['time'] as String,
       date: json['date'] as String,
-      duration_mins: (json['duration_mins'] as num).toInt(),
-      price: (json['price'] as num).toInt(),
+      duration_mins: json['duration_mins'] as num,
     );
 
 Map<String, dynamic> _$UpdateBookingRequestToJson(
@@ -21,5 +20,4 @@ Map<String, dynamic> _$UpdateBookingRequestToJson(
       'time': instance.time,
       'date': instance.date,
       'duration_mins': instance.duration_mins,
-      'price': instance.price,
     };

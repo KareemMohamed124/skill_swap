@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/services/notification_service.dart';
 import '../../data/models/login/login_response.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../helper/local_storage.dart';
@@ -20,7 +21,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           await LocalStorage.saveToken(s.data.accessToken);
           await LocalStorage.saveRefreshToken(s.data.refreshToken);
           await LocalStorage.saveUserId(s.data.id);
-          //  await LocalStorage.saveUser(s.data.)
+          NotificationService.init();
           emit(LoginSuccessState(s.data));
           break;
 

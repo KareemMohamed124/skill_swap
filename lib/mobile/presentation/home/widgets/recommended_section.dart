@@ -1,22 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
+import 'package:skill_swap/shared/bloc/user_filter_bloc/user_filter_bloc.dart';
+import 'package:skill_swap/shared/bloc/user_filter_bloc/user_filter_event.dart';
+import 'package:skill_swap/shared/bloc/user_filter_bloc/user_filter_state.dart';
 
 import '../../../../mobile/presentation/home/widgets/recommended_card.dart';
-import '../../../../shared/bloc/get_users_cubit/users_state.dart';
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../book_session/screens/profile_mentor.dart';
+import '../models/user_rank.dart';
 
 class RecommendedSection extends StatelessWidget {
   const RecommendedSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
-      child: const _RecommendedList(),
+    return BlocBuilder<MyProfileCubit, MyProfileState>(
+      builder: (context, profileState) {
+        if (profileState is! MyProfileLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final currentTrack = profileState.profile.track.name ?? '';
+
+        return BlocProvider(
+          create: (_) => UserFilterBloc(
+            userRepository: sl(),
+            allUsers: [],
+          )..add(
+              ApplyFiltersEvent(
+                track: currentTrack,
+              ),
+            ),
+          child: const _RecommendedList(),
+        );
+      },
     );
   }
 }
@@ -38,14 +58,19 @@ class _RecommendedListState extends State<_RecommendedList> {
   }
 
   void _scrollListener() {
-    final cubit = context.read<UsersCubit>();
+    final bloc = context.read<UserFilterBloc>();
+    final state = bloc.state;
+
     if (_controller.position.pixels >=
             _controller.position.maxScrollExtent - 150 &&
-        cubit.state is UsersLoaded) {
-      final state = cubit.state as UsersLoaded;
-      if (!state.isLoadingMore && !state.isLastPage) {
-        cubit.fetchNextPage();
-      }
+        !state.isLoadingMore &&
+        !state.isLastPage) {
+      bloc.add(
+        LoadMoreUsersEvent(
+          page: bloc.currentPage + 1,
+          track: state.selectedTrack,
+        ),
+      );
     }
   }
 
@@ -62,9 +87,14 @@ class _RecommendedListState extends State<_RecommendedList> {
 
     return SizedBox(
       height: screenHeight * 0.22,
-      child: BlocBuilder<UsersCubit, UsersState>(
+      child: BlocBuilder<UserFilterBloc, UserFilterState>(
         builder: (context, state) {
-          if (state is UsersLoading) {
+          final rankedList = rankRecommendedUsers(
+            state.filteredList,
+            state.selectedTrack,
+          );
+
+          if (state.isLoading && state.filteredList.isEmpty) {
             return ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: 6,
@@ -73,54 +103,55 @@ class _RecommendedListState extends State<_RecommendedList> {
             );
           }
 
-          if (state is UsersLoaded) {
-            return ListView.separated(
-              controller: _controller,
-              scrollDirection: Axis.horizontal,
-              itemCount: state.isLastPage
-                  ? state.users.length
-                  : state.users.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                if (index < state.users.length) {
-                  final u = state.users[index];
-                  return InkWell(
-                    onTap: () {
-                      Get.to(ProfileMentor(
+          return ListView.separated(
+            controller: _controller,
+            scrollDirection: Axis.horizontal,
+            itemCount:
+                state.isLastPage ? rankedList.length : rankedList.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              if (index < rankedList.length) {
+                final u = rankedList[index];
+
+                return InkWell(
+                  onTap: () {
+                    Get.to(
+                      ProfileMentor(
                         id: u.id,
                         name: u.name,
                         track: u.track.name,
                         rate: u.rate,
                         image: u.userImage.secureUrl,
                         bio: u.profile.bio,
+                        role: u.role,
                         skills: u.skills,
                         hoursAvailable: u.freeHours,
                         peopleHelped: u.helpTotalHours,
-                        hourlyRate: 0,
-                      ));
-                    },
-                    child: RecommendedCard(
-                      id: u.id,
-                      image: u.userImage.secureUrl,
-                      name: u.name,
-                      track: u.track.name,
-                      rating: u.rate,
-                    ),
-                  );
-                } else {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
-                    child: Center(
-                        child: CircularProgressIndicator(
+                        hourlyRate: u.hourlyPrice,
+                        reviews: u.reviews,
+                      ),
+                    );
+                  },
+                  child: RecommendedCard(
+                    id: u.id,
+                    image: u.userImage.secureUrl,
+                    name: u.name,
+                    track: u.track.name,
+                    rating: u.rate,
+                  ),
+                );
+              } else {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32),
+                  child: Center(
+                    child: CircularProgressIndicator(
                       color: AppPalette.primary,
-                    )),
-                  );
-                }
-              },
-            );
-          }
-
-          return const SizedBox();
+                    ),
+                  ),
+                );
+              }
+            },
+          );
         },
       ),
     );

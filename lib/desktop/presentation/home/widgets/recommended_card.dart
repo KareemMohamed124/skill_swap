@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../../book_session/screens/profile_mentor.dart';
 
 class RecommendedCard extends StatelessWidget {
   final String? id;
   final String? image;
   final String? name;
   final String? track;
-  final int? rating;
+  final num? rating;
   final double? width;
   final double? imageHeight;
   final bool isLoading;
@@ -123,10 +120,9 @@ class RecommendedCard extends StatelessWidget {
 
 Widget _buildPlaceholder(double cardWidth) {
   return Container(
-    width: cardWidth * 0.25,
-    height: cardWidth * 0.25,
+    width: double.infinity,
+    height: cardWidth,
     decoration: const BoxDecoration(
-      shape: BoxShape.circle,
       color: Colors.grey,
     ),
     child: const Icon(

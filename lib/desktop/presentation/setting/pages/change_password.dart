@@ -5,20 +5,19 @@ import 'package:skill_swap/desktop/presentation/sign/screens/sign_in_screen.dart
 
 import '../../../../desktop/presentation/sign/widgets/custom_text_field.dart';
 import '../../../../shared/bloc/change_password_bloc/change_password_bloc.dart';
-import '../../../../shared/common_ui/base_screen.dart';
 import '../../../../shared/data/models/change_password/change_password_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 
-class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+class ChangePasswordDesktop extends StatefulWidget {
+  const ChangePasswordDesktop({super.key});
 
   @override
-  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+  State<ChangePasswordDesktop> createState() => _ChangePasswordDesktopState();
 }
 
-class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+class _ChangePasswordDesktopState extends State<ChangePasswordDesktop> {
   final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -31,28 +30,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    double titleFontSize = 22;
-    double subtitleFontSize = 16;
-    double paddingAll = 16;
-    double spacing = 32;
-
-    if (screenWidth >= 800) {
-      titleFontSize = 28;
-      subtitleFontSize = 18;
-      paddingAll = 24;
-      spacing = 40;
-    }
-
     return BlocProvider(
       create: (_) => sl<ChangePasswordBloc>(),
-      child: BaseScreen(
-        title: "Change Password",
-        child: BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
-          listener: (context, state) async {
+      child: Scaffold(
+        body: BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
+          listener: (context, state) {
             if (state is ChangePasswordFailureState) {
               Get.snackbar('Error', state.error.message);
+
               setState(() {
                 oldPasswordError = null;
                 passwordError = null;
@@ -64,6 +49,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     switch (err.field) {
                       case "oldPassword":
                         oldPasswordError = err.message;
+                        break;
                       case "newPassword":
                         passwordError = err.message;
                         break;
@@ -76,40 +62,82 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   passwordError = state.error.message;
                 }
               });
+
               formKey.currentState?.validate();
-            } else if (state is ChangePasswordSuccessState) {
+            }
+
+            if (state is ChangePasswordSuccessState) {
               Get.snackbar('Success', state.success.message);
               Get.to(SignInDesktop());
             }
           },
           builder: (context, state) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(paddingAll),
-                child: Form(
+            final isLoading = state is ChangePasswordLoading;
+
+            return Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  width: 450,
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .scaffoldBackgroundColor
+                        .withValues(alpha: 0.5),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        blurRadius: 20,
+                        color: Colors.black12,
+                        offset: Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Form(
                     key: formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ///Old Password
+                        const Text(
+                          "Change Password",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        const Text(
+                          "Update your password to keep your account secure",
+                          style: TextStyle(fontSize: 16),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        /// Old Password
                         CustomTextField(
                           controller: oldPasswordController,
                           labelText: "Old Password",
                           hintText: "Enter old password",
                           obscureText: true,
+                          errorText: oldPasswordError,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Old password is required";
-                            } else if (!RegExp(
+                            }
+                            if (!RegExp(
                               r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
                             ).hasMatch(value)) {
-                              return "Password must contain at least 8 characters, uppercase, lowercase, and a number";
-                            } else if (value.length < 8) {
-                              return "Password must be at least 8 characters";
+                              return "Password must contain uppercase, lowercase and number";
                             }
-                            return oldPasswordError;
+                            return null;
                           },
                         ),
+
                         const SizedBox(height: 16),
 
                         /// New Password
@@ -118,19 +146,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           labelText: "New Password",
                           hintText: "Enter new password",
                           obscureText: true,
+                          errorText: passwordError,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Password is required";
-                            } else if (!RegExp(
+                            }
+                            if (!RegExp(
                               r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
                             ).hasMatch(value)) {
-                              return "Password must contain at least 8 characters, uppercase, lowercase, and a number";
-                            } else if (value.length < 8) {
-                              return "Password must be at least 8 characters";
+                              return "Password must contain uppercase, lowercase and number";
                             }
-                            return passwordError;
+                            return null;
                           },
                         ),
+
                         const SizedBox(height: 16),
 
                         /// Confirm Password
@@ -139,6 +168,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           labelText: "Confirm Password",
                           hintText: "Re-enter password",
                           obscureText: true,
+                          errorText: confirmPasswordError,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Confirm password is required";
@@ -146,23 +176,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             if (value != newPasswordController.text) {
                               return "Passwords do not match";
                             }
-                            return confirmPasswordError;
+                            return null;
                           },
                         ),
-                        const SizedBox(height: 24),
 
-                        /// Confirm Button
-                        CustomButton(
-                          text: state is ChangePasswordLoading
-                              ? "Changing..."
-                              : "Change Password",
-                          onPressed: state is ChangePasswordLoading
-                              ? null
-                              : () {
-                                  if (formKey.currentState!.validate()) {
-                                    context.read<ChangePasswordBloc>().add(
-                                          ConfirmSubmit(
-                                            ChangePasswordRequest(
+                        const SizedBox(height: 32),
+
+                        /// Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: CustomButton(
+                            text: isLoading ? "Changing..." : "Change Password",
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    if (formKey.currentState!.validate()) {
+                                      context.read<ChangePasswordBloc>().add(
+                                            ConfirmSubmit(
+                                              ChangePasswordRequest(
                                                 oldPassword:
                                                     oldPasswordController.text
                                                         .trim(),
@@ -172,25 +203,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                 confirmPassword:
                                                     confirmPasswordController
                                                         .text
-                                                        .trim()),
-                                          ),
-                                        );
-                                  }
-                                },
+                                                        .trim(),
+                                              ),
+                                            ),
+                                          );
+                                    }
+                                  },
+                          ),
                         ),
-                        const SizedBox(height: 16),
+
+                        const SizedBox(height: 20),
 
                         Center(
-                          child: TextButton(
-                            onPressed: () => Get.to(ForgetPassword()),
-                            child: Text(
+                          child: GestureDetector(
+                            onTap: () => Get.to(ForgetPasswordDesktop()),
+                            child: const Text(
                               "Forget Old Password?",
-                              style: TextStyle(fontSize: subtitleFontSize),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.blue,
+                              ),
                             ),
                           ),
                         ),
                       ],
-                    )),
+                    ),
+                  ),
+                ),
               ),
             );
           },

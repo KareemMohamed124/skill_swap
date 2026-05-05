@@ -12,32 +12,33 @@ class StatusFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final statusList = ["accepted".tr, "pending".tr, "request".tr];
+    final statusList = ["accepted".tr, "pending".tr, "request".tr, "rejected"];
 
     return Wrap(
-      spacing: screenWidth * 0.02, // responsive spacing
+      spacing: screenWidth * 0.02,
       children: List.generate(statusList.length, (index) {
         final isSelected = selectedIndex == index;
 
         return GestureDetector(
           onTap: () => onSelect(index),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.03,
-              vertical: screenWidth * 0.015,
+              horizontal: screenWidth * 0.04,
+              vertical: screenWidth * 0.018,
             ),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? colorScheme.primary.withOpacity(0.15)
-                  : colorScheme.surface,
-              borderRadius: BorderRadius.circular(screenWidth * 0.02),
+              color:
+                  isSelected ? Color(0xFFE68C47) : colorScheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected
-                    ? colorScheme.primary.withOpacity(0.4)
-                    : colorScheme.outline.withOpacity(0.2),
+                    ? colorScheme.primary
+                    : colorScheme.outlineVariant,
               ),
             ),
             child: Text(
@@ -45,9 +46,7 @@ class StatusFilter extends StatelessWidget {
               style: TextStyle(
                 fontSize: screenWidth * 0.035,
                 fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurface.withOpacity(0.7),
+                color: isSelected ? Colors.white : colorScheme.onSurfaceVariant,
               ),
             ),
           ),

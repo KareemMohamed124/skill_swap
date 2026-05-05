@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../book_session/screens/book_session.dart';
 import '../../book_session/screens/profile_mentor.dart';
 import '../models/details_model.dart';
 
@@ -12,7 +11,6 @@ class SessionDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// ✅ MediaQuery بدون تغيير التصميم
     final media = MediaQuery.of(context);
     final screenWidth = media.size.width;
     final screenHeight = media.size.height;
@@ -83,6 +81,8 @@ class SessionDetailsPage extends StatelessWidget {
                               hoursAvailable: 0,
                               peopleHelped: 0,
                               hourlyRate: 0,
+                              reviews: [],
+                              role: '',
                             ));
                           },
                           icon: const Icon(Icons.person_outline),
@@ -261,11 +261,11 @@ class SessionDetailsPage extends StatelessWidget {
         trailing: Icon(Icons.arrow_forward_ios,
             size: 16, color: Theme.of(context).textTheme.bodyMedium!.color),
         onTap: () {
-          Get.to(BookSessionScreen(
-            userId: session.mentorId,
-            userName: session.mentorName,
-            price: 100,
-          ));
+          // Get.to(BookSessionScreen(
+          //   userId: session.mentorId,
+          //   userName: session.mentorName,
+          //   price: 100,
+          // ));
         },
       ),
     );

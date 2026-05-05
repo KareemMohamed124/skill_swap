@@ -8,6 +8,10 @@ class BlockInfo {
     return {"isBlocked": isBlocked, "blockReason": blockReason};
   }
 
+  factory BlockInfo.empty() {
+    return BlockInfo(isBlocked: false, blockReason: "");
+  }
+
   factory BlockInfo.fromJson(Map<String, dynamic> json) {
     return BlockInfo(
       isBlocked: json['isBlocked'] ?? false,

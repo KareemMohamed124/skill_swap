@@ -7,7 +7,7 @@ class TopUserCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
-  final int? hours;
+  final num? hours;
   final double? widthCard;
   final bool isLoading;
 
@@ -25,7 +25,7 @@ class TopUserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = widthCard ?? screenWidth * 0.35;
+    final cardWidth = widthCard ?? screenWidth * 0.36;
 
     if (isLoading) {
       return Container(
@@ -56,7 +56,7 @@ class TopUserCard extends StatelessWidget {
         children: [
           SizedBox(height: screenWidth * 0.02),
 
-          /// Avatar أو placeholder
+          /// Avatar أ
           ClipOval(
             child: (image != null && image!.startsWith("http"))
                 ? Image.network(
@@ -75,14 +75,14 @@ class TopUserCard extends StatelessWidget {
             name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
 
           Text(
             track ?? "Mobile Development",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
 
           SizedBox(height: screenWidth * 0.01),

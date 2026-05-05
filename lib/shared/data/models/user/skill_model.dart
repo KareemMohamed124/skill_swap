@@ -3,29 +3,28 @@ import 'package:equatable/equatable.dart';
 class Skill extends Equatable {
   final String skillName;
   final bool isVerified;
-  final int badgeLevel;
   final int quizScore;
-  final String experienceLevel;
+  final String id;
+  final String addedAt;
 
   Skill({
     required this.skillName,
     required this.isVerified,
-    required this.badgeLevel,
+    required this.id,
     required this.quizScore,
-    required this.experienceLevel,
+    required this.addedAt,
   });
 
   @override
-  List<Object?> get props =>
-      [skillName, isVerified, badgeLevel, quizScore, experienceLevel];
+  List<Object?> get props => [skillName, isVerified, id, quizScore, addedAt];
 
   factory Skill.fromJson(Map<String, dynamic>? json) {
     return Skill(
       skillName: json?['skillName'] ?? '',
       isVerified: json?['isVerified'] ?? false,
-      badgeLevel: json?['badgeLevel'] ?? 0,
+      id: json?['_id'] ?? "",
       quizScore: json?['quizScore'] ?? 0,
-      experienceLevel: json?['experienceLevel'] ?? '',
+      addedAt: json?['addedAt'] ?? '',
     );
   }
 
@@ -33,9 +32,9 @@ class Skill extends Equatable {
     return {
       'skillName': skillName,
       'isVerified': isVerified,
-      'badgeLevel': badgeLevel,
+      '_id': id,
       'quizScore': quizScore,
-      'experienceLevel': experienceLevel,
+      'addedAt': addedAt,
     };
   }
 }

@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../../shared/common_ui/screen_manager/screen_manager.dart';
+import '../../../shared/dependency_injection/injection.dart';
+import '../../../shared/domain/repositories/booking_repository.dart';
+
 class PaymentWebViewScreen extends StatefulWidget {
   final String checkoutUrl;
   final String successUrl;
   final String cancelUrl;
+  final String bookingId;
 
   const PaymentWebViewScreen({
     super.key,
     required this.checkoutUrl,
     required this.successUrl,
     required this.cancelUrl,
+    required this.bookingId,
   });
 
   @override
@@ -21,6 +27,7 @@ class PaymentWebViewScreen extends StatefulWidget {
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -39,42 +46,105 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url;
 
-            // Check if Stripe redirected to the success URL
+            // SUCCESS
             if (url.startsWith(widget.successUrl) ||
                 url.startsWith('skillswap://payment/success')) {
-              // Close WebView and navigate to success screen
-              Get.off(() => const PaymentSuccessScreen());
+              _handlePaymentSuccess();
               return NavigationDecision.prevent;
             }
 
-            // Check if Stripe redirected to the cancel URL
+            // CANCEL
             if (url.startsWith(widget.cancelUrl) ||
                 url.startsWith('skillswap://payment/cancel')) {
-              // Close WebView and show cancelled notification
               Get.back();
+
               Get.snackbar(
                 'Payment Cancelled',
                 'Your payment has been cancelled.',
                 snackPosition: SnackPosition.BOTTOM,
                 backgroundColor: Colors.orange.withOpacity(0.9),
                 colorText: Colors.white,
-                duration: const Duration(seconds: 3),
               );
+
               return NavigationDecision.prevent;
             }
 
             return NavigationDecision.navigate;
           },
-          onWebResourceError: (WebResourceError error) {
-            // Handle custom scheme redirects (skillswap://) that may
-            // appear as errors on some platforms
-            if (error.description.contains('skillswap://')) {
-              return;
-            }
-          },
         ),
       )
       ..loadRequest(Uri.parse(widget.checkoutUrl));
+  }
+
+  Future<void> _handlePaymentSuccess() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+
+    try {
+      final repo = sl<BookingRepository>();
+
+      final res = await repo.confirmPayment(widget.bookingId);
+
+      final status = res['paymentStatus'];
+
+      if (status == 'paid') {
+        _showSuccessDialog();
+      } else {
+        Get.back();
+
+        Get.snackbar(
+          "Payment Pending",
+          "Payment not confirmed yet",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.back();
+
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+
+    _isProcessing = false;
+  }
+
+  void _showSuccessDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          "Payment Successful",
+          textAlign: TextAlign.center,
+        ),
+        content: const Text(
+          "Your payment has been confirmed successfully.",
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Get.back(); // close dialog
+
+                Get.off(() => const PaymentSuccessScreen());
+              },
+              child: const Text("Continue"),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 
   @override
@@ -86,13 +156,13 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           icon: const Icon(Icons.close),
           onPressed: () {
             Get.back();
+
             Get.snackbar(
               'Payment Cancelled',
               'You closed the payment page.',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.orange.withOpacity(0.9),
               colorText: Colors.white,
-              duration: const Duration(seconds: 3),
             );
           },
         ),
@@ -100,10 +170,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
-          if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
+          if (_isLoading) const Center(child: CircularProgressIndicator()),
         ],
       ),
     );
@@ -162,8 +229,10 @@ class PaymentSuccessScreen extends StatelessWidget {
                   height: screenWidth * 0.12,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Pop back to the sessions screen
-                      Get.back();
+                      Get.to(() => ScreenManager(
+                            initialIndex: 3,
+                            initialSessionTab: 0, // Requests
+                          ));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../profile/widgets/profile_tabs.dart';
-import '../pages/cancel_page.dart';
 import '../pages/completed_page.dart';
-import '../pages/issue_page.dart';
 import '../pages/review_page.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -22,7 +20,7 @@ class _HistoryScreenState extends State<HistoryScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -39,15 +37,15 @@ class _HistoryScreenState extends State<HistoryScreen>
           children: [
             ProfileTabs(
               tabController: _tabController,
-              tabs: ['completed'.tr, 'cancelled'.tr, 'issue'.tr, 'reviews'.tr],
+              tabs: ['completed'.tr, /*'cancelled'.tr*/ 'reviews'.tr],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: const [
                   CompletedSessionsPage(),
-                  CancelSessionsPage(),
-                  IssueSessionsPage(),
+                  // CancelSessionsPage(),
+                  //IssueSessionsPage(),
                   ReviewSessionsPage()
                 ],
               ),

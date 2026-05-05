@@ -50,9 +50,8 @@ class NextSessionSection extends StatelessWidget {
                     name: s.name,
                     duration: s.duration,
                     dateTime: s.dateTime,
-                    startsIn: s.startsIn,
+                    sessionTime: s.sessionTime,
                     isMentor: s.isMentor,
-                    remainingMinutes: s.remainingMinutes,
                   );
                 },
               ),

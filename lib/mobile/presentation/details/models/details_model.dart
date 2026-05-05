@@ -10,7 +10,7 @@ class SessionModel {
   final String time;
   final String duration;
   final String notes;
-  final int rating;
+  final double rating;
   final String review;
   final String bio;
   final List<Skill> skills;

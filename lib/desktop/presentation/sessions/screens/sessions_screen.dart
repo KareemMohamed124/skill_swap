@@ -10,7 +10,12 @@ import 'package:skill_swap/desktop/presentation/sessions/widgets/session_header.
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 
 class SessionsScreen extends StatefulWidget {
-  const SessionsScreen({super.key});
+  final int initialTab;
+
+  const SessionsScreen({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<SessionsScreen> createState() => _SessionsScreenState();
@@ -23,28 +28,47 @@ class _SessionsScreenState extends State<SessionsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
 
-    // Fetch bookings for the first tab initially
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GetBookingsCubit>().fetchAllBookings("accepted");
-    });
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
 
-    // Listen to tab changes to fetch data per tab
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging) return; // ignore swipe in progress
-      switch (_tabController.index) {
-        case 0:
-          context.read<GetBookingsCubit>().fetchAllBookings("accepted");
-          break;
-        case 1:
-          context.read<GetBookingsCubit>().fetchAllBookings("pending");
-          break;
-        case 2:
-          context.read<GetBookingsCubit>().fetchAllBookings("request");
-          break;
-      }
+      if (_tabController.indexIsChanging) return;
+      _fetchByIndex(_tabController.index);
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchByIndex(_tabController.index);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant SessionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.initialTab != widget.initialTab) {
+      _tabController.animateTo(widget.initialTab);
+      _fetchByIndex(widget.initialTab);
+    }
+  }
+
+  void _fetchByIndex(int index) {
+    final cubit = context.read<GetBookingsCubit>();
+
+    switch (index) {
+      case 0:
+        cubit.fetchAllBookings("accepted");
+        break;
+      case 1:
+        cubit.fetchAllBookings("pending");
+        break;
+      case 2:
+        cubit.fetchAllBookings("request");
+        break;
+    }
   }
 
   @override
@@ -66,7 +90,11 @@ class _SessionsScreenState extends State<SessionsScreen>
             ),
             ProfileTabs(
               tabController: _tabController,
-              tabs: ['accepted'.tr, 'pending'.tr, 'request'.tr],
+              tabs: [
+                'accepted'.tr,
+                'pending'.tr,
+                'request'.tr,
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -75,7 +103,7 @@ class _SessionsScreenState extends State<SessionsScreen>
                 children: const [
                   UpcomingSessionsPage(),
                   PendingSessionsPage(),
-                  RequestsSessionsPage()
+                  RequestsSessionsPage(),
                 ],
               ),
             ),
