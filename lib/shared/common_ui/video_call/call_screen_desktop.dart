@@ -57,8 +57,6 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
         return;
       }
 
-      // ✅ Aggressive Fix: Delay stream attachment
-      // This prevents a race condition in Windows DirectX texture registration
       await Future.delayed(const Duration(milliseconds: 800));
 
       if (_disposed) return;
@@ -67,30 +65,50 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
 
       await service.initPeerConnection();
 
-      if (_disposed) return;
+      if (_disposed || service.peerConnection == null) return;
 
+      // ✅ Fix: Safe onTrack with null/dispose checks
       service.peerConnection!.onTrack = (event) async {
-        if (_disposed) return;
+        if (_disposed || service.peerConnection == null) return;
+        
+        debugPrint("📹 onTrack: ${event.track.kind}");
+        
         if (event.track.kind == 'video') {
-          if (event.streams.isNotEmpty) {
-            remoteRenderer.srcObject = event.streams.first;
-          } else {
-            final stream = await createLocalMediaStream("remote_desktop");
-            await stream.addTrack(event.track);
-            remoteRenderer.srcObject = stream;
+          try {
+            if (event.streams.isNotEmpty) {
+              remoteRenderer.srcObject = event.streams.first;
+            } else {
+              final stream = await createLocalMediaStream("remote_desktop");
+              await stream.addTrack(event.track);
+              remoteRenderer.srcObject = stream;
+            }
+            if (mounted && !_disposed) setState(() {});
+          } catch (e) {
+            debugPrint("❌ onTrack processing error: $e");
           }
-          if (mounted && !_disposed) setState(() {});
         }
       };
 
+      // ✅ Fix: Robust ICE Candidate handling
       service.peerConnection!.onIceCandidate = (c) {
-        if (_disposed || c.candidate == null || c.candidate!.isEmpty) return;
+        if (_disposed || service.peerConnection == null) return;
+        if (c.candidate == null || c.candidate!.isEmpty) return;
+
         callRef.doc(callId).collection('candidates').add({
           'candidate': c.candidate,
           'sdpMid': c.sdpMid,
           'sdpMLineIndex': c.sdpMLineIndex,
           'senderId': userId,
         });
+      };
+
+      // ✅ Fix: Handle ICE connection failures (Firewall issues)
+      service.peerConnection!.onIceConnectionState = (state) {
+        debugPrint("🌐 ICE State: $state");
+        if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+          debugPrint("⚠️ ICE Connection failed - likely Firewall blocking UDP");
+          // Optionally: peerConnection!.restartIce();
+        }
       };
 
       await _handleCallFlow();
@@ -102,34 +120,38 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
   }
 
   Future<void> _handleCallFlow() async {
-    if (_disposed) return;
-    final doc = callRef.doc(callId);
-    final snap = await doc.get();
+    if (_disposed || service.peerConnection == null) return;
+    try {
+      final doc = callRef.doc(callId);
+      final snap = await doc.get();
 
-    if (!snap.exists) {
-      final offer = await service.peerConnection!.createOffer();
-      await service.peerConnection!.setLocalDescription(offer);
-      await doc.set({'offer': offer.toMap()});
-    } else {
-      final data = snap.data()!;
-      final offer = RTCSessionDescription(data['offer']['sdp'], data['offer']['type']);
-      await service.peerConnection!.setRemoteDescription(offer);
-      _remoteSet = true;
+      if (!snap.exists) {
+        final offer = await service.peerConnection!.createOffer();
+        await service.peerConnection!.setLocalDescription(offer);
+        await doc.set({'offer': offer.toMap()});
+      } else {
+        final data = snap.data()!;
+        final offer = RTCSessionDescription(data['offer']['sdp'], data['offer']['type']);
+        await service.peerConnection!.setRemoteDescription(offer);
+        _remoteSet = true;
 
-      final answer = await service.peerConnection!.createAnswer();
-      await service.peerConnection!.setLocalDescription(answer);
-      await doc.update({'answer': answer.toMap()});
+        final answer = await service.peerConnection!.createAnswer();
+        await service.peerConnection!.setLocalDescription(answer);
+        await doc.update({'answer': answer.toMap()});
 
-      for (var c in _pending) {
-        await service.peerConnection!.addCandidate(c);
+        for (var c in _pending) {
+          await service.peerConnection!.addCandidate(c);
+        }
+        _pending.clear();
       }
-      _pending.clear();
+    } catch (e) {
+      debugPrint("❌ Call Flow Error: $e");
     }
   }
 
   void _listenCall() {
     _callSubscription = callRef.doc(callId).snapshots().listen((snap) async {
-      if (_disposed) return;
+      if (_disposed || service.peerConnection == null) return;
       final data = snap.data();
       if (data == null) return;
 
@@ -139,28 +161,39 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
       }
 
       if (data['answer'] != null && !_remoteSet) {
-        final answer = RTCSessionDescription(data['answer']['sdp'], data['answer']['type']);
-        await service.peerConnection!.setRemoteDescription(answer);
-        _remoteSet = true;
-        for (var c in _pending) {
-          await service.peerConnection!.addCandidate(c);
+        try {
+          final answer = RTCSessionDescription(data['answer']['sdp'], data['answer']['type']);
+          await service.peerConnection!.setRemoteDescription(answer);
+          _remoteSet = true;
+          for (var c in _pending) {
+            await service.peerConnection!.addCandidate(c);
+          }
+          _pending.clear();
+        } catch (e) {
+          debugPrint("❌ Set Remote Description Error: $e");
         }
-        _pending.clear();
       }
     });
   }
 
   void _listenCandidates() {
     _candidatesSubscription = callRef.doc(callId).collection('candidates').snapshots().listen((snap) async {
-      if (_disposed) return;
+      if (_disposed || service.peerConnection == null) return;
       for (var change in snap.docChanges) {
-        final data = change.doc.data();
-        if (data == null || data['senderId'] == userId) continue;
-        final candidate = RTCIceCandidate(data['candidate'], data['sdpMid'], data['sdpMLineIndex']);
-        if (_remoteSet && service.peerConnection != null) {
-          await service.peerConnection!.addCandidate(candidate);
-        } else {
-          _pending.add(candidate);
+        if (change.type == DocumentChangeType.added) {
+          final data = change.doc.data();
+          if (data == null || data['senderId'] == userId) continue;
+          
+          final candidate = RTCIceCandidate(data['candidate'], data['sdpMid'], data['sdpMLineIndex']);
+          if (_remoteSet && service.peerConnection != null) {
+            try {
+              await service.peerConnection!.addCandidate(candidate);
+            } catch (e) {
+              debugPrint("❌ Add Candidate Error: $e");
+            }
+          } else {
+            _pending.add(candidate);
+          }
         }
       }
     });
@@ -191,7 +224,6 @@ class _DesktopCallScreenState extends State<DesktopCallScreen> {
       localRenderer.dispose();
       remoteRenderer.dispose();
     }
-    super.initState(); // Note: This was a typo in previous versions, should be super.dispose()
     super.dispose();
   }
 
