@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:skill_swap/desktop/presentation/game_store/widgets/fantasy_store_header.dart';
-import 'package:skill_swap/desktop/presentation/game_store/widgets/store_item_card.dart';
-import 'package:skill_swap/desktop/presentation/game_store/widgets/timer_widget.dart';
 
+import '../../../../mobile/presentation/game_stor/widgets/fantasy_store_header.dart';
+import '../../../../mobile/presentation/game_stor/widgets/store_item_card.dart';
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
 import '../../../../shared/common_ui/error_dialog.dart';
@@ -24,7 +23,7 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<StoreCubit>()..getStoreItems(),
+      create: (_) => sl<StoreCubit>()..getStoreItems(freeOnly: false),
       child: Scaffold(
         body: SafeArea(
           child: BlocConsumer<StoreCubit, StoreState>(
@@ -81,11 +80,11 @@ class _StoreScreenState extends State<StoreScreen> {
                           padding: const EdgeInsets.all(12),
                           itemCount: state.items.length,
                           gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 300,
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 0.8,
+                            childAspectRatio: 2,
                           ),
                           itemBuilder: (_, i) {
                             final item = state.items[i];
@@ -104,7 +103,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       },
                     ),
                   ),
-                  const TimerWidget(),
+                  //  const TimerWidget(),
                 ],
               );
             },

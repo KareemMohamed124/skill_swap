@@ -377,6 +377,7 @@ class _BookSessionDesktopState extends State<BookSessionDesktop> {
                               ),
                               Wrap(
                                 spacing: 8,
+                                runSpacing: 8,
                                 children: widget.availableDates.map((day) {
                                   final isSelected = selectedDate == day.date;
                                   final isDisabled = isDayFullyBooked(day);

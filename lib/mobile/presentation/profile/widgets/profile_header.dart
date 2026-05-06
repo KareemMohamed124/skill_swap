@@ -33,7 +33,10 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Colors.blue;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     double maxWidth = screenWidth < 600 ? screenWidth : 600;
 
     return BlocBuilder<MyProfileCubit, MyProfileState>(
@@ -76,13 +79,13 @@ class ProfileHeader extends StatelessWidget {
                         radius: 30,
                         backgroundColor: Colors.white,
                         backgroundImage:
-                            hasImage ? NetworkImage(imagePath) : null,
+                        hasImage ? NetworkImage(imagePath) : null,
                         child: !hasImage
                             ? const Icon(
-                                Icons.person,
-                                size: 30,
-                                color: Colors.grey,
-                              )
+                          Icons.person,
+                          size: 30,
+                          color: Colors.grey,
+                        )
                             : null,
                       ),
                       const SizedBox(width: 12),
@@ -104,7 +107,7 @@ class ProfileHeader extends StatelessWidget {
                                 Icon(Icons.star,
                                     color: Colors.yellow, size: 16),
                                 SizedBox(width: 4),
-                                Text("$rate",
+                                Text(rate.toStringAsFixed(1),
                                     style: TextStyle(color: Colors.white)),
                               ],
                             ),

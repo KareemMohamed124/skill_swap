@@ -173,7 +173,7 @@ class _StoreItemCardState extends State<StoreItemCard>
               if (item.isPurchased && item.type != "theme")
                 Positioned(
                   top: 4,
-                  right: 4,
+                  right: 2,
                   child: Tooltip(
                     message: "This item refreshes weekly",
                     child: GestureDetector(

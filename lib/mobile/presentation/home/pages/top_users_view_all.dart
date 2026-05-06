@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../book_session/screens/profile_mentor.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -106,9 +108,22 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
 
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      selectedIndex = index;
-                    });
+                    Get.to(
+                      ProfileMentor(
+                        id: user.id,
+                        name: user.name,
+                        track: user.track.name,
+                        rate: user.rate,
+                        image: user.userImage.secureUrl,
+                        bio: user.profile.bio,
+                        skills: user.skills,
+                        hoursAvailable: user.freeHours,
+                        peopleHelped: user.helpTotalHours,
+                        hourlyRate: user.hourlyPrice,
+                        reviews: user.reviews,
+                        role: user.role,
+                      ),
+                    );
                   },
                   child: TopUserCard(
                     id: user.id,

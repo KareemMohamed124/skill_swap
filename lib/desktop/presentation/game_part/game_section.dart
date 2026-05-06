@@ -76,7 +76,7 @@ class _GameSectionState extends State<GameSection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "🎮 Challenge",
+                  "Our Game",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextButton.icon(

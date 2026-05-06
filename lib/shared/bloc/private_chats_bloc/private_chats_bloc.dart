@@ -15,6 +15,23 @@ class PrivateChatsBloc extends Bloc<PrivateChatEvent, PrivateChatsState> {
 
   PrivateChatsBloc(this.repository) : super(PrivateChatsInitial()) {
     on<GetPrivateChatsEvent>(_getPrivateChats);
+    on<ChatListUpdateEvent>((event, emit) {
+      _handleChatListUpdate(event.data);
+    });
+  }
+
+  void _handleChatListUpdate(Map<String, dynamic> data) {
+    final chatId = data['chatId']?.toString();
+    final senderId = data['senderId']?.toString();
+    final currentUserId = data['currentUserId']?.toString();
+
+    if (chatId == null || senderId == null) return;
+
+    if (senderId == currentUserId) return;
+
+    unreadMap[chatId] = (unreadMap[chatId] ?? 0) + 1;
+
+    emit(PrivateChatsLoaded(cache));
   }
 
   Future<void> _getPrivateChats(

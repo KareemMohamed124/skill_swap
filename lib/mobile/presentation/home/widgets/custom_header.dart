@@ -12,20 +12,26 @@ class CustomHeader extends StatelessWidget {
   final String? avatarPath;
   final VoidCallback? onIcon1;
   final VoidCallback? onIcon2;
+  final int unreadCount;
 
-  const CustomHeader({
-    super.key,
+  const CustomHeader({super.key,
     required this.name,
     required this.subtitle,
     this.avatarPath,
     this.onIcon1,
     this.onIcon2,
-  });
+    this.unreadCount = 0});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
 
     return Container(
       height: screenHeight * 0.2,
@@ -38,10 +44,13 @@ class CustomHeader extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
             /// Avatar
             CircleAvatar(
               radius: screenWidth * 0.075,
-              backgroundColor: Theme.of(context).cardColor,
+              backgroundColor: Theme
+                  .of(context)
+                  .cardColor,
               child: ClipOval(
                 child: _buildAvatar(context, screenWidth),
               ),
@@ -82,12 +91,29 @@ class CustomHeader extends StatelessWidget {
               ),
             ),
 
-            /// Notification Button
-            circleButton(
-              context: context,
-              icon: Icons.notifications_none,
-              onTap: onIcon2,
-              screenWidth: screenWidth,
+            Stack(
+              children: [
+                circleButton(
+                  context: context,
+                  icon: Icons.chat,
+                  onTap: onIcon2,
+                  screenWidth: screenWidth,
+                ),
+
+                if (unreadCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: screenWidth * 0.025,
+                      height: screenWidth * 0.025,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ],
         ),
@@ -133,11 +159,17 @@ class CustomHeader extends StatelessWidget {
     return Container(
       width: radius * 2,
       height: radius * 2,
-      color: Theme.of(context).cardColor,
+      color: Theme
+          .of(context)
+          .cardColor,
       child: Icon(
         Icons.person,
         size: radius,
-        color: Theme.of(context).textTheme.bodyLarge!.color,
+        color: Theme
+            .of(context)
+            .textTheme
+            .bodyLarge!
+            .color,
       ),
     );
   }
@@ -150,7 +182,9 @@ class CustomHeader extends StatelessWidget {
     required double screenWidth,
   }) {
     return Material(
-      color: Theme.of(context).cardColor,
+      color: Theme
+          .of(context)
+          .cardColor,
       shape: const CircleBorder(),
       elevation: 3,
       child: InkWell(
@@ -161,7 +195,11 @@ class CustomHeader extends StatelessWidget {
           child: Icon(
             icon,
             size: screenWidth * 0.04,
-            color: Theme.of(context).textTheme.bodyLarge!.color,
+            color: Theme
+                .of(context)
+                .textTheme
+                .bodyLarge!
+                .color,
           ),
         ),
       ),

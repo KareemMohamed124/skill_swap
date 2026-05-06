@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:skill_swap/shared/bloc/private_chats_bloc/private_chats_event.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../../shared/core/network/pusher_service.dart';
 import '../../constants/not_type.dart';
@@ -14,12 +14,14 @@ import '../../domain/repositories/chat_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 import '../private_chats_bloc/private_chats_bloc.dart';
+import '../private_chats_bloc/private_chats_event.dart';
 import 'public_chat_messages_state.dart';
 
 class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   final ChatRepository chatRepository;
   final PusherService pusherService;
   final PrivateChatsBloc privateChatsBloc;
+  StreamSubscription? _connectivitySub;
   String? _chatId;
   String? _currentUserId;
 
@@ -32,6 +34,8 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   static const int _pageLimit = 20;
 
   List<ChatMessage> _messages = [];
+  final List<String> _failedMessagesQueue = [];
+  bool _isRetrying = false;
   bool _hasMore = true;
   bool _isLoadingMore = false;
 
@@ -82,7 +86,11 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _isPrivate = isPrivate;
 
     _currentUserId = await LocalStorage.getUserId();
-
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((result) {
+      if (result != ConnectivityResult.none) {
+        retryFailedMessages();
+      }
+    });
     if (partnerId != null && partnerId != _currentUserId) {
       _partnerId = partnerId;
     } else {
@@ -100,18 +108,31 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
     _editingMessage = null;
     _senderThemeCache.clear();
 
-    await _messageSubscription?.cancel();
+    // Emit initial state to show loader in UI
+    emit(PublicChatMessagesInitial());
 
+    // Setup Pusher in background to avoid blocking history loading
     if (_currentUserId != null) {
-      await pusherService.init(userId: _currentUserId!);
-      await pusherService.whenConnected;
+      _setupPusher(chatId);
     }
 
-    await pusherService.subscribeToChat(chatId: chatId);
-    _messageSubscription = pusherService.messageStream.listen(_onPusherEvent);
-
+    // Load history and mark as read
     await loadMessages();
     await markMessagesAsRead();
+  }
+
+  Future<void> _setupPusher(String chatId) async {
+    await _messageSubscription?.cancel();
+
+    try {
+      await pusherService.init(userId: _currentUserId!);
+      await pusherService.whenConnected;
+      await pusherService.subscribeToChat(chatId: chatId);
+
+      _messageSubscription = pusherService.messageStream.listen(_onPusherEvent);
+    } catch (e) {
+      print("❌ Error setting up Pusher: $e");
+    }
   }
 
   // ================= LOAD (أول مرة) =================
@@ -270,14 +291,48 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
       }
     } catch (e) {
       _messages[index] = message.copyWith(status: MessageStatus.failed);
-      emit(_buildLoaded());
 
-      Future.delayed(const Duration(seconds: 3), () {
-        final i = _messages.indexWhere((m) => m.id == tempId);
-        if (i != -1 && _messages[i].status == MessageStatus.failed) {
-          _retryMessage(tempId, replyToId);
+      if (!_failedMessagesQueue.contains(tempId)) {
+        _failedMessagesQueue.add(tempId);
+      }
+      emit(_buildLoaded());
+    }
+  }
+
+  Future<void> retryFailedMessages() async {
+    if (_isRetrying) return;
+    _isRetrying = true;
+
+    try {
+      for (final tempId in List.from(_failedMessagesQueue)) {
+        final index = _messages.indexWhere((m) => m.id == tempId);
+
+        if (index == -1) {
+          _failedMessagesQueue.remove(tempId);
+          continue;
         }
-      });
+
+        final message = _messages[index];
+
+        if (message.status != MessageStatus.failed) {
+          _failedMessagesQueue.remove(tempId);
+          continue;
+        }
+
+        _messages[index] = message.copyWith(status: MessageStatus.sending);
+
+        emit(_buildLoaded());
+
+        await _trySendMessage(
+          tempId,
+          message,
+          message.replyTo?.id,
+        );
+
+        _failedMessagesQueue.remove(tempId);
+      }
+    } finally {
+      _isRetrying = false;
     }
   }
 
@@ -370,6 +425,9 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
         break;
       case 'messages_read':
         _handleMessagesRead(data);
+        break;
+      case 'chat_list_update':
+        privateChatsBloc.add(ChatListUpdateEvent(data));
         break;
       default:
         _handleNewMessage(data);
@@ -561,6 +619,7 @@ class PublicChatMessagesCubit extends Cubit<PublicChatMessagesState> {
   @override
   Future<void> close() {
     _messageSubscription?.cancel();
+    _connectivitySub?.cancel();
     if (_chatId != null && _currentUserId != null) {
       pusherService.unsubscribeFromChat(_chatId!);
     }

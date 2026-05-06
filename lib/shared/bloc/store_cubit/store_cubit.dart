@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../../mobile/presentation/game_stor/models/store_item_model.dart';
 import '../../data/models/store/item_mapper.dart';
 import '../../domain/repositories/store_repository.dart';
 import 'store_state.dart';
@@ -22,16 +23,23 @@ class StoreCubit extends Cubit<StoreState> {
   Timer? timer;
   final box = GetStorage();
 
+  /// ================= KEYS =================
   static const String endTimeKey = "store_end_time";
+  static const String monthStartKey = "month_start";
+  static const String claimedKey = "claimed";
 
-  // ---------------- STORE ITEMS ----------------
+  // ================= STORE ITEMS =================
 
-  Future<void> getStoreItems() async {
+  Future<void> getStoreItems({required bool freeOnly}) async {
     try {
       emit(state.copyWith(isLoading: true));
 
       final response = await repository.getItems();
-      final items = response.items.map((e) => e.toStoreItem()).toList();
+
+      final items = response.items
+          .map((e) => e.toStoreItem())
+          .where((item) => freeOnly ? item.price == 0 : item.price > 0)
+          .toList();
 
       emit(state.copyWith(
         items: items,
@@ -45,7 +53,7 @@ class StoreCubit extends Cubit<StoreState> {
     }
   }
 
-  // ---------------- BUY ITEM ----------------
+  // ================= BUY ITEM =================
 
   Future<void> buyItem(String id) async {
     try {
@@ -67,7 +75,7 @@ class StoreCubit extends Cubit<StoreState> {
     }
   }
 
-  // ---------------- CLEAR MESSAGE ----------------
+  // ================= CLEAR =================
 
   void clearMessage() {
     emit(state.copyWith(
@@ -76,7 +84,38 @@ class StoreCubit extends Cubit<StoreState> {
     ));
   }
 
-  // ---------------- TIMER ----------------
+  // ================= FREE ITEMS =================
+
+  Future<List<StoreItem>> getFreeStoreItems() async {
+    final response = await repository.getItems();
+
+    return response.items
+        .map((e) => e.toStoreItem())
+        .where((item) => item.price == 0)
+        .toList();
+  }
+
+  // ================= REWARDS BY RANK =================
+
+  List<StoreItem> getRewardItemsByRank(int rank) {
+    final freeItems = state.items.where((e) => e.price == 0).toList();
+
+    if (rank == 1) {
+      return freeItems.where((e) => e.title == "50% Discount").toList();
+    }
+
+    if (rank == 2) {
+      return freeItems.where((e) => e.title == "25% Discount").toList();
+    }
+
+    if (rank == 3) {
+      return freeItems.where((e) => e.title == "15% Discount").toList();
+    }
+
+    return [];
+  }
+
+  // ================= TIMER =================
 
   DateTime getNextSaturdayMidnight() {
     final now = DateTime.now();
@@ -126,8 +165,90 @@ class StoreCubit extends Cubit<StoreState> {
         return;
       }
 
-      emit(state.copyWith(remaining: remaining));
+      emit(state.copyWith(
+        remaining: remaining,
+        isClaimPhase: isClaimPhase(),
+      ));
     });
+  }
+
+  // ================= REWARD TIME =================
+
+  DateTime getMonthStart() {
+    final stored = box.read(monthStartKey);
+
+    if (stored != null) {
+      return DateTime.fromMillisecondsSinceEpoch(stored);
+    }
+
+    final now = DateTime.now();
+    box.write(monthStartKey, now.millisecondsSinceEpoch);
+    return now;
+  }
+
+  DateTime getClaimStart() {
+    return getMonthStart().add(const Duration(days: 30));
+  }
+
+  DateTime getClaimEnd() {
+    return getClaimStart().add(const Duration(hours: 1));
+  }
+
+  bool isClaimPhase() {
+    final now = DateTime.now();
+    return now.isAfter(getClaimStart()) && now.isBefore(getClaimEnd());
+  }
+
+  // ================= CLAIM REWARDS =================
+
+  Future<void> collectRewards(int myRank) async {
+    try {
+      emit(state.copyWith(isLoading: true));
+
+      final rewards = getRewardItemsByRank(myRank);
+
+      for (final item in rewards) {
+        await buyItem(item.id);
+      }
+
+      box.write(claimedKey, true);
+
+      emit(state.copyWith(
+        isLoading: false,
+        isClaimed: true,
+        successMessage: "Rewards collected 🎉",
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  // ================= AUTO CLAIM =================
+
+  Future<void> handleRewards(int myRank) async {
+    final now = DateTime.now();
+    final claimEnd = getClaimEnd();
+
+    final claimed = box.read(claimedKey) ?? false;
+
+    if (now.isAfter(claimEnd) && !claimed) {
+      if (myRank <= 10) {
+        final rewards = getRewardItemsByRank(myRank);
+
+        for (final item in rewards) {
+          await repository.purchaseItem(item.id);
+        }
+      }
+
+      box.write(claimedKey, true);
+    }
+
+    emit(state.copyWith(
+      isClaimPhase: isClaimPhase(),
+    ));
   }
 
   @override

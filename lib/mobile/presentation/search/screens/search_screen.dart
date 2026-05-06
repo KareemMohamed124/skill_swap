@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 
 import '../../../../mobile/presentation/search/widgets/filterSheet.dart';
+import '../../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
@@ -56,7 +57,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void _scrollListener() {
     final bloc = context.read<UserFilterBloc>();
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !bloc.state.isLastPage &&
         !bloc.state.isLoadingMore) {
       bloc.add(LoadMoreUsersEvent(
@@ -85,19 +86,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme
-          .of(context)
-          .scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -120,13 +114,12 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: Center(
                               child: Text(
                                 'search'.tr,
-                                style: Theme
-                                    .of(context)
+                                style: Theme.of(context)
                                     .textTheme
                                     .titleLarge
                                     ?.copyWith(
-                                  fontSize: isDesktop ? 24 : 20,
-                                ),
+                                      fontSize: isDesktop ? 24 : 20,
+                                    ),
                               ),
                             ),
                           ),
@@ -145,20 +138,16 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: TextField(
                                 controller: searchTextController,
                                 cursorColor:
-                                isDark ? Colors.white : Colors.black,
+                                    isDark ? Colors.white : Colors.black,
                                 decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Theme
-                                            .of(context)
-                                            .dividerColor),
+                                        color: Theme.of(context).dividerColor),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Theme
-                                            .of(context)
-                                            .dividerColor),
+                                        color: Theme.of(context).dividerColor),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   prefixIcon: Icon(Icons.search,
@@ -189,14 +178,10 @@ class _SearchScreenState extends State<SearchScreen> {
                             width: isDesktop ? 55 : 50,
                             child: DecoratedBox(
                               decoration: BoxDecoration(
-                                color: Theme
-                                    .of(context)
-                                    .cardColor,
+                                color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                    color: Theme
-                                        .of(context)
-                                        .dividerColor),
+                                    color: Theme.of(context).dividerColor),
                               ),
                               child: IconButton(
                                 icon: Icon(Icons.tune_outlined,
@@ -204,17 +189,27 @@ class _SearchScreenState extends State<SearchScreen> {
                                     size: isDesktop ? 28 : 24),
                                 onPressed: () async {
                                   final bloc = context.read<UserFilterBloc>();
+                                  final tracksCubit =
+                                      context.read<TracksCubit>();
+
                                   final state = bloc.state;
 
                                   final activeFilters =
-                                  await showModalSideSheet<int>(
+                                      await showModalSideSheet<int>(
                                     context: context,
                                     withCloseControll: true,
                                     barrierColor: const Color(0xFFD6D6D6)
                                         .withOpacity(0.3),
                                     width: isDesktop ? 500 : screenWidth * 0.85,
-                                    body: BlocProvider.value(
-                                      value: bloc,
+                                    body: MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider.value(
+                                          value: bloc,
+                                        ),
+                                        BlocProvider.value(
+                                          value: tracksCubit,
+                                        ),
+                                      ],
                                       child: MentorFilterSheet(
                                         initialMinPrice: state.minPrice,
                                         initialMaxPrice: state.maxPrice,
@@ -249,17 +244,26 @@ class _SearchScreenState extends State<SearchScreen> {
                               activeFilters: activeFiltersCount,
                               onPressed: () async {
                                 final bloc = context.read<UserFilterBloc>();
+                                final tracksCubit = context.read<TracksCubit>();
+
                                 final state = bloc.state;
 
                                 final activeFilters =
-                                await showModalSideSheet<int>(
+                                    await showModalSideSheet<int>(
                                   context: context,
                                   withCloseControll: true,
                                   barrierColor:
-                                  const Color(0xFFD6D6D6).withOpacity(0.3),
+                                      const Color(0xFFD6D6D6).withOpacity(0.3),
                                   width: isDesktop ? 500 : screenWidth * 0.85,
-                                  body: BlocProvider.value(
-                                    value: bloc,
+                                  body: MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider.value(
+                                        value: bloc,
+                                      ),
+                                      BlocProvider.value(
+                                        value: tracksCubit,
+                                      ),
+                                    ],
                                     child: MentorFilterSheet(
                                       initialMinPrice: state.minPrice,
                                       initialMaxPrice: state.maxPrice,
@@ -302,8 +306,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     Text(
                                       "No results found",
                                       textAlign: TextAlign.center,
-                                      style: Theme
-                                          .of(context)
+                                      style: Theme.of(context)
                                           .textTheme
                                           .titleMedium,
                                     ),
@@ -361,8 +364,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                     padding: EdgeInsets.all(16.0),
                                     child: Center(
                                         child: CircularProgressIndicator(
-                                          color: AppPalette.primary,
-                                        )),
+                                      color: AppPalette.primary,
+                                    )),
                                   );
                                 }
                               },

@@ -32,8 +32,8 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<GetAvailableDatesBloc>().add(
-        FetchAvailableDates(widget.instructorId),
-      );
+            FetchAvailableDates(widget.instructorId),
+          );
 
       context.read<GetUpcomingSatBloc>().add(FetchUpcomingSat());
     });
@@ -64,17 +64,14 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
 
     List<String> result = [];
 
-    // بنلف على كل أيام الشهر الحالي بس
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
 
     for (int i = 1; i <= daysInMonth; i++) {
       final date = DateTime(now.year, now.month, i);
 
-      // بناخد بس الأيام اللي نفس اليوم المطلوب و مش فاتت
       if (date.weekday == targetWeekday && !date.isBefore(today)) {
         result.add(
-          "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day
-              .toString().padLeft(2, '0')}",
+          "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         );
       }
     }
@@ -85,64 +82,57 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
   void openManageSheet(List availableDates, DateTime startOfWeek) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme
-          .of(context)
-          .cardColor,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (bottomSheetContext) =>
-          MultiBlocProvider(
-            providers: [
-              BlocProvider.value(value: context.read<GetAvailableDatesBloc>()),
-              BlocProvider.value(value: context.read<
-                  DeleteAvailableDatesBloc>()),
-              BlocProvider.value(value: context.read<AddAvailableDatesBloc>()),
-              BlocProvider.value(value: context.read<AcceptedBookingsCubit>()),
-            ],
-            child: ManageAvailabilityBottomSheet(
-              instructorId: widget.instructorId,
-              availableDates: availableDates,
-              onAddPressed: () {
-                Navigator.pop(bottomSheetContext);
-                openBottomSheet(startOfWeek, false, availableDates);
-              },
-            ),
-          ),
+      builder: (bottomSheetContext) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: context.read<GetAvailableDatesBloc>()),
+          BlocProvider.value(value: context.read<DeleteAvailableDatesBloc>()),
+          BlocProvider.value(value: context.read<AddAvailableDatesBloc>()),
+          BlocProvider.value(value: context.read<AcceptedBookingsCubit>()),
+        ],
+        child: ManageAvailabilityBottomSheet(
+          instructorId: widget.instructorId,
+          availableDates: availableDates,
+          onAddPressed: () {
+            Navigator.pop(bottomSheetContext);
+            openBottomSheet(startOfWeek, false, availableDates);
+          },
+        ),
+      ),
     );
   }
 
-  void openBottomSheet(DateTime startOfWeek, bool hasData,
-      List availableDates) async {
+  void openBottomSheet(
+      DateTime startOfWeek, bool hasData, List availableDates) async {
     final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme
-          .of(context)
-          .cardColor,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) =>
-          MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: context.read<SetAvailableDatesBloc>(),
-              ),
-            ],
-            child: AvailabilityBottomSheet(
-              selectedDays: [],
-              fromTime: "02:00 PM",
-              toTime: "05:00 PM",
-              repeatType: "weekly",
-              isEditMode: hasData,
-              startOfWeek: startOfWeek,
-              disabledDays: availableDates.map((e) {
-                final date = DateTime.parse(e.date);
-                return _getDayName(date.weekday);
-              }).toList(),
-            ),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(
+            value: context.read<SetAvailableDatesBloc>(),
           ),
+        ],
+        child: AvailabilityBottomSheet(
+          selectedDays: [],
+          fromTime: "02:00 PM",
+          toTime: "05:00 PM",
+          repeatType: "weekly",
+          isEditMode: hasData,
+          startOfWeek: startOfWeek,
+          disabledDays: availableDates.map((e) {
+            final date = DateTime.parse(e.date);
+            return _getDayName(date.weekday);
+          }).toList(),
+        ),
+      ),
     );
 
     if (result != null) {
@@ -164,22 +154,21 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
             if (context.mounted) {
               showDialog(
                 context: context,
-                builder: (_) =>
-                    AlertDialog(
-                      title: const Text("No Available Days"),
-                      content: Text(
-                        "There are no remaining $day days in this month.",
+                builder: (_) => AlertDialog(
+                  title: const Text("No Available Days"),
+                  content: Text(
+                    "There are no remaining $day days in this month.",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        "OK",
+                        style: TextStyle(color: AppPalette.primary),
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            "OK",
-                            style: TextStyle(color: AppPalette.primary),
-                          ),
-                        ),
-                      ],
                     ),
+                  ],
+                ),
               );
             }
             return;
@@ -192,19 +181,19 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
       if (allDates.isNotEmpty) {
         if (context.mounted) {
           context.read<SetAvailableDatesBloc>().add(
-            SubmitSetAvailableDates(
-              SetAvailableDates(
-                availableDates: allDates.map((d) {
-                  return Dates(
-                    date: d,
-                    from: _convertTo24(from),
-                    to: _convertTo24(to),
-                  );
-                }).toList(),
-                rotationType: repeat,
-              ),
-            ),
-          );
+                SubmitSetAvailableDates(
+                  SetAvailableDates(
+                    availableDates: allDates.map((d) {
+                      return Dates(
+                        date: d,
+                        from: _convertTo24(from),
+                        to: _convertTo24(to),
+                      );
+                    }).toList(),
+                    rotationType: repeat,
+                  ),
+                ),
+              );
         }
       }
     }
@@ -223,8 +212,7 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
 
     final date = startOfWeek.add(Duration(days: map[day]!));
 
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day
-        .toString().padLeft(2, '0')}";
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
   String _convertTo24(String time) {
@@ -272,8 +260,8 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
               );
 
               context.read<GetAvailableDatesBloc>().add(
-                FetchAvailableDates(widget.instructorId),
-              );
+                    FetchAvailableDates(widget.instructorId),
+                  );
             }
 
             if (state is SetAvailableDatesError) {
@@ -291,8 +279,8 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
               );
 
               context.read<GetAvailableDatesBloc>().add(
-                FetchAvailableDates(widget.instructorId),
-              );
+                    FetchAvailableDates(widget.instructorId),
+                  );
             }
 
             if (state is DeleteAvailableDatesFailure) {
@@ -315,16 +303,12 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .cardColor,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: const [
                 BoxShadow(color: Colors.black12, blurRadius: 6)
               ],
-              border: Border.all(color: Theme
-                  .of(context)
-                  .dividerColor),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,11 +318,7 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -350,12 +330,10 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                       return Row(
                         children: [
                           Text(
-                              "${_getDayName(date.weekday)} ${date.day}/${date
-                                  .month}"),
+                              "${_getDayName(date.weekday)} ${date.day}/${date.month}"),
                           const Spacer(),
                           Text(
-                              "${_formatTime(item.from)} - ${_formatTime(
-                                  item.to)}"),
+                              "${_formatTime(item.from)} - ${_formatTime(item.to)}"),
                         ],
                       );
                     }).toList(),
@@ -364,11 +342,7 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                   Text(
                     "Set when you're available for sessions",
                     style: TextStyle(
-                      color: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .color,
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
                     ),
                   ),
                 const SizedBox(height: 12),
@@ -382,14 +356,14 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                         onPressed: isLoading
                             ? null
                             : () {
-                          final start = getStartOfWeek(DateTime.now());
+                                final start = getStartOfWeek(DateTime.now());
 
-                          if (hasData) {
-                            openManageSheet(availableDates, start);
-                          } else {
-                            openBottomSheet(start, false, availableDates);
-                          }
-                        },
+                                if (hasData) {
+                                  openManageSheet(availableDates, start);
+                                } else {
+                                  openBottomSheet(start, false, availableDates);
+                                }
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppPalette.primary,
                           padding: const EdgeInsets.all(14),
@@ -399,33 +373,33 @@ class _AvailabilityCardState extends State<AvailabilityCard> {
                         ),
                         child: isLoading
                             ? const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "Saving...",
-                              style: TextStyle(
-                                color: Color(0XFFF2F5F8),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        )
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Saving...",
+                                    style: TextStyle(
+                                      color: Color(0XFFF2F5F8),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              )
                             : Text(
-                          hasData ? "Manage Days" : "Set Your Schedule",
-                          style: const TextStyle(
-                            color: Color(0XFFF2F5F8),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                                hasData ? "Manage Days" : "Set Your Schedule",
+                                style: const TextStyle(
+                                  color: Color(0XFFF2F5F8),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     );
                   },

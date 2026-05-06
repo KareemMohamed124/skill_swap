@@ -361,6 +361,7 @@ class _ProfileMentorDesktopState extends State<ProfileMentorDesktop> {
                                   DesktopScreenManagerState>()!
                               .currentBody!,
                           rightPanel: BlocProvider(
+                            key: ValueKey(chatId),
                             create: (_) => sl<PublicChatMessagesCubit>()
                               ..init(chatId,
                                   partnerId: widget.id, isPrivate: true),

@@ -8,6 +8,9 @@ class StoreState extends Equatable {
   final List<StoreItem> items;
 
   final bool isLoading;
+  final bool isClaimPhase;
+  final bool isClaimed;
+
   final String? errorMessage;
   final String? successMessage;
 
@@ -16,6 +19,8 @@ class StoreState extends Equatable {
     required this.elapsed,
     required this.items,
     this.isLoading = false,
+    this.isClaimPhase = false,
+    this.isClaimed = false,
     this.errorMessage,
     this.successMessage,
   });
@@ -25,6 +30,8 @@ class StoreState extends Equatable {
     Duration? elapsed,
     List<StoreItem>? items,
     bool? isLoading,
+    bool? isClaimPhase,
+    bool? isClaimed,
     String? errorMessage,
     String? successMessage,
   }) {
@@ -33,8 +40,10 @@ class StoreState extends Equatable {
       elapsed: elapsed ?? this.elapsed,
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      successMessage: successMessage ?? this.successMessage,
+      isClaimPhase: isClaimPhase ?? this.isClaimPhase,
+      isClaimed: isClaimed ?? this.isClaimed,
+      errorMessage: errorMessage,
+      successMessage: successMessage,
     );
   }
 
@@ -44,6 +53,8 @@ class StoreState extends Equatable {
         elapsed,
         items,
         isLoading,
+        isClaimPhase,
+        isClaimed,
         errorMessage,
         successMessage,
       ];

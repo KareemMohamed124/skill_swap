@@ -9,6 +9,7 @@ import 'package:skill_swap/shared/bloc/private_chats_bloc/private_chats_event.da
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/private_chats_bloc/private_chats_bloc.dart';
+import '../../../../shared/bloc/private_chats_bloc/private_chats_state.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/home_controller.dart';
 import '../../history_private_chats/private_chats_list.dart';
@@ -57,26 +58,30 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             children: [
               BlocBuilder<MyProfileCubit, MyProfileState>(
-                builder: (context, state) {
+                builder: (context, profileState) {
                   String id = "";
                   String name = "User";
                   String avatarPath = 'assets/images/placeholder.png';
 
-                  if (state is MyProfileLoaded) {
-                    name = state.profile.name ?? name;
-                    id = state.profile.id ?? id;
+                  if (profileState is MyProfileLoaded) {
+                    name = profileState.profile.name ?? name;
+                    id = profileState.profile.id ?? id;
 
-                    if (state.profile.userImage?.secureUrl?.isNotEmpty ==
+                    if (profileState.profile.userImage?.secureUrl?.isNotEmpty ==
                         true) {
-                      avatarPath = state.profile.userImage!.secureUrl!;
+                      avatarPath = profileState.profile.userImage!.secureUrl!;
                     }
                   }
+
+                  final unreadCount = context.select<PrivateChatsBloc, int>(
+                    (bloc) => bloc.unreadMap.values.fold(0, (a, b) => a + b),
+                  );
 
                   return CustomHeader(
                     name: 'Hi, $name',
                     subtitle: 'keep_learning'.tr,
                     avatarPath: avatarPath,
-                    // onIcon1: () {},
+                    unreadCount: unreadCount,
                     onIcon2: () {
                       Get.to(() => BlocProvider(
                             create: (_) => sl<PrivateChatsBloc>()

@@ -129,11 +129,7 @@ class _ChangePasswordDesktopState extends State<ChangePasswordDesktop> {
                             if (value == null || value.isEmpty) {
                               return "Old password is required";
                             }
-                            if (!RegExp(
-                              r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$",
-                            ).hasMatch(value)) {
-                              return "Password must contain uppercase, lowercase and number";
-                            }
+
                             return null;
                           },
                         ),

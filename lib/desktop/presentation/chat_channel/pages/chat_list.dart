@@ -54,6 +54,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void initState() {
     super.initState();
     _loadUser();
+    _loadDialogFlags();
 
     context.read<TracksBloc>().add(LoadTracksEvent());
     context.read<PublicChatBloc>().add(GetPublicChatsEvent());
@@ -71,42 +72,40 @@ class _ChatListScreenState extends State<ChatListScreen> {
             .findAncestorStateOfType<DesktopScreenManagerState>()!
             .currentBody!,
         rightPanel: ChatScreen(
+          key: ValueKey(chatId),
           chatId: chatId,
           channelName: channel,
         ));
   }
 
-  void _showLeaveConfirmation(String chatId, String channelName,
-      String trackId) {
+  void _showLeaveConfirmation(
+      String chatId, String channelName, String trackId) {
     showDialog(
       context: context,
-      builder: (ctx) =>
-          AlertDialog(
-            title: const Text('Leave Channel'),
-            content: Text('Are you sure you want to leave "$channelName"?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  setState(() => _leavingTracks.add(trackId));
-                  context.read<TracksBloc>().add(LeaveChatEvent(chatId));
-                },
-                child: const Text('Leave', style: TextStyle(color: Colors.red)),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: const Text('Leave Channel'),
+        content: Text('Are you sure you want to leave "$channelName"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              setState(() => _leavingTracks.add(trackId));
+              context.read<TracksBloc>().add(LeaveChatEvent(chatId));
+            },
+            child: const Text('Leave', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return MultiBlocListener(
       listeners: [
@@ -165,9 +164,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -176,7 +173,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-
                     /// SEARCH
                     TextField(
                       onChanged: (value) {
@@ -188,30 +184,20 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         hintText: "Search".tr,
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                          BorderSide(color: Theme
-                              .of(context)
-                              .dividerColor),
+                              BorderSide(color: Theme.of(context).dividerColor),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide:
-                          BorderSide(color: Theme
-                              .of(context)
-                              .dividerColor),
+                              BorderSide(color: Theme.of(context).dividerColor),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         prefixIcon: Icon(
                           Icons.search,
-                          color: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .color,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
                         filled: true,
-                        fillColor: Theme
-                            .of(context)
-                            .cardColor,
+                        fillColor: Theme.of(context).cardColor,
                       ),
                     ),
 
@@ -231,18 +217,15 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             final tracks = trackState.tracks;
 
                             final publicChatState =
-                                context
-                                    .watch<PublicChatBloc>()
-                                    .state;
+                                context.watch<PublicChatBloc>().state;
 
-                            final publicChats =
-                            publicChatState is PublicChatsLoaded
-                                ? publicChatState.chats.chats
-                                : <dynamic>[];
+                            final List<GetChatModel> publicChats =
+                                publicChatState is PublicChatsLoaded
+                                    ? publicChatState.chats.chats
+                                    : [];
 
                             final filteredTracks = tracks
-                                .where((track) =>
-                                track.name!
+                                .where((track) => track.name!
                                     .toLowerCase()
                                     .contains(searchQuery))
                                 .toList();
@@ -256,9 +239,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     .cast<GetChatModel?>()
                                     .firstWhere(
                                       (c) =>
-                                  c != null && c.track?.id == track.id,
-                                  orElse: () => null,
-                                );
+                                          c != null && c.track?.id == track.id,
+                                      orElse: () => null,
+                                    );
 
                                 bool isJoined =
                                     chat?.isJoined(currentUserId ?? "") ??
@@ -275,86 +258,80 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     track.name == selectedChannel;
 
                                 final isLeaving =
-                                _leavingTracks.contains(track.id);
+                                    _leavingTracks.contains(track.id);
 
                                 final isJoining =
-                                _joiningTracks.contains(track.id);
+                                    _joiningTracks.contains(track.id);
 
                                 return InkWell(
                                   onTap: (!isJoined &&
-                                      _shownJoinDialogForTrack
-                                          .contains(track.id))
+                                          _shownJoinDialogForTrack
+                                              .contains(track.id))
                                       ? null
                                       : () async {
-                                    if (!isJoined) {
-                                      final id = track.id!;
+                                          if (!isJoined) {
+                                            final id = track.id!;
 
-                                      if (!_shownJoinDialogForTrack
-                                          .contains(id)) {
-                                        _shownJoinDialogForTrack.add(id);
-                                        await _saveDialogFlags();
+                                            if (!_shownJoinDialogForTrack
+                                                .contains(id)) {
+                                              _shownJoinDialogForTrack.add(id);
+                                              await _saveDialogFlags();
 
-                                        showDialog(
-                                          context: context,
-                                          builder: (_) =>
-                                              AlertDialog(
-                                                title: const Text(
-                                                    "Join Required"),
-                                                content: Text(
-                                                  "Join '${track
-                                                      .name}' to access this channel",
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(
-                                                            context),
-                                                    child: const Text("OK"),
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) => AlertDialog(
+                                                  title: const Text(
+                                                      "Join Required"),
+                                                  content: Text(
+                                                    "Join '${track.name}' to access this channel",
                                                   ),
-                                                ],
-                                              ),
-                                        );
-                                      }
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: const Text("OK"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            }
 
-                                      return;
-                                    }
+                                            return;
+                                          }
 
-                                    if (chatId != null) {
-                                      selectedChannel = track.name;
-                                      selectedTrackId = track.id;
-                                      _openChat(chatId, track.name!);
-                                    }
-                                  },
+                                          if (chatId != null) {
+                                            selectedChannel = track.name;
+                                            selectedTrackId = track.id;
+                                            _openChat(chatId, track.name!);
+                                          }
+                                        },
                                   child: Container(
                                     margin:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                        const EdgeInsets.symmetric(vertical: 8),
                                     padding: const EdgeInsets.all(14),
                                     decoration: BoxDecoration(
                                       color: isSelected
                                           ? (isDark
-                                          ? AppPalette.primary
-                                          .withValues(alpha: 0.5)
-                                          : const Color(0xFFE6E7FF))
-                                          : Theme
-                                          .of(context)
-                                          .cardColor,
+                                              ? AppPalette.primary
+                                                  .withValues(alpha: 0.5)
+                                              : const Color(0xFFE6E7FF))
+                                          : Theme.of(context).cardColor,
                                       border: Border.all(
                                         color: isSelected
                                             ? AppPalette.primary
-                                            : Theme
-                                            .of(context)
-                                            .dividerColor,
+                                            : Theme.of(context).dividerColor,
                                         width: 2,
                                       ),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             CircleAvatar(
                                               radius: 22,
@@ -375,7 +352,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                             Expanded(
                                               child: Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Row(
                                                     children: [
@@ -384,7 +361,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                                           track.name ?? "",
                                                           style: TextStyle(
                                                             fontWeight:
-                                                            FontWeight.w600,
+                                                                FontWeight.w600,
                                                           ),
                                                         ),
                                                       ),
@@ -393,39 +370,39 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                                           onPressed: isJoining
                                                               ? null
                                                               : () {
-                                                            selectedChannel =
-                                                                track
-                                                                    .name;
-                                                            selectedTrackId =
-                                                                track.id;
+                                                                  selectedChannel =
+                                                                      track
+                                                                          .name;
+                                                                  selectedTrackId =
+                                                                      track.id;
 
-                                                            setState(() =>
-                                                                _joiningTracks
-                                                                    .add(track
-                                                                    .id!));
+                                                                  setState(() =>
+                                                                      _joiningTracks
+                                                                          .add(track
+                                                                              .id!));
 
-                                                            context
-                                                                .read<
-                                                                TracksBloc>()
-                                                                .add(
-                                                              JoinTrackEvent(
-                                                                  track.id!),
-                                                            );
-                                                          },
+                                                                  context
+                                                                      .read<
+                                                                          TracksBloc>()
+                                                                      .add(
+                                                                        JoinTrackEvent(
+                                                                            track.id!),
+                                                                      );
+                                                                },
                                                           child: isJoining
                                                               ? const SizedBox(
-                                                            width: 16,
-                                                            height: 16,
-                                                            child:
-                                                            CircularProgressIndicator(
-                                                              strokeWidth:
-                                                              2,
-                                                              color: Colors
-                                                                  .white,
-                                                            ),
-                                                          )
+                                                                  width: 16,
+                                                                  height: 16,
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    strokeWidth:
+                                                                        2,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                )
                                                               : const Text(
-                                                              "Join"),
+                                                                  "Join"),
                                                         ),
                                                     ],
                                                   ),
@@ -454,41 +431,41 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                                           onPressed: isLeaving
                                                               ? null
                                                               : () {
-                                                            selectedChannel =
-                                                                track
-                                                                    .name;
-                                                            selectedTrackId =
-                                                                track.id;
+                                                                  selectedChannel =
+                                                                      track
+                                                                          .name;
+                                                                  selectedTrackId =
+                                                                      track.id;
 
-                                                            _showLeaveConfirmation(
-                                                              chatId!,
-                                                              track.name!,
-                                                              track.id!,
-                                                            );
-                                                          },
+                                                                  _showLeaveConfirmation(
+                                                                    chatId!,
+                                                                    track.name!,
+                                                                    track.id!,
+                                                                  );
+                                                                },
                                                           style: OutlinedButton
                                                               .styleFrom(
                                                             foregroundColor:
-                                                            Colors.red,
+                                                                Colors.red,
                                                             side:
-                                                            const BorderSide(
-                                                                color: Colors
-                                                                    .red),
+                                                                const BorderSide(
+                                                                    color: Colors
+                                                                        .red),
                                                           ),
                                                           child: isLeaving
                                                               ? const SizedBox(
-                                                            width: 16,
-                                                            height: 16,
-                                                            child:
-                                                            CircularProgressIndicator(
-                                                              strokeWidth:
-                                                              2,
-                                                              color: Colors
-                                                                  .red,
-                                                            ),
-                                                          )
+                                                                  width: 16,
+                                                                  height: 16,
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    strokeWidth:
+                                                                        2,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  ),
+                                                                )
                                                               : const Text(
-                                                              "Leave"),
+                                                                  "Leave"),
                                                         ),
                                                       ],
                                                     ),

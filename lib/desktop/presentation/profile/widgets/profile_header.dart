@@ -31,7 +31,9 @@ class ProfileHeader extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,14 +42,20 @@ class ProfileHeader extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: Theme.of(context).cardColor,
+                    backgroundColor: Theme
+                        .of(context)
+                        .cardColor,
                     backgroundImage: hasImage ? NetworkImage(imagePath) : null,
                     child: !hasImage
                         ? Icon(
-                            Icons.person,
-                            size: 28,
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                          )
+                      Icons.person,
+                      size: 28,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.color,
+                    )
                         : null,
                   ),
                   const SizedBox(width: 16),
@@ -57,7 +65,11 @@ class ProfileHeader extends StatelessWidget {
                       Text(
                         name,
                         style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          color: Theme
+                              .of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .color,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -68,10 +80,14 @@ class ProfileHeader extends StatelessWidget {
                           const Icon(Icons.star, color: Colors.amber, size: 18),
                           const SizedBox(width: 4),
                           Text(
-                            rating.toString(),
+                            rating.toStringAsFixed(1),
                             style: TextStyle(
                               color:
-                                  Theme.of(context).textTheme.bodyMedium?.color,
+                              Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color,
                             ),
                           ),
                         ],
@@ -116,13 +132,21 @@ class ProfileHeader extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).textTheme.bodyLarge?.color,
+            color: Theme
+                .of(context)
+                .textTheme
+                .bodyLarge
+                ?.color,
           ),
         ),
         Text(
           title,
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyMedium?.color,
+            color: Theme
+                .of(context)
+                .textTheme
+                .bodyMedium
+                ?.color,
           ),
         ),
       ],

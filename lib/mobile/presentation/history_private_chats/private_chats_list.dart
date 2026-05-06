@@ -13,7 +13,7 @@ import '../../../shared/domain/repositories/chat_repository.dart';
 import 'chat_title.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
-    RouteObserver<ModalRoute<void>>();
+RouteObserver<ModalRoute<void>>();
 
 class PrivateChatsListScreen extends StatefulWidget {
   final String currentUserId;
@@ -88,14 +88,14 @@ class _PrivateChatsListScreenState extends State<PrivateChatsListScreen>
                 final chat = chats[index];
 
                 final otherUser = chat.participants.firstWhere(
-                  (p) => p.id != widget.currentUserId,
+                      (p) => p.id != widget.currentUserId,
                   orElse: () => chat.participants.first,
                 );
 
                 final unread = bloc.unreadMap[chat.id] ?? 0;
 
                 return ChatTile(
-                  name: chat.type == "private" ? otherUser.email : chat.name,
+                  name: chat.type == "private" ? otherUser.name : chat.name,
                   lastMessage: chat.lastMessage?.content ?? "",
                   image: otherUser.userImage.secureUrl,
                   time: chat.lastMessage?.createdAt ?? "",
@@ -105,23 +105,25 @@ class _PrivateChatsListScreenState extends State<PrivateChatsListScreen>
                       final chatRepo = sl<ChatRepository>();
 
                       final chatId =
-                          await chatRepo.createOrGetPrivateChat(otherUser.id);
+                      await chatRepo.createOrGetPrivateChat(otherUser.id);
 
                       Get.to(
-                        () => BlocProvider(
-                          create: (_) => sl<PublicChatMessagesCubit>()
-                            ..init(
-                              chatId,
-                              partnerId: otherUser.id,
-                              isPrivate: true,
+                            () =>
+                            BlocProvider(
+                              create: (_) =>
+                              sl<PublicChatMessagesCubit>()
+                                ..init(
+                                  chatId,
+                                  partnerId: otherUser.id,
+                                  isPrivate: true,
+                                ),
+                              child: PrivateChatScreen(
+                                chatId: chatId,
+                                partnerName: otherUser.name,
+                                partnerId: otherUser.id,
+                                partnerImage: otherUser.userImage.secureUrl,
+                              ),
                             ),
-                          child: PrivateChatScreen(
-                            chatId: chatId,
-                            partnerName: otherUser.email,
-                            partnerId: otherUser.id,
-                            partnerImage: otherUser.userImage.secureUrl,
-                          ),
-                        ),
                       );
                     } catch (e) {
                       Get.snackbar('Error', 'Failed to open chat: $e');

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skill_swap/mobile/presentation/game_part/rewards_screen.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../../shared/bloc/store_cubit/store_cubit.dart';
 
 class LeaderBoardHeader extends StatelessWidget {
   final String name;
+  final int myRank;
   final VoidCallback? onIcon1;
   final VoidCallback? onBack;
 
   const LeaderBoardHeader({
     super.key,
     required this.name,
+    required this.myRank,
     this.onIcon1,
     this.onBack,
   });
@@ -22,34 +27,27 @@ class LeaderBoardHeader extends StatelessWidget {
     return Container(
       height: screenHeight * 0.2,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: AppPalette.primary,
-      ),
+      color: AppPalette.primary,
       child: Padding(
         padding: EdgeInsets.all(screenWidth * 0.01),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /// Back Button
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: onBack ?? () => Navigator.pop(context),
-                child: Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.02),
-                  child: Icon(
-                    Icons.arrow_back_ios_new,
-                    color: Colors.white,
-                    size: screenWidth * 0.05,
-                  ),
+            /// 🔙 Back
+            InkWell(
+              borderRadius: BorderRadius.circular(30),
+              onTap: onBack ?? () => Navigator.pop(context),
+              child: Padding(
+                padding: EdgeInsets.all(screenWidth * 0.02),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
                 ),
               ),
             ),
 
             SizedBox(width: screenWidth * 0.03),
 
-            /// Name
+            /// 🏆 Title
             Expanded(
               child: Text(
                 name,
@@ -61,7 +59,27 @@ class LeaderBoardHeader extends StatelessWidget {
               ),
             ),
 
-            /// Notification Button
+            /// 🎁 Rewards Button
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(Icons.card_giftcard, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<StoreCubit>(),
+                          child: RewardsScreen(myRank: myRank),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+
+            /// ❓ Help
             circleButton(
               context: context,
               icon: Icons.help_outline_rounded,
@@ -74,7 +92,6 @@ class LeaderBoardHeader extends StatelessWidget {
     );
   }
 
-  /// -------- Circle Button --------
   Widget circleButton({
     required BuildContext context,
     required IconData icon,
@@ -90,11 +107,7 @@ class LeaderBoardHeader extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: EdgeInsets.all(screenWidth * 0.02),
-          child: Icon(
-            icon,
-            size: screenWidth * 0.07,
-            color: Theme.of(context).textTheme.bodyLarge!.color,
-          ),
+          child: Icon(icon),
         ),
       ),
     );

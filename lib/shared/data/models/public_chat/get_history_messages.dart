@@ -47,6 +47,7 @@ class ChatMessage {
   final String id;
   final String chatId;
   final Sender senderId;
+
   final String content;
   final String messageType;
   final List<dynamic> readBy;
@@ -57,7 +58,9 @@ class ChatMessage {
   final bool isEdited;
   final bool isSeen;
   final MessageStatus status;
+  final String? themeId;
   final MessageTheme? theme;
+  final String? timeOnly;
 
   ChatMessage(
       {required this.id,
@@ -69,6 +72,8 @@ class ChatMessage {
       required this.createdAt,
       required this.updatedAt,
       this.replyTo,
+      this.themeId,
+      this.timeOnly,
       required this.v,
       this.isEdited = false,
       this.isSeen = false,
@@ -82,6 +87,8 @@ class ChatMessage {
       content: json['content'],
       messageType: json['messageType'],
       readBy: json['readBy'] ?? [],
+      themeId: json['themeId'],
+      timeOnly: json['timeOnly'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'])
@@ -108,7 +115,9 @@ class ChatMessage {
         '__v': v,
         'isEdited': isEdited,
         'isSeen': isSeen,
-        'theme': theme
+        'theme': theme,
+        'themeId': themeId,
+        'timeOnly': timeOnly
       };
 
   ChatMessage copyWith(

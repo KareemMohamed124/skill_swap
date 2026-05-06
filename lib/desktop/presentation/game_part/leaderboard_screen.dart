@@ -4,6 +4,7 @@ import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
 import '../../../mobile/presentation/game_stor/widgets/show_store_daiolg.dart';
+import '../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../shared/data/models/user/user_model.dart';
 import '../../../shared/helper/local_storage.dart';
 
@@ -32,7 +33,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
     final usersData = await cubit.getLeaderboardUsers(page: 1);
     final userId = LocalStorage.getUserId();
+    final myRank = usersData.indexWhere((u) => u.id == myId) + 1;
 
+    context.read<StoreCubit>().handleRewards(myRank);
     setState(() {
       users = usersData;
       myId = userId;

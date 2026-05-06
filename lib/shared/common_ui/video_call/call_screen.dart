@@ -15,8 +15,10 @@ import '../screen_manager/screen_manager.dart';
 
 class CallScreen extends StatefulWidget {
   final SessionModel session;
+  final int remainingMinutes;
 
-  const CallScreen({super.key, required this.session});
+  const CallScreen(
+      {super.key, required this.session, required this.remainingMinutes});
 
   @override
   State<CallScreen> createState() => _CallScreenState();
@@ -32,7 +34,8 @@ class _CallScreenState extends State<CallScreen> {
 
   late String callId;
   late String currentUserId;
-
+  Timer? _waitingTimer;
+  bool _otherUserJoined = false;
   bool mic = true;
   bool cam = true;
   bool screenSharing = false;
@@ -56,15 +59,7 @@ class _CallScreenState extends State<CallScreen> {
 
   // ================= TIMER LOGIC =================
   void _startCallTimer() {
-    final sessionEnd = widget.session.dateTime.add(
-      Duration(minutes: widget.session.duration.toInt()),
-    );
-    final now = DateTime.now();
-    _remaining = sessionEnd.difference(now);
-    if (_remaining.isNegative || _remaining.inSeconds < 60) {
-      _remaining = const Duration(minutes: 1);
-    }
-    _remaining = const Duration(hours: 1);
+    _remaining = const Duration(minutes: 3);
 
     _callTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
@@ -80,6 +75,20 @@ class _CallScreenState extends State<CallScreen> {
           _remaining = _remaining - const Duration(seconds: 1);
         }
       });
+    });
+  }
+
+  void _startWaitingForOtherUser() {
+    _waitingTimer = Timer(const Duration(minutes: 1), () async {
+      if (_otherUserJoined) return;
+
+      // اقفال الكول
+      await callRef.doc(callId).set({
+        'status': 'ended',
+        'endedBy': 'no_user_joined',
+      }, SetOptions(merge: true));
+
+      if (!mounted) return;
     });
   }
 
@@ -134,7 +143,7 @@ class _CallScreenState extends State<CallScreen> {
     };
 
     await handleCallFlow();
-
+    _startWaitingForOtherUser();
     listenCall();
     listenCandidates();
   }
@@ -179,6 +188,8 @@ class _CallScreenState extends State<CallScreen> {
       }
 
       if (data['answer'] != null && !_remoteSet) {
+        _otherUserJoined = true;
+        _waitingTimer?.cancel();
         final answer = RTCSessionDescription(
           data['answer']['sdp'],
           data['answer']['type'],
@@ -218,6 +229,22 @@ class _CallScreenState extends State<CallScreen> {
 
     if (!mounted) return;
 
+    if (endedBy == 'no_user_joined') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ScreenManager(
+            initialIndex: 3,
+            showNoUserDialog: true,
+            noUserBookingCode: widget.session.bookingCode,
+            noUserPrice: widget.session.price,
+            isStudent: widget.session.isStudent,
+          ),
+        ),
+      );
+      return;
+    }
+
     if (widget.session.isStudent) {
       Navigator.pushReplacement(
         context,
@@ -228,12 +255,14 @@ class _CallScreenState extends State<CallScreen> {
           ),
         ),
       );
-    } else {
+    }
+    if (endedBy == 'ended') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => ScreenManager(
             initialIndex: 3,
+            showNoUserDialog: false,
           ),
         ),
       );

@@ -14,6 +14,8 @@ class SessionModel {
   final String bookingCode;
   final bool isStudent;
   final String paymentStatus;
+  final bool studentJoined;
+  final bool instructorJoined;
 
   // final DateTime createAt;
 
@@ -32,6 +34,8 @@ class SessionModel {
       required this.bookingCode,
       required this.isStudent,
       required this.duration,
+      required this.instructorJoined,
+      required this.studentJoined,
       required this.paymentStatus});
 
   SessionModel copyWith({
@@ -42,6 +46,8 @@ class SessionModel {
         sessionId: sessionId,
         bookingCode: bookingCode,
         userId: userId,
+        instructorJoined: instructorJoined,
+        studentJoined: studentJoined,
         studentId: studentId,
         userName: userName,
         userRole: userRole,

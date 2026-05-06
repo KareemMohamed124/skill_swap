@@ -11,8 +11,8 @@ import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../book_session/screens/profile_mentor.dart';
 import '../models/user_rank.dart';
-import '../widgets/section_header.dart';
 import '../pages/recommended_view_all.dart';
+import '../widgets/section_header.dart';
 
 class RecommendedSection extends StatelessWidget {
   const RecommendedSection({super.key});
@@ -24,7 +24,7 @@ class RecommendedSection extends StatelessWidget {
     return BlocBuilder<MyProfileCubit, MyProfileState>(
       builder: (context, profileState) {
         if (profileState is! MyProfileLoaded) {
-          return const SizedBox(); // ❌ متظهريش حاجة لحد ما البروفايل ييجي
+          return const SizedBox();
         }
 
         final currentTrack = profileState.profile.track.name ?? '';

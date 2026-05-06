@@ -133,7 +133,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
                         skills: u.skills,
                         hoursAvailable: u.freeHours,
                         peopleHelped: u.helpTotalHours,
-                        hourlyRate: 0,
+                        hourlyRate: u.hourlyPrice,
                         reviews: u.reviews,
                         role: u.role,
                       ),

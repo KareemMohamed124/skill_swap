@@ -99,7 +99,7 @@ class RecommendedCard extends StatelessWidget {
                       const Icon(Icons.star,
                           size: 16, color: Color(0xFFFFCE31)),
                       const SizedBox(width: 4),
-                      Text("$rating",
+                      Text(rating!.toStringAsFixed(1),
                           style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),

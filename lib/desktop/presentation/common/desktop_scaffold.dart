@@ -38,9 +38,9 @@ class DesktopScaffold extends StatelessWidget {
           ),
 
           /// Right Panel
-          if (width >= 1200 && rightPanel != null)
+          if (width >= 900 && rightPanel != null)
             Container(
-              width: 320,
+              width: 350,
               color: colors.surfaceVariant,
               child: rightPanel!,
             ),

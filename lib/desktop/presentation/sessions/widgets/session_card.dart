@@ -239,47 +239,11 @@ class _SessionCardState extends State<SessionCard> {
         }
       },
       child: InkWell(
-        onTap: isPending
-            ? () async {
-                final user = await context
-                    .read<UsersCubit>()
-                    .getUserById(widget.session.userId);
-                if (user != null) {
-                  // Get.to(
-                  //   ProfileMentorDesktop(
-                  //     id: user.id,
-                  //     image: user.userImage.secureUrl ?? "",
-                  //     name: user.name,
-                  //     track: user.track.name,
-                  //     rate: user.rate ?? 5.0,
-                  //     bio: user.profile.bio ?? "",
-                  //     hoursAvailable: user.freeHours ?? 5,
-                  //     peopleHelped: user.helpTotalHours ?? 0,
-                  //     hourlyRate: widget.session.price,
-                  //     skills: user.skills ?? [],
-                  //     reviews: user.reviews ?? [],
-                  //     role: user.role,
-                  //   ),
-                  // )?.then((_) {
-                  //   showModalBottomSheet(
-                  //     context: context,
-                  //     isScrollControlled: true,
-                  //     backgroundColor: Colors.transparent,
-                  //     builder: (_) => BookingBottomSheet(
-                  //       userId: user.id,
-                  //       userName: user.name,
-                  //       price: widget.session.price,
-                  //       bookingId: widget.session.sessionId.toString(),
-                  //       availableDates: [],
-                  //       role: user.role,
-                  //     ),
-                  //   );
-                  // });
-                } else {
-                  Get.snackbar("Error", "User data not found");
-                }
-              }
-            : null,
+        onTap: () {
+          Get.to(() => DesktopCallScreen(
+                session: widget.session,
+              ));
+        },
         child: Container(
           padding: EdgeInsets.all(pad),
           decoration: BoxDecoration(
@@ -709,32 +673,96 @@ class _SessionCardState extends State<SessionCard> {
                               },
                               builder: (context, state) {
                                 final isJoining = state is JoinSessionLoading;
+
                                 return GestureDetector(
                                   onTap: (_timeRemaining.inSeconds <= 0 &&
                                           !isJoining)
                                       ? () {
                                           context.read<JoinSessionBloc>().add(
-                                              JoinSessionRequested(
-                                                  widget.session.sessionId));
+                                                JoinSessionRequested(
+                                                  widget.session.sessionId,
+                                                ),
+                                              );
                                         }
                                       : null,
                                   child: _actionButton(
-                                    height: btnH,
-                                    radius: _isDesktop ? 8 : screenWidth * 0.03,
-                                    color: _timeRemaining.inSeconds > 0
-                                        ? AppPalette.primary
-                                        : Colors.green,
-                                    child: isJoining
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white)
-                                        : Text(
-                                            _timeRemaining.inSeconds > 0
-                                                ? "Session starts in ${_formatDuration(_timeRemaining)}"
-                                                : "Start Session",
-                                            style: const TextStyle(
-                                                color: Colors.white),
-                                          ),
-                                  ),
+                                      height: btnH,
+                                      radius:
+                                          _isDesktop ? 8 : screenWidth * 0.03,
+                                      color: _timeRemaining.inSeconds > 0
+                                          ? AppPalette.primary
+                                          : Colors.green,
+                                      child: isJoining
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white)
+                                          : BlocProvider(
+                                              create: (_) =>
+                                                  sl<JoinSessionBloc>(),
+                                              child: BlocConsumer<
+                                                  JoinSessionBloc,
+                                                  JoinSessionState>(
+                                                listener: (context, state) {
+                                                  if (state
+                                                      is JoinSessionSuccess) {
+                                                    Get.to(
+                                                        () => DesktopCallScreen(
+                                                              session: widget
+                                                                  .session,
+//remainingMinutes: 2
+                                                            ));
+                                                  } else if (state
+                                                      is JoinSessionFailure) {
+                                                    Get.snackbar(
+                                                        "Error", state.error);
+                                                  }
+                                                },
+                                                builder: (context, state) {
+                                                  final isJoining = state
+                                                      is JoinSessionLoading;
+
+                                                  final canJoin = _timeRemaining
+                                                          .inSeconds <=
+                                                      0;
+
+                                                  return GestureDetector(
+                                                    onTap:
+                                                        (canJoin && !isJoining)
+                                                            ? () {
+                                                                context
+                                                                    .read<
+                                                                        JoinSessionBloc>()
+                                                                    .add(
+                                                                      JoinSessionRequested(widget
+                                                                          .session
+                                                                          .sessionId),
+                                                                    );
+                                                              }
+                                                            : null,
+                                                    child: _actionButton(
+                                                      height: btnH,
+                                                      radius: _isDesktop
+                                                          ? 8
+                                                          : screenWidth * 0.03,
+                                                      color: canJoin
+                                                          ? Colors.green
+                                                          : AppPalette.primary,
+                                                      child: isJoining
+                                                          ? const CircularProgressIndicator(
+                                                              color:
+                                                                  Colors.white)
+                                                          : Text(
+                                                              canJoin
+                                                                  ? "Live now"
+                                                                  : "Session starts in ${_formatDuration(_timeRemaining)}",
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            )),
                                 );
                               },
                             ),
@@ -761,23 +789,27 @@ class _SessionCardState extends State<SessionCard> {
                               },
                               builder: (context, state) {
                                 final isPayLoading = state is PayBookingLoading;
+
                                 return GestureDetector(
                                   onTap: isPayLoading
                                       ? null
                                       : () {
                                           context.read<PayBookingBloc>().add(
                                                 PayBookingRequested(
-                                                  bookingId:
-                                                      widget.session.sessionId,
-                                                  voucherId:
-                                                      selectedVoucher?.id,
-                                                ),
+                                                    bookingId: widget
+                                                        .session.sessionId,
+                                                    voucherId:
+                                                        selectedVoucher?.id),
                                               );
                                         },
-                                  child: _actionButton(
-                                    height: btnH,
-                                    radius: _isDesktop ? 8 : screenWidth * 0.03,
-                                    color: AppPalette.primary,
+                                  child: Container(
+                                    height: screenWidth * 0.11,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: AppPalette.primary,
+                                      borderRadius: BorderRadius.circular(
+                                          screenWidth * 0.03),
+                                    ),
                                     child: isPayLoading
                                         ? const CircularProgressIndicator(
                                             color: Colors.white)
@@ -804,6 +836,16 @@ class _SessionCardState extends State<SessionCard> {
                           style: const TextStyle(color: Colors.white),
                         ),
                       )
+              else if (isRejected)
+                _actionButton(
+                  height: btnH,
+                  radius: _isDesktop ? 8 : screenWidth * 0.03,
+                  color: Colors.red.shade100,
+                  child: const Text(
+                    "Session Rejected",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
               else
                 _actionButton(
                   height: btnH,
