@@ -20,7 +20,14 @@ class RewardItem extends StatelessWidget {
             color: Colors.white.withOpacity(0.2),
             shape: BoxShape.circle,
           ),
-          child: Image.asset(
+          child: image.startsWith("http")
+              ? Image.network(
+            image,
+            width: 24,
+            height: 24,
+            errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+          )
+              : Image.asset(
             image,
             width: 24,
             height: 24,

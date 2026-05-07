@@ -5,10 +5,24 @@ import 'package:skill_swap/mobile/presentation/game_part/reward_card.dart';
 import '../../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../../shared/bloc/store_cubit/store_state.dart';
 
-class RewardsScreen extends StatelessWidget {
+class RewardsScreen extends StatefulWidget {
   final int myRank;
 
   const RewardsScreen({super.key, required this.myRank});
+
+  @override
+  State<RewardsScreen> createState() => _RewardsScreenState();
+}
+
+class _RewardsScreenState extends State<RewardsScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<StoreCubit>().getStoreItems(freeOnly: true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +32,13 @@ class RewardsScreen extends StatelessWidget {
       ),
       body: BlocBuilder<StoreCubit, StoreState>(
         builder: (context, state) {
-
           /// 🟡 مش وقت الكلايم
           if (!state.isClaimPhase) {
             return _buildPreview(context);
           }
 
           /// 🟡 برا top 10
-          if (myRank > 10) {
+          if (widget.myRank > 10) {
             return const Center(
               child: Text(
                 "Keep going! Reach top 10 next month 💪",
@@ -42,7 +55,6 @@ class RewardsScreen extends StatelessWidget {
   }
 
   // ================= PREVIEW =================
-
   Widget _buildPreview(BuildContext context) {
     final cubit = context.read<StoreCubit>();
 
@@ -74,20 +86,19 @@ class RewardsScreen extends StatelessWidget {
   }
 
   // ================= CLAIM =================
-
   Widget _buildClaim(BuildContext context, StoreState state) {
     final cubit = context.read<StoreCubit>();
 
     return Center(
       child: RewardCard(
-        rank: myRank <= 3 ? myRank : null,
-        range: myRank > 3 ? "4-10" : null,
+        rank: widget.myRank <= 3 ? widget.myRank : null,
+        range: widget.myRank > 3 ? "4-10" : null,
         isClaim: true,
         isClaimed: state.isClaimed,
         isLoading: state.isLoading,
-        rewards: cubit.getRewardItemsByRank(myRank),
+        rewards: cubit.getRewardItemsByRank(widget.myRank),
         onCollect: () {
-          cubit.collectRewards(myRank);
+          cubit.collectRewards(widget.myRank);
         },
       ),
     );
