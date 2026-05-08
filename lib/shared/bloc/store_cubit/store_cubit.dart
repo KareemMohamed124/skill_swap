@@ -23,12 +23,9 @@ class StoreCubit extends Cubit<StoreState> {
   Timer? timer;
   final box = GetStorage();
 
-  /// ================= KEYS =================
   static const String endTimeKey = "store_end_time";
   static const String monthStartKey = "month_start";
   static const String claimedKey = "claimed";
-
-  // ================= STORE ITEMS =================
 
   Future<void> getStoreItems({required bool freeOnly}) async {
     try {
@@ -53,8 +50,6 @@ class StoreCubit extends Cubit<StoreState> {
     }
   }
 
-  // ================= BUY ITEM =================
-
   Future<void> buyItem(String id) async {
     try {
       final response = await repository.purchaseItem(id);
@@ -75,16 +70,12 @@ class StoreCubit extends Cubit<StoreState> {
     }
   }
 
-  // ================= CLEAR =================
-
   void clearMessage() {
     emit(state.copyWith(
       successMessage: null,
       errorMessage: null,
     ));
   }
-
-  // ================= FREE ITEMS =================
 
   Future<List<StoreItem>> getFreeStoreItems() async {
     final response = await repository.getItems();
@@ -95,27 +86,22 @@ class StoreCubit extends Cubit<StoreState> {
         .toList();
   }
 
-  // ================= REWARDS BY RANK =================
-
   List<StoreItem> getRewardItemsByRank(int rank) {
     final freeItems = state.items.where((e) => e.price == 0).toList();
 
-    if (rank == 1) {
-      return freeItems.where((e) => e.title == "50% Discount").toList();
-    }
+    final rewardsMap = {
+      1: ["50% Discount", "Top1 Bubble", "20 free hours"],
+      2: ["25% Discount", "Top2 Bubble", "15 free hours"],
+      3: ["15% Discount", "Top3 Bubble", "10 free hours"],
+      4: ["10% Discount", "5 free hours"],
+    };
 
-    if (rank == 2) {
-      return freeItems.where((e) => e.title == "25% Discount").toList();
-    }
+    final rewardTitles = rewardsMap[rank] ?? [];
 
-    if (rank == 3) {
-      return freeItems.where((e) => e.title == "15% Discount").toList();
-    }
-
-    return [];
+    return freeItems
+        .where((item) => rewardTitles.contains(item.title))
+        .toList();
   }
-
-  // ================= TIMER =================
 
   DateTime getNextSaturdayMidnight() {
     final now = DateTime.now();
@@ -172,8 +158,6 @@ class StoreCubit extends Cubit<StoreState> {
     });
   }
 
-  // ================= REWARD TIME =================
-
   DateTime getMonthStart() {
     final stored = box.read(monthStartKey);
 
@@ -199,8 +183,6 @@ class StoreCubit extends Cubit<StoreState> {
     return now.isAfter(getClaimStart()) && now.isBefore(getClaimEnd());
   }
 
-  // ================= CLAIM REWARDS =================
-
   Future<void> collectRewards(int myRank) async {
     try {
       emit(state.copyWith(isLoading: true));
@@ -216,7 +198,7 @@ class StoreCubit extends Cubit<StoreState> {
       emit(state.copyWith(
         isLoading: false,
         isClaimed: true,
-        successMessage: "Rewards collected 🎉",
+        successMessage: "Rewards collected",
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -225,8 +207,6 @@ class StoreCubit extends Cubit<StoreState> {
       ));
     }
   }
-
-  // ================= AUTO CLAIM =================
 
   Future<void> handleRewards(int myRank) async {
     final now = DateTime.now();

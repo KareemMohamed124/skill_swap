@@ -4,6 +4,7 @@ import 'package:skill_swap/shared/bloc/change_password_bloc/change_password_bloc
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
+import 'package:skill_swap/shared/data/web_services/skills/skills_api_services.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
 import '../bloc/accepted_bookings/accepted_bookings_cubit.dart';
@@ -36,6 +37,7 @@ import '../bloc/status_book_bloc/status_book_bloc.dart';
 import '../bloc/store_cubit/purchase_cubit.dart';
 import '../bloc/store_cubit/store_cubit.dart';
 import '../bloc/submit_review_bloc/submit_review_bloc.dart';
+import '../bloc/track_cubit/skills_cubit.dart';
 import '../bloc/track_cubit/track_cubit.dart';
 import '../bloc/tracks_bloc/tracks_bloc.dart';
 import '../bloc/update_book_bloc/update_book_bloc.dart';
@@ -80,6 +82,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<BookingApi>(() => BookingApi(sl<Dio>()));
   sl.registerLazySingleton<UserApi>(() => UserApi(sl<Dio>()));
   sl.registerLazySingleton<ReportApi>(() => ReportApi(sl<Dio>()));
+  sl.registerLazySingleton<SkillsApiService>(() => SkillsApiService(sl<Dio>()));
+
   sl.registerLazySingleton<StoreApiService>(() => StoreApiService(sl<Dio>()));
 
   sl.registerLazySingleton<NotificationApi>(
@@ -113,6 +117,8 @@ Future<void> initDependencies() async {
       () => StoreRepositoryImpl(api: sl<StoreApiService>()));
 
   // Blocs
+  sl.registerFactory<SkillsCubit>(() => SkillsCubit(sl<SkillsApiService>()));
+
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
   sl.registerFactory<LoginBloc>(() => LoginBloc(sl<AuthRepository>()));
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
@@ -194,6 +200,7 @@ Future<void> initDependencies() async {
   // Chat Cubits
   sl.registerFactory<PrivateChatsBloc>(() => PrivateChatsBloc(
         sl<ChatRepository>(),
+        sl<PusherService>(),
       ));
 
   sl.registerFactory<PublicChatMessagesCubit>(() => PublicChatMessagesCubit(

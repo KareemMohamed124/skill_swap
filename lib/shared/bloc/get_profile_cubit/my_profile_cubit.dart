@@ -5,6 +5,7 @@ import 'package:skill_swap/mobile/presentation/sign/screens/sign_in_screen.dart'
 import 'package:skill_swap/shared/data/models/my_profile/my_profile.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
 
+import '../../core/services/notification_service.dart';
 import '../../domain/repositories/user_repository.dart';
 
 part 'my_profile_state.dart';
@@ -55,6 +56,31 @@ class MyProfileCubit extends Cubit<MyProfileState> {
           barrierDismissible: false,
         );
       }
+    }
+  }
+
+  Future<MyProfile?> getMyProfile() async {
+    try {
+      return await repository.getMyProfile();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> handleInvalidAccount() async {
+    await repository.deleteAccount();
+    await LocalStorage.clearAllTokens();
+    await NotificationService.deleteToken();
+    emit(MyProfileInitial());
+  }
+
+  Future<void> validateProfile(MyProfile profile) async {
+    final isInvalid = profile.activationCode == null ||
+        profile.skills.isEmpty ||
+        profile.track.id.isEmpty;
+
+    if (isInvalid) {
+      await handleInvalidAccount();
     }
   }
 

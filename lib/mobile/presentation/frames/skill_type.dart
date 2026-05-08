@@ -4,7 +4,10 @@ enum SkillType {
   csharp,
   java,
   php,
-  javascript,
+  js,
+  top1,
+  top2,
+  top3
 }
 
 enum FrameShapeType {

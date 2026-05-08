@@ -28,4 +28,24 @@ class LastMessageModel {
       createdAt: json['createdAt'] ?? '',
     );
   }
+
+  LastMessageModel copyWith({
+    String? id,
+    String? chatId,
+    String? senderId,
+    String? content,
+    String? messageType,
+    List<dynamic>? readBy,
+    String? createdAt,
+  }) {
+    return LastMessageModel(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
+      senderId: senderId ?? this.senderId,
+      content: content ?? this.content,
+      messageType: messageType ?? this.messageType,
+      readBy: readBy ?? this.readBy,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

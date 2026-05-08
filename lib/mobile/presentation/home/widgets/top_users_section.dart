@@ -15,9 +15,7 @@ class TopUsersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-      sl<UsersCubit>()
-        ..fetchUsers(reset: true, topUsers: true),
+      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true, topUsers: true),
       child: const _TopUsersList(),
     );
   }
@@ -41,10 +39,15 @@ class _TopUsersListState extends State<_TopUsersList> {
 
   void _scrollListener() {
     final cubit = context.read<UsersCubit>();
-    if (_controller.position.pixels >=
-        _controller.position.maxScrollExtent - 150 &&
-        cubit.state is UsersLoaded) {
+
+    if (!_controller.hasClients) return;
+
+    final max = _controller.position.maxScrollExtent;
+    final current = _controller.position.pixels;
+
+    if (current >= max - 150 && cubit.state is UsersLoaded) {
       final state = cubit.state as UsersLoaded;
+
       if (!state.isLoadingMore && !state.isLastPage) {
         cubit.fetchNextPage();
       }
@@ -60,13 +63,10 @@ class _TopUsersListState extends State<_TopUsersList> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final height = MediaQuery.of(context).size.height;
 
     return SizedBox(
-      height: screenHeight * 0.18,
+      height: height * 0.18,
       child: BlocBuilder<UsersCubit, UsersState>(
         builder: (context, state) {
           if (state is UsersLoading) {
@@ -79,52 +79,58 @@ class _TopUsersListState extends State<_TopUsersList> {
           }
 
           if (state is UsersLoaded) {
+            final showLoader = state.isLoadingMore && !state.isLastPage;
+
+            final itemCount =
+                showLoader ? state.users.length + 1 : state.users.length;
+
             return ListView.separated(
               controller: _controller,
               scrollDirection: Axis.horizontal,
-              itemCount: state.isLastPage
-                  ? state.users.length
-                  : state.users.length + 1,
+              itemCount: itemCount,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
-                if (index < state.users.length) {
-                  final u = state.users[index];
-                  return InkWell(
-                    onTap: () {
-                      Get.to(ProfileMentor(
-                        id: u.id,
-                        name: u.name,
-                        track: u.track.name,
-                        rate: u.rate,
-                        image: u.userImage.secureUrl,
-                        bio: u.profile.bio,
-                        skills: u.skills,
-                        role: u.role,
-                        hoursAvailable: u.freeHours,
-                        peopleHelped: u.helpTotalHours,
-                        hourlyRate: u.hourlyPrice,
-                        reviews: u.reviews,
-                      ));
-                    },
-                    child: TopUserCard(
-                      id: u.id,
-                      image: u.userImage.secureUrl,
-                      name: u.name,
-                      track: u.track.name.isEmpty
-                          ? "Mobile Development"
-                          : u.track.name,
-                      hours: u.helpTotalHours,
-                    ),
-                  );
-                } else {
+                // loader item
+                if (index >= state.users.length) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 32),
                     child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppPalette.primary,
-                        )),
+                      child: CircularProgressIndicator(
+                        color: AppPalette.primary,
+                      ),
+                    ),
                   );
                 }
+
+                final u = state.users[index];
+
+                return InkWell(
+                  onTap: () {
+                    Get.to(ProfileMentor(
+                      id: u.id,
+                      name: u.name,
+                      track: u.track.name,
+                      rate: u.rate,
+                      image: u.userImage.secureUrl,
+                      bio: u.profile.bio,
+                      skills: u.skills,
+                      role: u.role,
+                      hoursAvailable: u.freeHours,
+                      peopleHelped: u.helpTotalHours,
+                      hourlyRate: u.hourlyPrice,
+                      reviews: u.reviews,
+                    ));
+                  },
+                  child: TopUserCard(
+                    id: u.id,
+                    image: u.userImage.secureUrl,
+                    name: u.name,
+                    track: u.track.name.isEmpty
+                        ? "Mobile Development"
+                        : u.track.name,
+                    hours: u.helpTotalHours,
+                  ),
+                );
               },
             );
           }

@@ -28,8 +28,8 @@ class ChatRepositoryImpl implements ChatRepository {
           response['chatId']?.toString() ??
           (response['chat'] is Map
               ? (response['chat']['_id']?.toString() ??
-                  response['chat']['id']?.toString() ??
-                  '')
+              response['chat']['id']?.toString() ??
+              '')
               : '');
     } on DioException catch (e) {
       throw _extractError(e);
@@ -43,7 +43,8 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await api.getMyChats();
       return response
           .where((item) => item is Map<String, dynamic>)
-          .map((item) => PrivateChatModel.fromJson(
+          .map((item) =>
+          PrivateChatModel.fromJson(
               item as Map<String, dynamic>, currentUserId))
           .toList();
     } on DioException catch (e) {
@@ -131,7 +132,7 @@ class ChatRepositoryImpl implements ChatRepository {
         final isPrivate = chat.type == "private";
 
         final hasOtherUser =
-            chat.participants.any((p) => p.id.trim() != currentUserId.trim());
+        chat.participants.any((p) => p.id.trim() != currentUserId.trim());
 
         final hasMessage = chat.lastMessage != null;
 
@@ -157,9 +158,16 @@ class ChatRepositoryImpl implements ChatRepository {
 
       if (senderId == currentUserId) return false;
 
-      final readBy = List<String>.from(msg['readBy'] ?? []);
+      // readBy items can be plain strings OR populated Map objects
+      final rawReadBy = msg['readBy'] ?? [];
+      final readByIds = (rawReadBy as List).map((e) {
+        if (e is Map) {
+          return (e['_id'] ?? e['id'] ?? e).toString();
+        }
+        return e.toString();
+      }).toList();
 
-      return !readBy.contains(currentUserId);
+      return !readByIds.contains(currentUserId);
     }).length;
   }
 
@@ -195,12 +203,12 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<SendMessageResponse> sendMessage(
-      String chatId, String content, String type,
+  Future<SendMessageResponse> sendMessage(String chatId, String content,
+      String type,
       {String? replyTo}) async {
     try {
       final response =
-          await api.sendMessage(chatId, content, type, replyTo: replyTo);
+      await api.sendMessage(chatId, content, type, replyTo: replyTo);
 
       return SendMessageResponse.fromJson(response);
     } on DioException catch (e) {
@@ -218,8 +226,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> editMessage(
-      String chatId, String messageId, String content) async {
+  Future<void> editMessage(String chatId, String messageId,
+      String content) async {
     try {
       await api.editMessage(chatId, messageId, content);
     } on DioException catch (e) {

@@ -32,22 +32,19 @@ class _RewardsScreenState extends State<RewardsScreen> {
       ),
       body: BlocBuilder<StoreCubit, StoreState>(
         builder: (context, state) {
-          /// 🟡 مش وقت الكلايم
           if (!state.isClaimPhase) {
             return _buildPreview(context);
           }
 
-          /// 🟡 برا top 10
           if (widget.myRank > 10) {
             return const Center(
               child: Text(
-                "Keep going! Reach top 10 next month 💪",
+                "Keep going! Reach top 10 next month",
                 style: TextStyle(fontSize: 16),
               ),
             );
           }
 
-          /// 🟢 وقت الكلايم
           return _buildClaim(context, state);
         },
       ),
@@ -70,6 +67,9 @@ class _RewardsScreenState extends State<RewardsScreen> {
           rank: 2,
           preview: true,
           rewards: cubit.getRewardItemsByRank(2),
+          onCollect: () {
+            cubit.collectRewards(2);
+          },
         ),
         RewardCard(
           rank: 3,

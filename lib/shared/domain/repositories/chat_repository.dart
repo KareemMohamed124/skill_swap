@@ -21,8 +21,8 @@ abstract class ChatRepository {
   Future<ChatHistoryResponse> getMessages(String chatId,
       {int page = 1, int limit = 20});
 
-  Future<SendMessageResponse> sendMessage(
-      String chatId, String content, String type,
+  Future<SendMessageResponse> sendMessage(String chatId, String content,
+      String type,
       {String? replyTo});
 
   Future<TracksResponse> getTracks();

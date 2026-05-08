@@ -31,7 +31,8 @@ class ChatHistoryResponse {
         totalPages: json['totalPages'],
       );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'message': message,
         'userId': userId,
         'messages': List<dynamic>.from(messages.map((x) => x.toJson())),
@@ -62,47 +63,48 @@ class ChatMessage {
   final MessageTheme? theme;
   final String? timeOnly;
 
-  ChatMessage(
-      {required this.id,
-      required this.chatId,
-      required this.senderId,
-      required this.content,
-      required this.messageType,
-      required this.readBy,
-      required this.createdAt,
-      required this.updatedAt,
-      this.replyTo,
-      this.themeId,
-      this.timeOnly,
-      required this.v,
-      this.isEdited = false,
-      this.isSeen = false,
-      this.status = MessageStatus.sent,
-      this.theme});
+  ChatMessage({required this.id,
+    required this.chatId,
+    required this.senderId,
+    required this.content,
+    required this.messageType,
+    required this.readBy,
+    required this.createdAt,
+    required this.updatedAt,
+    this.replyTo,
+    this.themeId,
+    this.timeOnly,
+    required this.v,
+    this.isEdited = false,
+    this.isSeen = false,
+    this.status = MessageStatus.sent,
+    this.theme});
 
-  factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
-      id: json['_id'],
-      chatId: json['chatId'],
-      senderId: Sender.fromJson(json['senderId']),
-      content: json['content'],
-      messageType: json['messageType'],
-      readBy: json['readBy'] ?? [],
-      themeId: json['themeId'],
-      timeOnly: json['timeOnly'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : DateTime.now(),
-      replyTo: json['replyTo'] != null
-          ? ReplyMessage.fromJson(json['replyTo'])
-          : null,
-      v: json['__v'] ?? 0,
-      isEdited: json['isEdited'] ?? false,
-      isSeen: json['isSeen'] ?? false,
-      theme:
+  factory ChatMessage.fromJson(Map<String, dynamic> json) =>
+      ChatMessage(
+          id: json['_id'],
+          chatId: json['chatId'],
+          senderId: Sender.fromJson(json['senderId']),
+          content: json['content'],
+          messageType: json['messageType'],
+          readBy: json['readBy'] ?? [],
+          themeId: json['themeId'],
+          timeOnly: json['timeOnly'],
+          createdAt: DateTime.parse(json['createdAt']),
+          updatedAt: json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'])
+              : DateTime.now(),
+          replyTo: json['replyTo'] != null
+              ? ReplyMessage.fromJson(json['replyTo'])
+              : null,
+          v: json['__v'] ?? 0,
+          isEdited: json['isEdited'] ?? false,
+          isSeen: json['isSeen'] ?? false,
+          theme:
           json['theme'] != null ? MessageTheme.fromJson(json['theme']) : null);
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         '_id': id,
         'chatId': chatId,
         'senderId': senderId.toJson(),
@@ -120,21 +122,20 @@ class ChatMessage {
         'timeOnly': timeOnly
       };
 
-  ChatMessage copyWith(
-      {String? id,
-      String? chatId,
-      Sender? senderId,
-      String? content,
-      String? messageType,
-      List<dynamic>? readBy,
-      DateTime? createdAt,
-      DateTime? updatedAt,
-      ReplyMessage? replyTo,
-      int? v,
-      bool? isEdited,
-      bool? isSeen,
-      MessageStatus? status,
-      MessageTheme? theme}) {
+  ChatMessage copyWith({String? id,
+    String? chatId,
+    Sender? senderId,
+    String? content,
+    String? messageType,
+    List<dynamic>? readBy,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    ReplyMessage? replyTo,
+    int? v,
+    bool? isEdited,
+    bool? isSeen,
+    MessageStatus? status,
+    MessageTheme? theme}) {
     return ChatMessage(
         id: id ?? this.id,
         chatId: chatId ?? this.chatId,

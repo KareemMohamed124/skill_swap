@@ -24,74 +24,58 @@ class RewardCard extends StatelessWidget {
       this.rewards = const []});
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: _getGradient(),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          /// 🏆 Title
-          Text(
-            rank != null ? "Rank #$rank" : "Rank $range",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        onCollect?.call();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: _getGradient(),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            )
+          ],
+        ),
+        child: Column(
+          children: [
+            Text(
+              rank != null ? "Rank #$rank" : "Rank $range",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🎁 Rewards (صور)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: rewards.map((item) {
-              return RewardItem(
-                image: item.image,
-                label: item.title,
-              );
-            }).toList(),
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 🔘 Preview
-          if (preview)
-            const Text(
-              "Finish in this rank to win 🎯",
-              style: TextStyle(fontSize: 12),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: rewards.map((item) {
+                return RewardItem(
+                  image: item.image,
+                  label: item.title,
+                );
+              }).toList(),
             ),
-
-          /// 🔘 Claim Button
-          if (isClaim && !isClaimed)
-            ElevatedButton(
-              onPressed: isLoading ? null : onCollect,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text("Collect"),
-            ),
-
-          /// ✅ Collected
-          if (isClaimed)
-            const Text(
-              "Collected ✅",
-              style: TextStyle(color: Colors.green),
-            ),
-        ],
+            const SizedBox(height: 12),
+            if (preview)
+              Text(
+                "Finish in this rank to win 🎯",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            if (isClaim)
+              const Text(
+                "Tap card to test collect 🎯",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+          ],
+        ),
       ),
     );
   }

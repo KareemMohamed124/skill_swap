@@ -41,23 +41,44 @@ class AnimatedFrameContainer extends StatelessWidget {
   }
 
   Widget _buildBadge(FrameStyle style) {
+    final isCircle = style.shapeType == FrameShapeType.circle;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      width: isCircle ? 34 : null,
+      height: isCircle ? 34 : null,
+      padding: isCircle
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.9),
+        shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: isCircle ? null : BorderRadius.circular(20),
         border: Border.all(
           color: style.glowColor.withOpacity(0.4),
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: style.glowColor.withOpacity(0.25),
+            blurRadius: 8,
+          ),
+        ],
       ),
-      child: Text(
-        style.label,
-        style: TextStyle(
-          color: style.glowColor,
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Center(
+        child: style.icon != null
+            ? Icon(
+                style.icon,
+                color: style.glowColor,
+                size: 18,
+              )
+            : Text(
+                style.label ?? "",
+                style: TextStyle(
+                  color: style.glowColor,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
     );
   }

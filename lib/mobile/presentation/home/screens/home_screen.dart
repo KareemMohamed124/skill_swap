@@ -83,9 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     avatarPath: avatarPath,
                     unreadCount: unreadCount,
                     onIcon2: () {
-                      Get.to(() => BlocProvider(
-                            create: (_) => sl<PrivateChatsBloc>()
-                              ..add(GetPrivateChatsEvent()),
+                      final bloc = context.read<PrivateChatsBloc>();
+                      Get.to(() => BlocProvider.value(
+                            value: bloc..add(GetPrivateChatsEvent()),
                             child: PrivateChatsListScreen(currentUserId: id),
                           ));
                     },

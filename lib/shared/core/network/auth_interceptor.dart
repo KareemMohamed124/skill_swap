@@ -7,18 +7,12 @@ import 'package:get/get.dart' hide Response;
 import '../../../mobile/presentation/sign/screens/sign_in_screen.dart';
 import '../../helper/local_storage.dart';
 
-/// Dio interceptor that:
-/// 1. Attaches the access token to every request.
-/// 2. On a 401 response, attempts to refresh the token using the refresh token.
-/// 3. Retries the original failed request with the new access token.
-/// 4. If refresh fails, shows a session expired dialog and navigates to the sign-in screen.
-
 class AuthInterceptor extends Interceptor {
   final Dio dio;
 
   AuthInterceptor(this.dio);
 
-  // ───────────────────── onRequest ─────────────────────
+  // ───────────────────── REQUEST ─────────────────────
   @override
   void onRequest(
     RequestOptions options,
@@ -33,55 +27,145 @@ class AuthInterceptor extends Interceptor {
     handler.next(options);
   }
 
-  // ───────────────────── onResponse ─────────────────────
+  // ───────────────────── RESPONSE ─────────────────────
   @override
   void onResponse(
     Response response,
     ResponseInterceptorHandler handler,
-  ) {
-    final data = response.data.toString();
+  ) async {
+    final message = _extractMessage(response.data);
+    final statusCode = response.statusCode ?? 0;
 
-    if (_isTokenExpired(data)) {
-      print('🚨 Token expired (response)');
-      _showSessionExpiredDialog();
-    }
+    await _handleAllCases(
+      statusCode: statusCode,
+      message: message,
+      isError: false,
+    );
 
     handler.next(response);
   }
 
-  // ───────────────────── onError ─────────────────────
+  // ───────────────────── ERROR ─────────────────────
   @override
   void onError(
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    final data = err.response?.data.toString() ?? '';
+    final message = _extractMessage(err.response?.data);
+    final statusCode = err.response?.statusCode ?? 0;
 
-    print('❗ Error Data: $data');
+    print('❌ STATUS: $statusCode');
+    print('❌ MESSAGE: $message');
+    print('❌ TYPE: ${err.type}');
 
-    if (_isTokenExpired(data)) {
-      print('🚨 Token expired (error)');
-      _showSessionExpiredDialog();
-    }
+    await _handleAllCases(
+      statusCode: statusCode,
+      message: message,
+      isError: true,
+      dioErrorType: err.type,
+    );
 
     handler.next(err);
   }
 
-  // ───────────────────── Helpers ─────────────────────
+  // ───────────────────── MAIN HANDLER ─────────────────────
+  Future<void> _handleAllCases({
+    required int statusCode,
+    required String message,
+    required bool isError,
+    DioExceptionType? dioErrorType,
+  }) async {
+    // =========================
+    // FORCE LOGOUT CASES (SECURITY)
+    // =========================
 
-  bool _isTokenExpired(String data) {
-    return data.contains('jwt expired') || data.contains('TokenExpiredError');
+    if (_isTokenExpired(message)) {
+      await _logout(
+        title: 'Session Expired',
+        message: 'Please login again.',
+      );
+      return;
+    }
+
+    if (_isAnotherLogin(message)) {
+      await _logout(
+        title: 'Logged Out',
+        message: 'Your account was used on another device.',
+      );
+      return;
+    }
+
+    if (_isBlocked(message)) {
+      await _logout(
+        title: 'Account Blocked',
+        message: message,
+      );
+      return;
+    }
+
+    // =========================
+    // INTERNET / NETWORK ISSUES
+    // =========================
+
+    if (dioErrorType != null) {
+      if (dioErrorType == DioExceptionType.connectionError) {
+        await _logout(
+          title: 'Connection Lost',
+          message: 'No internet connection. Please login again.',
+        );
+        return;
+      }
+    }
+
+    // // =========================
+    // // SERVER ERROR
+    // // =========================
+    //
+    // if (statusCode >= 500) {
+    //   await _logout(
+    //     title: 'Server Error',
+    //     message: 'Server is down. Please try again later.',
+    //   );
+    //   return;
+    // }
   }
 
-  Future<void> _showSessionExpiredDialog() async {
+  // ───────────────────── HELPERS ─────────────────────
+
+  String _extractMessage(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      return data['message']?.toString() ?? '';
+    }
+    return data?.toString() ?? '';
+  }
+
+  bool _isTokenExpired(String msg) {
+    return msg.contains('jwt expired') || msg.contains('TokenExpiredError');
+  }
+
+  bool _isAnotherLogin(String msg) {
+    return msg.contains('Another login detected') ||
+        msg.contains('Session expired');
+  }
+
+  bool _isBlocked(String msg) {
+    return msg.contains('blocked');
+  }
+
+  // ───────────────────── LOGOUT ─────────────────────
+
+  Future<void> _logout({
+    required String title,
+    required String message,
+  }) async {
     await LocalStorage.clearAllTokens();
 
     if (Get.isDialogOpen ?? false) return;
 
     Get.dialog(
       AlertDialog(
-        title: const Text('Session Expired'),
-        content: const Text('Your session has expired. Please log in again.'),
+        title: Text(title),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () {

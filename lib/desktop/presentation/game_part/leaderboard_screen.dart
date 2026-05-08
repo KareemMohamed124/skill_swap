@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
+import '../../../main.dart';
+import '../../../mobile/presentation/game_part/rewards_screen.dart';
 import '../../../mobile/presentation/game_stor/widgets/show_store_daiolg.dart';
 import '../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../shared/data/models/user/user_model.dart';
+import '../../../shared/dependency_injection/injection.dart';
 import '../../../shared/helper/local_storage.dart';
 
 class LeaderboardScreen extends StatefulWidget {
@@ -29,99 +32,150 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Future<void> loadAll() async {
-    final cubit = context.read<UsersCubit>();
+    try {
+      final cubit = context.read<UsersCubit>();
 
-    final usersData = await cubit.getLeaderboardUsers(page: 1);
-    final userId = LocalStorage.getUserId();
-    final myRank = usersData.indexWhere((u) => u.id == myId) + 1;
+      final usersData = await cubit.getLeaderboardUsers(page: 1);
+      final userId = LocalStorage.getUserId();
 
-    context.read<StoreCubit>().handleRewards(myRank);
-    setState(() {
-      users = usersData;
-      myId = userId;
-      isLoading = false;
-    });
+      final myRank = usersData.indexWhere((u) => u.id == userId) + 1;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<StoreCubit>().handleRewards(myRank);
+      });
+
+      setState(() {
+        users = usersData;
+        myId = userId;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          /// 🔝 Top Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-            child: Row(
+    return BlocProvider(
+      create: (_) => sl<StoreCubit>(),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            body: Column(
               children: [
-                /// Back
-                IconButton(
-                  onPressed: widget.onBack,
-                  icon: const Icon(Icons.arrow_back),
-                ),
+                /// 🔝 Top Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 20,
+                  ),
+                  child: Row(
+                    children: [
+                      /// 🔙 Back
+                      IconButton(
+                        onPressed: widget.onBack,
+                        icon: const Icon(Icons.arrow_back),
+                      ),
 
-                const SizedBox(width: 12),
+                      const SizedBox(width: 12),
 
-                /// Title
-                const Text(
-                  "Leaderboard",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                      /// 🏆 Title
+                      const Text(
+                        "Leaderboard",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      /// Rewards
+                      IconButton(
+                        icon: const Icon(Icons.card_giftcard),
+                        onPressed: () {
+                          final myRank = users.isEmpty
+                              ? 0
+                              : users.indexWhere(
+                                    (u) => u.id == myId,
+                                  ) +
+                                  1;
+
+                          desktopKey.currentState?.openSidePage(
+                            body: BlocProvider.value(
+                              value: context.read<StoreCubit>(),
+                              child: RewardsScreen(
+                                myRank: myRank,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      /// Help
+                      IconButton(
+                        onPressed: () {
+                          showStoreDialog(
+                            context,
+                            isFirstTime: false,
+                            title: "Leaderboard",
+                            subtitle: "leaderboard",
+                            rules:
+                                "• Only the Top 10 players are displayed on the leaderboard\n"
+                                "• Your score is based on your performance in the Challenge Rooms.\n",
+                          );
+                        },
+                        icon: const Icon(Icons.help_outline_rounded),
+                      ),
+                    ],
                   ),
                 ),
 
-                const Spacer(),
+                /// ➖ Divider
+                Container(
+                  height: 2,
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  color: Colors.grey.shade300,
+                ),
 
-                /// Help Icon
-                IconButton(
-                  onPressed: () {
-                    showStoreDialog(context,
-                        isFirstTime: false,
-                        title: "Leaderboard",
-                        subtitle: "leaderboard",
-                        rules:
-                            "• Only the Top 10 players are displayed on the leaderboard\n"
-                            "• Your score is based on your performance in the Challenge Rooms.\n");
-                  },
-                  icon: const Icon(Icons.help_outline_rounded),
+                const SizedBox(height: 20),
+
+                /// 📋 Leaderboard List
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SizedBox(
+                        width: 700,
+                        child: isLoading
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ListView.builder(
+                                itemCount:
+                                    users.length > 10 ? 10 : users.length,
+                                itemBuilder: (context, index) {
+                                  final user = users[index];
+                                  final rank = index + 1;
+                                  final isMe = myId != null && user.id == myId;
+
+                                  return _buildItem(
+                                    user,
+                                    rank,
+                                    isMe,
+                                  );
+                                },
+                              ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-
-          /// ➖ Divider
-          Container(
-            height: 2,
-            margin: const EdgeInsets.symmetric(horizontal: 32),
-            color: Colors.grey.shade300,
-          ),
-
-          const SizedBox(height: 20),
-
-          /// 📋 List
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SizedBox(
-                  width: 700,
-                  child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          itemCount: users.length,
-                          itemBuilder: (context, index) {
-                            final user = users[index];
-                            final rank = index + 1;
-                            final isMe = myId != null && user.id == myId;
-
-                            return _buildItem(user, rank, isMe);
-                          },
-                        ),
-                ),
-              ),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -193,7 +247,7 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
           color: Colors.black.withOpacity(0.08),
           blurRadius: 14,
           offset: const Offset(0, 8),
-        )
+        ),
       ],
       border: isMe ? Border.all(color: AppPalette.primary, width: 2) : null,
     ),
@@ -202,9 +256,10 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
         Row(
           children: [
             _buildRankBadge(rank),
+
             const SizedBox(width: 14),
 
-            /// Avatar
+            /// 👤 Avatar
             Container(
               decoration: rank <= 3
                   ? BoxDecoration(
@@ -214,7 +269,7 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
                           color: rankColor.withOpacity(0.6),
                           blurRadius: 18,
                           spreadRadius: 1,
-                        )
+                        ),
                       ],
                     )
                   : null,
@@ -241,7 +296,7 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
 
             const SizedBox(width: 14),
 
-            /// Name
+            /// 👤 Name
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,6 +320,7 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
               ),
             ),
 
+            /// 🏆 Trophy
             if (rank <= 3)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
@@ -275,7 +331,7 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
                         color: rankColor.withOpacity(0.7),
                         blurRadius: 14,
                         spreadRadius: 1,
-                      )
+                      ),
                     ],
                   ),
                   child: Icon(
@@ -286,9 +342,12 @@ Widget _buildItem(UserModel user, int rank, bool isMe) {
                 ),
               ),
 
-            /// Score
+            /// 🎯 Score
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
                 color: AppPalette.primary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(14),
@@ -325,11 +384,14 @@ Widget _buildRankBadge(int rank) {
           color: color.withOpacity(rank <= 3 ? 0.6 : 0.3),
           blurRadius: rank <= 3 ? 14 : 8,
           offset: const Offset(0, 4),
-        )
+        ),
       ],
       gradient: rank <= 3
           ? LinearGradient(
-              colors: [color.withOpacity(0.5), color.withOpacity(0.2)],
+              colors: [
+                color.withOpacity(0.5),
+                color.withOpacity(0.2),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             )

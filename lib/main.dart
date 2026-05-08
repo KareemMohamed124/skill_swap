@@ -112,7 +112,7 @@ void main() async {
 
         final width = MediaQuery.of(context).size.width;
 
-        if (width >= 800) {
+        if (defaultTargetPlatform == TargetPlatform.windows) {
           return SignInDesktop();
         }
         return ScreenManager();

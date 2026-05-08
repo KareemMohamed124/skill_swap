@@ -56,10 +56,13 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _scrollListener() {
     final bloc = context.read<UserFilterBloc>();
+    final state = bloc.state;
+
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 200 &&
-        !bloc.state.isLastPage &&
-        !bloc.state.isLoadingMore) {
+        state.filteredList.isNotEmpty &&
+        !state.isLastPage &&
+        !state.isLoadingMore) {
       bloc.add(LoadMoreUsersEvent(
         page: bloc.currentPage + 1,
         limit: bloc.limit,
@@ -291,42 +294,39 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
+                            if (state.isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                    color: AppPalette.primary),
+                              );
+                            }
+
                             if (state.filteredList.isEmpty &&
                                 !state.isLoading) {
                               return Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
-                                      Icons.search_off,
-                                      size: 80,
-                                      color: Colors.grey,
-                                    ),
+                                    Icon(Icons.search_off,
+                                        size: 80, color: Colors.grey),
                                     SizedBox(height: 16),
-                                    Text(
-                                      "No results found",
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
-                                    // SizedBox(height: 8),
-                                    // Text(
-                                    //   "Try searching with different keywords",
-                                    //   style:
-                                    //       Theme.of(context).textTheme.bodySmall,
-                                    //   textAlign: TextAlign.center,
-                                    // ),
+                                    Text("No results found",
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium),
                                   ],
                                 ),
                               );
                             }
 
+                            final showLoader =
+                                state.isLoadingMore && !state.isLastPage;
                             return ListView.builder(
                               controller: _scrollController,
                               padding: EdgeInsets.zero,
                               itemCount: state.filteredList.length +
-                                  (state.isLastPage ? 0 : 1),
+                                  (showLoader ? 1 : 0),
                               itemBuilder: (context, index) {
                                 if (index < state.filteredList.length) {
                                   final user = state.filteredList[index];
@@ -359,13 +359,17 @@ class _SearchScreenState extends State<SearchScreen> {
                                       responseTime: "9",
                                     ),
                                   );
-                                } else {
-                                  return Padding(
+                                }
+                                if (index >= state.filteredList.length &&
+                                    state.isLoadingMore &&
+                                    !state.isLastPage) {
+                                  return const Padding(
                                     padding: EdgeInsets.all(16.0),
                                     child: Center(
-                                        child: CircularProgressIndicator(
-                                      color: AppPalette.primary,
-                                    )),
+                                      child: CircularProgressIndicator(
+                                        color: AppPalette.primary,
+                                      ),
+                                    ),
                                   );
                                 }
                               },

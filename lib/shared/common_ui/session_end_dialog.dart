@@ -31,13 +31,15 @@ class _SessionEndDialogState extends State<SessionEndDialog> {
   bool isLoadingUser = false;
 
   String _getMessage() {
-    if (widget.isStudent) {
-      return widget.price == 0
-          ? "Don't worry, your time won't be deducted."
-          : "Don't worry, your money will be returned to you.";
-    } else {
-      return "The session has ended";
+    if (widget.isStudent && widget.price == 0) {
+      return "Don't worry, your time won't be deducted.";
     }
+
+    if (widget.isStudent && widget.price > 0) {
+      return "Don't worry, your money will be returned to you.";
+    }
+
+    return "";
   }
 
   Future<void> _openReport() async {
@@ -75,6 +77,13 @@ class _SessionEndDialogState extends State<SessionEndDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final shouldShowDialog =
+        widget.isStudent && (widget.price == 0 || widget.price > 0);
+
+    if (!shouldShowDialog) {
+      return const SizedBox.shrink();
+    }
+
     return BlocListener<ReportBloc, ReportState>(
       listener: (context, state) {
         if (state is ReportSuccessState) {

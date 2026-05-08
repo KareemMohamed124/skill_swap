@@ -17,7 +17,6 @@ class TopUsersViewAll extends StatefulWidget {
 }
 
 class _TopUsersViewAllState extends State<TopUsersViewAll> {
-  int? selectedIndex = 1;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -28,10 +27,15 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
 
   void _scrollListener() {
     final cubit = context.read<UsersCubit>();
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
-        cubit.state is UsersLoaded) {
+
+    if (!_scrollController.hasClients) return;
+
+    final max = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.position.pixels;
+
+    if (current >= max - 200 && cubit.state is UsersLoaded) {
       final state = cubit.state as UsersLoaded;
+
       if (!state.isLoadingMore && !state.isLastPage) {
         cubit.fetchNextPage();
       }
@@ -49,24 +53,10 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    double radius = 32;
     double padding = 16;
 
     if (screenWidth >= 800) {
-      radius = 40;
       padding = 24;
-    }
-
-    double aspectRatio;
-
-    if (screenWidth < 360) {
-      aspectRatio = 0.6; // موبايلات صغيرة قوي
-    } else if (screenWidth < 400) {
-      aspectRatio = 0.65;
-    } else if (screenWidth < 450) {
-      aspectRatio = 0.7;
-    } else {
-      aspectRatio = 0.75; // موبايلات كبيرة
     }
 
     return BaseScreen(
@@ -74,7 +64,9 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
       child: BlocBuilder<UsersCubit, UsersState>(
         builder: (context, state) {
           if (state is UsersLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (state is UsersError) {
@@ -82,29 +74,33 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
           }
 
           if (state is UsersLoaded) {
-            final usersList = state.users;
+            final users = state.users;
+
+            final showLoader = state.isLoadingMore && !state.isLastPage;
+
+            final itemCount = showLoader ? users.length + 1 : users.length;
 
             return GridView.builder(
               controller: _scrollController,
               padding: EdgeInsets.all(padding),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.75),
-              itemCount:
-                  state.isLastPage ? usersList.length : usersList.length + 1,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: itemCount,
               itemBuilder: (context, index) {
-                if (index >= usersList.length) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                        child: CircularProgressIndicator(
-                            color: AppPalette.primary)),
+                // Loader item
+                if (index >= users.length) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppPalette.primary,
+                    ),
                   );
                 }
 
-                final user = usersList[index];
+                final user = users[index];
 
                 return GestureDetector(
                   onTap: () {
@@ -129,7 +125,9 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                     id: user.id,
                     image: user.userImage.secureUrl,
                     name: user.name,
-                    track: user.track.name ?? "Mobile Development",
+                    track: user.track.name.isEmpty
+                        ? "Mobile Development"
+                        : user.track.name,
                     hours: user.helpTotalHours,
                   ),
                 );

@@ -19,6 +19,8 @@ import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/logout_bloc/logout_bloc.dart';
 import '../../../../shared/bloc/logout_bloc/logout_event.dart';
 import '../../../../shared/bloc/logout_bloc/logout_state.dart';
+import '../../../../shared/bloc/track_cubit/skills_cubit.dart';
+import '../../../../shared/bloc/track_cubit/skills_state.dart';
 import '../../../../shared/bloc/update_profile_bloc/update_profile_bloc.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../setting/pages/change_password.dart';
@@ -205,6 +207,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   List<dynamic> selectedSkills = [];
   List<dynamic> originalSkills = [];
   String? userTrack;
+  String? userTrackId;
   List<dynamic> selectedSkillsNew = [];
   bool hasSeenMentorDialog = false;
 
@@ -249,6 +252,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     skillsController.text = selectedSkills.join(', ');
 
     userTrack = profile.track.name;
+    userTrackId = profile.track.id;
     selectedImage = null;
     controllersFilled = true;
 
@@ -318,26 +322,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (!hasSeenMentorDialog) {
       showDialog(
         context: context,
-        builder: (_) =>
-            AlertDialog(
-              title: const Text("Verification Required"),
-              content: const Text(
-                  "To add a skill, you need to pass an assessment with at least 85%."),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    hasSeenMentorDialog = true;
-                    showSkillsPicker(isMentorFlow: true);
-                  },
-                  child: const Text("Continue"),
-                ),
-              ],
+        builder: (_) => AlertDialog(
+          title: const Text("Verification Required"),
+          content: const Text(
+              "To add a skill, you need to pass an assessment with at least 85%."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                hasSeenMentorDialog = true;
+                showSkillsPicker(isMentorFlow: true);
+              },
+              child: const Text("Continue"),
+            ),
+          ],
+        ),
       );
     } else {
       showSkillsPicker(isMentorFlow: true);
@@ -346,17 +349,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenWidth = MediaQuery.of(context).size.width;
     final padding = screenWidth * 0.04;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme
-          .of(context)
-          .scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocListener<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
           if (state is UpdateProfileSuccessState) {
@@ -402,7 +400,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               padding: EdgeInsets.all(padding),
               child: Column(
                 children: [
-
                   /// Profile Picture
                   containerWrapper(
                     context: context,
@@ -417,31 +414,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             CircleAvatar(
                               radius: avatarRadius,
                               backgroundColor:
-                              AppPalette.primary.withValues(alpha: 0.25),
+                                  AppPalette.primary.withValues(alpha: 0.25),
                               backgroundImage: selectedImage != null
                                   ? FileImage(selectedImage!) as ImageProvider
                                   : (profile?.userImage.secureUrl.isNotEmpty ??
-                                  false)
-                                  ? NetworkImage(
-                                  profile!.userImage.secureUrl)
-                              as ImageProvider
-                                  : null,
+                                          false)
+                                      ? NetworkImage(
+                                              profile!.userImage.secureUrl)
+                                          as ImageProvider
+                                      : null,
                               child: (selectedImage == null &&
-                                  (profile?.userImage.secureUrl.isEmpty ??
-                                      true))
+                                      (profile?.userImage.secureUrl.isEmpty ??
+                                          true))
                                   ? (isLoading
-                                  ? SizedBox(
-                                width: avatarRadius * 1.2,
-                                height: avatarRadius * 1.2,
-                                child:
-                                const CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: Colors.white,
-                                ),
-                              )
-                                  : Icon(Icons.person,
-                                  size: avatarRadius,
-                                  color: Colors.white))
+                                      ? SizedBox(
+                                          width: avatarRadius * 1.2,
+                                          height: avatarRadius * 1.2,
+                                          child:
+                                              const CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : Icon(Icons.person,
+                                          size: avatarRadius,
+                                          color: Colors.white))
                                   : null,
                             ),
                             SizedBox(width: spacing),
@@ -456,7 +453,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       size: fontSizeTitle),
                                   label: Text("change_photo".tr,
                                       style:
-                                      TextStyle(fontSize: fontSizeTitle)),
+                                          TextStyle(fontSize: fontSizeTitle)),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -497,29 +494,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             text: "save_changes".tr,
                             onPressed: _hasChanges
                                 ? () {
-                              final skillsList =
-                              selectedSkillsNew.isNotEmpty
-                                  ? selectedSkillsNew
-                                  .map((skillName) =>
-                                  UpdateSkill(
-                                      skillName: skillName))
-                                  .toList()
-                                  : null;
+                                    final skillsList =
+                                        selectedSkillsNew.isNotEmpty
+                                            ? selectedSkillsNew
+                                                .map((skillName) => UpdateSkill(
+                                                    skillName: skillName))
+                                                .toList()
+                                            : null;
 
-                              final bioText = bioController.text.trim();
-                              final nameText = nameController.text.trim();
+                                    final bioText = bioController.text.trim();
+                                    final nameText = nameController.text.trim();
 
-                              final updateRequest = UpdateProfileRequest(
-                                name: nameText.isEmpty ? null : nameText,
-                                profile: bioText.isEmpty
-                                    ? null
-                                    : UpdateProfile(bio: bioText),
-                                skills: skillsList,
-                              );
+                                    final updateRequest = UpdateProfileRequest(
+                                      name: nameText.isEmpty ? null : nameText,
+                                      profile: bioText.isEmpty
+                                          ? null
+                                          : UpdateProfile(bio: bioText),
+                                      skills: skillsList,
+                                    );
 
-                              context.read<UpdateProfileBloc>().add(
-                                  SubmitUpdateProfile(updateRequest));
-                            }
+                                    context.read<UpdateProfileBloc>().add(
+                                        SubmitUpdateProfile(updateRequest));
+                                  }
                                 : null,
                           ),
                         ),
@@ -618,9 +614,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           "member_since".tr,
                           profile != null
                               ? profile.createdAt
-                              .toLocal()
-                              .toString()
-                              .split(' ')[0]
+                                  .toLocal()
+                                  .toString()
+                                  .split(' ')[0]
                               : '',
                           fontSizeTitle,
                         ),
@@ -640,20 +636,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget containerWrapper(
       {required BuildContext context, required Widget child}) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
-        color: Theme
-            .of(context)
-            .cardColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(screenWidth * 0.03),
-        border: Border.all(color: Theme
-            .of(context)
-            .dividerColor),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: child,
     );
@@ -666,11 +655,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .color)),
+              color: Theme.of(context).textTheme.bodyLarge!.color)),
     );
   }
 
@@ -735,50 +720,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) =>
-          AlertDialog(
-            title: const Text("Delete Account"),
-            content: const Text(
-                "Are you sure you want to delete your account? This action cannot be undone."),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text("Cancel")),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  context.read<DeleteAccountBloc>().add(DeleteAccountSubmit());
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text("Delete"),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Delete Account"),
+        content: const Text(
+            "Are you sure you want to delete your account? This action cannot be undone."),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text("Cancel")),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<DeleteAccountBloc>().add(DeleteAccountSubmit());
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text("Delete"),
           ),
+        ],
+      ),
     );
   }
 
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) =>
-          AlertDialog(
-            title: const Text("Log Out"),
-            content:
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Log Out"),
+        content:
             const Text("Are you sure you want to log out from your account?"),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text("Cancel")),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  context.read<LogoutBloc>().add(LogoutRequested());
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text("Log Out"),
-              ),
-            ],
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text("Cancel")),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<LogoutBloc>().add(LogoutRequested());
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text("Log Out"),
           ),
+        ],
+      ),
     );
   }
 
@@ -791,8 +774,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            ...selectedSkillsNew.map((skill) =>
-                Chip(
+            ...selectedSkillsNew.map((skill) => Chip(
                   label: Text(skill),
                   deleteIcon: const Icon(Icons.close, size: 18),
                   onDeleted: () {
@@ -819,94 +801,195 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void showSkillsPicker({bool isMentorFlow = false}) {
-    final trackSkills = tracksWithSkillsMap[userTrack] ?? [];
+    if (userTrackId == null) return;
+
+    context.read<SkillsCubit>().fetchSkills(userTrackId!);
 
     List<String> tempSelectedSkills = List.from(selectedSkillsNew);
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
       ),
       builder: (_) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "Select Skills",
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: trackSkills.map((skill) {
-                        final isAlreadyMine = selectedSkills.contains(skill);
-                        final isSelectedNew =
-                        tempSelectedSkills.contains(skill);
+        return BlocProvider.value(
+          value: context.read<SkillsCubit>(),
+          child: BlocBuilder<SkillsCubit, SkillsState>(
+            builder: (context, state) {
+              /// Loading
+              if (state is SkillsLoading) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
 
-                        return FilterChip(
-                          label: Text(skill),
-                          selectedShadowColor: AppPalette.primary,
-                          selected: isAlreadyMine || isSelectedNew,
-                          onSelected: isAlreadyMine
-                              ? null
-                              : (selected) {
-                            setModalState(() {
-                              if (isMentorFlow) {
-                                tempSelectedSkills.clear();
-                                tempSelectedSkills.add(skill);
-                              } else {
-                                if (selected) {
-                                  tempSelectedSkills.add(skill);
-                                } else {
-                                  tempSelectedSkills.remove(skill);
-                                }
-                              }
-                            });
-                          },
-                          selectedColor: isAlreadyMine ? Colors.grey : null,
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: AppPalette.primary,
-                              foregroundColor: Colors.white),
-                          child: Text(
-                              isMentorFlow ? "Take Assessment" : "Save Skills"),
-                          onPressed: () {
-                            if (isMentorFlow) {
-                              if (tempSelectedSkills.isEmpty) return;
-                              final selectedSkill = tempSelectedSkills.first;
-                              Navigator.pop(context);
-                              Get.to(() =>
-                                  QuizDetailsScreen(
-                                    skillName: selectedSkill,
-                                    fromAddSkill: true,
-                                  ));
-                            } else {
-                              setState(() {
-                                selectedSkillsNew = tempSelectedSkills;
-                              });
-                              Navigator.pop(context);
-                            }
-                          }),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
+              /// Error
+              if (state is SkillsError) {
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: Text(state.error),
+                  ),
+                );
+              }
+
+              /// Success
+              if (state is SkillsLoaded) {
+                /// Split:
+                /// Dart & Flutter
+                /// => Dart , Flutter
+                final trackSkills = state.response.data
+                    .expand((e) => e.name.split('&'))
+                    .map((e) => e.trim())
+                    .where((e) => e.isNotEmpty)
+                    .toSet()
+                    .toList();
+
+                return StatefulBuilder(
+                  builder: (context, setModalState) {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 16,
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// Title
+                            const Center(
+                              child: Text(
+                                "Select Skills",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            /// Skills
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: trackSkills.map((skill) {
+                                /// already in profile
+                                final isAlreadyMine =
+                                    selectedSkills.contains(skill);
+
+                                /// selected in current session
+                                final isSelected =
+                                    tempSelectedSkills.contains(skill);
+
+                                return FilterChip(
+                                  label: Text(skill),
+                                  selected: isAlreadyMine || isSelected,
+                                  selectedColor: isAlreadyMine
+                                      ? Colors.grey
+                                      : AppPalette.primary.withOpacity(0.2),
+                                  checkmarkColor: isAlreadyMine
+                                      ? Colors.grey
+                                      : AppPalette.primary,
+                                  disabledColor: Colors.grey,
+                                  onSelected: isAlreadyMine
+                                      ? null
+                                      : (value) {
+                                          setModalState(() {
+                                            /// Mentor:
+                                            /// only one skill
+                                            if (isMentorFlow) {
+                                              tempSelectedSkills.clear();
+
+                                              if (value) {
+                                                tempSelectedSkills.add(skill);
+                                              }
+                                            } else {
+                                              if (value) {
+                                                tempSelectedSkills.add(skill);
+                                              } else {
+                                                tempSelectedSkills
+                                                    .remove(skill);
+                                              }
+                                            }
+                                          });
+                                        },
+                                );
+                              }).toList(),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            /// Button
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppPalette.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  /// Mentor Flow
+                                  if (isMentorFlow) {
+                                    if (tempSelectedSkills.isEmpty) {
+                                      return;
+                                    }
+
+                                    final selectedSkill =
+                                        tempSelectedSkills.first;
+
+                                    Navigator.pop(context);
+
+                                    Get.to(
+                                      () => QuizDetailsScreen(
+                                        skillName: selectedSkill,
+                                        fromAddSkill: true,
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
+                                  /// Normal Flow
+                                  setState(() {
+                                    selectedSkillsNew = tempSelectedSkills;
+                                  });
+
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  isMentorFlow
+                                      ? "Take Assessment"
+                                      : "Save Skills",
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return const SizedBox();
+            },
+          ),
         );
       },
     );

@@ -24,8 +24,10 @@ class UserRepositoryImpl extends UserRepository {
     String? myId = await LocalStorage.getUserId();
 
     return users.where((user) {
-      final isMe = user.id == myId;
-      final isAdmin = user.role?.toLowerCase() == "admin";
+      final isMe = user.id.toString().trim() == myId.toString().trim();
+
+      final isAdmin = user.role.toString().trim() == "Admin";
+
       return !isMe && !isAdmin;
     }).toList();
   }

@@ -49,10 +49,16 @@ class PrvMessageBubble extends StatelessWidget {
         return SkillType.java;
       case "php":
         return SkillType.php;
-      case "javascript":
-        return SkillType.javascript;
+      case "js":
+        return SkillType.js;
       case "csharp":
         return SkillType.csharp;
+      case "top1":
+        return SkillType.top1;
+      case "top2":
+        return SkillType.top2;
+      case "top3":
+        return SkillType.top3;
       default:
         return SkillType.none;
     }

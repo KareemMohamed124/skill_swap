@@ -7,7 +7,6 @@ import '../../../shared/bloc/private_chats_bloc/private_chats_bloc.dart';
 import '../../../shared/bloc/private_chats_bloc/private_chats_state.dart';
 import '../../../shared/bloc/private_chats_bloc/private_chats_event.dart';
 import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
-import '../../../shared/data/models/public_chat/get_history_messages.dart';
 import '../../../shared/dependency_injection/injection.dart';
 import '../../../shared/domain/repositories/chat_repository.dart';
 import 'chat_title.dart';
@@ -55,6 +54,7 @@ class _PrivateChatsListScreenState extends State<PrivateChatsListScreen>
   // 🔥 أهم نقطة (real-time refresh عند الرجوع)
   @override
   void didPopNext() {
+    bloc.clearActiveChat();
     bloc.add(GetPrivateChatsEvent());
   }
 
@@ -101,6 +101,9 @@ class _PrivateChatsListScreenState extends State<PrivateChatsListScreen>
                   time: chat.lastMessage?.createdAt ?? "",
                   unread: unread,
                   onTap: () async {
+                    // Clear unread badge immediately when entering the chat
+                    bloc.clearUnread(chat.id);
+
                     try {
                       final chatRepo = sl<ChatRepository>();
 

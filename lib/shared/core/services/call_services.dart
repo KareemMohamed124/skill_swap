@@ -14,7 +14,6 @@ class CallService {
   bool get _isAndroid =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
-  // ================= LOCAL =================
   Future<void> initLocalStream() async {
     localStream = await navigator.mediaDevices.getUserMedia({
       'video': {'facingMode': 'user'},
@@ -22,27 +21,65 @@ class CallService {
     });
   }
 
-  // ================= PEER =================
-  Future<void> initPeerConnection() async {
-    peerConnection = await createPeerConnection({
+  Map<String, dynamic> _iceConfig() {
+    return {
       "iceServers": [
         {"urls": "stun:stun.l.google.com:19302"},
         {"urls": "stun:stun1.l.google.com:19302"},
+        {"urls": "stun:stun.cloudflare.com:3478"},
         {
           "urls": "turn:openrelay.metered.ca:80",
           "username": "openrelayproject",
           "credential": "openrelayproject",
         },
+        {
+          "urls": [
+            "turn:global.turn.twilio.com:3478?transport=udp",
+            "turn:global.turn.twilio.com:3478?transport=tcp",
+            "turns:global.turn.twilio.com:443?transport=tcp"
+          ],
+          "username": "SK8374f544b5955cd3c744033965a1df2e", // SID
+          "credential": "jUXFEtWu9YldVUvfKelex0yQVDIjIZ82", // SECRET
+        }
       ],
       "sdpSemantics": "unified-plan",
-    });
-
-    for (var track in localStream!.getTracks()) {
-      await peerConnection!.addTrack(track, localStream!);
-    }
+      "iceCandidatePoolSize": 10,
+    };
   }
 
-  // ================= REPLACE TRACK =================
+  Future<void> initPeerConnection() async {
+    peerConnection = await createPeerConnection(_iceConfig());
+
+    for (var track in localStream?.getTracks() ?? []) {
+      await peerConnection!.addTrack(track, localStream!);
+    }
+
+    peerConnection!.onRenegotiationNeeded = () async {
+      try {
+        debugPrint("renegotiation triggered");
+
+        final offer = await peerConnection!.createOffer();
+        await peerConnection!.setLocalDescription(offer);
+
+        // IMPORTANT: send this via Firestore signaling
+      } catch (e) {
+        debugPrint("Renegotiation error: $e");
+      }
+    };
+
+    peerConnection!.onIceConnectionState = (state) {
+      debugPrint("ICE STATE => $state");
+    };
+
+    peerConnection!.onConnectionState = (state) {
+      debugPrint("CONNECTION STATE => $state");
+    };
+
+    peerConnection!.onIceGatheringState = (state) {
+      debugPrint("ICE GATHERING => $state");
+    };
+  }
+
   Future<RTCSessionDescription?> replaceVideoTrack(
       MediaStreamTrack newTrack) async {
     final senders = await peerConnection!.getSenders();
@@ -51,7 +88,12 @@ class CallService {
       if (sender.track?.kind == 'video') {
         await sender.replaceTrack(newTrack);
 
-        final offer = await peerConnection!.createOffer();
+        await Future.delayed(const Duration(milliseconds: 250));
+
+        final offer = await peerConnection!.createOffer({
+          "iceRestart": true,
+        });
+
         await peerConnection!.setLocalDescription(offer);
 
         return offer;
@@ -60,10 +102,8 @@ class CallService {
     return null;
   }
 
-  // ================= SCREEN SHARE =================
   Future<RTCSessionDescription?> startScreenShare() async {
     try {
-      // ✅ Android فقط - Desktop مش محتاجها
       if (_isAndroid) {
         await _channel.invokeMethod('startScreenCaptureService');
       }
@@ -73,19 +113,17 @@ class CallService {
         'audio': false,
       });
 
-      if (screenStream == null) return null;
-
       isScreenSharing = true;
 
-      screenStream!.getVideoTracks().first.onEnded = () {
-        stopScreenShare();
+      screenStream!.getVideoTracks().first.onEnded = () async {
+        await stopScreenShare();
       };
 
       return await replaceVideoTrack(
         screenStream!.getVideoTracks().first,
       );
     } catch (e) {
-      debugPrint("❌ Screen share error: $e");
+      debugPrint("Screen share error: $e");
       isScreenSharing = false;
       return null;
     }
@@ -95,17 +133,22 @@ class CallService {
     if (!isScreenSharing) return null;
 
     final cameraTrack = localStream?.getVideoTracks().first;
+
     RTCSessionDescription? offer;
 
     if (cameraTrack != null) {
       offer = await replaceVideoTrack(cameraTrack);
     }
 
+    for (var t in screenStream?.getTracks() ?? []) {
+      t.stop();
+    }
+
     await screenStream?.dispose();
     screenStream = null;
+
     isScreenSharing = false;
 
-    // ✅ Android فقط
     if (_isAndroid) {
       await _channel.invokeMethod('stopScreenCaptureService');
     }
@@ -114,9 +157,20 @@ class CallService {
   }
 
   Future<void> dispose() async {
-    await localStream?.dispose();
-    await screenStream?.dispose();
-    await peerConnection?.close();
-    peerConnection = null;
+    try {
+      for (var t in localStream?.getTracks() ?? []) {
+        t.stop();
+      }
+
+      for (var t in screenStream?.getTracks() ?? []) {
+        t.stop();
+      }
+
+      await localStream?.dispose();
+      await screenStream?.dispose();
+
+      await peerConnection?.close();
+      peerConnection = null;
+    } catch (_) {}
   }
 }

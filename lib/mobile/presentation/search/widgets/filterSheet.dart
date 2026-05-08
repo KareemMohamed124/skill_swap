@@ -37,10 +37,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
   String? selectedRole;
   TrackModel? selectedTrack;
 
-  int activeFiltersCount = 0;
-
   final List<String> roles = ["Mentor", "Normal"];
-
   final List<int> rates = [1, 2, 3, 4, 5];
 
   @override
@@ -49,15 +46,31 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
     startPrice = widget.initialMinPrice;
     endPrice = widget.initialMaxPrice;
+
     selectedRate = widget.initialRate;
     selectedRole = widget.initialRole;
 
     context.read<TracksCubit>().fetchTracks();
+  }
 
-    if (startPrice != 20 || endPrice != 60) activeFiltersCount++;
-    if (selectedRate != null) activeFiltersCount++;
-    if (selectedRole != null) activeFiltersCount++;
-    if (selectedTrack != null) activeFiltersCount++;
+  void _restoreTrackIfNeeded(List<TrackModel> tracks) {
+    if (selectedTrack == null && widget.initialTrack != null) {
+      final match = tracks.where((e) => e.name == widget.initialTrack);
+      if (match.isNotEmpty) {
+        selectedTrack = match.first;
+      }
+    }
+  }
+
+  int get activeFiltersCount {
+    int count = 0;
+
+    if (startPrice != 20 || endPrice != 60) count++;
+    if (selectedRate != null) count++;
+    if (selectedRole != null) count++;
+    if (selectedTrack != null) count++;
+
+    return count;
   }
 
   @override
@@ -78,23 +91,21 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
         child: SafeArea(
           child: ListView(
             children: [
-              Text("filters".tr,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                "filters".tr,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+
               SizedBox(height: screenWidth * 0.02),
-              Divider(),
+              const Divider(),
               SizedBox(height: screenWidth * 0.02),
 
-              /// Price
+              /// PRICE
               PriceFilterSection(
                 min: 0,
                 max: 100,
                 onChanged: (start, end) {
                   setState(() {
-                    if (startPrice == 20 &&
-                        endPrice == 60 &&
-                        (start != 20 || end != 60)) {
-                      activeFiltersCount++;
-                    }
                     startPrice = start;
                     endPrice = end;
                   });
@@ -103,20 +114,17 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
               SizedBox(height: screenWidth * 0.04),
 
-              /// Role
+              /// ROLE
               Text("role".tr, style: Theme.of(context).textTheme.titleMedium),
+
               SizedBox(height: screenWidth * 0.02),
+
               buildChoiceChips<String>(
                 context: context,
                 items: roles,
                 selectedItem: selectedRole,
                 onSelected: (value) {
                   setState(() {
-                    if (selectedRole == null && value != null) {
-                      activeFiltersCount++;
-                    } else if (selectedRole != null && value == null) {
-                      activeFiltersCount--;
-                    }
                     selectedRole = value;
                   });
                 },
@@ -124,9 +132,11 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
               SizedBox(height: screenWidth * 0.04),
 
-              /// Track
+              /// TRACK
               Text("track".tr, style: Theme.of(context).textTheme.titleMedium),
+
               SizedBox(height: screenWidth * 0.02),
+
               BlocBuilder<TracksCubit, TracksState>(
                 builder: (context, state) {
                   if (state is TracksLoading) {
@@ -140,16 +150,24 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                   if (state is TracksLoaded) {
                     final tracks = state.tracks;
 
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+
+                      setState(() {
+                        _restoreTrackIfNeeded(tracks);
+                      });
+                    });
+
                     return buildChoiceChips<TrackModel>(
                       context: context,
                       items: tracks,
                       selectedItem: selectedTrack,
+                      labelBuilder: (item) => item.name,
                       onSelected: (value) {
                         setState(() {
                           selectedTrack = value;
                         });
                       },
-                      labelBuilder: (item) => item.name,
                     );
                   }
 
@@ -159,30 +177,27 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
               SizedBox(height: screenWidth * 0.04),
 
-              /// Rating
+              /// RATING
               Text("rating".tr, style: Theme.of(context).textTheme.titleMedium),
+
               SizedBox(height: screenWidth * 0.02),
+
               buildChoiceChips<int>(
                 context: context,
                 items: rates,
                 selectedItem: selectedRate,
+                showIcon: true,
+                icon: Icons.star,
                 onSelected: (value) {
                   setState(() {
-                    if (selectedRate == null && value != null) {
-                      activeFiltersCount++;
-                    } else if (selectedRate != null && value == null) {
-                      activeFiltersCount--;
-                    }
                     selectedRate = value;
                   });
                 },
-                showIcon: true,
-                icon: Icons.star,
               ),
 
               SizedBox(height: screenWidth * 0.08),
 
-              /// Buttons (side by side responsive)
+              /// BUTTONS
               Row(
                 children: [
                   Expanded(
@@ -190,7 +205,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).cardColor,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -199,7 +214,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                           style: Theme.of(context).textTheme.titleMedium),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -213,27 +228,22 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                               ),
                             );
 
-                        int newCount = 0;
-                        if (startPrice != 20 || endPrice != 60) newCount++;
-                        if (selectedRate != null) newCount++;
-                        if (selectedRole != null) newCount++;
-                        if (selectedTrack != null) newCount++;
-
-                        Navigator.pop(context, newCount);
+                        Navigator.pop(context, activeFiltersCount);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.primary,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(
-                        "apply".tr,
+                      child: const Text(
+                        "Apply",
                         style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -256,7 +266,6 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     String Function(T)? labelBuilder,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     final activeColor = AppPalette.primary;
     final inactiveColor = Theme.of(context).cardColor;
     final textActive = Colors.white;
@@ -267,8 +276,11 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
       spacing: 8,
       runSpacing: 8,
       children: items.map((item) {
-        final selected = selectedItem == item;
         final label = labelBuilder?.call(item) ?? "$item";
+        final selectedLabel = selectedItem != null
+            ? (labelBuilder?.call(selectedItem) ?? "$selectedItem")
+            : null;
+        final selected = label == selectedLabel;
 
         return ChoiceChip(
           label: showIcon

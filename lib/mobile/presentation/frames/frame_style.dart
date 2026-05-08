@@ -5,14 +5,16 @@ class FrameStyle {
   final List<Color> colors;
   final BorderRadius borderRadius;
   final Color glowColor;
-  final String label;
+  final String? label;
+  final IconData? icon;
   final FrameShapeType shapeType;
 
   const FrameStyle({
     required this.colors,
     required this.borderRadius,
     required this.glowColor,
-    required this.label,
+    this.label,
+    this.icon,
     required this.shapeType,
   });
 }
