@@ -32,15 +32,6 @@ class CallService {
           "username": "openrelayproject",
           "credential": "openrelayproject",
         },
-        {
-          "urls": [
-            "turn:global.turn.twilio.com:3478?transport=udp",
-            "turn:global.turn.twilio.com:3478?transport=tcp",
-            "turns:global.turn.twilio.com:443?transport=tcp"
-          ],
-          "username": "SK8374f544b5955cd3c744033965a1df2e", // SID
-          "credential": "jUXFEtWu9YldVUvfKelex0yQVDIjIZ82", // SECRET
-        }
       ],
       "sdpSemantics": "unified-plan",
       "iceCandidatePoolSize": 10,
