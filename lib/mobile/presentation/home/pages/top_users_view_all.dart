@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:skill_swap/shared/common_ui/base_screen.dart';
 
 import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../../shared/bloc/get_users_cubit/users_state.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../book_session/screens/profile_mentor.dart';
 import '../widgets/top_user_card.dart';
 
 class TopUsersViewAll extends StatefulWidget {
@@ -55,6 +57,18 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
       padding = 24;
     }
 
+    double aspectRatio;
+
+    if (screenWidth < 360) {
+      aspectRatio = 0.6; // موبايلات صغيرة قوي
+    } else if (screenWidth < 400) {
+      aspectRatio = 0.65;
+    } else if (screenWidth < 450) {
+      aspectRatio = 0.7;
+    } else {
+      aspectRatio = 0.75; // موبايلات كبيرة
+    }
+
     return BaseScreen(
       title: "Top Users",
       child: BlocBuilder<UsersCubit, UsersState>(
@@ -77,7 +91,7 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
-                  childAspectRatio: 0.55),
+                  childAspectRatio: 0.75),
               itemCount:
                   state.isLastPage ? usersList.length : usersList.length + 1,
               itemBuilder: (context, index) {
@@ -94,9 +108,22 @@ class _TopUsersViewAllState extends State<TopUsersViewAll> {
 
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      selectedIndex = index;
-                    });
+                    Get.to(
+                      ProfileMentor(
+                        id: user.id,
+                        name: user.name,
+                        track: user.track.name,
+                        rate: user.rate,
+                        image: user.userImage.secureUrl,
+                        bio: user.profile.bio,
+                        skills: user.skills,
+                        hoursAvailable: user.freeHours,
+                        peopleHelped: user.helpTotalHours,
+                        hourlyRate: user.hourlyPrice,
+                        reviews: user.reviews,
+                        role: user.role,
+                      ),
+                    );
                   },
                   child: TopUserCard(
                     id: user.id,

@@ -4,6 +4,7 @@ import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:skill_swap/shared/core/theme/app_palette.dart';
 
 import '../../../mobile/presentation/game_stor/widgets/show_store_daiolg.dart';
+import '../../../shared/bloc/store_cubit/store_cubit.dart';
 import '../../../shared/data/models/user/user_model.dart';
 import '../../../shared/helper/local_storage.dart';
 
@@ -32,7 +33,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
     final usersData = await cubit.getLeaderboardUsers(page: 1);
     final userId = LocalStorage.getUserId();
+    final myRank = usersData.indexWhere((u) => u.id == myId) + 1;
 
+    context.read<StoreCubit>().handleRewards(myRank);
     setState(() {
       users = usersData;
       myId = userId;
@@ -72,12 +75,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 /// Help Icon
                 IconButton(
                   onPressed: () {
-                    showStoreDialog(
-                      context,
-                      isFirstTime: false,
-                      title: "Leaderboard",
-                      subtitle: "leaderboard",
-                    );
+                    showStoreDialog(context,
+                        isFirstTime: false,
+                        title: "Leaderboard",
+                        subtitle: "leaderboard",
+                        rules:
+                            "• Only the Top 10 players are displayed on the leaderboard\n"
+                            "• Your score is based on your performance in the Challenge Rooms.\n");
                   },
                   icon: const Icon(Icons.help_outline_rounded),
                 ),

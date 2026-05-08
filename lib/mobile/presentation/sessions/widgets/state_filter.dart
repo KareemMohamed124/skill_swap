@@ -19,7 +19,7 @@ class StatusFilter extends StatelessWidget {
     final statusList = ["accepted".tr, "pending".tr, "request".tr, "rejected"];
 
     return Wrap(
-      spacing: screenWidth * 0.02,
+      spacing: screenWidth * 0.01,
       children: List.generate(statusList.length, (index) {
         final isSelected = selectedIndex == index;
 
@@ -28,8 +28,8 @@ class StatusFilter extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.04,
-              vertical: screenWidth * 0.018,
+              horizontal: screenWidth * 0.025,
+              vertical: screenWidth * 0.012,
             ),
             decoration: BoxDecoration(
               color:

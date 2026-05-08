@@ -13,20 +13,21 @@ class SubmitReviewBloc extends Bloc<SubmitReviewEvent, SubmitReviewState> {
   final BookingRepository repository;
 
   SubmitReviewBloc(this.repository) : super(SubmitReviewInitial()) {
-    // ================= SUBMIT REVIEW =================
     on<ConfirmSubmit>((event, emit) async {
       emit(SubmitReviewLoading());
 
-      final result = await repository.submitReview(event.id, event.request);
+      try {
+        final result = await repository.submitReview(event.id, event.request);
 
-      switch (result) {
-        case SubmitReviewSuccess s:
-          emit(SubmitReviewSuccessState(s.success.message));
-          break;
-
-        case SubmitReviewFailure f:
-          emit(SubmitReviewFailureState(f.error));
-          break;
+        if (result is SubmitReviewSuccess) {
+          emit(SubmitReviewSuccessState("success"));
+        } else if (result is SubmitReviewFailure) {
+          emit(SubmitReviewFailureState(result.error));
+        }
+      } catch (e) {
+        emit(SubmitReviewFailureState(
+          SubmitReviewErrorResponse(message: e.toString()),
+        ));
       }
     });
   }

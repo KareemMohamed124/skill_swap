@@ -42,33 +42,4 @@ class PublicChatBloc extends Bloc<PublicChatEvent, PublicChatState> {
       ));
     }
   }
-} // class PublicChatBloc extends Bloc<PublicChatEvent, PublicChatState> {
-//   final ChatRepository repository;
-//   final PusherService pusherService;
-//   String? _currentUserId;
-//
-//   PublicChatBloc(this.repository, this.pusherService)
-//       : super(PublicChatInitial()) {
-//     on<GetPublicChatsEvent>(_getGlobalChats);
-//   }
-//
-//   Future<void> _getGlobalChats(
-//     GetPublicChatsEvent event,
-//     Emitter<PublicChatState> emit,
-//   ) async {
-//     emit(PublicChatsLoading());
-//
-//     try {
-//       final chats = await repository.getPublicChats();
-//
-//       emit(PublicChatsLoaded(
-//         ChatResponseModel(
-//           message: "Done",
-//           chats: chats,
-//         ),
-//       ));
-//     } catch (e) {
-//       emit(PublicChatsError(e.toString()));
-//     }
-//   }
-// }
+}

@@ -229,7 +229,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                   height: screenWidth * 0.12,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(() => ScreenManager(
+                      Get.offAll(() => ScreenManager(
                             initialIndex: 3,
                             initialSessionTab: 0, // Requests
                           ));

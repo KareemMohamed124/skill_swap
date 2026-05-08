@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-import '../../../../desktop/presentation/sign/widgets/custom_text_field.dart';
 import '../../../../shared/bloc/change_password_bloc/change_password_bloc.dart';
 import '../../../../shared/common_ui/base_screen.dart';
 import '../../../../shared/data/models/change_password/change_password_request.dart';
@@ -10,6 +9,7 @@ import '../../../../shared/dependency_injection/injection.dart';
 import '../../forget_password/screens/forget_password_screen.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
+import '../../sign/widgets/custom_text_field.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -37,6 +37,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     super.dispose();
   }
 
+  String? oldPasswordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Old password is required";
+    }
+    return oldPasswordError;
+  }
+
   String? passwordValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "Password is required";
@@ -53,7 +60,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     double subtitleFontSize = screenWidth >= 800 ? 18 : 16;
     double paddingAll = screenWidth >= 800 ? 24 : 16;
@@ -66,7 +76,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           listener: (context, state) {
             /// FAILURE
             if (state is ChangePasswordFailureState) {
-              Get.snackbar('Error', state.error.message);
+              //  Get.snackbar('Error', state.error.message);
 
               setState(() {
                 oldPasswordError = null;
@@ -118,17 +128,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
                       /// OLD PASSWORD
                       CustomTextField(
-                        controller: oldPasswordController,
-                        labelText: "Old Password",
-                        hintText: "Enter old password",
-                        obscureText: true,
-                        validator: (value) {
-                          final localError = passwordValidator(value);
-                          if (localError != null) return localError;
-                          return oldPasswordError;
-                        },
+                          controller: oldPasswordController,
+                          labelText: "Old Password",
+                          hintText: "Enter old password",
+                          obscureText: true,
+                          validator: oldPasswordValidator
                       ),
 
                       const SizedBox(height: 16),
@@ -177,30 +184,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         onPressed: state is ChangePasswordLoading
                             ? null
                             : () {
-                                setState(() {
-                                  oldPasswordError = null;
-                                  passwordError = null;
-                                  confirmPasswordError = null;
-                                });
+                          setState(() {
+                            oldPasswordError = null;
+                            passwordError = null;
+                            confirmPasswordError = null;
+                          });
 
-                                if (formKey.currentState!.validate()) {
-                                  context.read<ChangePasswordBloc>().add(
-                                        ConfirmSubmit(
-                                          ChangePasswordRequest(
-                                            oldPassword: oldPasswordController
-                                                .text
-                                                .trim(),
-                                            newPassword: newPasswordController
-                                                .text
-                                                .trim(),
-                                            confirmPassword:
-                                                confirmPasswordController.text
-                                                    .trim(),
-                                          ),
-                                        ),
-                                      );
-                                }
-                              },
+                          if (formKey.currentState!.validate()) {
+                            context.read<ChangePasswordBloc>().add(
+                              ConfirmSubmit(
+                                ChangePasswordRequest(
+                                  oldPassword: oldPasswordController
+                                      .text
+                                      .trim(),
+                                  newPassword: newPasswordController
+                                      .text
+                                      .trim(),
+                                  confirmPassword:
+                                  confirmPasswordController.text
+                                      .trim(),
+                                ),
+                              ),
+                            );
+                          }
+                        },
                       ),
 
                       const SizedBox(height: 16),

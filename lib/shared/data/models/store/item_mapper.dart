@@ -6,6 +6,7 @@ extension ItemMapper on Item {
     return StoreItem(
         id: id,
         title: title,
+        type: type,
         price: priceInPoints,
         image: img.secureUrl ?? "assets/images/store_images/coin.png",
         rarity: _mapRarity(priceInPoints),

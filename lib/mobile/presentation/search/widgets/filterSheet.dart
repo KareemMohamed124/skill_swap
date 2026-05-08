@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/search/widgets/price_filter_section.dart';
 
+import '../../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/data/models/track/track_model.dart';
 
 class MentorFilterSheet extends StatefulWidget {
   final double initialMinPrice;
@@ -33,36 +35,24 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
   int? selectedRate;
   String? selectedRole;
-  String? selectedTrack;
+  TrackModel? selectedTrack;
 
   int activeFiltersCount = 0;
 
   final List<String> roles = ["Mentor", "Normal"];
-
-  /// key = value sent to backend
-  /// value = label shown in UI
-  final Map<String, String> tracks = {
-    "Mobile Development": "Mobile",
-    "Frontend Development": "Frontend",
-    "Backend Development": "Backend",
-    "UI/UX Design": "UI/UX",
-    "Artificial Intelligence": "AI",
-    "Data Science": "Data",
-    "Game Development": "Game",
-    "CyberSecurity": "Security",
-    "Cloud Computing": "Cloud",
-  };
 
   final List<int> rates = [1, 2, 3, 4, 5];
 
   @override
   void initState() {
     super.initState();
+
     startPrice = widget.initialMinPrice;
     endPrice = widget.initialMaxPrice;
     selectedRate = widget.initialRate;
     selectedRole = widget.initialRole;
-    selectedTrack = widget.initialTrack;
+
+    context.read<TracksCubit>().fetchTracks();
 
     if (startPrice != 20 || endPrice != 60) activeFiltersCount++;
     if (selectedRate != null) activeFiltersCount++;
@@ -137,21 +127,34 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               /// Track
               Text("track".tr, style: Theme.of(context).textTheme.titleMedium),
               SizedBox(height: screenWidth * 0.02),
-              buildChoiceChips<String>(
-                context: context,
-                items: tracks.keys.toList(),
-                selectedItem: selectedTrack,
-                onSelected: (value) {
-                  setState(() {
-                    if (selectedTrack == null && value != null) {
-                      activeFiltersCount++;
-                    } else if (selectedTrack != null && value == null) {
-                      activeFiltersCount--;
-                    }
-                    selectedTrack = value;
-                  });
+              BlocBuilder<TracksCubit, TracksState>(
+                builder: (context, state) {
+                  if (state is TracksLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is TracksError) {
+                    return Center(child: Text(state.message));
+                  }
+
+                  if (state is TracksLoaded) {
+                    final tracks = state.tracks;
+
+                    return buildChoiceChips<TrackModel>(
+                      context: context,
+                      items: tracks,
+                      selectedItem: selectedTrack,
+                      onSelected: (value) {
+                        setState(() {
+                          selectedTrack = value;
+                        });
+                      },
+                      labelBuilder: (item) => item.name,
+                    );
+                  }
+
+                  return const SizedBox();
                 },
-                labelBuilder: (item) => tracks[item]!,
               ),
 
               SizedBox(height: screenWidth * 0.04),
@@ -206,7 +209,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                                 maxPrice: endPrice,
                                 minRate: selectedRate?.toDouble(),
                                 role: selectedRole,
-                                track: selectedTrack,
+                                track: selectedTrack?.name,
                               ),
                             );
 

@@ -508,19 +508,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 .toList()
                                             : null;
 
+                                        final bioText =
+                                            bioController.text.trim();
+                                        final nameText =
+                                            nameController.text.trim();
+
                                         final updateRequest =
                                             UpdateProfileRequest(
-                                          name:
-                                              nameController.text.trim().isEmpty
-                                                  ? null
-                                                  : nameController.text.trim(),
-                                          profile: UpdateProfile(
-                                            bio: bioController.text
-                                                    .trim()
-                                                    .isEmpty
-                                                ? null
-                                                : bioController.text.trim(),
-                                          ),
+                                          name: nameText.isEmpty
+                                              ? null
+                                              : nameText,
+                                          profile: bioText.isEmpty
+                                              ? null
+                                              : UpdateProfile(bio: bioText),
                                           skills: skillsList,
                                         );
 

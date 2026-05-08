@@ -113,7 +113,7 @@ class MentorCard extends StatelessWidget {
                         SizedBox(width: r(6, 4, 10)),
                         Flexible(
                           child: Text(
-                            "${rate.toString()} • $hours hours • ${price == 0 ? 'Free' : '\$$price/hr'}",
+                            "${rate.toStringAsFixed(1)} • $hours hours • ${price == 0 ? 'Free' : '\$$price/hr'}",
                             style: Theme.of(context).textTheme.bodySmall,
                             overflow: TextOverflow.ellipsis,
                           ),

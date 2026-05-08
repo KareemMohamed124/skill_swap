@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:skill_swap/desktop/presentation/profile/widgets/profile_tabs.dart';
 import 'package:skill_swap/desktop/presentation/sessions/pages/pending_sessions_page.dart';
 import 'package:skill_swap/desktop/presentation/sessions/pages/requests_sessions_page.dart';
+import 'package:skill_swap/desktop/presentation/sessions/pages/rjected_session_page.dart';
 import 'package:skill_swap/desktop/presentation/sessions/pages/upcoming_sessions_page.dart';
 import 'package:skill_swap/desktop/presentation/sessions/widgets/session_header.dart';
 
@@ -30,7 +31,7 @@ class _SessionsScreenState extends State<SessionsScreen>
     super.initState();
 
     _tabController = TabController(
-      length: 3,
+      length: 4,
       vsync: this,
       initialIndex: widget.initialTab,
     );
@@ -67,6 +68,8 @@ class _SessionsScreenState extends State<SessionsScreen>
         break;
       case 2:
         cubit.fetchAllBookings("request");
+      case 3:
+        cubit.fetchAllBookings("rejected");
         break;
     }
   }
@@ -90,20 +93,17 @@ class _SessionsScreenState extends State<SessionsScreen>
             ),
             ProfileTabs(
               tabController: _tabController,
-              tabs: [
-                'accepted'.tr,
-                'pending'.tr,
-                'request'.tr,
-              ],
+              tabs: ['accepted'.tr, 'pending'.tr, 'request'.tr, 'rejected'],
             ),
             const SizedBox(height: 16),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: const [
+                children: [
                   UpcomingSessionsPage(),
                   PendingSessionsPage(),
                   RequestsSessionsPage(),
+                  RejectedSessionsPage()
                 ],
               ),
             ),

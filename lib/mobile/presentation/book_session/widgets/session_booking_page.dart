@@ -382,6 +382,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8,
+                            runSpacing: 8,
                             children: widget.availableDates.map((day) {
                               final isSelected = selectedDate == day.date;
                               final isDisabled = isDayFullyBooked(day);

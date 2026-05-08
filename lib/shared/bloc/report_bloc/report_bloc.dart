@@ -8,7 +8,6 @@ import '../../data/models/report_user/report_success_response.dart';
 import '../../domain/repositories/report_repository.dart';
 
 part 'report_event.dart';
-
 part 'report_state.dart';
 
 class ReportBloc extends Bloc<ReportEvent, ReportState> {
@@ -18,14 +17,27 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     on<ConfirmSubmit>((event, emit) async {
       emit(ReportLoading());
 
-      final result = await repository.report(event.request);
+      try {
+        final result = await repository.report(event.request);
 
-      switch (result) {
-        case ReportSuccess s:
-          emit(ReportSuccessState(s.success));
-          break;
-        case ReportFailure f:
-          emit(ReportFailureState(f.error));
+        switch (result) {
+          case ReportSuccess s:
+            emit(ReportSuccessState(s.success));
+            break;
+
+          case ReportFailure f:
+            emit(ReportFailureState(f.error));
+            break;
+
+          default:
+            emit(ReportFailureState(
+              ReportErrorResponse(message: "Unknown response"),
+            ));
+        }
+      } catch (e) {
+        emit(ReportFailureState(
+          ReportErrorResponse(message: e.toString()),
+        ));
       }
     });
   }

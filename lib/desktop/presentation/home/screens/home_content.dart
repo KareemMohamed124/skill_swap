@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:skill_swap/desktop/presentation/home/pages/recommended_view_all.dart';
 import 'package:skill_swap/desktop/presentation/home/pages/top_users_view_all.dart';
 import 'package:skill_swap/main.dart';
 
@@ -184,17 +183,20 @@ class _HomeContentState extends State<HomeContent> {
 
                     const SizedBox(height: 40),
 
-                    /// RECOMMENDED
-                    SectionHeader(
-                      sectionTitle: 'recommended_for_you'.tr,
-                      onTop: () => desktopKey.currentState?.openSidePage(
-                        body: const RecommendedViewAll(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                     RecommendedSectionDesktop(
                       controller: _recommendedScrollController,
                     ),
+                    // /// RECOMMENDED
+                    // SectionHeader(
+                    //   sectionTitle: 'recommended_for_you'.tr,
+                    //   onTop: () => desktopKey.currentState?.openSidePage(
+                    //     body: const RecommendedViewAll(),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 16),
+                    // RecommendedSectionDesktop(
+                    //   controller: _recommendedScrollController,
+                    // ),
 
                     /// GAME
                     if (!controller.showGameFirst.value) ...[

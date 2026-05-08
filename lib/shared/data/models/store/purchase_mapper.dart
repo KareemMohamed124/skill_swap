@@ -7,6 +7,7 @@ extension PurchasesMapper on Purchases {
     return StoreItem(
         id: itemId?.id ?? '',
         title: itemId?.title ?? '',
+        type: itemId?.type ?? '',
         price: itemId?.priceInPoints?.toInt() ?? 0,
         image: itemId?.img?.secureUrl?.isNotEmpty == true
             ? itemId!.img!.secureUrl!

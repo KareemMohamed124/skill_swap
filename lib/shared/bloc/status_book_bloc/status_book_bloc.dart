@@ -11,7 +11,6 @@ import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 
 part 'status_book_event.dart';
-
 part 'status_book_state.dart';
 
 class StatusBookBloc extends Bloc<StatusBookEvent, StatusBookState> {

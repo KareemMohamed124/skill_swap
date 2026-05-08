@@ -31,6 +31,8 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   late String fromTime;
   late String toTime;
   late String repeat;
+  late DateTime currentWeekStart;
+  bool _hasAutoShifted = false;
 
   final allDays = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
   final Map<String, int> dayIndex = {
@@ -47,14 +49,56 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   void initState() {
     super.initState();
 
+    currentWeekStart = widget.startOfWeek;
+
     days = [...widget.selectedDays];
     repeat = widget.repeatType;
 
-    final minFrom = DateTime.now().add(const Duration(hours: 12));
-    final minTo = minFrom.add(const Duration(hours: 2));
+    if (widget.fromTime.isNotEmpty && widget.toTime.isNotEmpty) {
+      fromTime = widget.fromTime;
+      toTime = widget.toTime;
+    } else {
+      final minFrom = DateTime.now().add(const Duration(hours: 12));
+      final minTo = minFrom.add(const Duration(hours: 2));
 
-    fromTime = _formatTime(TimeOfDay.fromDateTime(minFrom));
-    toTime = _formatTime(TimeOfDay.fromDateTime(minTo));
+      fromTime = _formatTime(TimeOfDay.fromDateTime(minFrom));
+      toTime = _formatTime(TimeOfDay.fromDateTime(minTo));
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _autoMoveToNextAvailableWeek();
+    });
+  }
+
+  void _autoMoveToNextAvailableWeek() {
+    DateTime tempWeek = currentWeekStart;
+    int safety = 0;
+
+    while (_isWeekDisabled(tempWeek) && safety < 10) {
+      tempWeek = tempWeek.add(const Duration(days: 7));
+      safety++;
+    }
+
+    if (tempWeek != currentWeekStart) {
+      setState(() {
+        currentWeekStart = tempWeek;
+      });
+    }
+  }
+
+  bool _isWeekDisabled(DateTime weekStart) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return allDays.every((day) {
+      final index = dayIndex[day]!;
+      final date = weekStart.add(Duration(days: index));
+
+      final isPastDay = date.isBefore(today);
+
+      return widget.disabledDays.contains(day) ||
+          isPastDay ||
+          !isDayAvailable(day, weekStart);
+    });
   }
 
   String _formatTime(TimeOfDay t) {
@@ -67,18 +111,19 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
   DateTime get minAllowedDateTime =>
       DateTime.now().add(const Duration(hours: 12));
 
-  bool isDayAvailable(String day) {
+  bool isDayAvailable(String day, DateTime weekStart) {
     final index = dayIndex[day]!;
-    final date = widget.startOfWeek.add(Duration(days: index));
-    final minAllowed = DateTime.now().add(const Duration(hours: 12));
+    final date = weekStart.add(Duration(days: index));
 
+    final minAllowed = DateTime.now().add(const Duration(hours: 12));
     final endOfDay = DateTime(date.year, date.month, date.day, 23, 59);
+
     return endOfDay.isAfter(minAllowed);
   }
 
   bool isDayAndTimeValid(String day) {
     final index = dayIndex[day]!;
-    final date = widget.startOfWeek.add(Duration(days: index));
+    final date = currentWeekStart.add(Duration(days: index));
 
     final fromParsed = _parseTime(fromTime);
     final sessionDateTime = DateTime(
@@ -220,10 +265,14 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
 
     if (picked == null) return;
 
-    final now = DateTime.now();
-    final selected =
-        DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
-
+    final today = DateTime.now();
+    final selected = DateTime(
+      today.year,
+      today.month,
+      today.day,
+      picked.hour,
+      picked.minute,
+    );
     if (isFrom && selected.isBefore(minAllowed)) {
       _showSnackBar(
         "Minimum time is ${_formatTime(TimeOfDay.fromDateTime(minAllowed))} (12h from now)",
@@ -263,7 +312,7 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
 
   String getDateForDay(String day) {
     final index = dayIndex[day]!;
-    final date = widget.startOfWeek.add(Duration(days: index));
+    final date = currentWeekStart.add(Duration(days: index));
     return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
@@ -313,12 +362,12 @@ class _AvailabilityBottomSheetState extends State<AvailabilityBottomSheet> {
                   final selected = days.contains(day);
                   final now = DateTime.now();
                   final index = dayIndex[day]!;
-                  final date = widget.startOfWeek.add(Duration(days: index));
+                  final date = currentWeekStart.add(Duration(days: index));
                   final today = DateTime(now.year, now.month, now.day);
                   final isPastDay = date.isBefore(today);
 
                   final isDisabled = widget.disabledDays.contains(day) ||
-                      !isDayAvailable(day) ||
+                      !isDayAvailable(day, currentWeekStart) ||
                       isPastDay;
 
                   return ChoiceChip(

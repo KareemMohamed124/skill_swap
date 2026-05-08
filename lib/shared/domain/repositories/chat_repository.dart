@@ -14,6 +14,10 @@ abstract class ChatRepository {
 
   Future<List<GetChatModel>> getPublicChats();
 
+  Future<List<GetChatModel>> getPrivateChats();
+
+  Future<int> getUnreadCount(String chatId);
+
   Future<ChatHistoryResponse> getMessages(String chatId,
       {int page = 1, int limit = 20});
 

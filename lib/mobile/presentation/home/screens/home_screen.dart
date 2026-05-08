@@ -5,12 +5,14 @@ import 'package:skill_swap/mobile/presentation/game_part/game_section.dart';
 import 'package:skill_swap/mobile/presentation/home/widgets/next_session_section.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
+import 'package:skill_swap/shared/bloc/private_chats_bloc/private_chats_event.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/private_chats_bloc/private_chats_bloc.dart';
+import '../../../../shared/bloc/private_chats_bloc/private_chats_state.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/home_controller.dart';
-import '../../notification/screens/notification_screen.dart';
-import '../pages/recommended_view_all.dart';
+import '../../history_private_chats/private_chats_list.dart';
 import '../pages/top_users_view_all.dart';
 import '../widgets/custom_header.dart';
 import '../widgets/recommended_section.dart';
@@ -56,29 +58,37 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             children: [
               BlocBuilder<MyProfileCubit, MyProfileState>(
-                builder: (context, state) {
+                builder: (context, profileState) {
                   String id = "";
                   String name = "User";
                   String avatarPath = 'assets/images/placeholder.png';
 
-                  if (state is MyProfileLoaded) {
-                    name = state.profile.name ?? name;
-                    id = state.profile.id ?? id;
+                  if (profileState is MyProfileLoaded) {
+                    name = profileState.profile.name ?? name;
+                    id = profileState.profile.id ?? id;
 
-                    if (state.profile.userImage?.secureUrl?.isNotEmpty ==
+                    if (profileState.profile.userImage?.secureUrl?.isNotEmpty ==
                         true) {
-                      avatarPath = state.profile.userImage!.secureUrl!;
+                      avatarPath = profileState.profile.userImage!.secureUrl!;
                     }
                   }
+
+                  final unreadCount = context.select<PrivateChatsBloc, int>(
+                    (bloc) => bloc.unreadMap.values.fold(0, (a, b) => a + b),
+                  );
 
                   return CustomHeader(
                     name: 'Hi, $name',
                     subtitle: 'keep_learning'.tr,
                     avatarPath: avatarPath,
-                    // onIcon1: () {},
-                    // onIcon2: () {
-                    // //  Get.to(() => const NotificationsScreen());
-                    // },
+                    unreadCount: unreadCount,
+                    onIcon2: () {
+                      final bloc = context.read<PrivateChatsBloc>();
+                      Get.to(() => BlocProvider.value(
+                            value: bloc..add(GetPrivateChatsEvent()),
+                            child: PrivateChatsListScreen(currentUserId: id),
+                          ));
+                    },
                   );
                 },
               ),
@@ -126,25 +136,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: screenHeight * 0.03),
                       NextSessionSection(),
                       SizedBox(height: screenHeight * 0.03),
-                      BlocBuilder<MyProfileCubit, MyProfileState>(
-                        builder: (context, state) {
-                          String track = '';
-
-                          if (state is MyProfileLoaded) {
-                            track = state.profile.track.name ?? '';
-                          }
-
-                          return SectionHeader(
-                            sectionTitle: 'recommended_for_you'.tr,
-                            onTop: () {
-                              Get.to(
-                                RecommendedViewAll(track: track),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.01),
+                      // BlocBuilder<MyProfileCubit, MyProfileState>(
+                      //   builder: (context, state) {
+                      //     String track = '';
+                      //
+                      //     if (state is MyProfileLoaded) {
+                      //       track = state.profile.track.name ?? '';
+                      //     }
+                      //
+                      //     return SectionHeader(
+                      //       sectionTitle: 'recommended_for_you'.tr,
+                      //       onTop: () {
+                      //         Get.to(
+                      //           RecommendedViewAll(track: track),
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      // ),
+                      // SizedBox(height: screenHeight * 0.01),
                       RecommendedSection(),
                       SizedBox(height: screenHeight * 0.01),
                       // UnrealExperienceCard(),

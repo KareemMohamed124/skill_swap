@@ -35,9 +35,11 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
 
   Future<void> fetchAllBookings(String status) async {
     emit(GetBookingsLoading());
+
     try {
       final response = await bookingRepository.getAllBookings(status);
       final currentUserId = await LocalStorage.getUserId();
+      final now = DateTime.now();
 
       final sessions = response.bookings.map((booking) {
         final dateTime = DateTime(
@@ -57,26 +59,59 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             : booking.status;
 
         return SessionModel(
-            sessionId: booking.id,
-            bookingCode: booking.bookingCode,
-            userId: otherUser.id,
-            studentId: booking.studentId.id,
-            userName: otherUser.name,
-            userRole: otherUser.role,
-            userImage: otherUser.userImage.secureUrl,
-            dateTime: dateTime,
-            duration: booking.durationMins,
-            price: booking.price,
-            paymentStatus: booking.paymentStatus,
-            status: displayStatus,
-            rawStatus: displayStatus,
-            timeAgo: booking.createdAt,
-            isStudent: isMeSender);
+          sessionId: booking.id,
+          bookingCode: booking.bookingCode,
+          userId: otherUser.id,
+          studentId: booking.studentId.id,
+          userName: otherUser.name,
+          userRole: otherUser.role,
+          userImage: otherUser.userImage.secureUrl,
+          dateTime: dateTime,
+          duration: booking.durationMins,
+          price: booking.price,
+          paymentStatus: booking.paymentStatus,
+          status: displayStatus,
+          rawStatus: displayStatus,
+          timeAgo: booking.createdAt,
+          isStudent: isMeSender,
+          instructorJoined: booking.instructorJoined,
+          studentJoined: booking.studentJoined,
+        );
+      }).where((session) {
+        final endTime = session.dateTime.add(
+          Duration(minutes: session.duration.toInt()),
+        );
+
+        return now.isBefore(endTime);
       }).toList();
 
       emit(GetBookingsLoaded(bookings: sessions));
     } catch (e) {
       emit(GetBookingsError(message: e.toString()));
+    }
+  }
+
+  Future<dynamic> getNotJoinedUserFromAccepted(String bookingCode) async {
+    try {
+      final response = await bookingRepository.getAllBookings("accepted");
+
+      final booking = response.bookings.firstWhere(
+        (b) => b.bookingCode == bookingCode,
+        orElse: () => throw Exception("Booking not found"),
+      );
+
+      if (booking.studentJoined == false) {
+        return booking.studentId;
+      }
+
+      if (booking.instructorJoined == false) {
+        return booking.instructorId;
+      }
+
+      return null;
+    } catch (e) {
+      print("getNotJoinedUserFromAccepted error: $e");
+      return null;
     }
   }
 

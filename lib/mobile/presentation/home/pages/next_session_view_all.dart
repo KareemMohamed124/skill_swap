@@ -19,37 +19,28 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    double radius = 32;
-    double padding = 16;
-
-    if (screenWidth >= 800) {
-      radius = 40;
-      padding = 24;
-    }
-
-    return BlocBuilder<GetBookingsCubit, GetBookingsState>(
-      builder: (context, state) {
-        if (state is GetTodaySessionsLoading) {
-          return const Center(
+    return BaseScreen(
+      title: 'Next Sessions',
+      child: BlocBuilder<GetBookingsCubit, GetBookingsState>(
+        builder: (context, state) {
+          if (state is GetTodaySessionsLoading) {
+            return const Center(
               child: CircularProgressIndicator(
-            color: AppPalette.primary,
-          ));
-        }
-
-        if (state is GetTodaySessionsLoaded) {
-          if (state.sessions.isEmpty) {
-            return const SizedBox.shrink();
+                color: AppPalette.primary,
+              ),
+            );
           }
 
-          return BaseScreen(
-            title: 'Next Sessions',
-            child: ListView.separated(
+          if (state is GetTodaySessionsLoaded) {
+            if (state.sessions.isEmpty) {
+              return const Center(child: Text("No sessions"));
+            }
+
+            return ListView.separated(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: state.sessions.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final s = state.sessions[index];
 
@@ -61,16 +52,16 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                   isMentor: s.isMentor,
                 );
               },
-            ),
-          );
-        }
+            );
+          }
 
-        if (state is GetBookingsError) {
+          if (state is GetBookingsError) {
+            return const Center(child: Text("Error loading sessions"));
+          }
+
           return const SizedBox.shrink();
-        }
-
-        return const SizedBox.shrink();
-      },
+        },
+      ),
     );
   }
 }

@@ -47,6 +47,30 @@ class GetChatModel {
       updatedAt: json['updatedAt'] ?? '',
     );
   }
+
+  GetChatModel copyWith({
+    String? id,
+    String? type,
+    String? name,
+    String? image,
+    List<ParticipantModel>? participants,
+    TrackModel? track,
+    LastMessageModel? lastMessage,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return GetChatModel(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      name: name ?? this.name,
+      image: image ?? this.image,
+      participants: participants ?? this.participants,
+      track: track ?? this.track,
+      lastMessage: lastMessage ?? this.lastMessage,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 class TrackModel {

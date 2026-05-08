@@ -5,6 +5,7 @@ import 'package:skill_swap/shared/data/models/booking_availability/get_available
 import 'package:skill_swap/shared/data/models/booking_availability/get_upcoming_sat.dart';
 import 'package:skill_swap/shared/data/models/booking_availability/set_available_dates.dart';
 import 'package:skill_swap/shared/data/models/join_session/join_session_response.dart';
+import 'package:skill_swap/shared/data/models/submit_review/submit_review_success_response.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
 import '../models/booking/booking_error_response.dart';
@@ -309,11 +310,9 @@ class BookingRepositoryImpl extends BookingRepository {
       String id, SubmitReviewRequest request) async {
     try {
       final response = await api.submitReview(id, request);
-      if (response.message == "Booking completed and review submitted") {
-        return SubmitReviewSuccess(success: response);
-      }
-      return SubmitReviewFailure(
-          error: SubmitReviewErrorResponse(message: response.message));
+
+      return SubmitReviewSuccess(
+          success: SubmitReviewSuccessResponse.fromJson(response));
     } on DioException catch (e) {
       if (e.response?.data != null &&
           e.response!.data is Map<String, dynamic>) {
@@ -322,7 +321,14 @@ class BookingRepositoryImpl extends BookingRepository {
       }
 
       return SubmitReviewFailure(
-          error: SubmitReviewErrorResponse(message: _getServerErrorMessage(e)));
+        error: SubmitReviewErrorResponse(
+          message: _getServerErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      return SubmitReviewFailure(
+        error: SubmitReviewErrorResponse(message: e.toString()),
+      );
     }
   }
 

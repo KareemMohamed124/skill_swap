@@ -99,31 +99,32 @@ class ProfileMentorHeader extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              name,
-                              style: TextStyle(
-                                  fontSize: nameFontSize, color: Colors.white),
-                            ),
-                            SizedBox(height: screenHeight * 0.005),
                             Row(
                               children: [
                                 Text(
-                                  "$track • ",
+                                  "$name • ",
                                   style: TextStyle(
-                                      fontSize: trackFontSize,
-                                      color: Colors.white70),
+                                      fontSize: nameFontSize,
+                                      color: Colors.white),
                                 ),
                                 Icon(Icons.star,
                                     size: iconSize,
                                     color: const Color(0xFFFFCE31)),
                                 SizedBox(width: screenWidth * 0.01),
                                 Text(
-                                  "$rate",
+                                  rate.toStringAsFixed(2),
                                   style: TextStyle(
                                       fontSize: rateFontSize,
                                       color: Colors.white),
                                 ),
                               ],
+                            ),
+                            SizedBox(height: screenHeight * 0.005),
+                            Text(
+                              track,
+                              style: TextStyle(
+                                  fontSize: trackFontSize,
+                                  color: Colors.white70),
                             ),
                           ],
                         ),

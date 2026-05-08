@@ -15,8 +15,10 @@ import '../screen_manager/screen_manager.dart';
 
 class CallScreen extends StatefulWidget {
   final SessionModel session;
+  final int remainingMinutes;
 
-  const CallScreen({super.key, required this.session});
+  const CallScreen(
+      {super.key, required this.session, required this.remainingMinutes});
 
   @override
   State<CallScreen> createState() => _CallScreenState();
@@ -32,23 +34,82 @@ class _CallScreenState extends State<CallScreen> {
 
   late String callId;
   late String currentUserId;
-
+  Timer? _waitingTimer;
+  bool _otherUserJoined = false;
   bool mic = true;
   bool cam = true;
   bool screenSharing = false;
 
   bool _remoteSet = false;
+  bool _isEnding = false;
 
   final List<RTCIceCandidate> _pending = [];
+
+  // ================= TIMER =================
+  Timer? _callTimer;
+  Duration _remaining = Duration.zero;
 
   @override
   void initState() {
     super.initState();
     callId = widget.session.bookingCode;
     currentUserId = widget.session.userId;
-    init();
+    init().then((_) => _startCallTimer());
   }
 
+  // ================= TIMER LOGIC =================
+  void _startCallTimer() {
+    _remaining = const Duration(minutes: 3);
+
+    _callTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        if (_remaining.inSeconds <= 1) {
+          _remaining = Duration.zero;
+          timer.cancel();
+          _autoEndCall();
+        } else {
+          _remaining = _remaining - const Duration(seconds: 1);
+        }
+      });
+    });
+  }
+
+  void _startWaitingForOtherUser() {
+    _waitingTimer = Timer(const Duration(minutes: 1), () async {
+      if (_otherUserJoined) return;
+
+      // اقفال الكول
+      await callRef.doc(callId).set({
+        'status': 'ended',
+        'endedBy': 'no_user_joined',
+      }, SetOptions(merge: true));
+
+      if (!mounted) return;
+    });
+  }
+
+  Future<void> _autoEndCall() async {
+    if (_isEnding) return;
+    _isEnding = true;
+
+    await callRef.doc(callId).set({
+      'status': 'ended',
+      'endedBy': 'system',
+    }, SetOptions(merge: true));
+  }
+
+  String _formatDuration(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
+  }
+
+  // ================= INIT =================
   Future<void> init() async {
     await localRenderer.initialize();
     await remoteRenderer.initialize();
@@ -58,8 +119,6 @@ class _CallScreenState extends State<CallScreen> {
 
     await service.initPeerConnection();
 
-    // ✅ FIX onTrack
-// ================= TRACK FIX =================
     service.peerConnection!.onTrack = (event) async {
       print("TRACK: ${event.track.kind}");
 
@@ -84,7 +143,7 @@ class _CallScreenState extends State<CallScreen> {
     };
 
     await handleCallFlow();
-
+    _startWaitingForOtherUser();
     listenCall();
     listenCandidates();
   }
@@ -128,8 +187,9 @@ class _CallScreenState extends State<CallScreen> {
         return;
       }
 
-      // ANSWER
       if (data['answer'] != null && !_remoteSet) {
+        _otherUserJoined = true;
+        _waitingTimer?.cancel();
         final answer = RTCSessionDescription(
           data['answer']['sdp'],
           data['answer']['type'],
@@ -144,7 +204,6 @@ class _CallScreenState extends State<CallScreen> {
         _pending.clear();
       }
 
-      // 🔥 RENEGOTIATION
       if (data['renegotiate'] == true && data['offer'] != null) {
         final offer = RTCSessionDescription(
           data['offer']['sdp'],
@@ -165,11 +224,27 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   void _handleCallEnded(String? endedBy) async {
+    _callTimer?.cancel();
     await service.dispose();
 
     if (!mounted) return;
 
-    // 👇 هنا التحكم في navigation
+    if (endedBy == 'no_user_joined') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ScreenManager(
+            initialIndex: 3,
+            showNoUserDialog: true,
+            noUserBookingCode: widget.session.bookingCode,
+            noUserPrice: widget.session.price,
+            isStudent: widget.session.isStudent,
+          ),
+        ),
+      );
+      return;
+    }
+
     if (widget.session.isStudent) {
       Navigator.pushReplacement(
         context,
@@ -180,12 +255,14 @@ class _CallScreenState extends State<CallScreen> {
           ),
         ),
       );
-    } else {
+    }
+    if (endedBy == 'ended') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => ScreenManager(
             initialIndex: 3,
+            showNoUserDialog: false,
           ),
         ),
       );
@@ -256,21 +333,30 @@ class _CallScreenState extends State<CallScreen> {
     }
   }
 
-  void endCall() async {
-    await callRef.doc(callId).set({
-      'status': 'ended',
-      'endedBy': currentUserId,
-    }, SetOptions(merge: true));
+  // ================= DISPOSE =================
+  @override
+  void dispose() {
+    _callTimer?.cancel();
+    localRenderer.dispose();
+    remoteRenderer.dispose();
+    super.dispose();
   }
 
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
+    final isLastFiveMinutes =
+        _remaining.inMinutes < 5 && _remaining.inSeconds > 0;
+    final isExpired = _remaining.inSeconds == 0;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+          // ── Remote Video ──
           RTCVideoView(remoteRenderer),
+
+          // ── Local Video ──
           Positioned(
             top: 40,
             right: 20,
@@ -278,6 +364,82 @@ class _CallScreenState extends State<CallScreen> {
             height: 160,
             child: RTCVideoView(localRenderer, mirror: true),
           ),
+
+          // ── Timer Badge ──
+          Positioned(
+            top: 50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isExpired
+                      ? Colors.red
+                      : isLastFiveMinutes
+                          ? Colors.red.withOpacity(0.85)
+                          : Colors.black.withOpacity(0.55),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: isLastFiveMinutes ? Colors.red : Colors.white24,
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.timer_outlined,
+                      color: isLastFiveMinutes ? Colors.white : Colors.white70,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      isExpired ? 'انتهت الجلسة' : _formatDuration(_remaining),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: isLastFiveMinutes
+                            ? FontWeight.bold
+                            : FontWeight.w500,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // ── تحذير آخر دقيقة ──
+          if (_remaining.inSeconds <= 60 && _remaining.inSeconds > 0)
+            Positioned(
+              top: 110,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    '⚠️ الجلسة ستنتهي خلال دقيقة',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Control Buttons (بدون زرار إنهاء) ──
           Positioned(
             bottom: 30,
             left: 0,
@@ -293,7 +455,6 @@ class _CallScreenState extends State<CallScreen> {
                   toggleScreenShare,
                   active: screenSharing,
                 ),
-                _btn(Icons.call_end, endCall, red: true),
               ],
             ),
           ),

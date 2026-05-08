@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:skill_swap/mobile/presentation/sessions/widgets/voucher_sheet.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
-import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
 import '../../../../shared/bloc/join_session_bloc/join_session_bloc.dart';
 import '../../../../shared/bloc/join_session_bloc/join_session_event.dart';
 import '../../../../shared/bloc/join_session_bloc/join_session_state.dart';
@@ -22,8 +21,6 @@ import '../../../../shared/data/models/status_booking/status_booking_request.dar
 import '../../../../shared/data/models/store/purchases.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/local_storage.dart';
-import '../../book_session/screens/profile_mentor.dart';
-import '../../book_session/widgets/session_booking_page.dart';
 import '../../payment/payment_webview_screen.dart';
 import '../models/session.dart';
 
@@ -83,6 +80,21 @@ class _SessionCardState extends State<SessionCard> {
     return "";
   }
 
+  int getRemainingCallMinutes() {
+    final start = widget.session.dateTime;
+    final end = start.add(Duration(minutes: widget.session.duration.toInt()));
+
+    final now = DateTime.now();
+
+    final remainingSeconds = end
+        .difference(now)
+        .inSeconds;
+
+    final minutes = (remainingSeconds / 60).ceil();
+
+    return minutes < 0 ? 0 : minutes;
+  }
+
   Future<void> _loadUser() async {
     final userId = await LocalStorage.getUserId();
 
@@ -103,7 +115,7 @@ class _SessionCardState extends State<SessionCard> {
 
     _timer = Timer.periodic(
       const Duration(seconds: 1),
-      (_) => _updateTime(),
+          (_) => _updateTime(),
     );
 
     finalPrice = widget.session.price.toDouble();
@@ -198,7 +210,10 @@ class _SessionCardState extends State<SessionCard> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final cardWidth = screenWidth * 0.35;
 
     final bloc = context.read<StatusBookBloc>();
@@ -223,74 +238,28 @@ class _SessionCardState extends State<SessionCard> {
         }
       },
       child: InkWell(
-        onTap: isPending
-            ? () async {
-                final user = await context
-                    .read<UsersCubit>()
-                    .getUserById(widget.session.userId);
-
-                if (user != null) {
-                  Get.to(
-                    ProfileMentor(
-                      id: user.id,
-                      image: user.userImage.secureUrl ?? "",
-                      name: user.name,
-                      track: user.track.name,
-                      rate: user.rate ?? 5.0,
-                      bio: user.profile.bio ?? "",
-                      hoursAvailable: user.freeHours ?? 5,
-                      peopleHelped: user.helpTotalHours ?? 0.0,
-                      hourlyRate: widget.session.price,
-                      skills: user.skills ?? [],
-                      reviews: user.reviews ?? [],
-                      role: user.role,
-                    ),
-                  )?.then((_) {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => BookingBottomSheet(
-                        userId: user.id,
-                        userName: user.name,
-                        price: widget.session.price,
-                        bookingId: widget.session.sessionId.toString(),
-                        availableDates: [],
-                        role: user.role,
-                      ),
-                    );
-                  });
-                } else {
-                  Get.snackbar("Error", "User data not found");
-                }
-              }
-            : null,
-        // onTap: () {
-        //   final bookingId = widget.session.sessionId.toString();
-        //
-        //   Get.to(
-        //     BlocProvider(
-        //       create: (_) =>
-        //           sl<ActiveBookingBloc>()..add(LoadBookingDetails(bookingId)),
-        //       child: BookSessionScreen(
-        //         userId: widget.session.userId,
-        //         bookingId: bookingId,
-        //         userName: widget.session.userName,
-        //         price: widget.session.price,
-        //       ),
-        //     ),
-        //   );
-        // },
+        onTap: () {
+          Get.to(() =>
+              CallScreen(
+                session: widget.session,
+                remainingMinutes: 2,
+              ));
+        },
         child: Container(
           padding: EdgeInsets.all(screenWidth * 0.04),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Theme
+                .of(context)
+                .cardColor,
             borderRadius: BorderRadius.circular(screenWidth * 0.04),
-            border: Border.all(color: Theme.of(context).dividerColor),
+            border: Border.all(color: Theme
+                .of(context)
+                .dividerColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               /// HEADER
               Row(
                 children: [
@@ -301,16 +270,25 @@ class _SessionCardState extends State<SessionCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(widget.session.userName ?? "User",
-                            style: Theme.of(context).textTheme.titleMedium),
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .titleMedium),
                         Text(widget.session.userRole ?? "Normal",
-                            style: Theme.of(context).textTheme.bodySmall),
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .bodySmall),
                       ],
                     ),
                   ),
                   if (isRequested)
                     Text(
                       timeAgoFromServer(widget.session.timeAgo),
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodySmall,
                     )
                   else
                     Container(
@@ -349,7 +327,8 @@ class _SessionCardState extends State<SessionCard> {
                 context: context,
                 icon: Icons.calendar_today_outlined,
                 data:
-                    "${widget.session.dateTime.day}/${widget.session.dateTime.month}/${widget.session.dateTime.year}",
+                "${widget.session.dateTime.day}/${widget.session.dateTime
+                    .month}/${widget.session.dateTime.year}",
                 screenWidth: screenWidth,
               ),
 
@@ -388,7 +367,10 @@ class _SessionCardState extends State<SessionCard> {
                   SizedBox(width: 8),
                   if (isUnpaid &&
                       widget.session.price > 0 &&
-                      widget.session.isStudent)
+                      widget.session.isStudent &&
+                      !isRejected &&
+                      !isCancelled &&
+                      !isCompleted)
                     Text(
                       "Payment Required",
                       style: TextStyle(
@@ -404,7 +386,7 @@ class _SessionCardState extends State<SessionCard> {
               BlocBuilder<PurchaseCubit, PurchaseState>(
                 builder: (context, state) {
                   final vouchers =
-                      context.read<PurchaseCubit>().getAvailableVouchers();
+                  context.read<PurchaseCubit>().getAvailableVouchers();
 
                   if (isPaid ||
                       !widget.session.isStudent ||
@@ -428,14 +410,15 @@ class _SessionCardState extends State<SessionCard> {
                             ElevatedButton(
                               onPressed: () async {
                                 final selected =
-                                    await showModalBottomSheet<Purchases>(
+                                await showModalBottomSheet<Purchases>(
                                   context: context,
                                   isScrollControlled: true,
                                   backgroundColor: Colors.transparent,
-                                  builder: (_) => VoucherSheet(
-                                    vouchers: vouchers,
-                                    selected: selectedVoucher,
-                                  ),
+                                  builder: (_) =>
+                                      VoucherSheet(
+                                        vouchers: vouchers,
+                                        selected: selectedVoucher,
+                                      ),
                                 );
 
                                 if (selected != null) {
@@ -476,19 +459,20 @@ class _SessionCardState extends State<SessionCard> {
                                     width: 100,
                                     height: 60,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      width: 100,
-                                      height: 60,
-                                      color: Colors.grey.shade300,
-                                      child: const Icon(Icons.local_offer),
-                                    ),
+                                    errorBuilder: (_, __, ___) =>
+                                        Container(
+                                          width: 100,
+                                          height: 60,
+                                          color: Colors.grey.shade300,
+                                          child: const Icon(Icons.local_offer),
+                                        ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         selectedVoucher!.itemId?.title ?? "",
@@ -498,7 +482,7 @@ class _SessionCardState extends State<SessionCard> {
                                       Text(
                                         selectedVoucher!.itemId?.value ?? "",
                                         style:
-                                            const TextStyle(color: Colors.grey),
+                                        const TextStyle(color: Colors.grey),
                                       ),
                                       Text(
                                         "After discount: $finalPrice",
@@ -543,15 +527,15 @@ class _SessionCardState extends State<SessionCard> {
                         onPressed: isLoading
                             ? null
                             : () {
-                                context.read<StatusBookBloc>().add(
-                                      StatusBookSession(
-                                          id: widget.session.sessionId,
-                                          request: StatusBookingRequest(
-                                            status: "accepted",
-                                          ),
-                                          studentId: widget.session.studentId),
-                                    );
-                              },
+                          context.read<StatusBookBloc>().add(
+                            StatusBookSession(
+                                id: widget.session.sessionId,
+                                request: StatusBookingRequest(
+                                  status: "accepted",
+                                ),
+                                studentId: widget.session.studentId),
+                          );
+                        },
                         child: const Text(
                           "Accept",
                           style: TextStyle(color: Colors.white),
@@ -568,14 +552,14 @@ class _SessionCardState extends State<SessionCard> {
                         onPressed: isLoading
                             ? null
                             : () {
-                                context.read<StatusBookBloc>().add(
-                                      StatusBookSession(
-                                          id: widget.session.sessionId,
-                                          request: StatusBookingRequest(
-                                              status: "rejected"),
-                                          studentId: widget.session.userId),
-                                    );
-                              },
+                          context.read<StatusBookBloc>().add(
+                            StatusBookSession(
+                                id: widget.session.sessionId,
+                                request: StatusBookingRequest(
+                                    status: "rejected"),
+                                studentId: widget.session.userId),
+                          );
+                        },
                         child: const Text(
                           "Decline",
                           style: TextStyle(color: Colors.white),
@@ -586,215 +570,309 @@ class _SessionCardState extends State<SessionCard> {
                 )
 
               /// FREE SESSION
-              else if (isAccepted && widget.session.price == 0)
-                BlocProvider(
-                  create: (_) => sl<JoinSessionBloc>(),
-                  child: BlocConsumer<JoinSessionBloc, JoinSessionState>(
-                    listener: (context, state) {
-                      if (state is JoinSessionSuccess) {
-                        Get.to(() => CallScreen(session: widget.session));
-                      } else if (state is JoinSessionFailure) {
-                        Get.snackbar("Error", state.error);
-                      }
-                    },
-                    builder: (context, state) {
-                      final isJoining = state is JoinSessionLoading;
+              else
+                if (isAccepted && widget.session.price == 0)
+                  BlocProvider(
+                    create: (_) => sl<JoinSessionBloc>(),
+                    child: BlocConsumer<JoinSessionBloc, JoinSessionState>(
+                      listener: (context, state) {
+                        if (state is JoinSessionSuccess) {
+                          Get.to(() =>
+                              CallScreen(session: widget.session,
+                                  remainingMinutes: 2));
+                        } else if (state is JoinSessionFailure) {
+                          Get.snackbar("Error", state.error);
+                        }
+                      },
+                      builder: (context, state) {
+                        final isJoining = state is JoinSessionLoading;
 
-                      return GestureDetector(
-                        onTap: (_timeRemaining.inSeconds <= 0 && !isJoining)
-                            ? () {
-                                context.read<JoinSessionBloc>().add(
-                                      JoinSessionRequested(
-                                        widget.session.sessionId,
-                                      ),
-                                    );
-                              }
-                            : null,
-                        child: Container(
-                          height: screenWidth * 0.11,
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: _timeRemaining.inSeconds > 0
-                                ? AppPalette.primary
-                                : Colors.green,
-                            borderRadius:
-                                BorderRadius.circular(screenWidth * 0.03),
-                          ),
-                          child: isJoining
-                              ? const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 18,
-                                      height: 18,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Joining...",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                )
-                              : Text(
-                                  _timeRemaining.inSeconds > 0
-                                      ? "Session starts in ${_formatDuration(_timeRemaining)}"
-                                      : "Live now",
-                                  style: const TextStyle(color: Colors.white),
+                        return GestureDetector(
+                          onTap: (_timeRemaining.inSeconds <= 0 && !isJoining)
+                              ? () {
+                            context.read<JoinSessionBloc>().add(
+                              JoinSessionRequested(
+                                widget.session.sessionId,
+                              ),
+                            );
+                          }
+                              : null,
+                          child: Container(
+                            height: screenWidth * 0.11,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: _timeRemaining.inSeconds > 0
+                                  ? AppPalette.primary
+                                  : Colors.green,
+                              borderRadius:
+                              BorderRadius.circular(screenWidth * 0.03),
+                            ),
+                            child: isJoining
+                                ? const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
                                 ),
-                        ),
-                      );
-                    },
-                  ),
-                )
+                                SizedBox(width: 10),
+                                Text(
+                                  "Joining...",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            )
+                                : Text(
+                              _timeRemaining.inSeconds > 0
+                                  ? "Session starts in ${_formatDuration(
+                                  _timeRemaining)}"
+                                  : "Live now",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
 
-              /// PAID SESSION
-              else if (isAccepted && widget.session.price > 0)
-                widget.session.isStudent
-                    ? (isPaid
+                /// PAID SESSION
+                else
+                  if (isAccepted && widget.session.price > 0)
+                    widget.session.isStudent
+                        ? (isPaid
                         ? BlocProvider(
-                            create: (_) => sl<JoinSessionBloc>(),
-                            child:
-                                BlocConsumer<JoinSessionBloc, JoinSessionState>(
-                              listener: (context, state) {
-                                if (state is JoinSessionSuccess) {
-                                  // Call Session
-                                } else if (state is JoinSessionFailure) {
-                                  Get.snackbar("Error", state.error);
-                                }
-                              },
-                              builder: (context, state) {
-                                final isJoining = state is JoinSessionLoading;
+                      create: (_) => sl<JoinSessionBloc>(),
+                      child:
+                      BlocConsumer<JoinSessionBloc, JoinSessionState>(
+                        listener: (context, state) {
+                          if (state is JoinSessionSuccess) {
+                            // Call Session
+                          } else if (state is JoinSessionFailure) {
+                            Get.snackbar("Error", state.error);
+                          }
+                        },
+                        builder: (context, state) {
+                          final isJoining = state is JoinSessionLoading;
 
-                                return GestureDetector(
-                                  onTap: (_timeRemaining.inSeconds <= 0 &&
-                                          !isJoining)
-                                      ? () {
-                                          context.read<JoinSessionBloc>().add(
-                                                JoinSessionRequested(
-                                                  widget.session.sessionId,
-                                                ),
-                                              );
+                          return GestureDetector(
+                            onTap: (_timeRemaining.inSeconds <= 0 &&
+                                !isJoining)
+                                ? () {
+                              context.read<JoinSessionBloc>().add(
+                                JoinSessionRequested(
+                                  widget.session.sessionId,
+                                ),
+                              );
+                            }
+                                : null,
+                            child: Container(
+                                height: screenWidth * 0.11,
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: _timeRemaining.inSeconds > 0
+                                      ? AppPalette.primary
+                                      : Colors.green,
+                                  borderRadius: BorderRadius.circular(
+                                      screenWidth * 0.03),
+                                ),
+                                child: isJoining
+                                    ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                    : BlocProvider(
+                                  create: (_) =>
+                                      sl<JoinSessionBloc>(),
+                                  child: BlocConsumer<
+                                      JoinSessionBloc,
+                                      JoinSessionState>(
+                                    listener: (context, state) {
+                                      if (state
+                                      is JoinSessionSuccess) {
+                                        Get.to(() =>
+                                            CallScreen(
+                                                session:
+                                                widget.session,
+                                                remainingMinutes: 2
+                                            ));
+                                      } else if (state
+                                      is JoinSessionFailure) {
+                                        Get.snackbar(
+                                            "Error", state.error);
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      final isJoining = state
+                                      is JoinSessionLoading;
+
+                                      final canJoin = _timeRemaining
+                                          .inSeconds <=
+                                          0;
+
+                                      return GestureDetector(
+                                        onTap:
+                                        (canJoin && !isJoining)
+                                            ? () {
+                                          context
+                                              .read<
+                                              JoinSessionBloc>()
+                                              .add(
+                                            JoinSessionRequested(widget
+                                                .session
+                                                .sessionId),
+                                          );
                                         }
-                                      : null,
-                                  child: Container(
-                                    height: screenWidth * 0.11,
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: _timeRemaining.inSeconds > 0
-                                          ? AppPalette.primary
-                                          : Colors.green,
-                                      borderRadius: BorderRadius.circular(
-                                          screenWidth * 0.03),
-                                    ),
-                                    child: isJoining
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white)
-                                        : Text(
-                                            _timeRemaining.inSeconds > 0
-                                                ? "Session starts in ${_formatDuration(_timeRemaining)}"
-                                                : "Start Session",
+                                            : null,
+                                        child: Container(
+                                          height:
+                                          screenWidth * 0.11,
+                                          width: double.infinity,
+                                          alignment:
+                                          Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: canJoin
+                                                ? Colors.green
+                                                : AppPalette
+                                                .primary,
+                                            borderRadius:
+                                            BorderRadius
+                                                .circular(
+                                                screenWidth *
+                                                    0.03),
+                                          ),
+                                          child: isJoining
+                                              ? const CircularProgressIndicator(
+                                              color:
+                                              Colors.white)
+                                              : Text(
+                                            canJoin
+                                                ? "Live now"
+                                                : "Session starts in ${_formatDuration(
+                                                _timeRemaining)}",
                                             style: const TextStyle(
-                                                color: Colors.white),
+                                                color: Colors
+                                                    .white),
                                           ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
-                              },
-                            ),
-                          )
+                                )),
+                          );
+                        },
+                      ),
+                    )
                         : BlocProvider(
-                            create: (_) => sl<PayBookingBloc>(),
-                            child:
-                                BlocConsumer<PayBookingBloc, PayBookingState>(
-                              listener: (context, state) {
-                                if (state is PayBookingSuccessState) {
-                                  Get.to(() => PaymentWebViewScreen(
-                                        checkoutUrl: state.checkoutUrl,
-                                        successUrl: state.successUrl,
-                                        cancelUrl: state.cancelUrl,
-                                        bookingId: widget.session.sessionId,
-                                      ))?.then((_) {
-                                    context
-                                        .read<GetBookingsCubit>()
-                                        .fetchAllBookings(widget.currentStatus);
-                                  });
-                                } else if (state is PayBookingFailureState) {
-                                  Get.snackbar("Payment Error", state.error);
-                                }
-                              },
-                              builder: (context, state) {
-                                final isPayLoading = state is PayBookingLoading;
+                      create: (_) => sl<PayBookingBloc>(),
+                      child:
+                      BlocConsumer<PayBookingBloc, PayBookingState>(
+                        listener: (context, state) {
+                          if (state is PayBookingSuccessState) {
+                            Get.to(() =>
+                                PaymentWebViewScreen(
+                                  checkoutUrl: state.checkoutUrl,
+                                  successUrl: state.successUrl,
+                                  cancelUrl: state.cancelUrl,
+                                  bookingId: widget.session.sessionId,
+                                ))?.then((_) {
+                              context
+                                  .read<GetBookingsCubit>()
+                                  .fetchAllBookings(widget.currentStatus);
+                            });
+                          } else if (state is PayBookingFailureState) {
+                            Get.snackbar("Payment Error", state.error);
+                          }
+                        },
+                        builder: (context, state) {
+                          final isPayLoading = state is PayBookingLoading;
 
-                                return GestureDetector(
-                                  onTap: isPayLoading
-                                      ? null
-                                      : () {
-                                          context.read<PayBookingBloc>().add(
-                                                PayBookingRequested(
-                                                    bookingId: widget
-                                                        .session.sessionId,
-                                                    voucherId:
-                                                        selectedVoucher?.id),
-                                              );
-                                        },
-                                  child: Container(
-                                    height: screenWidth * 0.11,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: AppPalette.primary,
-                                      borderRadius: BorderRadius.circular(
-                                          screenWidth * 0.03),
-                                    ),
-                                    child: isPayLoading
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white)
-                                        : const Text(
-                                            "Pay Now",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                  ),
-                                );
-                              },
+                          return GestureDetector(
+                            onTap: isPayLoading
+                                ? null
+                                : () {
+                              context.read<PayBookingBloc>().add(
+                                PayBookingRequested(
+                                    bookingId: widget
+                                        .session.sessionId,
+                                    voucherId:
+                                    selectedVoucher?.id),
+                              );
+                            },
+                            child: Container(
+                              height: screenWidth * 0.11,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: AppPalette.primary,
+                                borderRadius: BorderRadius.circular(
+                                    screenWidth * 0.03),
+                              ),
+                              child: isPayLoading
+                                  ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                                  : const Text(
+                                "Pay Now",
+                                style:
+                                TextStyle(color: Colors.white),
+                              ),
                             ),
-                          ))
-                    : Container(
+                          );
+                        },
+                      ),
+                    ))
+                        : Container(
+                      height: screenWidth * 0.11,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _timeRemaining.inSeconds > 0
+                            ? AppPalette.primary
+                            : Colors.green,
+                        borderRadius:
+                        BorderRadius.circular(screenWidth * 0.03),
+                      ),
+                      child: Text(
+                        _timeRemaining.inSeconds > 0
+                            ? "Session starts in ${_formatDuration(
+                            _timeRemaining)}"
+                            : "Ready to start",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    )
+                  else
+                    if (isRejected)
+                      Container(
                         height: screenWidth * 0.11,
                         width: double.infinity,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: _timeRemaining.inSeconds > 0
-                              ? AppPalette.primary
-                              : Colors.green,
-                          borderRadius:
-                              BorderRadius.circular(screenWidth * 0.03),
+                          color: Colors.red.shade100,
+                          borderRadius: BorderRadius.circular(
+                              screenWidth * 0.03),
                         ),
-                        child: Text(
-                          _timeRemaining.inSeconds > 0
-                              ? "Session starts in ${_formatDuration(_timeRemaining)}"
-                              : "Ready to start",
-                          style: const TextStyle(color: Colors.white),
+                        child: const Text(
+                          "Session Rejected",
+                          style: TextStyle(color: Colors.red),
                         ),
                       )
-              else
-                Container(
-                  height: screenWidth * 0.11,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                  ),
-                  child: const Text(
-                    "Pending approval",
-                    style: TextStyle(color: AppPalette.primary),
-                  ),
-                ),
+                    else
+                      Container(
+                        height: screenWidth * 0.11,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(
+                              screenWidth * 0.03),
+                        ),
+                        child: const Text(
+                          "Pending approval",
+                          style: TextStyle(color: AppPalette.primary),
+                        ),
+                      ),
             ],
           ),
         ),
