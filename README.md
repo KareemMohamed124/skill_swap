@@ -10,6 +10,7 @@
 - [Installation Steps](#installation-steps)
 - [Compilation Steps](#compilation-steps)
 - [Run Instructions](#run-instructions)
+- [Using Pre-Built Installers](#using-pre-built-installers-no-development-setup-needed)
 - [Environment Setup & Configuration](#environment-setup--configuration)
 - [Project Structure](#project-structure)
 
@@ -39,7 +40,6 @@
 | **Flutter SDK** | Core framework | [flutter.dev/docs/get-started/install](https://flutter.dev/docs/get-started/install) |
 | **Android Studio** | Android build toolchain & emulators | [developer.android.com/studio](https://developer.android.com/studio) |
 | **Android SDK** | Compile SDK 36, NDK `28.2.13676358` | Installed via Android Studio SDK Manager |
-| **Xcode** *(macOS only)* | iOS/macOS builds | Mac App Store |
 | **Visual Studio** *(Windows only)* | Windows desktop builds (C++ workload) | [visualstudio.microsoft.com](https://visualstudio.microsoft.com/) |
 | **Git** | Version control | [git-scm.com](https://git-scm.com/) |
 | **Firebase CLI** | Firebase project management | `npm install -g firebase-tools` |
@@ -49,10 +49,8 @@
 
 | Platform | Minimum Requirements |
 |----------|---------------------|
-| **Windows** | Windows 10 or later, 8 GB RAM, 4 GB disk space |
-| **macOS** | macOS 12 (Monterey) or later, 8 GB RAM |
+| **Windows** | Windows 10 or later, 8 GB RAM, 1 GB disk space |
 | **Android** | Min SDK set by Flutter (API 21+), Target SDK 36 |
-| **iOS** | iOS 12.0+ |
 
 ### External Services & APIs
 
@@ -120,7 +118,7 @@ cd skill_swap
 flutter doctor -v
 ```
 
-Ensure there are **no critical issues** for your target platform (Android / iOS / Windows / Web).
+Ensure there are **no critical issues** for your target platform (Android / Windows).
 
 ### 3. Install Flutter Dependencies
 
@@ -146,7 +144,6 @@ flutterfire configure --project=skill-swap-e1a3d
 This generates/updates:
 - `lib/firebase_options.dart`
 - `android/app/google-services.json`
-- `ios/Runner/GoogleService-Info.plist` *(if targeting iOS)*
 
 ### 5. Generate Code (Retrofit, JSON Serialization)
 
@@ -156,27 +153,11 @@ The project uses `build_runner` for code generation (Retrofit API clients, JSON 
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### 6. Set Up Android Signing *(Android only)*
-
-For release builds, the project is configured with debug signing by default. For production:
-
-1. Generate a keystore:
-   ```bash
-   keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-   ```
-2. Create `android/key.properties`:
-   ```properties
-   storePassword=<your-password>
-   keyPassword=<your-password>
-   keyAlias=upload
-   storeFile=<path-to-keystore>/upload-keystore.jks
-   ```
-
 ---
 
 ## Compilation Steps
 
-### Android (APK / App Bundle)
+### Android (APK)
 
 ```bash
 # Debug APK
@@ -184,19 +165,6 @@ flutter build apk --debug
 
 # Release APK
 flutter build apk --release
-
-# Release App Bundle (for Google Play)
-flutter build appbundle --release
-```
-
-### iOS *(macOS only)*
-
-```bash
-# Install CocoaPods dependencies
-cd ios && pod install && cd ..
-
-# Build for iOS
-flutter build ios --release
 ```
 
 ### Windows Desktop
@@ -205,22 +173,10 @@ flutter build ios --release
 flutter build windows --release
 ```
 
-### Web
-
-```bash
-flutter build web --release
-```
-
 ### Generate Native Splash Screen
 
 ```bash
 dart run flutter_native_splash:create
-```
-
-### Generate App Launcher Icons
-
-```bash
-dart run flutter_launcher_icons
 ```
 
 ---
@@ -236,9 +192,6 @@ flutter run
 # Specify a target device
 flutter devices                  # List available devices
 flutter run -d <device-id>       # Run on specific device
-
-# Run on Chrome (Web)
-flutter run -d chrome
 
 # Run on Windows Desktop
 flutter run -d windows
@@ -260,12 +213,72 @@ Once the app is running in debug mode, press:
 flutter run --release
 ```
 
-### Deploy Web to Firebase Hosting
+---
 
-```bash
-flutter build web --release
-firebase deploy --only hosting
-```
+## Using Pre-Built Installers (No Development Setup Needed)
+
+If you just want to **install and use the app** without building from source, pre-built installers are available in the [`installers/`](installers/) directory.
+
+---
+
+### 🤖 Android — Install APK
+
+#### Prerequisites
+- An Android phone or tablet running **Android 5.0 (Lollipop)** or later
+- **Enable "Install from Unknown Sources"** on your device
+
+#### Steps
+
+1. **Transfer the APK file** to your Android device:
+   - Copy `app-release.apk` to your phone via USB cable, Google Drive, Telegram, or any file-sharing method.
+
+2. **Enable Unknown Sources** (if not already enabled):
+   - Go to **Settings → Security** (or **Settings → Apps → Special access**).
+   - Enable **"Install unknown apps"** for your file manager or browser.
+   - On newer Android versions, you'll be prompted automatically when opening the APK.
+
+3. **Open the APK file** on your device:
+   - Use a file manager app to navigate to where you saved the APK.
+   - Tap the APK file.
+
+4. **Tap "Install"** when the installation prompt appears.
+
+5. **Tap "Open"** after installation completes, or find **SkillSwap** in your app drawer.
+
+> **Note:** If Google Play Protect shows a warning, tap **"Install anyway"** — this is normal for apps not published on the Play Store.
+
+---
+
+### 🖥️ Windows — Install EXE
+
+#### Prerequisites
+- **Windows 10** or later (64-bit)
+- ~100 MB of free disk space
+
+#### Steps
+
+1. **Locate the installer:**
+   - Find `skill_swap.exe` in the [`installers/`](installers/) directory of this repository.
+
+2. **Run the installer:**
+   - Double-click `skill_swap.exe`.
+   - If Windows SmartScreen shows a warning:
+     - Click **"More info"**
+     - Then click **"Run anyway"**
+
+3. **Follow the setup wizard:**
+   - Choose the installation directory (default: `C:\Program Files\SkillSwap`).
+   - Optionally check **"Create a desktop shortcut"**.
+   - Click **"Install"** and wait for the process to complete.
+
+4. **Launch the app:**
+   - Check **"Launch SkillSwap"** at the end of the wizard, or
+   - Open the app from the **Start Menu** or **Desktop shortcut**.
+
+#### Uninstalling (Windows)
+- Go to **Settings → Apps → Installed Apps**.
+- Search for **SkillSwap**.
+- Click **"Uninstall"** and follow the prompts.
 
 ---
 
@@ -321,18 +334,13 @@ Firebase is auto-configured via `lib/firebase_options.dart` for the following pl
 | Platform | Status |
 |----------|--------|
 | Android  | ✅ Configured |
-| iOS      | ✅ Configured |
-| macOS    | ✅ Configured |
-| Web      | ✅ Configured |
 | Windows  | ✅ Configured |
-| Linux    | ❌ Not configured |
 
 **Firebase Project ID:** `skill-swap-e1a3d`
 
 The project uses:
 - **Cloud Firestore** — Video call signaling (WebRTC)
 - **Firebase Cloud Messaging (FCM)** — Push notifications
-- **Firebase Hosting** — Web deployment
 
 ### Local Storage
 
@@ -429,7 +437,6 @@ lib/
 | Android build fails (SLF4J) | Already fixed — SLF4J dependencies included in `build.gradle.kts` |
 | Pusher not connecting | Verify network connectivity and Pusher credentials |
 | WebRTC crash on desktop | `WebRTC.initialize()` is called in `main.dart` — ensure it runs before camera access |
-| iOS pod install fails | `cd ios && pod install --repo-update && cd ..` |
 
 ---
 
