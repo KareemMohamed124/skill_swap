@@ -7,11 +7,19 @@ class UpdateUser {
   final String? activationCode;
   final String? activationCodeExpires;
   final String password;
+<<<<<<< HEAD
   final num rate;
   final String role;
   final num freeHours;
   final num helpTotalHours;
   final num totalScore;
+=======
+  final int rate;
+  final String role;
+  final int freeHours;
+  final int helpTotalHours;
+  final int totalScore;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final UserImage userImage;
   final Profile profile;
   final BlockInfo blockInfo;
@@ -24,11 +32,19 @@ class UpdateUser {
   final List<dynamic> feedbackReceived;
   final List<dynamic> mentorSuggestions;
   final String? forgetCode;
+<<<<<<< HEAD
   final num warningCount;
   final List<dynamic> warnings;
   final DateTime createdAt;
   final DateTime updatedAt;
   final num v;
+=======
+  final int warningCount;
+  final List<dynamic> warnings;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int v;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final String track;
 
   UpdateUser({
@@ -66,6 +82,7 @@ class UpdateUser {
   });
 
   factory UpdateUser.fromJson(Map<String, dynamic> json) => UpdateUser(
+<<<<<<< HEAD
         id: json['_id']?.toString() ?? '',
         name: json['name']?.toString() ?? '',
         email: json['email']?.toString() ?? '',
@@ -85,6 +102,26 @@ class UpdateUser {
         skills: (json['skills'] as List? ?? [])
             .map((x) => SkillModel.fromJson(x))
             .toList(),
+=======
+        id: json['_id'],
+        name: json['name'],
+        email: json['email'],
+        isActive: json['isActive'],
+        confirmEmail: json['confirmEmail'],
+        activationCode: json['activationCode'],
+        activationCodeExpires: json['activationCodeExpires'],
+        password: json['password'],
+        rate: json['rate'],
+        role: json['role'],
+        freeHours: json['freeHours'],
+        helpTotalHours: json['helpTotalHours'],
+        totalScore: json['totalScore'],
+        userImage: UserImage.fromJson(json['userImage']),
+        profile: Profile.fromJson(json['profile']),
+        blockInfo: BlockInfo.fromJson(json['blockInfo']),
+        skills: List<SkillModel>.from(
+            json['skills'].map((x) => SkillModel.fromJson(x))),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         challenges: json['challenges'] ?? [],
         messages: json['messages'] ?? [],
         reports: json['reports'] ?? [],
@@ -92,6 +129,7 @@ class UpdateUser {
         feedbackGiven: json['feedbackGiven'] ?? [],
         feedbackReceived: json['feedbackReceived'] ?? [],
         mentorSuggestions: json['mentorSuggestions'] ?? [],
+<<<<<<< HEAD
         forgetCode: json['forgetCode']?.toString(),
         warningCount: json['warningCount'] ?? 0,
         warnings: json['warnings'] ?? [],
@@ -99,6 +137,15 @@ class UpdateUser {
         updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
         v: json['__v'] ?? 0,
         track: json['track']?.toString() ?? '',
+=======
+        forgetCode: json['forgetCode'],
+        warningCount: json['warningCount'],
+        warnings: json['warnings'] ?? [],
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: DateTime.parse(json['updatedAt']),
+        v: json['__v'],
+        track: json['track'],
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       );
 
   Map<String, dynamic> toJson() => {
@@ -140,6 +187,7 @@ class UserImage {
   final String secureUrl;
   final String publicId;
 
+<<<<<<< HEAD
   UserImage({
     required this.secureUrl,
     required this.publicId,
@@ -148,6 +196,13 @@ class UserImage {
   factory UserImage.fromJson(Map<String, dynamic> json) => UserImage(
         secureUrl: json['secure_url']?.toString() ?? '',
         publicId: json['public_id']?.toString() ?? '',
+=======
+  UserImage({required this.secureUrl, required this.publicId});
+
+  factory UserImage.fromJson(Map<String, dynamic> json) => UserImage(
+        secureUrl: json['secure_url'],
+        publicId: json['public_id'],
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       );
 
   Map<String, dynamic> toJson() => {
@@ -170,10 +225,17 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) => Profile(
+<<<<<<< HEAD
         bio: json['bio']?.toString() ?? '',
         skillSummary: json['skillSummary']?.toString() ?? '',
         reputationScore: json['reputationScore'] ?? 0,
         lastUpdated: json['lastUpdated']?.toString() ?? '',
+=======
+        bio: json['bio'],
+        skillSummary: json['skillSummary'],
+        reputationScore: json['reputationScore'],
+        lastUpdated: (json['lastUpdated']),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       );
 
   Map<String, dynamic> toJson() => {
@@ -189,6 +251,7 @@ class BlockInfo {
   final String? blockedUntil;
   final String blockReason;
 
+<<<<<<< HEAD
   BlockInfo({
     required this.isBlocked,
     this.blockedUntil,
@@ -199,6 +262,15 @@ class BlockInfo {
         isBlocked: json['isBlocked'] ?? false,
         blockedUntil: json['blockedUntil']?.toString(),
         blockReason: json['blockReason']?.toString() ?? '',
+=======
+  BlockInfo(
+      {required this.isBlocked, this.blockedUntil, required this.blockReason});
+
+  factory BlockInfo.fromJson(Map<String, dynamic> json) => BlockInfo(
+        isBlocked: json['isBlocked'],
+        blockedUntil: json['blockedUntil'],
+        blockReason: json['blockReason'],
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       );
 
   Map<String, dynamic> toJson() => {
@@ -215,6 +287,7 @@ class SkillModel {
   final String id;
   final DateTime addedAt;
 
+<<<<<<< HEAD
   SkillModel({
     required this.skillName,
     required this.isVerified,
@@ -229,6 +302,21 @@ class SkillModel {
         quizScore: json['quizScore'] ?? 0,
         id: json['_id']?.toString() ?? '',
         addedAt: DateTime.tryParse(json['addedAt'] ?? '') ?? DateTime.now(),
+=======
+  SkillModel(
+      {required this.skillName,
+      required this.isVerified,
+      required this.quizScore,
+      required this.id,
+      required this.addedAt});
+
+  factory SkillModel.fromJson(Map<String, dynamic> json) => SkillModel(
+        skillName: json['skillName'],
+        isVerified: json['isVerified'],
+        quizScore: json['quizScore'],
+        id: json['_id'],
+        addedAt: DateTime.parse(json['addedAt']),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       );
 
   Map<String, dynamic> toJson() => {

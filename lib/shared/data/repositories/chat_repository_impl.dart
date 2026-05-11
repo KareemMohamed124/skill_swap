@@ -1,16 +1,24 @@
 import 'package:dio/dio.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/shared/data/models/join_track/tracks_response.dart';
 import 'package:skill_swap/shared/data/models/public_chat/get_history_messages.dart';
 import 'package:skill_swap/shared/data/models/public_chat/send_message_response.dart';
+=======
+import 'package:skill_swap/shared/data/models/public_chat/tracks_response.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 import '../../domain/repositories/chat_repository.dart';
 import '../../helper/local_storage.dart';
 import '../models/chat/chat_models.dart';
+<<<<<<< HEAD
 import '../models/join_track/join_response.dart';
 import '../models/join_track/join_track_error_response.dart';
 import '../models/join_track/join_track_success_response.dart';
 import '../models/public_chat/get_chat_model.dart';
 import '../models/public_chat/search_response.dart';
+=======
+import '../models/public_chat/join_response.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../web_services/chat/chat_api_service.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -28,8 +36,13 @@ class ChatRepositoryImpl implements ChatRepository {
           response['chatId']?.toString() ??
           (response['chat'] is Map
               ? (response['chat']['_id']?.toString() ??
+<<<<<<< HEAD
               response['chat']['id']?.toString() ??
               '')
+=======
+                  response['chat']['id']?.toString() ??
+                  '')
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               : '');
     } on DioException catch (e) {
       throw _extractError(e);
@@ -43,8 +56,12 @@ class ChatRepositoryImpl implements ChatRepository {
       final response = await api.getMyChats();
       return response
           .where((item) => item is Map<String, dynamic>)
+<<<<<<< HEAD
           .map((item) =>
           PrivateChatModel.fromJson(
+=======
+          .map((item) => PrivateChatModel.fromJson(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               item as Map<String, dynamic>, currentUserId))
           .toList();
     } on DioException catch (e) {
@@ -52,6 +69,44 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
+<<<<<<< HEAD
+=======
+  @override
+  Future<List<ChatMessageModel>> getMessages(String chatId,
+      {int page = 1, int limit = 20}) async {
+    try {
+      final response = await api.getMessages(chatId, page: page, limit: limit);
+      final messages =
+          response['messages'] ?? response['data'] ?? response['docs'] ?? [];
+      if (messages is List) {
+        return messages
+            .where((item) => item is Map<String, dynamic>)
+            .map((item) =>
+                ChatMessageModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+  @override
+  Future<ChatMessageModel> sendMessage(
+      String chatId, String content, String type) async {
+    try {
+      final response = await api.sendMessage(chatId, content, type);
+      // The response may wrap the message in a key
+      final messageData = response['message'] is Map<String, dynamic>
+          ? response['message'] as Map<String, dynamic>
+          : response;
+      return ChatMessageModel.fromJson(messageData);
+    } on DioException catch (e) {
+      throw _extractError(e);
+    }
+  }
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   String _extractError(DioException e) {
     try {
       final data = e.response?.data;
@@ -64,6 +119,10 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+<<<<<<< HEAD
+=======
+  @override
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<TracksResponse> getTracks() async {
     try {
       final response = await api.getTracks();
@@ -74,6 +133,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+<<<<<<< HEAD
   Future<JoinTrackResponse> joinTrack(String trackId) async {
     try {
       final response = await api.joinTrack(trackId);
@@ -140,10 +200,17 @@ class ChatRepositoryImpl implements ChatRepository {
       }).toList();
 
       return chats;
+=======
+  Future<JoinResponse> joinTrack(String trackId) async {
+    try {
+      final response = await api.joinTrack(trackId);
+      return JoinResponse.fromJson(response);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     } on DioException catch (e) {
       throw _extractError(e);
     }
   }
+<<<<<<< HEAD
 
   @override
   Future<int> getUnreadCount(String chatId) async {
@@ -266,3 +333,6 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

@@ -38,10 +38,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.labelText,
+<<<<<<< HEAD
           style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Theme.of(context).textTheme.bodyLarge!.color),
+=======
+          style:  TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+              color: Theme.of(context).textTheme.bodyLarge!.color
+          ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -53,6 +61,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintStyle: Theme.of(context).textTheme.bodyMedium,
             filled: true,
             fillColor: Theme.of(context).cardColor,
+<<<<<<< HEAD
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Theme.of(context).dividerColor),
               borderRadius: BorderRadius.circular(16),
@@ -69,6 +78,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderSide: BorderSide(color: Colors.red),
               borderRadius: BorderRadius.circular(16),
             ),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -79,6 +90,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             errorText: widget.errorText,
             errorMaxLines: 3,
+<<<<<<< HEAD
             suffixIcon: widget.obscureText
                 ? IconButton(
                     icon: Icon(
@@ -91,10 +103,31 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       });
                     },
                   )
+=======
+
+            suffixIcon: widget.obscureText
+                ? IconButton(
+              icon: Icon(
+                _isObscure
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isObscure = !_isObscure;
+                });
+              },
+            )
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 : null,
           ),
         ),
       ],
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

@@ -3,12 +3,23 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+<<<<<<< HEAD
   file_selector_linux
   url_launcher_linux
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   jni
+=======
+  audioplayers_linux
+  file_selector_linux
+  flutter_volume_controller
+  url_launcher_linux
+  zego_express_engine
+)
+
+list(APPEND FLUTTER_FFI_PLUGIN_LIST
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/desktop/presentation/history/screens/history_screen.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+=======
+import 'package:skill_swap/desktop/presentation/history/screens/history_screen.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 import '../../../../main.dart';
 import '../../../../shared/common_ui/circle_button_icon.dart';
@@ -34,23 +38,39 @@ class SessionsHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+<<<<<<< HEAD
                     Text(title,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                         )),
+=======
+                    Text(
+                      title,
+                      style:TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                      )
+                    ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
                         fontSize: 14,
+<<<<<<< HEAD
                         color: Theme.of(context).textTheme.bodyMedium!.color,
+=======
+                        color: Colors.white,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                     ),
                   ],
                 ),
               ),
+<<<<<<< HEAD
               CircleButtonIcon(
                 icon: Icons.history,
                 onTap: () {
@@ -63,6 +83,18 @@ class SessionsHeader extends StatelessWidget {
               ),
             ],
           ),
+=======
+              CircleButtonIcon(icon: Icons.history,
+                onTap: (){
+                  desktopKey.currentState?.openSidePage(
+                      body: HistoryScreen()
+                  );
+                      }
+                ,),
+            ],
+          ),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           const SizedBox(height: 16),
         ],
       ),
@@ -70,6 +102,10 @@ class SessionsHeader extends StatelessWidget {
   }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 Widget selectStatus({
   required BuildContext context,
   required int selectedIndex,
@@ -112,4 +148,8 @@ Widget selectStatus({
       );
     }),
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

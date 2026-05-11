@@ -6,7 +6,10 @@ import 'package:get/get.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 
 import '../../../../mobile/presentation/search/widgets/filterSheet.dart';
+<<<<<<< HEAD
 import '../../../../shared/bloc/track_cubit/track_cubit.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
@@ -30,6 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
 
+<<<<<<< HEAD
   int calculateHourlyRate(int hours, String role) {
     if (role.toLowerCase() != 'mentor') {
       return 0;
@@ -48,6 +52,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return 50;
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   @override
   void initState() {
     super.initState();
@@ -56,6 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _scrollListener() {
     final bloc = context.read<UserFilterBloc>();
+<<<<<<< HEAD
     final state = bloc.state;
 
     if (_scrollController.position.pixels >=
@@ -63,6 +70,12 @@ class _SearchScreenState extends State<SearchScreen> {
         state.filteredList.isNotEmpty &&
         !state.isLastPage &&
         !state.isLoadingMore) {
+=======
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !bloc.state.isLastPage &&
+        !bloc.state.isLoadingMore) {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       bloc.add(LoadMoreUsersEvent(
         page: bloc.currentPage + 1,
         limit: bloc.limit,
@@ -93,7 +106,10 @@ class _SearchScreenState extends State<SearchScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+<<<<<<< HEAD
       resizeToAvoidBottomInset: false,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
@@ -113,6 +129,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       /// Top Bar
                       Row(
                         children: [
+<<<<<<< HEAD
+=======
+                          IconButton(
+                            icon: Icon(Icons.arrow_back,
+                                size: isDesktop ? 28 : 24),
+                            onPressed: () => Get.back(),
+                          ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           Expanded(
                             child: Center(
                               child: Text(
@@ -192,14 +216,18 @@ class _SearchScreenState extends State<SearchScreen> {
                                     size: isDesktop ? 28 : 24),
                                 onPressed: () async {
                                   final bloc = context.read<UserFilterBloc>();
+<<<<<<< HEAD
                                   final tracksCubit =
                                       context.read<TracksCubit>();
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                   final state = bloc.state;
 
                                   final activeFilters =
                                       await showModalSideSheet<int>(
                                     context: context,
+<<<<<<< HEAD
                                     withCloseControll: true,
                                     barrierColor: const Color(0xFFD6D6D6)
                                         .withOpacity(0.3),
@@ -213,6 +241,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                           value: tracksCubit,
                                         ),
                                       ],
+=======
+                                    withCloseControll: false,
+                                    barrierColor: const Color(0xFFD6D6D6)
+                                        .withOpacity(0.3),
+                                    width: isDesktop ? 500 : screenWidth * 0.85,
+                                    body: BlocProvider.value(
+                                      value: bloc,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                       child: MentorFilterSheet(
                                         initialMinPrice: state.minPrice,
                                         initialMaxPrice: state.maxPrice,
@@ -247,13 +283,17 @@ class _SearchScreenState extends State<SearchScreen> {
                               activeFilters: activeFiltersCount,
                               onPressed: () async {
                                 final bloc = context.read<UserFilterBloc>();
+<<<<<<< HEAD
                                 final tracksCubit = context.read<TracksCubit>();
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 final state = bloc.state;
 
                                 final activeFilters =
                                     await showModalSideSheet<int>(
                                   context: context,
+<<<<<<< HEAD
                                   withCloseControll: true,
                                   barrierColor:
                                       const Color(0xFFD6D6D6).withOpacity(0.3),
@@ -267,6 +307,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                         value: tracksCubit,
                                       ),
                                     ],
+=======
+                                  withCloseControll: false,
+                                  barrierColor:
+                                      const Color(0xFFD6D6D6).withOpacity(0.3),
+                                  width: isDesktop ? 500 : screenWidth * 0.85,
+                                  body: BlocProvider.value(
+                                    value: bloc,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                     child: MentorFilterSheet(
                                       initialMinPrice: state.minPrice,
                                       initialMaxPrice: state.maxPrice,
@@ -294,6 +342,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                           builder: (context, state) {
+<<<<<<< HEAD
                             if (state.isLoading) {
                               return const Center(
                                 child: CircularProgressIndicator(
@@ -322,11 +371,17 @@ class _SearchScreenState extends State<SearchScreen> {
 
                             final showLoader =
                                 state.isLoadingMore && !state.isLastPage;
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                             return ListView.builder(
                               controller: _scrollController,
                               padding: EdgeInsets.zero,
                               itemCount: state.filteredList.length +
+<<<<<<< HEAD
                                   (showLoader ? 1 : 0),
+=======
+                                  (state.isLastPage ? 0 : 1),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               itemBuilder: (context, index) {
                                 if (index < state.filteredList.length) {
                                   final user = state.filteredList[index];
@@ -342,9 +397,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                         skills: user.skills,
                                         hoursAvailable: user.freeHours,
                                         peopleHelped: user.helpTotalHours,
+<<<<<<< HEAD
                                         hourlyRate: user.hourlyPrice,
                                         reviews: user.reviews,
                                         role: user.role,
+=======
+                                        hourlyRate: 0,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                       ));
                                     },
                                     child: MentorCard(
@@ -352,13 +411,19 @@ class _SearchScreenState extends State<SearchScreen> {
                                       name: user.name,
                                       role: user.role,
                                       rate: user.rate,
+<<<<<<< HEAD
                                       hours: user.helpTotalHours,
                                       price: user.hourlyPrice,
+=======
+                                      hours: 5,
+                                      price: 0,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                       track: user.track.name,
                                       skills: user.skills,
                                       responseTime: "9",
                                     ),
                                   );
+<<<<<<< HEAD
                                 }
                                 if (index >= state.filteredList.length &&
                                     state.isLoadingMore &&
@@ -370,6 +435,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         color: AppPalette.primary,
                                       ),
                                     ),
+=======
+                                } else {
+                                  return Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Center(
+                                        child: CircularProgressIndicator(
+                                      color: AppPalette.primary,
+                                    )),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                   );
                                 }
                               },

@@ -22,10 +22,20 @@ class StartScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Spacer(),
+<<<<<<< HEAD
                   Image.asset(
                     'assets/logo/logoStart.png',
                   ),
                   const SizedBox(height: 16),
+=======
+
+                  Image.asset(
+                    'assets/logo/logoStart.png',
+                  ),
+
+                  const SizedBox(height: 16),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   Text(
                     'Welcome to \nSkillSwap',
                     textAlign: TextAlign.center,
@@ -35,16 +45,27 @@ class StartScreen extends StatelessWidget {
                       color: AppPalette.primary,
                     ),
                   ),
+<<<<<<< HEAD
                   const SizedBox(height: 64),
                   Text(
                     'Learn new skills, teach others, and grow together in our collaborative learning community',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+=======
+
+                  const SizedBox(height: 64),
+
+                  Text(
+                    'Learn new skills, teach others, and grow together in our collaborative learning community',
+                    textAlign: TextAlign.center,
+                    style:  TextStyle(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       fontSize: 18,
                       height: 1.4,
                       color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
+<<<<<<< HEAD
                   const Spacer(),
                   CustomButton(
                     text: 'Get Start',
@@ -53,6 +74,20 @@ class StartScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
+=======
+
+                  const Spacer(),
+
+                  CustomButton(
+                    text: 'Get Start',
+                    onPressed: () {
+                      Get.to(SignUpScreen());
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   CustomButton(
                     text: 'I already have an account',
                     colorButton: Colors.white,
@@ -60,11 +95,19 @@ class StartScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
+<<<<<<< HEAD
                         MaterialPageRoute(
                             builder: (context) => SignInDesktop()),
                       );
                     },
                   ),
+=======
+                        MaterialPageRoute(builder: (context) => SignInDesktop()),
+                      );
+                    },
+                  ),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   const SizedBox(height: 32),
                 ],
               ),
@@ -74,4 +117,8 @@ class StartScreen extends StatelessWidget {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

@@ -67,6 +67,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             filled: true,
             fillColor: Theme.of(context).cardColor,
             contentPadding: contentPadding,
+<<<<<<< HEAD
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Theme.of(context).dividerColor),
               borderRadius: BorderRadius.circular(16),
@@ -83,6 +84,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderSide: BorderSide(color: Colors.red),
               borderRadius: BorderRadius.circular(16),
             ),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,

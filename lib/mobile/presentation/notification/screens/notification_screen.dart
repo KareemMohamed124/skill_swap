@@ -133,7 +133,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 tagColor: tagColor,
                 timeAgo: formatTimeDifference(dateTime),
                 title: title,
+<<<<<<< HEAD
                 mentorName: session.userName,
+=======
+                mentorName: session.name,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 sessionTime:
                     "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
                 icon: icon,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 
@@ -69,3 +70,35 @@ class _CompletedSessionsPageState extends State<CompletedSessionsPage> {
     );
   }
 }
+=======
+
+import '../../../../shared/constants/strings.dart';
+import '../widgets/history_card.dart';
+
+class CompletedSessionsPage extends StatelessWidget {
+  const CompletedSessionsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // MediaQuery for responsive sizing
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.03, // 3% padding from sides
+        vertical: screenHeight * 0.01, // 1% padding from top/bottom
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        itemCount: AppData.completedSessions.length,
+        separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.01),
+        itemBuilder: (_, index) {
+          return HistoryCard(data: AppData.completedSessions[index]);
+        },
+      ),
+    );
+  }
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

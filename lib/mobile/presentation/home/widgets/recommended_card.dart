@@ -7,7 +7,11 @@ class RecommendedCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
+<<<<<<< HEAD
   final num? rating;
+=======
+  final int? rating;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final double? width;
   final double? imageHeight;
   final String? bio;
@@ -76,6 +80,7 @@ class RecommendedCard extends StatelessWidget {
 
           SizedBox(height: screenWidth * 0.01),
 
+<<<<<<< HEAD
           Expanded(
             flex: 4,
             child: Column(
@@ -104,6 +109,35 @@ class RecommendedCard extends StatelessWidget {
                 ),
               ],
             ),
+=======
+          Text(
+            name ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+
+          rating != null
+              ? Row(
+                  children: [
+                    Icon(Icons.star,
+                        size: screenWidth * 0.03,
+                        color: const Color(0xFFFFCE31)),
+                    SizedBox(width: screenWidth * 0.01),
+                    Text(
+                      "$rating",
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                )
+              : const SizedBox(),
+
+          Text(
+            track ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
         ],
       ),

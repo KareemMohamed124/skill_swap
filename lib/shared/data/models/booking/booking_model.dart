@@ -6,6 +6,7 @@ class Booking {
 
   final DateTime date;
   final String time;
+<<<<<<< HEAD
   final num duration_mins;
   final num price;
   final String bookingCode;
@@ -15,6 +16,17 @@ class Booking {
   final DateTime createdAt;
   final DateTime updatedAt;
   final num v;
+=======
+  final int duration_mins;
+  final int price;
+  final String bookingCode;
+  final String status;
+  final int rate;
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int v;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   Booking(
       {required this.id,

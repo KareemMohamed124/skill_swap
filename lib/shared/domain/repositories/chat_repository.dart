@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:skill_swap/shared/data/models/join_track/join_response.dart';
 import 'package:skill_swap/shared/data/models/join_track/tracks_response.dart';
 
@@ -6,12 +7,19 @@ import '../../data/models/public_chat/get_chat_model.dart';
 import '../../data/models/public_chat/get_history_messages.dart';
 import '../../data/models/public_chat/search_response.dart';
 import '../../data/models/public_chat/send_message_response.dart';
+=======
+import 'package:skill_swap/shared/data/models/public_chat/join_response.dart';
+import 'package:skill_swap/shared/data/models/public_chat/tracks_response.dart';
+
+import '../../data/models/chat/chat_models.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 abstract class ChatRepository {
   Future<String> createOrGetPrivateChat(String partnerId);
 
   Future<List<PrivateChatModel>> getMyChats();
 
+<<<<<<< HEAD
   Future<List<GetChatModel>> getPublicChats();
 
   Future<List<GetChatModel>> getPrivateChats();
@@ -39,3 +47,15 @@ abstract class ChatRepository {
 
   Future<List<MessageModel>> searchMessages(String chatId, String query);
 }
+=======
+  Future<List<ChatMessageModel>> getMessages(String chatId,
+      {int page = 1, int limit = 20});
+
+  Future<ChatMessageModel> sendMessage(
+      String chatId, String content, String type);
+
+  Future<TracksResponse> getTracks();
+
+  Future<JoinResponse> joinTrack(String trackId);
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

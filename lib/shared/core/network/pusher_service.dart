@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import 'dart:async';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import 'dart:convert';
 
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
@@ -12,6 +15,7 @@ class PusherService {
   final Map<String, bool> _subscribedChannels = {};
   String? _currentUserId;
 
+<<<<<<< HEAD
   final StreamController<Map<String, dynamic>> _messageController =
       StreamController<Map<String, dynamic>>.broadcast();
 
@@ -76,6 +80,45 @@ class PusherService {
 
   void _subscribeToUserChannel(String userId) async {
     final channelName = "user-$userId";
+=======
+  void Function(Map<String, dynamic> data)? onNewMessage;
+  void Function(Map<String, dynamic> data)? onChatListUpdated;
+
+  bool _isConnected = false;
+
+  bool get isConnected => _isConnected;
+
+  Future<void> init({required String userId}) async {
+    if (_isConnected) return;
+
+    _currentUserId = userId;
+
+    await _pusher.init(
+      apiKey: _appKey,
+      cluster: _cluster,
+
+      onConnectionStateChange: (current, previous) {
+        print('🔌 [Pusher] state: $current');
+      },
+
+      onError: (message, code, error) {
+        print('❌ [Pusher] error: $message');
+      },
+
+      onEvent: (event) {
+        _handleEvent(event);
+      },
+    );
+
+    await _pusher.connect();
+    _isConnected = true;
+
+    _subscribeToUserChannel(userId);
+  }
+
+  void _subscribeToUserChannel(String userId) async {
+    final channelName = 'user-$userId';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     if (_subscribedChannels.containsKey(channelName)) return;
 
@@ -83,6 +126,7 @@ class PusherService {
 
     _subscribedChannels[channelName] = true;
 
+<<<<<<< HEAD
     print("📡 Subscribed to $channelName");
   }
 
@@ -102,10 +146,21 @@ class PusherService {
       return;
     }
 
+=======
+    print('📡 [Pusher] Subscribed $channelName');
+  }
+
+  Future<void> subscribeToChatChannel(String chatId) async {
+    final channelName = 'private-chat-$chatId';
+
+    if (_subscribedChannels.containsKey(channelName)) return;
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     await _pusher.subscribe(channelName: channelName);
 
     _subscribedChannels[channelName] = true;
 
+<<<<<<< HEAD
     print("📡 Subscribed to chat $channelName");
   }
 
@@ -169,6 +224,40 @@ class PusherService {
 
   // ================= DISCONNECT =================
 
+=======
+    print('📡 [Pusher] Subscribed $channelName');
+  }
+
+  Future<void> unsubscribeFromChatChannel(String chatId) async {
+    final channelName = 'private-chat-$chatId';
+
+    if (!_subscribedChannels.containsKey(channelName)) return;
+
+    await _pusher.unsubscribe(channelName: channelName);
+
+    _subscribedChannels.remove(channelName);
+
+    print('📡 [Pusher] Unsubscribed $channelName');
+  }
+
+  void _handleEvent(PusherEvent event) {
+    if (event.data == null) return;
+
+    try {
+      final data = jsonDecode(event.data!);
+
+      print(
+        '📨 [Pusher] Event: ${event.eventName} channel: ${event.channelName}',
+      );
+
+      onNewMessage?.call(data);
+      onChatListUpdated?.call(data);
+    } catch (e) {
+      print('❌ parse error $e');
+    }
+  }
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<void> disconnect() async {
     for (final channel in _subscribedChannels.keys) {
       await _pusher.unsubscribe(channelName: channel);
@@ -179,6 +268,7 @@ class PusherService {
     await _pusher.disconnect();
 
     _isConnected = false;
+<<<<<<< HEAD
     _isConnecting = false;
 
     print("🔌 Pusher disconnected");
@@ -190,3 +280,10 @@ class PusherService {
 }
 
 final pusherService = PusherService();
+=======
+    _currentUserId = null;
+
+    print('🔌 [Pusher] Disconnected');
+  }
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

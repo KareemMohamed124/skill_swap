@@ -50,7 +50,10 @@ class CustomBottomNav extends StatelessWidget {
       NavItem(icon: Icons.search, label: 'search'.tr),
       NavItem(icon: Icons.calendar_today_outlined, label: 'session'.tr),
       NavItem(icon: Icons.person_outline, label: 'profile'.tr),
+<<<<<<< HEAD
       NavItem(icon: Icons.storefront_outlined, label: 'Store'),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     ];
 
     return Container(

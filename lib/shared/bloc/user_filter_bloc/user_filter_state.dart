@@ -2,9 +2,12 @@ import 'package:equatable/equatable.dart';
 
 import '../../data/models/user/user_model.dart';
 
+<<<<<<< HEAD
 // sentinel ثابت للتمييز بين "مش بعتلك حاجة" و "بعتلك null"
 const _undefined = Object();
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 class UserFilterState extends Equatable {
   final List<UserModel> filteredList;
   final bool isLoading;
@@ -18,6 +21,7 @@ class UserFilterState extends Equatable {
   final bool isLastPage;
   final bool isLoadingMore;
 
+<<<<<<< HEAD
   const UserFilterState({
     required this.filteredList,
     this.isLoading = false,
@@ -29,6 +33,18 @@ class UserFilterState extends Equatable {
     this.isLastPage = false,
     this.isLoadingMore = false,
   });
+=======
+  const UserFilterState(
+      {required this.filteredList,
+      this.isLoading = false,
+      this.minPrice = 20,
+      this.maxPrice = 60,
+      this.selectedRate,
+      this.selectedRole,
+      this.selectedTrack,
+      this.isLastPage = false,
+      this.isLoadingMore = false});
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   List<Object?> get props => [
@@ -40,6 +56,7 @@ class UserFilterState extends Equatable {
         selectedRole,
         selectedTrack,
         isLastPage,
+<<<<<<< HEAD
         isLoadingMore,
       ];
 
@@ -70,5 +87,30 @@ class UserFilterState extends Equatable {
       isLastPage: isLastPage ?? this.isLastPage,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
+=======
+        isLoadingMore
+      ];
+
+  UserFilterState copyWith(
+      {List<UserModel>? filteredList,
+      bool? isLoading,
+      double? minPrice,
+      double? maxPrice,
+      int? selectedRate,
+      String? selectedRole,
+      String? selectedTrack,
+      bool? isLastPage,
+      bool? isLoadingMore}) {
+    return UserFilterState(
+        filteredList: filteredList ?? this.filteredList,
+        isLoading: isLoading ?? this.isLoading,
+        minPrice: minPrice ?? this.minPrice,
+        maxPrice: maxPrice ?? this.maxPrice,
+        selectedRate: selectedRate ?? this.selectedRate,
+        selectedRole: selectedRole ?? this.selectedRole,
+        selectedTrack: selectedTrack ?? this.selectedTrack,
+        isLastPage: isLastPage ?? this.isLastPage,
+        isLoadingMore: isLoadingMore ?? this.isLoadingMore);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 }

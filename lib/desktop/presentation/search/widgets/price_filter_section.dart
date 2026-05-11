@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../../../shared/core/theme/app_palette.dart';
 
 class PriceFilterSection extends StatefulWidget {
@@ -39,7 +42,13 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           "price_range".tr,
           style: Theme.of(context).textTheme.titleMedium,
         ),
+<<<<<<< HEAD
         SizedBox(height: width * 0.02),
+=======
+
+        SizedBox(height: width * 0.02),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         RangeSlider(
           values: priceRange,
           min: widget.min,
@@ -56,7 +65,13 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
             widget.onChanged(values.start, values.end);
           },
         ),
+<<<<<<< HEAD
         SizedBox(height: width * 0.01),
+=======
+
+        SizedBox(height: width * 0.01),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         Row(
           children: [
             Expanded(child: priceBox("min".tr, priceRange.start)),
@@ -79,7 +94,13 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
             fontSize: 12,
           ),
         ),
+<<<<<<< HEAD
         SizedBox(height: 4),
+=======
+
+        SizedBox(height: 4),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         Container(
           height: 40,
           alignment: Alignment.centerLeft,
@@ -96,5 +117,9 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         ),
       ],
     );
+<<<<<<< HEAD
   }
 }
+=======
+  }}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skill_swap/main.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
 import '../../../../shared/core/theme/app_palette.dart';
+=======
+import 'package:skill_swap/main.dart';
+import '../../../../shared/constants/strings.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../widgets/next_session_card.dart';
 
 class NextSessionViewAll extends StatefulWidget {
@@ -25,7 +30,11 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
+<<<<<<< HEAD
           /// HEADER (زي ما هو)
+=======
+          // Header
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -39,6 +48,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                 IconButton(
                   onPressed: () {
                     final didGoBack = desktopKey.currentState?.goBack();
+<<<<<<< HEAD
                     if (didGoBack == false) {
                       desktopKey.currentState?.openPage(index: 0);
                     }
@@ -46,6 +56,13 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                   icon: Icon(
                     Icons.arrow_back,
                     color: Theme.of(context).textTheme.bodySmall!.color,
+=======
+                    if(didGoBack == false) {
+                      desktopKey.currentState?.openPage(index: 0);
+                    }
+                  },
+                  icon:  Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodySmall!.color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   ),
                 ),
                 Expanded(
@@ -65,6 +82,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
             ),
           ),
 
+<<<<<<< HEAD
           /// BODY (هنا اللوجيك الجديد)
           Expanded(
             child: Padding(
@@ -124,6 +142,35 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                   }
 
                   return const SizedBox.shrink();
+=======
+          // List of sessions
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: ListView.separated(
+                itemCount: AppData.nextSessions.length,
+                scrollDirection: Axis.vertical,
+                separatorBuilder: (_, __) => SizedBox(height: screenHeight * 0.02),
+                itemBuilder: (context, index) {
+                  final session = AppData.nextSessions[index];
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                      },
+                      child: NextSessionCard(
+                        name: session.name,
+                        duration: session.duration,
+                        dateTime: session.dateTime,
+                        startsIn: session.startsIn,
+                        isMentor: session.isMentor,
+                      ),
+                    ),
+                  );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 },
               ),
             ),
@@ -132,4 +179,8 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

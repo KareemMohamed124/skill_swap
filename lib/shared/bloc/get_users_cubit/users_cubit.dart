@@ -16,8 +16,12 @@ class UsersCubit extends Cubit<UsersState> {
   final List<UserModel> _users = [];
   final Set<String> _userIds = {};
 
+<<<<<<< HEAD
   Future<void> fetchUsers(
       {bool reset = false, bool topUsers = false, String? track}) async {
+=======
+  Future<void> fetchUsers({bool reset = false}) async {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     if (_isLoadingMore) return;
 
     if (reset) {
@@ -44,6 +48,7 @@ class UsersCubit extends Cubit<UsersState> {
 
       final uniqueNewUsers = newUsers.where((u) => _userIds.add(u.id)).toList();
       _users.addAll(uniqueNewUsers);
+<<<<<<< HEAD
 
       List<UserModel> processedUsers = List.from(_users);
       if (topUsers) {
@@ -54,11 +59,17 @@ class UsersCubit extends Cubit<UsersState> {
             processedUsers.where((u) => u.track.name == track).toList();
       }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       _isLastPage = newUsers.isEmpty;
       _isLoadingMore = false;
 
       emit(UsersLoaded(
+<<<<<<< HEAD
         processedUsers,
+=======
+        List.from(_users),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         isLastPage: _isLastPage,
         isLoadingMore: false,
       ));
@@ -70,6 +81,7 @@ class UsersCubit extends Cubit<UsersState> {
     }
   }
 
+<<<<<<< HEAD
   Future<List<UserModel>> getLeaderboardUsers({
     required int page,
     int limit = 100,
@@ -106,4 +118,9 @@ class UsersCubit extends Cubit<UsersState> {
       return null;
     }
   }
+=======
+  Future<void> fetchNextPage() async {
+    await fetchUsers();
+  }
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

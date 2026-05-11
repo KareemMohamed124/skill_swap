@@ -10,6 +10,7 @@ import 'package:skill_swap/shared/bloc/book_session/book_session_bloc.dart';
 import 'package:skill_swap/shared/bloc/book_session/book_session_event.dart';
 import 'package:skill_swap/shared/data/models/user/skill_model.dart';
 
+<<<<<<< HEAD
 import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
 import '../../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
@@ -22,12 +23,24 @@ import '../../prv_chat/private_chat_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 import '../widgets/profile_mentor_header.dart';
 import '../widgets/session_booking_page.dart';
+=======
+import '../../../../shared/bloc/private_chat/private_chat_messages_cubit.dart';
+import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/domain/repositories/chat_repository.dart';
+import '../../profile/pages/reviews_page.dart';
+import '../../prv_chat/private_chat_screen.dart';
+import '../../sign/widgets/custom_button.dart';
+import '../widgets/profile_mentor_header.dart';
+import 'book_session.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class ProfileMentor extends StatefulWidget {
   final String id;
   final String image;
   final String name;
   final String track;
+<<<<<<< HEAD
   final String role;
   final num rate;
   final String bio;
@@ -35,16 +48,29 @@ class ProfileMentor extends StatefulWidget {
   final num peopleHelped;
   final num hourlyRate;
   final List<ReviewModel> reviews;
+=======
+  final int rate;
+  final String bio;
+  final int hoursAvailable;
+  final int peopleHelped;
+  final int hourlyRate;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final List<Skill> skills;
 
   const ProfileMentor(
       {super.key,
+<<<<<<< HEAD
       required this.reviews,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       required this.id,
       required this.image,
       required this.name,
       required this.track,
+<<<<<<< HEAD
       required this.role,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       required this.rate,
       required this.bio,
       required this.hoursAvailable,
@@ -57,6 +83,7 @@ class ProfileMentor extends StatefulWidget {
 }
 
 class _ProfileMentorState extends State<ProfileMentor> {
+<<<<<<< HEAD
   int calculateHourlyRate(int hours, String role) {
     if (role.toLowerCase() != 'mentor') {
       return 0;
@@ -82,6 +109,20 @@ class _ProfileMentorState extends State<ProfileMentor> {
     final pricePerMinute = hourlyRate / 60;
     return (pricePerMinute * durationInMinutes).round();
   }
+=======
+  final List<String> skills = [
+    "Node.js",
+    "Html",
+    "JavaScript",
+    "TypeScript",
+    "Responsive Design",
+    "React",
+    "Css",
+    "Testing",
+    "Web Services API",
+    "C++",
+  ];
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +131,11 @@ class _ProfileMentorState extends State<ProfileMentor> {
     final screenWidth = media.size.width;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+<<<<<<< HEAD
+=======
+    // =========================================
+    // CircleAvatar helper function
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     Widget buildAvatar(String? avatarPath) {
       final hasImage = avatarPath != null && avatarPath.isNotEmpty;
 
@@ -109,6 +155,10 @@ class _ProfileMentorState extends State<ProfileMentor> {
             : null,
       );
     }
+<<<<<<< HEAD
+=======
+    // =========================================
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     return Scaffold(
       body: SafeArea(
@@ -154,9 +204,12 @@ class _ProfileMentorState extends State<ProfileMentor> {
                             color: Theme.of(context).cardColor,
                             borderRadius:
                                 BorderRadius.circular(screenWidth * 0.08),
+<<<<<<< HEAD
                             border: Border.all(
                               color: Theme.of(context).dividerColor,
                             ),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -171,9 +224,13 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                   info: "people_helped".tr),
                               mentorInfo(
                                   context: context,
+<<<<<<< HEAD
                                   rate: widget.role == "Mentor"
                                       ? "${widget.hourlyRate}\$"
                                       : "Free",
+=======
+                                  rate: "${widget.hourlyRate}\$",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                   info: "hourly_rate".tr),
                             ],
                           ),
@@ -237,6 +294,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                         Text("reviews".tr,
                             style: Theme.of(context).textTheme.bodyLarge),
                         const SizedBox(height: 8),
+<<<<<<< HEAD
                         Column(
                           children: widget.reviews.isNotEmpty
                               ? widget.reviews.map((review) {
@@ -256,6 +314,9 @@ class _ProfileMentorState extends State<ProfileMentor> {
                                 }).toList()
                               : [],
                         )
+=======
+                        ReviewsPage()
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ],
                     ),
                   ),
@@ -287,6 +348,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
                     final chatId =
                         await chatRepo.createOrGetPrivateChat(widget.id);
                     Get.to(
+<<<<<<< HEAD
                       () => BlocProvider(
                         create: (_) => sl<PublicChatMessagesCubit>()
                           ..init(chatId, partnerId: widget.id, isPrivate: true),
@@ -295,6 +357,14 @@ class _ProfileMentorState extends State<ProfileMentor> {
                           partnerName: widget.name,
                           partnerId: widget.id,
                           partnerImage: widget.image,
+=======
+                      BlocProvider(
+                        create: (_) =>
+                            sl<PrivateChatMessagesCubit>()..init(chatId),
+                        child: PrivateChatScreen(
+                          chatId: chatId,
+                          partnerName: widget.name,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                         ),
                       ),
                     );
@@ -307,6 +377,7 @@ class _ProfileMentorState extends State<ProfileMentor> {
             const SizedBox(width: 8),
             Expanded(
               child: CustomButton(
+<<<<<<< HEAD
                   text: "session_details".tr,
                   onPressed: () async {
                     final bloc = sl<GetAvailableDatesBloc>();
@@ -365,6 +436,22 @@ class _ProfileMentorState extends State<ProfileMentor> {
                       Get.snackbar("Error", state.message);
                     }
                   }),
+=======
+                text: "session_details".tr,
+                onPressed: () {
+                  Get.to(BlocProvider(
+                    create: (_) => sl<ActiveBookingBloc>()
+                      ..add(LoadMyBookingWithMentor(widget.id)),
+                    child: BookSessionScreen(
+                      userId: widget.id,
+                      bookingId: null,
+                      userName: widget.name,
+                      price: widget.hourlyRate,
+                    ),
+                  ));
+                },
+              ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
           ],
         ),

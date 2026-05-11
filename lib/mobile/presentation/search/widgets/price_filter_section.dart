@@ -40,6 +40,7 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         SizedBox(height: width * 0.02),
+<<<<<<< HEAD
         // CustomRangeSlider(
         //   min: widget.min,
         //   max: widget.max,
@@ -54,6 +55,8 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         //   labelFormatterStart: (v) => "\$${v.round()}",
         //   labelFormatterEnd: (v) => "\$${v.round()}",
         // ),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         RangeSlider(
           values: priceRange,
           min: widget.min,
@@ -73,15 +76,22 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
         SizedBox(height: width * 0.01),
         Row(
           children: [
+<<<<<<< HEAD
             Expanded(child: priceBox("min".tr, priceRange.start)),
             SizedBox(width: width * 0.04),
             Expanded(child: priceBox("max".tr, priceRange.end)),
+=======
+            Expanded(child: priceBox("min".tr, priceRange.start, width)),
+            SizedBox(width: width * 0.04),
+            Expanded(child: priceBox("max".tr, priceRange.end, width)),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ],
         ),
       ],
     );
   }
 
+<<<<<<< HEAD
   Widget priceBox(String label, double value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,6 +116,35 @@ class _PriceFilterSectionState extends State<PriceFilterSection> {
           child: Text(
             "\$${value.round()}",
             style: Theme.of(context).textTheme.bodySmall,
+=======
+  Widget priceBox(String label, double value, double width) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        FittedBox(
+          child: Text(
+            label,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+        SizedBox(height: width * 0.01),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Text(
+            "\$${value.round()}",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
         ),
       ],

@@ -34,6 +34,7 @@ class NextSessionSection extends StatelessWidget {
               SectionHeader(
                 sectionTitle: 'your_next_session'.tr,
                 onTop: () {
+<<<<<<< HEAD
                   Get.to(
                     () => BlocProvider.value(
                       value: context.read<GetBookingsCubit>(),
@@ -43,11 +44,21 @@ class NextSessionSection extends StatelessWidget {
                 },
               ),
               //  const SizedBox(height: 10),
+=======
+                  Get.to(NextSessionViewAll());
+                },
+              ),
+              const SizedBox(height: 10),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: state.sessions.length,
+<<<<<<< HEAD
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
+=======
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 itemBuilder: (context, index) {
                   final s = state.sessions[index];
 
@@ -55,8 +66,14 @@ class NextSessionSection extends StatelessWidget {
                     name: s.name,
                     duration: s.duration,
                     dateTime: s.dateTime,
+<<<<<<< HEAD
                     sessionTime: s.sessionTime,
                     isMentor: s.isMentor,
+=======
+                    startsIn: s.startsIn,
+                    isMentor: s.isMentor,
+                    remainingMinutes: s.remainingMinutes,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   );
                 },
               ),

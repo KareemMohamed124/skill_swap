@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+<<<<<<< HEAD
 import '../../../../shared/bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../../../../shared/bloc/add_available_dates_bloc/add_available_dates_bloc.dart';
 import '../../../../shared/bloc/delete_available_dates/delete_available_dates_bloc.dart';
@@ -14,14 +15,28 @@ import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/user_repository.dart';
 import '../widgets/availability_card.dart';
+=======
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/core/theme/app_palette.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class OverviewPage extends StatelessWidget {
   const OverviewPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenWidth = MediaQuery.of(context).size.width;
+=======
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     double containerWidth = screenWidth < 600 ? screenWidth : 600;
 
     return BlocBuilder<MyProfileCubit, MyProfileState>(
@@ -43,6 +58,7 @@ class OverviewPage extends StatelessWidget {
 
           final totalRequiredSkills = profile.skills.length;
           final verifiedSkills =
+<<<<<<< HEAD
               profile.skills.where((s) => s.isVerified).length;
 
           final verifyProgress =
@@ -54,6 +70,15 @@ class OverviewPage extends StatelessWidget {
           final isMentor = profile.role?.toLowerCase() == "mentor";
 
           final canApply = isHoursCompleted && isSkillsVerified && !isMentor;
+=======
+              profile.skills
+                  .where((s) => s.isVerified)
+                  .length;
+
+          final verifyProgress =
+          (verifiedSkills / totalRequiredSkills).clamp(0.0, 1.0);
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Center(
@@ -62,16 +87,35 @@ class OverviewPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+<<<<<<< HEAD
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
+=======
+
+                    /// =========================
+                    /// Progress Container
+                    /// =========================
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme
+                            .of(context)
+                            .cardColor,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: const [
                           BoxShadow(color: Colors.black12, blurRadius: 6)
                         ],
                         border:
+<<<<<<< HEAD
                             Border.all(color: Theme.of(context).dividerColor),
+=======
+                        Border.all(color: Theme
+                            .of(context)
+                            .dividerColor),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +135,12 @@ class OverviewPage extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
+<<<<<<< HEAD
                                   color: Theme.of(context)
+=======
+                                  color: Theme
+                                      .of(context)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                       .textTheme
                                       .bodyLarge!
                                       .color,
@@ -109,7 +158,12 @@ class OverviewPage extends StatelessWidget {
                                 child: Text(
                                   "Help others ($helpedHours/$requiredHours hours)",
                                   style: TextStyle(
+<<<<<<< HEAD
                                     color: Theme.of(context)
+=======
+                                    color: Theme
+                                        .of(context)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                         .textTheme
                                         .bodyMedium!
                                         .color,
@@ -120,7 +174,12 @@ class OverviewPage extends StatelessWidget {
                                 "${(helpProgress * 100).round()}%",
                                 style: TextStyle(
                                   fontWeight: FontWeight.normal,
+<<<<<<< HEAD
                                   color: Theme.of(context)
+=======
+                                  color: Theme
+                                      .of(context)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                       .textTheme
                                       .bodyMedium!
                                       .color,
@@ -148,7 +207,12 @@ class OverviewPage extends StatelessWidget {
                                 child: Text(
                                   "Verify skills ($verifiedSkills/$totalRequiredSkills required)",
                                   style: TextStyle(
+<<<<<<< HEAD
                                     color: Theme.of(context)
+=======
+                                    color: Theme
+                                        .of(context)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                         .textTheme
                                         .bodyMedium!
                                         .color,
@@ -159,7 +223,12 @@ class OverviewPage extends StatelessWidget {
                                 "${(verifyProgress * 100).round()}%",
                                 style: TextStyle(
                                   fontWeight: FontWeight.normal,
+<<<<<<< HEAD
                                   color: Theme.of(context)
+=======
+                                  color: Theme
+                                      .of(context)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                       .textTheme
                                       .bodyMedium!
                                       .color,
@@ -190,12 +259,16 @@ class OverviewPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
+<<<<<<< HEAD
                               onPressed: () {
                                 Get.to(() => ScreenManager(
                                       initialIndex: 4,
                                       initialProfileTab: 1,
                                     ));
                               },
+=======
+                              onPressed: () {},
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               child: Text(
                                 "complete_skills_verification".tr,
                                 style: const TextStyle(
@@ -210,6 +283,7 @@ class OverviewPage extends StatelessWidget {
                             width: double.infinity,
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
+<<<<<<< HEAD
                                 backgroundColor: isMentor
                                     ? Colors.grey.shade300
                                     : canApply
@@ -224,10 +298,17 @@ class OverviewPage extends StatelessWidget {
                                           : Colors.grey,
                                   width: 2,
                                 ),
+=======
+                                backgroundColor: const Color(0XFFF2F5F8),
+                                padding: const EdgeInsets.all(14),
+                                side: const BorderSide(
+                                    color: AppPalette.primary, width: 2),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
+<<<<<<< HEAD
                               onPressed: () async {
                                 if (isMentor) {
                                   showDialog(
@@ -321,10 +402,18 @@ class OverviewPage extends StatelessWidget {
                                       : canApply
                                           ? AppPalette.primary
                                           : Colors.grey,
+=======
+                              onPressed: () {},
+                              child: Text(
+                                "apply_mentor".tr,
+                                style: const TextStyle(
+                                  color: AppPalette.primary,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
+<<<<<<< HEAD
                           )
                         ],
                       ),
@@ -401,6 +490,72 @@ class OverviewPage extends StatelessWidget {
                     //     ],
                     //   ),
                     // ),
+=======
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    /// =========================
+                    /// Recent Activity Container
+                    /// =========================
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme
+                            .of(context)
+                            .cardColor,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black12, blurRadius: 10)
+                        ],
+                        border:
+                        Border.all(color: Theme
+                            .of(context)
+                            .dividerColor),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_month,
+                                color: Theme
+                                    .of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .color,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "recent_activity".tr,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          activityItem(context, "Completed React assessment",
+                              "2 days ago"),
+                          activityItem(context, "Helped Sarah with JavaScript",
+                              "3 days ago"),
+                          activityItem(context, "Joined React community chat",
+                              "1 week ago"),
+                        ],
+                      ),
+                    ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   ],
                 ),
               ),
@@ -421,21 +576,45 @@ class OverviewPage extends StatelessWidget {
           Icon(
             Icons.circle,
             size: 10,
+<<<<<<< HEAD
             color: Theme.of(context).textTheme.bodyLarge!.color,
+=======
+            color: Theme
+                .of(context)
+                .textTheme
+                .bodyLarge!
+                .color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               title,
               style: TextStyle(
+<<<<<<< HEAD
                 color: Theme.of(context).textTheme.bodyMedium!.color,
+=======
+                color: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               ),
             ),
           ),
           Text(
             time,
             style: TextStyle(
+<<<<<<< HEAD
               color: Theme.of(context).textTheme.bodyMedium!.color,
+=======
+              color: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,13 @@ import 'package:skill_swap/shared/data/models/my_profile/my_profile.dart';
 import 'package:skill_swap/shared/helper/local_storage.dart';
 
 import '../../core/services/notification_service.dart';
+=======
+// my_profile_cubit.dart
+import 'package:bloc/bloc.dart';
+import 'package:meta/meta.dart';
+import 'package:skill_swap/shared/data/models/my_profile/my_profile.dart';
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../domain/repositories/user_repository.dart';
 
 part 'my_profile_state.dart';
@@ -13,6 +21,7 @@ part 'my_profile_state.dart';
 class MyProfileCubit extends Cubit<MyProfileState> {
   final UserRepository repository;
 
+<<<<<<< HEAD
   num get coins {
     final state = this.state;
 
@@ -23,15 +32,21 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     return 0;
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   MyProfileCubit(this.repository) : super(MyProfileInitial());
 
   void fetchMyProfile() async {
     if (isClosed) return;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     emit(MyProfileLoading());
 
     try {
       final myProfile = await repository.getMyProfile();
+<<<<<<< HEAD
 
       // ================= SAVE LOCAL =================
 
@@ -157,10 +172,17 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     } catch (e) {
       if (isClosed) return;
 
+=======
+      if (isClosed) return;
+      emit(MyProfileLoaded(myProfile));
+    } catch (e) {
+      if (isClosed) return;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       emit(MyProfileError(e.toString()));
     }
   }
 
+<<<<<<< HEAD
   Future<void> setActiveTheme(String? themeId) async {
     try {
       await repository.setActiveTheme(themeId);
@@ -179,5 +201,19 @@ class MyProfileCubit extends Cubit<MyProfileState> {
     if (!isClosed) {
       emit(MyProfileInitial());
     }
+=======
+  void setProfile(MyProfile profile) {
+    if (!isClosed) emit(MyProfileLoaded(profile));
+  }
+
+  void clearProfile() {
+    if (!isClosed) emit(MyProfileInitial());
+  }
+
+  void refreshProfile() async {
+    if (isClosed) return;
+    clearProfile();
+    fetchMyProfile();
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 }

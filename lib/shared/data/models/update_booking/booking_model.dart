@@ -1,11 +1,15 @@
+<<<<<<< HEAD
 import '../../../core/utils/id_normalizer.dart';
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 class Booking {
   final String studentId;
   final String instructorId;
 
   final DateTime date;
   final String time;
+<<<<<<< HEAD
   final num duration_mins;
   final num price;
   final String bookingCode;
@@ -15,6 +19,17 @@ class Booking {
   final DateTime createdAt;
   final DateTime updatedAt;
   final num v;
+=======
+  final int duration_mins;
+  final int price;
+  final String bookingCode;
+  final String status;
+  final int rate;
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int v;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   Booking(
       {required this.id,
@@ -33,6 +48,7 @@ class Booking {
 
   factory Booking.fromJson(Map<String, dynamic> json) {
     return Booking(
+<<<<<<< HEAD
       id: IdNormalizer.normalize(json['_id']),
       studentId: IdNormalizer.normalize(json['studentId']),
       instructorId: IdNormalizer.normalize(json['instructorId']),
@@ -47,6 +63,21 @@ class Booking {
       updatedAt: DateTime.parse(json['updatedAt']),
       v: json['__v'],
     );
+=======
+        id: json['_id'],
+        studentId: json['studentId'],
+        instructorId: json['instructorId'],
+        date: DateTime.parse(json['date']),
+        time: json['time'],
+        duration_mins: json['duration_mins'],
+        price: json['price'],
+        bookingCode: json['bookingCode'],
+        status: json['status'],
+        rate: json['rate'] ?? 0,
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: DateTime.parse(json['updatedAt']),
+        v: json['__v']);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 
   Map<String, dynamic> toJson() {

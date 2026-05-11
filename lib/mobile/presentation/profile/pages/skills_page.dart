@@ -13,6 +13,7 @@ class SkillsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MyProfileCubit, MyProfileState>(
       builder: (context, state) {
+<<<<<<< HEAD
         /// ───────── Loading ─────────
         if (state is MyProfileLoading) {
           return const Center(
@@ -90,10 +91,65 @@ class SkillCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
         border: Border.all(color: Theme.of(context).dividerColor),
+=======
+        if (state is MyProfileLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is MyProfileError) {
+          return Center(child: Text(state.message));
+        } else if (state is MyProfileLoaded) {
+          final skills = state.profile.skills;
+
+          if (skills.isEmpty) {
+            return const Center(child: Text("No skills found"));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: skills
+                  .map((skill) =>
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: skillCard(
+                      context: context,
+                      title: skill.skillName,
+                      proficiency: (skill.quizScore / 100).clamp(0.0, 1.0),
+                      verified: skill.isVerified,
+                    ),
+                  ))
+                  .toList(),
+            ),
+          );
+        } else {
+          return const SizedBox(); // initial state
+        }
+      },
+    );
+  }
+
+  Widget skillCard({
+    required BuildContext context,
+    required String title,
+    required double proficiency,
+    required bool verified,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme
+            .of(context)
+            .cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+        border: Border.all(color: Theme
+            .of(context)
+            .dividerColor),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+<<<<<<< HEAD
           /// ───── Title + Status ─────
           Row(
             children: [
@@ -134,6 +190,39 @@ class SkillCard extends StatelessWidget {
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+=======
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .color,
+                    ),
+                  ),
+                  if (verified)
+                    const Padding(
+                      padding: EdgeInsets.only(left: 6),
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 18,
+                      ),
+                    ),
+                ],
+              ),
+              Container(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: verified ? Colors.green.shade50 : Colors.red.shade50,
@@ -148,32 +237,57 @@ class SkillCard extends StatelessWidget {
               ),
             ],
           ),
+<<<<<<< HEAD
 
           const SizedBox(height: 16),
 
           /// ───── Proficiency Text ─────
+=======
+          const SizedBox(height: 16),
+          // Proficiency
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "Proficiency",
                 style: TextStyle(
+<<<<<<< HEAD
                   color: Theme.of(context).textTheme.bodyMedium!.color,
+=======
+                  color: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 ),
               ),
               Text(
                 "${(proficiency * 100).round()}%",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+<<<<<<< HEAD
                   color: Theme.of(context).textTheme.bodyMedium!.color,
+=======
+                  color: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 ),
               ),
             ],
           ),
+<<<<<<< HEAD
 
           const SizedBox(height: 6),
 
           /// Progress Bar
+=======
+          const SizedBox(height: 6),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           SizedBox(
             height: 10,
             child: LinearProgressIndicator(
@@ -183,11 +297,16 @@ class SkillCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
+<<<<<<< HEAD
 
           const SizedBox(height: 16),
 
           /// 🔥 أهم جزء
           /// يظهر الزرار فقط لو مش Verified
+=======
+          const SizedBox(height: 16),
+          // زر الـ Assessment لو مش Verified
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           if (!verified)
             SizedBox(
               width: double.infinity,

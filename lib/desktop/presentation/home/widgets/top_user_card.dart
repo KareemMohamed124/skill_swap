@@ -5,7 +5,11 @@ class TopUserCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
+<<<<<<< HEAD
   final num? hours;
+=======
+  final int? hours;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final double? widthCard;
   final bool isLoading;
 
@@ -22,6 +26,7 @@ class TopUserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final cardWidth = widthCard ?? 180;
 
     if (isLoading) {
@@ -31,6 +36,19 @@ class TopUserCard extends StatelessWidget {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Theme.of(context).dividerColor),
+=======
+    if (isLoading) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Theme
+              .of(context)
+              .cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme
+              .of(context)
+              .dividerColor),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         ),
         child: const Center(
           child: CircularProgressIndicator(strokeWidth: 2),
@@ -38,6 +56,7 @@ class TopUserCard extends StatelessWidget {
       );
     }
 
+<<<<<<< HEAD
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       width: cardWidth,
@@ -53,10 +72,23 @@ class TopUserCard extends StatelessWidget {
             offset: const Offset(0, 4),
           )
         ],
+=======
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: Theme
+            .of(context)
+            .cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Theme
+            .of(context)
+            .dividerColor),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+<<<<<<< HEAD
           /// Avatar
           ClipOval(
             child: (image != null && image!.startsWith("http"))
@@ -72,10 +104,25 @@ class TopUserCard extends StatelessWidget {
 
           SizedBox(height: cardWidth * 0.08),
 
+=======
+          ClipOval(
+            child: (image != null && image!.startsWith("http"))
+                ? Image.network(
+              image!,
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _buildPlaceholder(40),
+            )
+                : _buildPlaceholder(40),
+          ),
+          const SizedBox(height: 12),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           Text(
             name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
             style: Theme.of(context).textTheme.bodyMedium,
           ),
 
@@ -102,12 +149,42 @@ class TopUserCard extends StatelessWidget {
             child: Text(
               "$hours",
               style: Theme.of(context).textTheme.bodySmall,
+=======
+            style: Theme
+                .of(context)
+                .textTheme
+                .bodyMedium,
+          ),
+          Text(
+            "${track ?? ''} ",
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Theme
+                  .of(context)
+                  .dividerColor),
+            ),
+            child: Text(
+              "$hours",
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodySmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
           ),
         ],
       ),
     );
   }
+<<<<<<< HEAD
 
   Widget _buildPlaceholder(double cardWidth) {
     return Container(
@@ -120,4 +197,21 @@ class TopUserCard extends StatelessWidget {
       child: const Icon(Icons.person, color: Colors.white),
     );
   }
+=======
+}
+
+Widget _buildPlaceholder(double cardWidth) {
+  return Container(
+    width: 40,
+    height: 40,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.grey,
+    ),
+    child: const Icon(
+      Icons.person,
+      color: Colors.white,
+    ),
+  );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

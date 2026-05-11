@@ -47,7 +47,11 @@ Map<String, String> en = {
   "recommended_for_you": "Recommended for You",
   "view_all": "View all",
   "channels": "Channels",
+<<<<<<< HEAD
   "search_placeholder": "Search by mentor name",
+=======
+  "search_placeholder": "Search by skill or mentor name or track....",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   "sort": "Sort",
   "filter": "Filter",
   "busy": "Busy",
@@ -76,7 +80,11 @@ Map<String, String> en = {
   "past_session": "Past Session",
   "rejected": "Rejected",
   "hourly_rate": "Hourly Rate",
+<<<<<<< HEAD
   "people_helped": "Hours Helped",
+=======
+  "people_helped": "People Helped",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   "hours_available": "Hours Available",
   "about": "About",
   "session_details": "Session Details",

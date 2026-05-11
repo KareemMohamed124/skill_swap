@@ -2,22 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+<<<<<<< HEAD
 import '../../../shared/common_ui/screen_manager/screen_manager.dart';
 import '../../../shared/dependency_injection/injection.dart';
 import '../../../shared/domain/repositories/booking_repository.dart';
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 class PaymentWebViewScreen extends StatefulWidget {
   final String checkoutUrl;
   final String successUrl;
   final String cancelUrl;
+<<<<<<< HEAD
   final String bookingId;
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   const PaymentWebViewScreen({
     super.key,
     required this.checkoutUrl,
     required this.successUrl,
     required this.cancelUrl,
+<<<<<<< HEAD
     required this.bookingId,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   });
 
   @override
@@ -27,7 +36,10 @@ class PaymentWebViewScreen extends StatefulWidget {
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
+<<<<<<< HEAD
   bool _isProcessing = false;
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   void initState() {
@@ -46,6 +58,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url;
 
+<<<<<<< HEAD
             // SUCCESS
             if (url.startsWith(widget.successUrl) ||
                 url.startsWith('skillswap://payment/success')) {
@@ -58,24 +71,55 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                 url.startsWith('skillswap://payment/cancel')) {
               Get.back();
 
+=======
+            // Check if Stripe redirected to the success URL
+            if (url.startsWith(widget.successUrl) ||
+                url.startsWith('skillswap://payment/success')) {
+              // Close WebView and navigate to success screen
+              Get.off(() => const PaymentSuccessScreen());
+              return NavigationDecision.prevent;
+            }
+
+            // Check if Stripe redirected to the cancel URL
+            if (url.startsWith(widget.cancelUrl) ||
+                url.startsWith('skillswap://payment/cancel')) {
+              // Close WebView and show cancelled notification
+              Get.back();
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               Get.snackbar(
                 'Payment Cancelled',
                 'Your payment has been cancelled.',
                 snackPosition: SnackPosition.BOTTOM,
                 backgroundColor: Colors.orange.withOpacity(0.9),
                 colorText: Colors.white,
+<<<<<<< HEAD
               );
 
+=======
+                duration: const Duration(seconds: 3),
+              );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               return NavigationDecision.prevent;
             }
 
             return NavigationDecision.navigate;
           },
+<<<<<<< HEAD
+=======
+          onWebResourceError: (WebResourceError error) {
+            // Handle custom scheme redirects (skillswap://) that may
+            // appear as errors on some platforms
+            if (error.description.contains('skillswap://')) {
+              return;
+            }
+          },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         ),
       )
       ..loadRequest(Uri.parse(widget.checkoutUrl));
   }
 
+<<<<<<< HEAD
   Future<void> _handlePaymentSuccess() async {
     if (_isProcessing) return;
     _isProcessing = true;
@@ -147,6 +191,8 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     );
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,13 +202,20 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           icon: const Icon(Icons.close),
           onPressed: () {
             Get.back();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             Get.snackbar(
               'Payment Cancelled',
               'You closed the payment page.',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.orange.withOpacity(0.9),
               colorText: Colors.white,
+<<<<<<< HEAD
+=======
+              duration: const Duration(seconds: 3),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             );
           },
         ),
@@ -170,7 +223,14 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
+<<<<<<< HEAD
           if (_isLoading) const Center(child: CircularProgressIndicator()),
+=======
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         ],
       ),
     );
@@ -229,10 +289,15 @@ class PaymentSuccessScreen extends StatelessWidget {
                   height: screenWidth * 0.12,
                   child: ElevatedButton(
                     onPressed: () {
+<<<<<<< HEAD
                       Get.offAll(() => ScreenManager(
                             initialIndex: 3,
                             initialSessionTab: 0, // Requests
                           ));
+=======
+                      // Pop back to the sessions screen
+                      Get.back();
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

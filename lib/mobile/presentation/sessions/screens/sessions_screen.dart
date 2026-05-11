@@ -3,17 +3,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+<<<<<<< HEAD
 import '../../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../pages/pending_sessions_page.dart';
 import '../pages/requests_sessions_page.dart';
 import '../pages/rjected_session_page.dart';
+=======
+import '../pages/pending_sessions_page.dart';
+import '../pages/requests_sessions_page.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../pages/upcoming_sessions_page.dart';
 import '../widgets/session_header.dart';
 
 class SessionsScreen extends StatefulWidget {
+<<<<<<< HEAD
   final int initialTab;
 
   const SessionsScreen({super.key, this.initialTab = 0});
+=======
+  const SessionsScreen({super.key});
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   State<SessionsScreen> createState() => _SessionsScreenState();
@@ -26,7 +35,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
     UpcomingSessionsPage(),
     PendingSessionsPage(),
     RequestsSessionsPage(),
+<<<<<<< HEAD
     RejectedSessionsPage()
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   ];
 
   String get currentStatus {
@@ -37,14 +49,18 @@ class _SessionsScreenState extends State<SessionsScreen> {
         return "pending";
       case 2:
         return "pending";
+<<<<<<< HEAD
       case 3:
         return "rejected";
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       default:
         return "accepted";
     }
   }
 
   @override
+<<<<<<< HEAD
   void initState() {
     super.initState();
     selected = widget.initialTab;
@@ -57,6 +73,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   @override
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -73,7 +91,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   context
                       .read<GetBookingsCubit>()
                       .fetchAllBookings(currentStatus);
+<<<<<<< HEAD
                   context.read<PurchaseCubit>().getPurchases();
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 },
                 title: "sessions".tr,
                 subtitle: "track_upcoming".tr,

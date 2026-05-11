@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/mobile/presentation/history/models/history_model.dart';
+=======
+import 'package:skill_swap/desktop/presentation/history/models/history_model.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 import '../widgets/history_card.dart';
 

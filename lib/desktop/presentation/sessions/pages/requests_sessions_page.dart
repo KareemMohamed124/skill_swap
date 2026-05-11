@@ -5,6 +5,7 @@ import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
 import '../widgets/session_card.dart';
 
+<<<<<<< HEAD
 class RequestsSessionsPage extends StatefulWidget {
   const RequestsSessionsPage({super.key});
 
@@ -14,6 +15,12 @@ class RequestsSessionsPage extends StatefulWidget {
 
 class _RequestsSessionsPageState extends State<RequestsSessionsPage> {
   @override
+=======
+class RequestsSessionsPage extends StatelessWidget {
+  const RequestsSessionsPage({super.key});
+
+  @override
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Widget build(BuildContext context) {
     return BlocBuilder<GetBookingsCubit, GetBookingsState>(
       builder: (context, state) {
@@ -39,9 +46,13 @@ class _RequestsSessionsPageState extends State<RequestsSessionsPage> {
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, index) {
               return SessionCard(
+<<<<<<< HEAD
                 session: requests[index],
                 currentStatus: "pending",
               );
+=======
+                  session: requests[index], currentStatus: "pending");
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             },
           );
         }

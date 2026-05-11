@@ -1,6 +1,9 @@
 import 'package:bloc/bloc.dart';
 
+<<<<<<< HEAD
 import '../../constants/not_type.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../data/models/booking/booking_model.dart' as bookingModel;
 import '../../data/models/booking/booking_model.dart';
 import '../../data/models/booking/booking_response.dart';
@@ -8,9 +11,13 @@ import '../../data/models/booking_details/booking_details_response.dart';
 import '../../data/models/cancel_booking/cancel_booking_response.dart';
 import '../../data/models/get_booking/booking.dart';
 import '../../data/models/update_booking/update_booking_response.dart';
+<<<<<<< HEAD
 import '../../dependency_injection/injection.dart';
 import '../../domain/repositories/booking_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
+=======
+import '../../domain/repositories/booking_repository.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../helper/local_storage.dart';
 import 'book_session_event.dart';
 import 'book_session_state.dart';
@@ -35,13 +42,19 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
         case BookingDetailsSuccess d:
           _cachedBooking = d.data.booking;
           emit(BookingLoaded(d.data.booking));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         case BookingDetailsFailure f:
           emit(BookingError(f.error.message));
       }
     });
 
+<<<<<<< HEAD
     /// 🔥 CREATE BOOKING
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     on<CreateBooking>((event, emit) async {
       emit(BookingLoading());
 
@@ -50,6 +63,7 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
       switch (response) {
         case BookingSuccess s:
           _cachedBooking = s.data.bookSession;
+<<<<<<< HEAD
 
           /// ✅ ADD THIS
           emit(BookingCreatedSuccess(s.data.bookSession));
@@ -69,16 +83,23 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
           /// UI يكمل طبيعي
           emit(BookingLoaded(s.data.bookSession));
 
+=======
+          emit(BookingLoaded(s.data.bookSession));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         case BookingFailure f:
           emit(BookingError(f.error.message));
       }
     });
 
+<<<<<<< HEAD
     /// 🔥 UPDATE BOOKING
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     on<UpdateBooking>((event, emit) async {
       emit(BookingLoading());
 
       final updateResponse =
+<<<<<<< HEAD
       await repo.updateBookSession(event.id, event.request);
 
       switch (updateResponse) {
@@ -87,13 +108,22 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
         /// ✅ ADD THIS
           emit(BookingUpdatedSuccess());
 
+=======
+          await repo.updateBookSession(event.id, event.request);
+
+      switch (updateResponse) {
+        case UpdateBookingSuccess _:
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           final detailsResponse = await repo.getBookingDetails(event.id);
 
           switch (detailsResponse) {
             case BookingDetailsSuccess d:
               _cachedBooking = d.data.booking;
               emit(BookingLoaded(d.data.booking));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             case BookingDetailsFailure f:
               emit(BookingError(f.error.message));
           }
@@ -104,7 +134,10 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
       }
     });
 
+<<<<<<< HEAD
     /// 🔥 CANCEL BOOKING
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     on<CancelBooking>((event, emit) async {
       emit(BookingLoading());
 
@@ -112,6 +145,7 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
 
       switch (response) {
         case CancelBookingSuccess _:
+<<<<<<< HEAD
 
         /// ✅ ADD THIS
           emit(BookingCancelledSuccess());
@@ -136,6 +170,11 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
 
           _cachedBooking = null;
           emit(BookingIdle());
+=======
+          _cachedBooking = null;
+          emit(BookingIdle());
+          break;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
         case CancelBookingFailure f:
           emit(BookingError(f.error.message));
@@ -196,4 +235,8 @@ class ActiveBookingBloc extends Bloc<ActiveBookingEvent, ActiveBookingState> {
       }
     });
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

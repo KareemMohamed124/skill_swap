@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/mobile/presentation/onboarding_screen/screens/start_screen.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import 'package:skill_swap/shared/data/models/update_profile/update_profile.dart';
 import 'package:skill_swap/shared/data/models/update_profile/update_profile_request.dart';
 import 'package:skill_swap/shared/data/models/update_profile/update_skill.dart';
@@ -19,6 +22,7 @@ import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/logout_bloc/logout_bloc.dart';
 import '../../../../shared/bloc/logout_bloc/logout_event.dart';
 import '../../../../shared/bloc/logout_bloc/logout_state.dart';
+<<<<<<< HEAD
 import '../../../../shared/bloc/track_cubit/skills_cubit.dart';
 import '../../../../shared/bloc/track_cubit/skills_state.dart';
 import '../../../../shared/bloc/update_profile_bloc/update_profile_bloc.dart';
@@ -27,6 +31,177 @@ import '../../setting/pages/change_password.dart';
 import '../../sign/screens/sign_in_screen.dart';
 import '../../sign/widgets/custom_button.dart';
 import '../../skill_verification/quiz_details_screen.dart';
+=======
+import '../../../../shared/bloc/update_profile_bloc/update_profile_bloc.dart';
+import '../../../../shared/core/theme/app_palette.dart';
+import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/helper/local_storage.dart';
+import '../../setting/pages/change_password.dart';
+import '../../sign/screens/sign_in_screen.dart';
+import '../../sign/widgets/custom_button.dart';
+
+const Map<String, List<String>> tracksWithSkillsMap = {
+  "Mobile Development": [
+    "Dart",
+    "Flutter",
+    "Java",
+    "Kotlin",
+    "Android",
+    "Swift",
+    "iOS",
+    "Backend Services",
+    "Firebase",
+    "REST APIs / GraphQL",
+    "Bloc",
+    "Provider",
+    "Riverpod",
+    "Unit Testing",
+    "Widget Testing",
+    "Integration Testing",
+    "CI/CD for Mobile",
+    "UX/UI Basics for Mobile"
+  ],
+  "Frontend Development": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "React",
+    "Angular",
+    "Vue",
+    "TypeScript",
+    "Redux",
+    "MobX",
+    "Pinia",
+    "Responsive Design",
+    "Tailwind",
+    "Bootstrap",
+    "Jest",
+    "Cypress",
+    "Web Performance",
+    "SEO"
+  ],
+  "Backend Development": [
+    "JavaScript",
+    "NodeJS",
+    "Laravel",
+    "Django",
+    "Database Management",
+    "PHP",
+    "Python",
+    "SQL",
+    "REST APIs",
+    "GraphQL",
+    "gRPC",
+    "JWT",
+    "OAuth",
+    "Caching",
+    "Redis",
+    "Message Queues",
+    "Microservices",
+    "Architecture Patterns",
+    "Unit Testing",
+    "Integration Testing"
+  ],
+  "UI/UX Design": [
+    "Figma",
+    "Adobe XD",
+    "User Research",
+    "UI Design",
+    "Prototyping",
+    "UX Strategy",
+    "User Flows",
+    "Wireframes",
+    "Interaction Design",
+    "Accessibility",
+    "WCAG",
+    "Design Systems",
+    "Style Guides"
+  ],
+  "Artificial Intelligence": [
+    "Python",
+    "TensorFlow",
+    "PyTorch",
+    "NLP",
+    "Computer Vision",
+    "Reinforcement Learning",
+    "ML Ops",
+    "Model Deployment",
+    "Data Preprocessing",
+    "Feature Engineering"
+  ],
+  "Data Science": [
+    "Python",
+    "Pandas",
+    "NumPy",
+    "Data Visualization",
+    "R",
+    "Statistical Analysis",
+    "SQL",
+    "Databases for Data",
+    "Machine Learning Basics",
+    "Statistical Modeling",
+    "Hypothesis Testing"
+  ],
+  "Game Development": [
+    "C#",
+    "Unity",
+    "C++",
+    "Unreal Engine",
+    "Blender",
+    "3D Design",
+    "Advanced C++ Techniques",
+    "Advanced C# Techniques",
+    "Physics Systems",
+    "Animation Systems",
+    "Shader Programming",
+    "Multiplayer",
+    "Networking"
+  ],
+  "CyberSecurity": [
+    "Linux",
+    "Networking",
+    "Python",
+    "Security Automation",
+    "Penetration Testing",
+    "OWASP",
+    "Security Protocols",
+    "Malware Analysis",
+    "Incident Response",
+    "Cloud Security"
+  ],
+  "Cloud Computing": [
+    "Docker",
+    "Containerization",
+    "Kubernetes",
+    "Orchestration",
+    "AWS",
+    "Cloud Services",
+    "CI/CD",
+    "DevOps",
+    "Azure",
+    "GCP",
+    "Terraform",
+    "Infrastructure as Code",
+    "Cloud Security",
+    "Monitoring"
+  ],
+  "Software Testing": [
+    "Dart",
+    "Flutter Testing",
+    "Java",
+    "Selenium",
+    "Automation",
+    "Test Frameworks",
+    "API Testing",
+    "Postman",
+    "REST Assured",
+    "Performance Testing",
+    "Load Testing",
+    "JMeter",
+    "Manual Testing Techniques"
+  ],
+};
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -45,6 +220,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   List<dynamic> selectedSkills = [];
   List<dynamic> originalSkills = [];
   String? userTrack;
+<<<<<<< HEAD
   String? userTrackId;
   List<dynamic> selectedSkillsNew = [];
   bool hasSeenMentorDialog = false;
@@ -58,6 +234,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final skillsChanged = selectedSkillsNew.isNotEmpty;
     return nameChanged || bioChanged || skillsChanged;
   }
+=======
+  List<dynamic> selectedSkillsNew = [];
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   void initState() {
@@ -66,6 +245,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     bioController = TextEditingController();
     skillsController = TextEditingController();
 
+<<<<<<< HEAD
     nameController.addListener(() => setState(() {}));
     bioController.addListener(() => setState(() {}));
 
@@ -83,6 +263,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void fillControllersFromProfile(profile) {
     nameController.text = profile.name ?? '';
     bioController.text = profile.profile.bio ?? '';
+=======
+    context.read<MyProfileCubit>().fetchMyProfile();
+  }
+
+  void fillControllersFromProfile(profile) {
+    nameController.text = profile.name;
+    bioController.text = profile.profile.bio;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     final skillsList = profile.skills ?? [];
     selectedSkills = skillsList.map((e) => e.skillName).toList();
@@ -90,12 +278,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
     skillsController.text = selectedSkills.join(', ');
 
     userTrack = profile.track.name;
+<<<<<<< HEAD
     userTrackId = profile.track.id;
     selectedImage = null;
     controllersFilled = true;
 
     _originalName = profile.name ?? '';
     _originalBio = profile.profile.bio ?? '';
+=======
+
+    selectedImage = null;
+    controllersFilled = true;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -156,6 +350,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+<<<<<<< HEAD
   void _handleMentorAddSkill() {
     if (!hasSeenMentorDialog) {
       showDialog(
@@ -185,13 +380,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final padding = screenWidth * 0.04;
 
     return Scaffold(
+<<<<<<< HEAD
       resizeToAvoidBottomInset: false,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocListener<UpdateProfileBloc, UpdateProfileState>(
         listener: (context, state) {
@@ -205,11 +405,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
               skillsController.text = selectedSkills.join(', ');
               nameController.text = state.user.name ?? '';
               bioController.text = state.user.profile.bio ?? '';
+<<<<<<< HEAD
 
               _originalName = state.user.name ?? '';
               _originalBio = state.user.profile.bio ?? '';
               originalSkills = List.from(selectedSkills);
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               controllersFilled = false;
             });
 
@@ -222,12 +425,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
           builder: (context, state) {
             final isLoading = state is MyProfileLoading;
             final profile = state is MyProfileLoaded ? state.profile : null;
+<<<<<<< HEAD
             final isMentor = profile?.role == "Mentor";
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
             if (!controllersFilled && profile != null) {
               fillControllersFromProfile(profile);
             }
+<<<<<<< HEAD
 
+=======
+            //    controllersFilled = false;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             final avatarRadius = screenWidth * 0.08;
             final fontSizeTitle = screenWidth * 0.045;
             final fontSizeHint = screenWidth * 0.035;
@@ -293,7 +503,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       style:
                                           TextStyle(fontSize: fontSizeTitle)),
                                 ),
+<<<<<<< HEAD
                                 const SizedBox(height: 4),
+=======
+                                SizedBox(height: 4),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 Text(
                                   "JPG, PNG or GIF, Max size 2MB",
                                   style: TextStyle(
@@ -324,12 +538,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         inputField("bio".tr, "Tell others about yourself...",
                             bioController, fontSizeHint,
                             maxLines: 3, isLoading: isLoading),
+<<<<<<< HEAD
                         skillsSection(fontSizeTitle, isMentor),
+=======
+                        skillsSection(fontSizeTitle),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                         SizedBox(height: spacing / 2),
                         SizedBox(
                           width: double.infinity,
                           child: CustomButton(
                             text: "save_changes".tr,
+<<<<<<< HEAD
                             onPressed: _hasChanges
                                 ? () {
                                     final skillsList =
@@ -355,6 +574,37 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         SubmitUpdateProfile(updateRequest));
                                   }
                                 : null,
+=======
+                            onPressed: () {
+                              final hasSkillsChanged = selectedSkills.length !=
+                                      originalSkills.length ||
+                                  !selectedSkills
+                                      .every((s) => originalSkills.contains(s));
+
+                              final skillsList = selectedSkillsNew.isNotEmpty
+                                  ? selectedSkillsNew
+                                      .map((skillName) =>
+                                          UpdateSkill(skillName: skillName))
+                                      .toList()
+                                  : null;
+
+                              final updateRequest = UpdateProfileRequest(
+                                name: nameController.text.trim().isEmpty
+                                    ? null
+                                    : nameController.text.trim(),
+                                profile: UpdateProfile(
+                                  bio: bioController.text.trim().isEmpty
+                                      ? null
+                                      : bioController.text.trim(),
+                                ),
+                                skills: skillsList,
+                              );
+
+                              context
+                                  .read<UpdateProfileBloc>()
+                                  .add(SubmitUpdateProfile(updateRequest));
+                            },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           ),
                         ),
                       ],
@@ -387,6 +637,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           listener: (context, state) {
                             if (state is LogoutSuccessState) {
                               Get.snackbar('Success', state.success);
+<<<<<<< HEAD
+=======
+                              //          LocalStorage.clearAllTokens();
+                              //        LocalStorage.clearUserId();
+                              //      LocalStorage.clearUser();
+                              //    sl<MyProfileCubit>().clearProfile();
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               Get.offAll(() => const SignInScreen());
                             } else if (state is LogoutFailureState) {
                               Get.snackbar('Error', state.error);
@@ -407,7 +664,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         BlocListener<DeleteAccountBloc, DeleteAccountState>(
                           listener: (context, state) {
                             if (state is DeleteAccountSuccessState) {
+<<<<<<< HEAD
                               Get.offAll(() => const StartScreen());
+=======
+                              //LocalStorage.clearAllTokens();
+                              // LocalStorage.clearUserId();
+                              //LocalStorage.clearUser();
+                              //sl<MyProfileCubit>().clearProfile();
+                              Get.offAll(() => const SignUpScreen());
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                             } else if (state is DeleteAccountFailureState) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -506,7 +771,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         controller: controller,
         maxLines: maxLines,
         enabled: !isLoading,
+<<<<<<< HEAD
         keyboardType: TextInputType.text,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         decoration: InputDecoration(
           hintText: isLoading ? '' : hint,
           hintStyle: TextStyle(
@@ -603,7 +871,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+<<<<<<< HEAD
   Widget skillsSection(double fontSize, bool isMentor) {
+=======
+  Widget skillsSection(double fontSize) {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -624,6 +896,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ActionChip(
               avatar: const Icon(Icons.add),
               label: const Text("Add"),
+<<<<<<< HEAD
               onPressed: () {
                 if (isMentor) {
                   _handleMentorAddSkill();
@@ -631,6 +904,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   showSkillsPicker();
                 }
               },
+=======
+              onPressed: showSkillsPicker,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
           ],
         ),
@@ -638,15 +914,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+<<<<<<< HEAD
   void showSkillsPicker({bool isMentorFlow = false}) {
     if (userTrackId == null) return;
 
     context.read<SkillsCubit>().fetchSkills(userTrackId!);
+=======
+  void showSkillsPicker() {
+    final trackSkills = tracksWithSkillsMap[userTrack] ?? [];
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     List<String> tempSelectedSkills = List.from(selectedSkillsNew);
 
     showModalBottomSheet(
       context: context,
+<<<<<<< HEAD
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -828,6 +1110,74 @@ class _EditProfilePageState extends State<EditProfilePage> {
               return const SizedBox();
             },
           ),
+=======
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Select Skills",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: trackSkills.map((skill) {
+                        final isAlreadyMine = selectedSkills.contains(skill);
+                        final isSelectedNew =
+                            tempSelectedSkills.contains(skill);
+
+                        return FilterChip(
+                          label: Text(skill),
+                          selectedShadowColor: AppPalette.primary,
+                          selected: isAlreadyMine || isSelectedNew,
+                          onSelected: isAlreadyMine
+                              ? null
+                              : (selected) {
+                                  setModalState(() {
+                                    if (selected) {
+                                      tempSelectedSkills.add(skill);
+                                    } else {
+                                      tempSelectedSkills.remove(skill);
+                                    }
+                                  });
+                                },
+                          selectedColor: isAlreadyMine ? Colors.grey : null,
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppPalette.primary,
+                            foregroundColor: Colors.white),
+                        child: const Text("Save Skills"),
+                        onPressed: () {
+                          setState(() {
+                            selectedSkillsNew = tempSelectedSkills;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         );
       },
     );

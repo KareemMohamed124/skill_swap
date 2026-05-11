@@ -5,10 +5,75 @@ import 'package:get_it/get_it.dart';
 import 'package:skill_swap/mobile/presentation/select_skills/select_skills.dart';
 
 import '../../../../shared/core/theme/app_palette.dart';
+<<<<<<< HEAD
 import '../../../shared/bloc/track_cubit/skills_cubit.dart';
 import '../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../shared/data/models/track/track_model.dart';
 import '../../../shared/data/web_services/skills/skills_api_services.dart';
+=======
+import '../../../shared/bloc/track_cubit/track_cubit.dart';
+import '../../../shared/data/models/track/track_model.dart';
+
+/// Local map: track name → list of skills (API only returns id + name)
+const Map<String, List<String>> tracksWithSkillsMap = {
+  "Mobile Development": [
+    "Dart & Flutter",
+    "Java/Kotlin & Android",
+    "Swift & iOS",
+    "Firebase & Backend Services",
+  ],
+  "Frontend Development": [
+    "HTML & CSS",
+    "JavaScript & React",
+    "JavaScript & Angular",
+    "JavaScript & Vue",
+  ],
+  "Backend Development": [
+    "JavaScript & NodeJS",
+    "PHP & Laravel",
+    "Python & Django",
+    "SQL & Database Management",
+  ],
+  "UI/UX Design": [
+    "Figma & UI Design",
+    "Adobe XD & Prototyping",
+    "User Research & UX Strategy",
+  ],
+  "Artificial Intelligence": [
+    "Python & TensorFlow",
+    "Python & PyTorch",
+    "Python & NLP",
+    "Python & Computer Vision",
+  ],
+  "Data Science": [
+    "Python & Pandas",
+    "Python & NumPy",
+    "Python & Data Visualization",
+    "R & Statistical Analysis",
+  ],
+  "Game Development": [
+    "C# & Unity",
+    "C++ & Unreal Engine",
+    "Blender & 3D Design",
+  ],
+  "CyberSecurity": [
+    "Linux & Networking",
+    "Python & Security Automation",
+    "Penetration Testing & OWASP",
+  ],
+  "Cloud Computing": [
+    "Docker & Containerization",
+    "Kubernetes & Orchestration",
+    "AWS & Cloud Services",
+    "CI/CD & DevOps",
+  ],
+  "Software Testing": [
+    "Dart & Flutter Testing",
+    "Java & Selenium",
+    "Automation & Test Frameworks",
+  ],
+};
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class SelectTrackScreen extends StatelessWidget {
   const SelectTrackScreen({super.key});
@@ -155,6 +220,7 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                   onPressed: selectedTrack == null
                       ? null
                       : () {
+<<<<<<< HEAD
                           Get.to(
                             () => BlocProvider(
                               create: (context) => SkillsCubit(
@@ -164,6 +230,17 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                                 trackId: selectedTrack!.id,
                                 trackName: selectedTrack!.name,
                               ),
+=======
+                          // Look up skills from local map by track name
+                          final skills =
+                              tracksWithSkillsMap[selectedTrack!.name] ?? [];
+
+                          Get.to(
+                            SelectSkillsScreen(
+                              trackId: selectedTrack!.id,
+                              trackName: selectedTrack!.name,
+                              skills: skills,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                             ),
                           );
                         },

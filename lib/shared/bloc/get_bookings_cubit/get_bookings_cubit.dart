@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
+<<<<<<< HEAD
 import '../../../mobile/presentation/history/models/history_model.dart';
 import '../../../mobile/presentation/home/models/next_session.dart';
 import '../../../mobile/presentation/notification/models/notification_model.dart';
 import '../../../mobile/presentation/sessions/models/session.dart';
 import '../../data/models/get_booking/booking.dart';
+=======
+import '../../../mobile/presentation/home/models/next_session.dart';
+import '../../../mobile/presentation/notification/models/notification_model.dart';
+import '../../../mobile/presentation/sessions/models/session.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../helper/local_storage.dart';
 import 'get_bookings_state.dart';
 
@@ -16,6 +22,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
 
   GetBookingsCubit(this.bookingRepository) : super(GetBookingsInitial());
 
+<<<<<<< HEAD
   Future<List<GetBookingModel>> fetchAcceptedBookingsRaw() async {
     try {
       final response = await bookingRepository.getAllBookings("all");
@@ -40,6 +47,13 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
       final response = await bookingRepository.getAllBookings(status);
       final currentUserId = await LocalStorage.getUserId();
       final now = DateTime.now();
+=======
+  Future<void> fetchAllBookings(String status) async {
+    emit(GetBookingsLoading());
+    try {
+      final response = await bookingRepository.getAllBookings(status);
+      final currentUserId = await LocalStorage.getUserId();
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
       final sessions = response.bookings.map((booking) {
         final dateTime = DateTime(
@@ -59,6 +73,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             : booking.status;
 
         return SessionModel(
+<<<<<<< HEAD
           sessionId: booking.id,
           bookingCode: booking.bookingCode,
           userId: otherUser.id,
@@ -83,6 +98,21 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         );
 
         return now.isBefore(endTime);
+=======
+            sessionId: booking.id,
+            bookingCode: booking.bookingCode,
+            instructorId: otherUser.id,
+            name: otherUser.name,
+            role: otherUser.role,
+            image: otherUser.userImage.secureUrl,
+            dateTime: dateTime,
+            price: booking.price,
+            status: displayStatus,
+            rawStatus: displayStatus,
+            timeAgo: booking.createdAt,
+            isStudent: isMeSender
+        );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       }).toList();
 
       emit(GetBookingsLoaded(bookings: sessions));
@@ -91,6 +121,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
     }
   }
 
+<<<<<<< HEAD
   Future<dynamic> getNotJoinedUserFromAccepted(String bookingCode) async {
     try {
       final response = await bookingRepository.getAllBookings("accepted");
@@ -184,6 +215,8 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
     }).toList();
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<List<NotificationModel>> fetchNotifications() async {
     try {
       final response = await bookingRepository.getAllBookings("all");
@@ -213,9 +246,19 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
             tagColor = Colors.green;
             icon = Icons.check_circle_outline;
             if (dateTime.isAfter(now) &&
+<<<<<<< HEAD
                 dateTime.difference(now).inMinutes <= 30) {
               title =
                   "Reminder: Your mentorship session starts in ${dateTime.difference(now).inMinutes} minutes.";
+=======
+                dateTime
+                    .difference(now)
+                    .inMinutes <= 30) {
+              title =
+              "Reminder: Your mentorship session starts in ${dateTime
+                  .difference(now)
+                  .inMinutes} minutes.";
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             } else {
               title = "Your session has been Approved!";
             }
@@ -251,7 +294,12 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
           title: title,
           mentorName: otherUser.name,
           sessionTime:
+<<<<<<< HEAD
               "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(dateTime)}",
+=======
+          "${dateTime.day}/${dateTime.month} at ${DateFormat('h:mm a').format(
+              dateTime)}",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           icon: icon,
           dateTime: dateTime,
         );
@@ -290,12 +338,18 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         final isRelated = booking.studentId.id == currentUserId ||
             booking.instructorId.id == currentUserId;
 
+<<<<<<< HEAD
         final duration = booking.durationMins ?? 0;
         final endTime = dateTime.add(Duration(minutes: duration.toInt()));
 
         final isNotFinished = now.isBefore(endTime);
 
         return isToday && isRelated && isNotFinished;
+=======
+        final isUpcoming = dateTime.isAfter(now);
+
+        return isToday && isRelated && isUpcoming;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       }).map((booking) {
         final dateTime = DateTime(
           booking.date.year,
@@ -311,6 +365,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
         final diff = dateTime.difference(now);
 
         return NextSession(
+<<<<<<< HEAD
           name: otherUser.name,
           sessionTime: dateTime,
           dateTime: "Today, ${DateFormat('h:mm a').format(dateTime)}",
@@ -320,6 +375,22 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
       }).toList();
 
       sessions.sort((a, b) => a.sessionTime.compareTo(b.sessionTime));
+=======
+          image: "assets/images/people_images/Ahmed Ibrahim.png",
+          name: otherUser.name,
+          dateTime: "Today, ${DateFormat('h:mm a').format(dateTime)}",
+          duration: "${booking.durationMins ?? 1}h",
+          startsIn: diff.inMinutes < 60
+              ? "Starts in ${diff.inMinutes}m"
+              : "Starts in ${diff.inHours}h",
+          isMentor: isMentor,
+          remainingMinutes: diff.inMinutes,
+        );
+      }).toList();
+
+      sessions.sort((a, b) => a.remainingMinutes.compareTo(b.remainingMinutes));
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       emit(GetTodaySessionsLoaded(sessions: sessions));
     } catch (e) {
       emit(GetBookingsError(message: e.toString()));
@@ -333,6 +404,7 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
     if (diff.inHours < 24) return "${diff.inHours}h ago";
     return "${diff.inDays}d ago";
   }
+<<<<<<< HEAD
 
   void updateBookingStatus(String sessionId, String newStatus) {
     if (state is GetBookingsLoaded) {
@@ -363,4 +435,6 @@ class GetBookingsCubit extends Cubit<GetBookingsState> {
       emit(GetBookingsLoaded(bookings: updated));
     }
   }
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

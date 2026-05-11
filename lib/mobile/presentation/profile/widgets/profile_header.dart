@@ -33,28 +33,42 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color primaryColor = Colors.blue;
+<<<<<<< HEAD
     final screenWidth = MediaQuery
         .of(context)
         .size
         .width;
+=======
+    final screenWidth = MediaQuery.of(context).size.width;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     double maxWidth = screenWidth < 600 ? screenWidth : 600;
 
     return BlocBuilder<MyProfileCubit, MyProfileState>(
       builder: (context, state) {
         String name = "User";
         String imagePath = '';
+<<<<<<< HEAD
         num freeHours = 0;
         num helpHours = 0;
         num rate = 0.0;
+=======
+        int freeHours = 0;
+        int helpHours = 0;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
         if (state is MyProfileLoaded) {
           final profile = state.profile;
 
           name = profile.name.isNotEmpty ? profile.name : "User";
           imagePath = profile.userImage.secureUrl;
+<<<<<<< HEAD
           rate = profile.rate ?? 0;
           freeHours = profile.freeHours ?? 0;
           helpHours = profile.helpTotalHours ?? 0;
+=======
+          freeHours = profile.freeHours;
+          helpHours = profile.helpTotalHours;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         }
 
         final hasImage = imagePath.isNotEmpty;
@@ -79,6 +93,7 @@ class ProfileHeader extends StatelessWidget {
                         radius: 30,
                         backgroundColor: Colors.white,
                         backgroundImage:
+<<<<<<< HEAD
                         hasImage ? NetworkImage(imagePath) : null,
                         child: !hasImage
                             ? const Icon(
@@ -86,6 +101,15 @@ class ProfileHeader extends StatelessWidget {
                           size: 30,
                           color: Colors.grey,
                         )
+=======
+                            hasImage ? NetworkImage(imagePath) : null,
+                        child: !hasImage
+                            ? const Icon(
+                                Icons.person,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                             : null,
                       ),
                       const SizedBox(width: 12),
@@ -102,12 +126,20 @@ class ProfileHeader extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
+<<<<<<< HEAD
                             Row(
+=======
+                            const Row(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               children: [
                                 Icon(Icons.star,
                                     color: Colors.yellow, size: 16),
                                 SizedBox(width: 4),
+<<<<<<< HEAD
                                 Text(rate.toStringAsFixed(1),
+=======
+                                Text('4.9',
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                     style: TextStyle(color: Colors.white)),
                               ],
                             ),
@@ -132,7 +164,11 @@ class ProfileHeader extends StatelessWidget {
                           freeHours.toString(), 'hours_available'.tr),
                       _buildMetricItem(
                           helpHours.toString(), 'people_helped'.tr),
+<<<<<<< HEAD
                       //    _buildMetricItem('3', 'achievements'.tr),
+=======
+                      _buildMetricItem('3', 'achievements'.tr),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     ],
                   ),
                 ),

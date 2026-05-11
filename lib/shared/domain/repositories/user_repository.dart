@@ -10,6 +10,7 @@ import '../../data/models/update_profile/update_profile_response.dart';
 abstract class UserRepository {
   Future<List<UserModel>> getAllUsers({required int page, int limit = 10});
 
+<<<<<<< HEAD
   Future<List<UserModel>> getUsersWithoutAdminOnly({
     required int page,
     int limit = 10,
@@ -54,6 +55,8 @@ abstract class UserRepository {
     return getAllUsers(page: page, limit: limit);
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<MyProfile> getMyProfile();
 
   Future<List<UserModel>> searchUsers(
@@ -78,8 +81,11 @@ abstract class UserRepository {
   Future<UpdateProfileResponse> updateProfileImage(String imagePath);
 
   Future<DeleteAccountResponse> deleteAccount();
+<<<<<<< HEAD
 
   Future<String> requestMentor(num hourlyPrice);
 
   Future<void> setActiveTheme(String? themeId);
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

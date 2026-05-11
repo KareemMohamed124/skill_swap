@@ -3,8 +3,11 @@ import 'package:retrofit/retrofit.dart';
 import 'package:skill_swap/shared/data/models/submit_review/submit_review_request.dart';
 
 import '../../models/booking/booking_request.dart';
+<<<<<<< HEAD
 import '../../models/booking_availability/add_available_dates.dart';
 import '../../models/booking_availability/set_available_dates.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../models/pay_booking/pay_booking_request.dart';
 import '../../models/status_booking/status_booking_request.dart';
 import '../../models/update_booking/update_booking_request.dart';
@@ -31,11 +34,14 @@ abstract class BookingApi {
     @Path("id") String id,
   );
 
+<<<<<<< HEAD
   @PATCH("booking/{id}/confirm-payment")
   Future<dynamic> confirmPayment(
     @Path("id") String id,
   );
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   @PATCH("booking/{id}")
   Future<dynamic> updateBookSession(
     @Path("id") String id,
@@ -66,6 +72,7 @@ abstract class BookingApi {
     @Path("id") String id,
     @Body() SubmitReviewRequest body,
   );
+<<<<<<< HEAD
 
   @PATCH("booking/{id}/join")
   Future<dynamic> joinSession(
@@ -97,4 +104,6 @@ abstract class BookingApi {
 
   @GET("booking/accepted")
   Future<dynamic> getAcceptedBookings();
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

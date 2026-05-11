@@ -90,6 +90,7 @@ class _BookingApi implements BookingApi {
   }
 
   @override
+<<<<<<< HEAD
   Future<dynamic> confirmPayment(String id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -111,6 +112,8 @@ class _BookingApi implements BookingApi {
   }
 
   @override
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<dynamic> updateBookSession(
     String id,
     UpdateBookingRequest body,
@@ -242,6 +245,7 @@ class _BookingApi implements BookingApi {
     return _value;
   }
 
+<<<<<<< HEAD
   @override
   Future<dynamic> joinSession(String id) async {
     final _extra = <String, dynamic>{};
@@ -391,6 +395,8 @@ class _BookingApi implements BookingApi {
     return _value;
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

@@ -5,6 +5,7 @@ import 'package:skill_swap/mobile/presentation/game_part/game_section.dart';
 import 'package:skill_swap/mobile/presentation/home/widgets/next_session_section.dart';
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/shared/bloc/private_chats_bloc/private_chats_event.dart';
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
@@ -13,11 +14,23 @@ import '../../../../shared/bloc/private_chats_bloc/private_chats_state.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/home_controller.dart';
 import '../../history_private_chats/private_chats_list.dart';
+=======
+
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/helper/home_controller.dart';
+import '../../notification/screens/notification_screen.dart';
+import '../pages/recommended_view_all.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../pages/top_users_view_all.dart';
 import '../widgets/custom_header.dart';
 import '../widgets/recommended_section.dart';
 import '../widgets/section_header.dart';
 import '../widgets/top_users_section.dart';
+<<<<<<< HEAD
+=======
+import '../widgets/unreal_card.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,11 +71,16 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             children: [
               BlocBuilder<MyProfileCubit, MyProfileState>(
+<<<<<<< HEAD
                 builder: (context, profileState) {
+=======
+                builder: (context, state) {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   String id = "";
                   String name = "User";
                   String avatarPath = 'assets/images/placeholder.png';
 
+<<<<<<< HEAD
                   if (profileState is MyProfileLoaded) {
                     name = profileState.profile.name ?? name;
                     id = profileState.profile.id ?? id;
@@ -77,10 +95,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     (bloc) => bloc.unreadMap.values.fold(0, (a, b) => a + b),
                   );
 
+=======
+                  if (state is MyProfileLoaded) {
+                    name = state.profile.name ?? name;
+                    id = state.profile.id ?? id;
+                    if (state.profile.userImage?.secureUrl?.isNotEmpty ==
+                        true) {
+                      avatarPath = state.profile.userImage!.secureUrl!;
+                    }
+                  }
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   return CustomHeader(
                     name: 'Hi, $name',
                     subtitle: 'keep_learning'.tr,
                     avatarPath: avatarPath,
+<<<<<<< HEAD
                     unreadCount: unreadCount,
                     onIcon2: () {
                       final bloc = context.read<PrivateChatsBloc>();
@@ -88,6 +118,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             value: bloc..add(GetPrivateChatsEvent()),
                             child: PrivateChatsListScreen(currentUserId: id),
                           ));
+=======
+                    onIcon1: () {},
+                    onIcon2: () {
+                      Get.to(() => const NotificationsScreen());
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     },
                   );
                 },
@@ -114,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(screenWidth * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+<<<<<<< HEAD
                     children: [
                       if (controller.showGameFirst.value) ...[
                         GameSection(),
@@ -163,6 +199,75 @@ class _HomeScreenState extends State<HomeScreen> {
                         GameSection(),
                       ],
                     ],
+=======
+                    children: controller.showGameFirst.value
+                        ? [
+                            GameSection(),
+                            SizedBox(height: screenHeight * 0.03),
+                            SectionHeader(
+                              sectionTitle: 'top_users'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
+                                  child: TopUsersViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            TopUsersSection(),
+                            SizedBox(height: screenHeight * 0.03),
+                            NextSessionSection(),
+                            SizedBox(height: screenHeight * 0.03),
+                            SectionHeader(
+                              sectionTitle: 'recommended_for_you'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
+                                  child: RecommendedViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            RecommendedSection(),
+                            SizedBox(height: screenHeight * 0.01),
+                            UnrealExperienceCard(),
+                          ]
+                        : [
+                            SectionHeader(
+                              sectionTitle: 'top_users'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
+                                  child: TopUsersViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            TopUsersSection(),
+                            SizedBox(height: screenHeight * 0.03),
+                            NextSessionSection(),
+                            SizedBox(height: screenHeight * 0.03),
+                            SectionHeader(
+                              sectionTitle: 'recommended_for_you'.tr,
+                              onTop: () {
+                                Get.to(BlocProvider(
+                                  create: (_) =>
+                                      sl<UsersCubit>()..fetchUsers(reset: true),
+                                  child: RecommendedViewAll(),
+                                ));
+                              },
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            RecommendedSection(),
+                            SizedBox(height: screenHeight * 0.01),
+                            // UnrealExperienceCard(),
+                            // SizedBox(height: screenHeight * 0.03),
+                            GameSection(),
+                          ],
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   ),
                 ),
               ),

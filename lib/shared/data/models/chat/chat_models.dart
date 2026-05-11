@@ -17,8 +17,13 @@ class PrivateChatModel {
     this.unreadCount = 0,
   });
 
+<<<<<<< HEAD
   factory PrivateChatModel.fromJson(
       Map<String, dynamic> json, String currentUserId) {
+=======
+  factory PrivateChatModel.fromJson(Map<String, dynamic> json,
+      String currentUserId) {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     // Determine which participant is the partner
     final participants = json['participants'] as List<dynamic>? ?? [];
     Map<String, dynamic>? partner;
@@ -46,7 +51,11 @@ class PrivateChatModel {
     return PrivateChatModel(
       id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
       partnerId:
+<<<<<<< HEAD
           partner?['_id']?.toString() ?? partner?['id']?.toString() ?? '',
+=======
+      partner?['_id']?.toString() ?? partner?['id']?.toString() ?? '',
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       partnerName: partner?['name']?.toString() ?? 'Unknown',
       partnerImage: partner?['userImage']?.toString(),
       lastMessage: lastMessageText,
@@ -94,6 +103,7 @@ class ChatMessageModel {
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+<<<<<<< HEAD
     String senderId = '';
     String? senderName;
 
@@ -107,6 +117,16 @@ class ChatMessageModel {
       senderId = json['sender'];
     } else if (json['senderId'] != null) {
       senderId = json['senderId'].toString();
+=======
+    final sender = json['sender'];
+    String senderId = '';
+    String? senderName;
+    if (sender is Map<String, dynamic>) {
+      senderId = sender['_id']?.toString() ?? sender['id']?.toString() ?? '';
+      senderName = sender['name']?.toString();
+    } else if (sender is String) {
+      senderId = sender;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     }
 
     return ChatMessageModel(
@@ -116,11 +136,17 @@ class ChatMessageModel {
       senderName: senderName,
       content: json['content']?.toString() ?? '',
       type: json['type']?.toString() ?? 'text',
+<<<<<<< HEAD
       createdAt: DateTime.tryParse(
             json['createdAt']?.toString() ??
                 json['timestamp']?.toString() ??
                 '',
           ) ??
+=======
+      createdAt: DateTime.tryParse(json['createdAt']?.toString() ??
+          json['timestamp']?.toString() ??
+          '') ??
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           DateTime.now(),
     );
   }
@@ -137,4 +163,8 @@ class ChatMessageModel {
       isPending: isPending ?? this.isPending,
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

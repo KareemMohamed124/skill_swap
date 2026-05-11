@@ -17,6 +17,7 @@ class LanguageController extends GetxController {
 
     Locale deviceLocale = Get.deviceLocale ?? const Locale('en', 'US');
 
+<<<<<<< HEAD
     return deviceLocale.languageCode == 'ar'
         ? const Locale('ar', 'EG')
         : const Locale('en', 'US');
@@ -41,3 +42,22 @@ class LanguageController extends GetxController {
     update();
   }
 }
+=======
+    if (deviceLocale.languageCode == 'ar') {
+      return const Locale('ar', 'EG');
+    } else {
+      return const Locale('en', 'US');
+    }
+  }
+  String get currentLangCode {
+    return box.read('lang') ?? 'en';
+  }
+  void changeLanguage(String langCode) {
+    Locale locale =
+    langCode == 'ar' ? const Locale('ar', 'EG') : const Locale('en', 'US');
+
+    Get.updateLocale(locale);
+    box.write('lang', langCode);
+  }
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+import 'package:get/get.dart';
+
+import '../../book_session/screens/profile_mentor.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class RecommendedCard extends StatelessWidget {
   final String? id;
   final String? image;
   final String? name;
   final String? track;
+<<<<<<< HEAD
   final num? rating;
+=======
+  final int? rating;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final double? width;
   final double? imageHeight;
   final bool isLoading;
@@ -99,7 +109,11 @@ class RecommendedCard extends StatelessWidget {
                       const Icon(Icons.star,
                           size: 16, color: Color(0xFFFFCE31)),
                       const SizedBox(width: 4),
+<<<<<<< HEAD
                       Text(rating!.toStringAsFixed(1),
+=======
+                      Text("$rating",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),
@@ -120,9 +134,16 @@ class RecommendedCard extends StatelessWidget {
 
 Widget _buildPlaceholder(double cardWidth) {
   return Container(
+<<<<<<< HEAD
     width: double.infinity,
     height: cardWidth,
     decoration: const BoxDecoration(
+=======
+    width: cardWidth * 0.25,
+    height: cardWidth * 0.25,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       color: Colors.grey,
     ),
     child: const Icon(

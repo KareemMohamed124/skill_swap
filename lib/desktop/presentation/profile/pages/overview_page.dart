@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/desktop/presentation/profile/widgets/availability_card.dart';
 
 import '../../../../main.dart';
@@ -14,6 +15,11 @@ import '../../../../shared/bloc/set_available_dates_bloc/set_available_dates_blo
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/domain/repositories/user_repository.dart';
+=======
+
+import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+import '../../../../shared/core/theme/app_palette.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class OverviewPage extends StatelessWidget {
   const OverviewPage({super.key});
@@ -47,24 +53,34 @@ class OverviewPage extends StatelessWidget {
 
           final verifyProgress =
               (verifiedSkills / totalRequiredSkills).clamp(0.0, 1.0);
+<<<<<<< HEAD
           final isHoursCompleted = helpedHours >= requiredHours;
           final isSkillsVerified = verifiedSkills == totalRequiredSkills;
 
           final isMentor = profile.role?.toLowerCase() == "mentor";
 
           final canApply = isHoursCompleted && isSkillsVerified && !isMentor;
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+<<<<<<< HEAD
+=======
+                /// Mentor Info (نفس UI بس القيم من الداتا)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(32),
+<<<<<<< HEAD
                     border: Border.all(color: Theme.of(context).dividerColor),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -79,10 +95,25 @@ class OverviewPage extends StatelessWidget {
                         rate: profile.helpTotalHours.toString() ?? "0",
                         info: "people_helped".tr,
                       ),
+<<<<<<< HEAD
                     ],
                   ),
                 ),
                 const SizedBox(height: 16),
+=======
+                      mentorInfo(
+                        context: context,
+                        rate: "0",
+                        info: "achievements".tr,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                /// Progress Container (نفس UI بس values ديناميك)
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -102,7 +133,11 @@ class OverviewPage extends StatelessWidget {
                             Icons.filter_center_focus,
                             color: isDark
                                 ? AppPalette.darkTextPrimary
+<<<<<<< HEAD
                                 : AppPalette.primary,
+=======
+                                : const Color(0xFF1B1464),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -142,7 +177,11 @@ class OverviewPage extends StatelessWidget {
                         height: 10,
                         child: LinearProgressIndicator(
                           value: helpProgress,
+<<<<<<< HEAD
                           color: AppPalette.primary,
+=======
+                          color: const Color(0xFF1B1464),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           backgroundColor: const Color(0XFFF2F5F8),
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -172,7 +211,11 @@ class OverviewPage extends StatelessWidget {
                         height: 10,
                         child: LinearProgressIndicator(
                           value: verifyProgress,
+<<<<<<< HEAD
                           color: AppPalette.primary,
+=======
+                          color: const Color(0xFF1B1464),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           backgroundColor: const Color(0XFFF2F5F8),
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -183,15 +226,23 @@ class OverviewPage extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                                 backgroundColor: AppPalette.primary,
+=======
+                                backgroundColor: const Color(0xFF1B1464),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 padding: const EdgeInsets.all(16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
+<<<<<<< HEAD
                               onPressed: () {
                                 desktopKey.currentState?.openProfile(tab: 1);
                               },
+=======
+                              onPressed: () {},
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               child: Text(
                                 "complete_skills_verification".tr,
                                 style: const TextStyle(
@@ -205,6 +256,7 @@ class OverviewPage extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                                 backgroundColor: isMentor
                                     ? Colors.grey.shade300
                                     : canApply
@@ -218,11 +270,15 @@ class OverviewPage extends StatelessWidget {
                                           : Colors.grey,
                                   width: 2,
                                 ),
+=======
+                                backgroundColor: const Color(0xFFF2F5F8),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 padding: const EdgeInsets.all(16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
+<<<<<<< HEAD
                               onPressed: () async {
                                 if (isMentor) {
                                   showDialog(
@@ -316,6 +372,13 @@ class OverviewPage extends StatelessWidget {
                                       : canApply
                                           ? AppPalette.primary
                                           : Colors.grey,
+=======
+                              onPressed: () {},
+                              child: Text(
+                                "apply_mentor".tr,
+                                style: const TextStyle(
+                                  color: Color(0XFF0D035F),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -326,6 +389,7 @@ class OverviewPage extends StatelessWidget {
                     ],
                   ),
                 ),
+<<<<<<< HEAD
                 const SizedBox(height: 16),
                 MultiBlocProvider(
                   providers: [
@@ -386,6 +450,53 @@ class OverviewPage extends StatelessWidget {
                 //     ],
                 //   ),
                 // ),
+=======
+
+                const SizedBox(height: 16),
+
+                /// Recent Activity (سيبناه static زي ما هو)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black12, blurRadius: 10)
+                    ],
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_month,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge!.color),
+                          const SizedBox(width: 8),
+                          Text(
+                            "recent_activity".tr,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge!.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      activityItem(
+                          context, "Completed React assessment", "2 days ago"),
+                      activityItem(context, "Helped Sarah with JavaScript",
+                          "3 days ago"),
+                      activityItem(
+                          context, "Joined React community chat", "1 week ago"),
+                    ],
+                  ),
+                ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               ],
             ),
           );

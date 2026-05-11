@@ -15,7 +15,11 @@ class TopUsersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+<<<<<<< HEAD
       create: (_) => sl<UsersCubit>()..fetchUsers(reset: true, topUsers: true),
+=======
+      create: (_) => sl<UsersCubit>()..fetchUsers(reset: true),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       child: const _TopUsersList(),
     );
   }
@@ -39,6 +43,7 @@ class _TopUsersListState extends State<_TopUsersList> {
 
   void _scrollListener() {
     final cubit = context.read<UsersCubit>();
+<<<<<<< HEAD
 
     if (!_controller.hasClients) return;
 
@@ -48,6 +53,12 @@ class _TopUsersListState extends State<_TopUsersList> {
     if (current >= max - 150 && cubit.state is UsersLoaded) {
       final state = cubit.state as UsersLoaded;
 
+=======
+    if (_controller.position.pixels >=
+            _controller.position.maxScrollExtent - 150 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       if (!state.isLoadingMore && !state.isLastPage) {
         cubit.fetchNextPage();
       }
@@ -63,10 +74,17 @@ class _TopUsersListState extends State<_TopUsersList> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final height = MediaQuery.of(context).size.height;
 
     return SizedBox(
       height: height * 0.18,
+=======
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return SizedBox(
+      height: screenHeight * 0.18,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       child: BlocBuilder<UsersCubit, UsersState>(
         builder: (context, state) {
           if (state is UsersLoading) {
@@ -79,6 +97,7 @@ class _TopUsersListState extends State<_TopUsersList> {
           }
 
           if (state is UsersLoaded) {
+<<<<<<< HEAD
             final showLoader = state.isLoadingMore && !state.isLastPage;
 
             final itemCount =
@@ -131,6 +150,52 @@ class _TopUsersListState extends State<_TopUsersList> {
                     hours: u.helpTotalHours,
                   ),
                 );
+=======
+            return ListView.separated(
+              controller: _controller,
+              scrollDirection: Axis.horizontal,
+              itemCount: state.isLastPage
+                  ? state.users.length
+                  : state.users.length + 1,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                if (index < state.users.length) {
+                  final u = state.users[index];
+                  return InkWell(
+                    onTap: () {
+                      Get.to(ProfileMentor(
+                        id: u.id,
+                        name: u.name,
+                        track: u.track.name,
+                        rate: u.rate,
+                        image: u.userImage.secureUrl,
+                        bio: u.profile.bio,
+                        skills: u.skills,
+                        hoursAvailable: u.freeHours,
+                        peopleHelped: u.helpTotalHours,
+                        hourlyRate: 0,
+                      ));
+                    },
+                    child: TopUserCard(
+                      id: u.id,
+                      image: u.userImage.secureUrl,
+                      name: u.name,
+                      track: u.track.name.isEmpty
+                          ? "Mobile Development"
+                          : u.track.name,
+                      hours: u.helpTotalHours,
+                    ),
+                  );
+                } else {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: AppPalette.primary,
+                    )),
+                  );
+                }
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               },
             );
           }

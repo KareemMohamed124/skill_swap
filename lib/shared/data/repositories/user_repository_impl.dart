@@ -24,15 +24,21 @@ class UserRepositoryImpl extends UserRepository {
     String? myId = await LocalStorage.getUserId();
 
     return users.where((user) {
+<<<<<<< HEAD
       final isMe = user.id.toString().trim() == myId.toString().trim();
 
       final isAdmin = user.role.toString().trim() == "Admin";
 
+=======
+      final isMe = user.id == myId;
+      final isAdmin = user.role?.toLowerCase() == "admin";
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       return !isMe && !isAdmin;
     }).toList();
   }
 
   @override
+<<<<<<< HEAD
   Future<List<UserModel>> getUsers({
     required int page,
     int limit = 10,
@@ -72,12 +78,15 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<List<UserModel>> getAllUsers(
       {required int page, int limit = 10}) async {
     final response = await api.getAllUsers(page, limit);
     return _excludeMyAccountAndAdmin(response.data.users);
   }
 
+<<<<<<< HEAD
   Future<List<UserModel>> getUsersWithoutAdminOnly({
     required int page,
     int limit = 10,
@@ -104,6 +113,12 @@ class UserRepositoryImpl extends UserRepository {
     // }
 
     return response.user!;
+=======
+  @override
+  Future<MyProfile> getMyProfile() async {
+    final response = await api.getMyProfile();
+    return response.user;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 
   String _getServerErrorMessage(DioException e) {
@@ -165,7 +180,11 @@ class UserRepositoryImpl extends UserRepository {
   Future<UpdateProfileResponse> updateProfile(
       UpdateProfileRequest request) async {
     try {
+<<<<<<< HEAD
       final response = await api.updateProfile(request.toJson());
+=======
+      final response = await api.updateProfile(request);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       return UpdateProfileData.fromJson(response);
     } on DioException catch (e) {
       String serverMessage = "Network Error";
@@ -249,6 +268,7 @@ class UserRepositoryImpl extends UserRepository {
       return UpdateProfileFailure(error: e.toString());
     }
   }
+<<<<<<< HEAD
 
   @override
   Future<String> requestMentor(num hourlyPrice) async {
@@ -268,4 +288,6 @@ class UserRepositoryImpl extends UserRepository {
   Future<void> setActiveTheme(String? themeId) async {
     await api.setActiveTheme({"themeId": themeId});
   }
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

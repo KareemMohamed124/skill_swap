@@ -8,6 +8,10 @@ import '../../data/models/report_user/report_success_response.dart';
 import '../../domain/repositories/report_repository.dart';
 
 part 'report_event.dart';
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 part 'report_state.dart';
 
 class ReportBloc extends Bloc<ReportEvent, ReportState> {
@@ -17,6 +21,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     on<ConfirmSubmit>((event, emit) async {
       emit(ReportLoading());
 
+<<<<<<< HEAD
       try {
         final result = await repository.report(event.request);
 
@@ -38,6 +43,16 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
         emit(ReportFailureState(
           ReportErrorResponse(message: e.toString()),
         ));
+=======
+      final result = await repository.report(event.request);
+
+      switch (result) {
+        case ReportSuccess s:
+          emit(ReportSuccessState(s.success));
+          break;
+        case ReportFailure f:
+          emit(ReportFailureState(f.error));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       }
     });
   }

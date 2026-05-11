@@ -16,7 +16,11 @@ class ProfileMentorHeader extends StatelessWidget {
   final String image;
   final String name;
   final String track;
+<<<<<<< HEAD
   final num rate;
+=======
+  final int rate;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final VoidCallback? onButtonTap;
 
   const ProfileMentorHeader({
@@ -99,6 +103,7 @@ class ProfileMentorHeader extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+<<<<<<< HEAD
                             Row(
                               children: [
                                 Text(
@@ -106,19 +111,39 @@ class ProfileMentorHeader extends StatelessWidget {
                                   style: TextStyle(
                                       fontSize: nameFontSize,
                                       color: Colors.white),
+=======
+                            Text(
+                              name,
+                              style: TextStyle(
+                                  fontSize: nameFontSize, color: Colors.white),
+                            ),
+                            SizedBox(height: screenHeight * 0.005),
+                            Row(
+                              children: [
+                                Text(
+                                  "$track • ",
+                                  style: TextStyle(
+                                      fontSize: trackFontSize,
+                                      color: Colors.white70),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 ),
                                 Icon(Icons.star,
                                     size: iconSize,
                                     color: const Color(0xFFFFCE31)),
                                 SizedBox(width: screenWidth * 0.01),
                                 Text(
+<<<<<<< HEAD
                                   rate.toStringAsFixed(2),
+=======
+                                  "$rate",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                   style: TextStyle(
                                       fontSize: rateFontSize,
                                       color: Colors.white),
                                 ),
                               ],
                             ),
+<<<<<<< HEAD
                             SizedBox(height: screenHeight * 0.005),
                             Text(
                               track,
@@ -126,6 +151,8 @@ class ProfileMentorHeader extends StatelessWidget {
                                   fontSize: trackFontSize,
                                   color: Colors.white70),
                             ),
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           ],
                         ),
                       ),

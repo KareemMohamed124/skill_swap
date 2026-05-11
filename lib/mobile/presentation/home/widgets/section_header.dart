@@ -4,7 +4,10 @@ import 'package:get/get.dart';
 class SectionHeader extends StatelessWidget {
   final String sectionTitle;
   final VoidCallback? onTop;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   const SectionHeader({
     super.key,
     required this.sectionTitle,
@@ -23,7 +26,11 @@ class SectionHeader extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             sectionTitle,
+<<<<<<< HEAD
             style: Theme.of(context).textTheme.bodyLarge,
+=======
+            style: Theme.of(context).textTheme.bodySmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
         ),
         GestureDetector(
@@ -34,14 +41,22 @@ class SectionHeader extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   "view_all".tr,
+<<<<<<< HEAD
                   style: Theme.of(context).textTheme.bodyLarge,
+=======
+                  style: Theme.of(context).textTheme.bodySmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 ),
               ),
               SizedBox(width: screenWidth * 0.02), // بدل 8
               Icon(
                 Icons.arrow_forward_ios,
                 size: screenWidth * 0.04, // بدل 16
+<<<<<<< HEAD
                 color: Theme.of(context).textTheme.bodyLarge!.color,
+=======
+                color: Theme.of(context).textTheme.titleMedium!.color,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               ),
             ],
           ),
@@ -49,4 +64,8 @@ class SectionHeader extends StatelessWidget {
       ],
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

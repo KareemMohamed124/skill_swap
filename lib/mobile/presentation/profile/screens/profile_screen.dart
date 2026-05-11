@@ -8,9 +8,13 @@ import '../widgets/profile_header.dart';
 import '../widgets/profile_tabs.dart';
 
 class ProfileScreen extends StatefulWidget {
+<<<<<<< HEAD
   final int initialTab;
 
   const ProfileScreen({super.key, this.initialTab = 0});
+=======
+  const ProfileScreen({Key? key}) : super(key: key);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -23,8 +27,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     _tabController =
         TabController(length: 3, vsync: this, initialIndex: widget.initialTab);
+=======
+    _tabController = TabController(length: 3, vsync: this);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 
   @override
@@ -35,10 +43,14 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final screenHeight = MediaQuery
         .of(context)
         .size
         .height;
+=======
+    final screenHeight = MediaQuery.of(context).size.height;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     return Scaffold(
       body: Stack(
         children: [
@@ -57,9 +69,13 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: double.infinity,
               constraints: BoxConstraints(minHeight: screenHeight),
               decoration: BoxDecoration(
+<<<<<<< HEAD
                 color: Theme
                     .of(context)
                     .scaffoldBackgroundColor,
+=======
+                color: Theme.of(context).scaffoldBackgroundColor,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
@@ -72,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr]),
                   Expanded(
                       child: TabBarView(
+<<<<<<< HEAD
                         controller: _tabController,
                         children: const [
                           OverviewPage(),
@@ -84,6 +101,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                         ],
                       )),
+=======
+                    controller: _tabController,
+                    children: const [
+                      OverviewPage(),
+                      SkillsPage(),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                        ),
+                        child: ReviewsPage(),
+                      ),
+                    ],
+                  )),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 ],
               ),
             ),

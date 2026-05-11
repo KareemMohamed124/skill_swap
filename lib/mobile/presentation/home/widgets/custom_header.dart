@@ -12,6 +12,7 @@ class CustomHeader extends StatelessWidget {
   final String? avatarPath;
   final VoidCallback? onIcon1;
   final VoidCallback? onIcon2;
+<<<<<<< HEAD
   final int unreadCount;
 
   const CustomHeader(
@@ -22,6 +23,17 @@ class CustomHeader extends StatelessWidget {
       this.onIcon1,
       this.onIcon2,
       this.unreadCount = 0});
+=======
+
+  const CustomHeader({
+    super.key,
+    required this.name,
+    required this.subtitle,
+    this.avatarPath,
+    this.onIcon1,
+    this.onIcon2,
+  });
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +95,7 @@ class CustomHeader extends StatelessWidget {
               ),
             ),
 
+<<<<<<< HEAD
             Stack(
               children: [
                 circleButton(
@@ -105,6 +118,14 @@ class CustomHeader extends StatelessWidget {
                     ),
                   ),
               ],
+=======
+            /// Notification Button
+            circleButton(
+              context: context,
+              icon: Icons.notifications_none,
+              onTap: onIcon2,
+              screenWidth: screenWidth,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
           ],
         ),

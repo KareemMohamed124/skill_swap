@@ -1,5 +1,6 @@
 package com.example.skill_swap
 
+<<<<<<< HEAD
 import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -30,3 +31,8 @@ class MainActivity : FlutterActivity() {
             }
     }
 }
+=======
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

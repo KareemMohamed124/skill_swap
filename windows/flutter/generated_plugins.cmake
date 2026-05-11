@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+<<<<<<< HEAD
   cloud_firestore
   connectivity_plus
   file_selector_windows
@@ -15,6 +16,21 @@ list(APPEND FLUTTER_PLUGIN_LIST
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   flutter_local_notifications_windows
   jni
+=======
+  audioplayers_windows
+  connectivity_plus
+  file_selector_windows
+  flutter_volume_controller
+  permission_handler_windows
+  screen_brightness_windows
+  share_plus
+  url_launcher_windows
+  zego_express_engine
+  zego_zim
+)
+
+list(APPEND FLUTTER_FFI_PLUGIN_LIST
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

@@ -7,7 +7,11 @@ class TopUserCard extends StatelessWidget {
   final String? image;
   final String? name;
   final String? track;
+<<<<<<< HEAD
   final num? hours;
+=======
+  final int? hours;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final double? widthCard;
   final bool isLoading;
 
@@ -25,7 +29,11 @@ class TopUserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+<<<<<<< HEAD
     final cardWidth = widthCard ?? screenWidth * 0.36;
+=======
+    final cardWidth = widthCard ?? screenWidth * 0.35;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     if (isLoading) {
       return Container(
@@ -56,7 +64,11 @@ class TopUserCard extends StatelessWidget {
         children: [
           SizedBox(height: screenWidth * 0.02),
 
+<<<<<<< HEAD
           /// Avatar أ
+=======
+          /// Avatar أو placeholder
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ClipOval(
             child: (image != null && image!.startsWith("http"))
                 ? Image.network(
@@ -75,14 +87,22 @@ class TopUserCard extends StatelessWidget {
             name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
             style: Theme.of(context).textTheme.titleSmall,
+=======
+            style: Theme.of(context).textTheme.bodySmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
 
           Text(
             track ?? "Mobile Development",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+<<<<<<< HEAD
             style: Theme.of(context).textTheme.bodySmall,
+=======
+            style: Theme.of(context).textTheme.titleSmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
 
           SizedBox(height: screenWidth * 0.01),

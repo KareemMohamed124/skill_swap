@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap/main.dart';
+<<<<<<< HEAD
 
 import '../../../../mobile/presentation/history/models/history_model.dart';
 import '../../details/models/details_model.dart';
 import '../../details/screens/session_details.dart';
+=======
+import '../../details/models/details_model.dart';
+import '../../details/screens/session_details.dart';
+import '../models/history_model.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class HistoryCard extends StatelessWidget {
   final HistoryModel data;
@@ -24,6 +30,7 @@ class HistoryCard extends StatelessWidget {
   }
 
   bool get isIssue => data.errorMessage != null;
+<<<<<<< HEAD
 
   bool get isCancelled => data.status == "Cancelled";
 
@@ -31,6 +38,12 @@ class HistoryCard extends StatelessWidget {
 
   bool get isFinishedNotRated => data.status == "Finished" && data.rating == 0;
 
+=======
+  bool get isCancelled => data.status == "Cancelled";
+  bool get isFinishedRated => data.status == "Finished" && data.rating > 0;
+  bool get isFinishedNotRated =>
+      data.status == "Finished" && data.rating == 0;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   bool get isReviewReceived => data.isReviewReceived == true;
 
   @override
@@ -57,12 +70,23 @@ class HistoryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+<<<<<<< HEAD
                     Text(data.name,
                         style: Theme.of(context).textTheme.titleMedium),
+=======
+                    Text(
+                      data.name,
+                      style: Theme.of(context).textTheme.titleMedium
+                    ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     Text(
                       data.role,
                       style: Theme.of(context).textTheme.bodySmall,
@@ -70,10 +94,18 @@ class HistoryCard extends StatelessWidget {
                   ],
                 ),
               ),
+<<<<<<< HEAD
               if (!isReviewReceived)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+=======
+
+              if (!isReviewReceived)
+                Container(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   decoration: BoxDecoration(
                     color: getStatusColor().withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -88,6 +120,7 @@ class HistoryCard extends StatelessWidget {
                 )
             ],
           ),
+<<<<<<< HEAD
           const SizedBox(height: 16),
           Row(
             children: [
@@ -117,6 +150,31 @@ class HistoryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+=======
+
+          const SizedBox(height: 16),
+
+          Row(
+            children: [
+              Icon(Icons.calendar_month, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color,),
+              const SizedBox(width: 8),
+              Text(data.date, style: Theme.of(context).textTheme.bodyMedium,),
+            ],
+          ),
+
+          const SizedBox(height: 4),
+
+          Row(
+            children: [
+              Icon(Icons.access_time, size: 20, color: Theme.of(context).textTheme.bodyMedium!.color),
+              const SizedBox(width: 8),
+              Text("${data.time} – ${data.duration}", style: Theme.of(context).textTheme.bodyMedium,),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           buildBottomSection(context),
         ],
       ),
@@ -124,6 +182,10 @@ class HistoryCard extends StatelessWidget {
   }
 
   Widget buildBottomSection(BuildContext context) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     // REVIEW RECEIVED
     if (isReviewReceived) {
       return Container(
@@ -137,7 +199,11 @@ class HistoryCard extends StatelessWidget {
           children: [
             Row(
               children: [
+<<<<<<< HEAD
                 Text(
+=======
+                 Text(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   "Their rating:",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -145,7 +211,11 @@ class HistoryCard extends StatelessWidget {
                 Row(
                   children: List.generate(
                     5,
+<<<<<<< HEAD
                     (i) => Icon(
+=======
+                        (i) => Icon(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       i < data.rating ? Icons.star : Icons.star_border,
                       size: 18,
                       color: Colors.amber,
@@ -181,9 +251,15 @@ class HistoryCard extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 16),
+<<<<<<< HEAD
             Text(
               "Error: ",
               style: TextStyle(color: Colors.black),
+=======
+             Text(
+              "Error: ",
+               style: TextStyle(color: Colors.black),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
             Text(
               data.errorMessage!,
@@ -203,7 +279,11 @@ class HistoryCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFD6D6D6)),
           borderRadius: BorderRadius.circular(14),
         ),
+<<<<<<< HEAD
         child: Center(
+=======
+        child:  Center(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           child: Text(
             "View Details",
             style: Theme.of(context).textTheme.titleMedium,
@@ -230,7 +310,11 @@ class HistoryCard extends StatelessWidget {
             Row(
               children: List.generate(
                 5,
+<<<<<<< HEAD
                 (i) => Icon(
+=======
+                    (i) => Icon(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   i < data.rating ? Icons.star : Icons.star_border,
                   size: 18,
                   color: Colors.amber,
@@ -255,15 +339,23 @@ class HistoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFD6D6D6)),
                   borderRadius: BorderRadius.circular(14),
                 ),
+<<<<<<< HEAD
                 child: Row(
+=======
+                child:  Row(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.star_border_outlined),
                     SizedBox(width: 4),
+<<<<<<< HEAD
                     Text(
                       "Rate Session",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
+=======
+                    Text("Rate Session", style: Theme.of(context).textTheme.titleMedium,),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   ],
                 ),
               ),
@@ -273,6 +365,7 @@ class HistoryCard extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
+<<<<<<< HEAD
                 desktopKey.currentState?.openSidePage(
                     body: SessionDetailsPage(
                   session: SessionModel(
@@ -288,6 +381,23 @@ class HistoryCard extends StatelessWidget {
                       review: 'Great session, learned a lot!',
                       notes: 'Covered Flutter BLoC basics'),
                 ));
+=======
+               desktopKey.currentState?.openSidePage(body: SessionDetailsPage(
+                 session: SessionModel(
+                     mentorId: data.id,
+                     mentorImage: data.imageUrl,
+                     mentorName: data.name,
+                     mentorTrack: data.role,
+                     status: data.status,
+                     date: DateTime(2025,10,6),
+                     time: data.time,
+                     duration: data.duration,
+                     rating: data.rating,
+                     review: 'Great session, learned a lot!',
+                     notes: 'Covered Flutter BLoC basics'
+
+                 ),));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 // Get.to(SessionDetailsPage(
                 //   session: SessionModel(
                 //     mentorId: data.id,
@@ -310,15 +420,23 @@ class HistoryCard extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFD6D6D6)),
                   borderRadius: BorderRadius.circular(14),
                 ),
+<<<<<<< HEAD
                 child: Row(
+=======
+                child:  Row(
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.description_outlined),
                     SizedBox(width: 4),
+<<<<<<< HEAD
                     Text(
                       "View Details",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
+=======
+                    Text("View Details", style: Theme.of(context).textTheme.titleMedium,),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                   ],
                 ),
               ),
@@ -330,4 +448,8 @@ class HistoryCard extends StatelessWidget {
 
     return const SizedBox();
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

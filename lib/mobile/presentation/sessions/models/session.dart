@@ -1,5 +1,6 @@
 class SessionModel {
   final String sessionId;
+<<<<<<< HEAD
   final String userId;
   final String studentId;
   final String userImage;
@@ -8,11 +9,20 @@ class SessionModel {
   final DateTime dateTime;
   final num duration;
   final num price;
+=======
+  final String instructorId;
+  final String image;
+  final String name;
+  final String role;
+  final DateTime dateTime;
+  final int price;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final String status;
   final String rawStatus;
   final DateTime timeAgo;
   final String bookingCode;
   final bool isStudent;
+<<<<<<< HEAD
   final String paymentStatus;
   final bool studentJoined;
   final bool instructorJoined;
@@ -61,4 +71,22 @@ class SessionModel {
         duration: duration,
         paymentStatus: paymentStatus);
   }
+=======
+
+  // final DateTime createAt;
+
+  SessionModel({required this.sessionId,
+    required this.instructorId,
+    required this.image,
+    required this.name,
+    required this.role,
+    required this.dateTime,
+    required this.price,
+    required this.status,
+    required this.rawStatus,
+    required this.timeAgo,
+    required this.bookingCode,
+    required this.isStudent
+  });
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

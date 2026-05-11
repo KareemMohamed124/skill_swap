@@ -1,4 +1,5 @@
 import 'dart:convert';
+<<<<<<< HEAD
 
 import 'package:dio/dio.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
@@ -8,6 +9,12 @@ import 'package:get_it/get_it.dart';
 import '../../../desktop/presentation/skill_verification/result_screen.dart';
 import '../../../mobile/presentation/skill_verification/result_screen.dart';
 import '../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
+=======
+import 'package:get/get.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+
+import '../../../mobile/presentation/skill_verification/result_screen.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class QuizQuestion {
   String question;
@@ -31,7 +38,11 @@ class QuizQuestion {
 
 class QuizController extends GetxController {
   static const int totalTimeInSeconds = 15 * 60;
+<<<<<<< HEAD
   static const apiKey = "AIzaSyB1LiIUeJUv1t7ZEBq9AibLEJiABMCxi3Y";
+=======
+  static const apiKey = "AIzaSyCJ4d1kF6fmKoj0E141ITsS3UMk8LkeeDc";
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final gemini = Gemini.instance;
 
   var questions = <QuizQuestion>[].obs;
@@ -40,6 +51,7 @@ class QuizController extends GetxController {
   var selectedOption = RxnInt();
   var loading = false.obs;
   var currentSkill = ''.obs;
+<<<<<<< HEAD
   var fromAddSkill = false.obs;
 
   // ── Verification state ──
@@ -52,6 +64,12 @@ class QuizController extends GetxController {
     loading.value = true;
     currentSkill.value = skill;
     fromAddSkill.value = isAddSkill;
+=======
+
+  Future<void> generateQuiz(String skill) async {
+    loading.value = true;
+    currentSkill.value = skill;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     final prompt = """
 Generate exactly 15 multiple-choice questions about $skill.
@@ -88,7 +106,12 @@ No explanation, no text outside the JSON.
       for (int i = startIndex; i < text.length; i++) {
         if (text[i] == '[')
           bracketCount++;
+<<<<<<< HEAD
         else if (text[i] == ']') bracketCount--;
+=======
+        else if (text[i] == ']')
+          bracketCount--;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         if (bracketCount == 0) {
           endIndex = i + 1;
           break;
@@ -122,10 +145,16 @@ No explanation, no text outside the JSON.
 
   void nextQuestion() {
     if (selectedOption.value != null) {
+<<<<<<< HEAD
       if (questions[index.value]
               .options[selectedOption.value!]
               .trim()
               .toLowerCase() ==
+=======
+      if (questions[index.value].options[selectedOption.value!]
+          .trim()
+          .toLowerCase() ==
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           questions[index.value].correctAnswer.trim().toLowerCase()) {
         correct.value++;
       }
@@ -152,6 +181,7 @@ No explanation, no text outside the JSON.
     selectedOption.value = null;
     questions.clear();
     currentSkill.value = '';
+<<<<<<< HEAD
     isVerifying.value = false;
     isSkillVerified.value = false;
     verifiedQuizScore.value = 0;
@@ -247,3 +277,14 @@ No explanation, no text outside the JSON.
     }
   }
 }
+=======
+  }
+
+  void goToResult() {
+    Get.to(
+          () => ResultScreen(),
+      arguments: {'score': correct.value, 'total': questions.length},
+    );
+  }
+}
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1

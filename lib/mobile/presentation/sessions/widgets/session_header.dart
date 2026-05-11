@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:skill_swap/mobile/presentation/sessions/widgets/state_filter.dart';
@@ -7,6 +8,12 @@ import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/common_ui/circle_button_icon.dart';
 import '../../../../shared/core/theme/app_palette.dart';
 import '../../../../shared/dependency_injection/injection.dart';
+=======
+import 'package:get/get.dart';
+import 'package:skill_swap/mobile/presentation/sessions/widgets/state_filter.dart';
+
+import '../../../../shared/common_ui/circle_button_icon.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../history/screens/history_screen.dart';
 
 class SessionsHeader extends StatelessWidget {
@@ -32,8 +39,15 @@ class SessionsHeader extends StatelessWidget {
       height: screenHeight * 0.24,
       // responsive height
       width: double.infinity,
+<<<<<<< HEAD
       color: AppPalette.primary,
       padding: EdgeInsets.all(screenWidth * 0.04),
+=======
+      padding: EdgeInsets.all(screenWidth * 0.04),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+      ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -66,10 +80,14 @@ class SessionsHeader extends StatelessWidget {
               CircleButtonIcon(
                 icon: Icons.history,
                 onTap: () {
+<<<<<<< HEAD
                   Get.to(BlocProvider(
                     create: (_) => sl<GetBookingsCubit>(),
                     child: HistoryScreen(),
                   ));
+=======
+                  Get.to(HistoryScreen());
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 },
               ),
             ],

@@ -101,6 +101,10 @@ class _UserApi implements UserApi {
     try {
       _value = UsersResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+<<<<<<< HEAD
+=======
+      //errorLogger?.logError(e, s, _options, response: _result);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       rethrow;
     }
     return _value;
@@ -133,6 +137,10 @@ class _UserApi implements UserApi {
     try {
       _value = UsersResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+<<<<<<< HEAD
+=======
+      //errorLogger?.logError(e, s, _options, response: _result);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       rethrow;
     }
     return _value;
@@ -176,18 +184,30 @@ class _UserApi implements UserApi {
     try {
       _value = UsersResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+<<<<<<< HEAD
+=======
+      //errorLogger?.logError(e, s, _options, response: _result);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       rethrow;
     }
     return _value;
   }
 
   @override
+<<<<<<< HEAD
   Future<dynamic> updateProfile(Map<String, dynamic> body) async {
+=======
+  Future<dynamic> updateProfile(UpdateProfileRequest body) async {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
+<<<<<<< HEAD
     _data.addAll(body);
+=======
+    _data.addAll(body.toJson());
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     final _options = _setStreamType<dynamic>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
@@ -226,7 +246,10 @@ class _UserApi implements UserApi {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     return _result.data!;
   }
 
@@ -254,6 +277,10 @@ class _UserApi implements UserApi {
     try {
       _value = ChangePasswordSuccessResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
+<<<<<<< HEAD
+=======
+      // errorLogger?.logError(e, s, _options, response: _result);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       rethrow;
     }
     return _value;
@@ -278,6 +305,7 @@ class _UserApi implements UserApi {
     await _dio.fetch<void>(_options);
   }
 
+<<<<<<< HEAD
   @override
   Future<dynamic> requestMentor(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
@@ -322,6 +350,8 @@ class _UserApi implements UserApi {
     return _value;
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

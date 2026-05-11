@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -7,10 +8,20 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Camera + Mic -->
+=======
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 🌐 Internet & Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 🎥 Video Call -->
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
+<<<<<<< HEAD
     <!-- Keep call alive -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -48,10 +59,31 @@
             android:resource="@mipmap/ic_launcher" />
 
         <!-- MAIN ACTIVITY -->
+=======
+    <!-- 🔔 Notifications (Android 13+) -->
+    <!-- <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />-->
+
+    <!-- 🎧 Bluetooth Headset Support -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <!-- ⚡ تحسين أداء المكالمة -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:label="skill_swap"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+<<<<<<< HEAD
+=======
+            android:taskAffinity=""
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -68,12 +100,15 @@
 
         </activity>
 
+<<<<<<< HEAD
         <!-- Screen Share Service -->
         <service
             android:name=".ScreenCaptureService"
             android:foregroundServiceType="mediaProjection"
             android:exported="false" />
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

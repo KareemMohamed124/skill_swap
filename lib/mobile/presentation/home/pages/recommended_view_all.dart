@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+<<<<<<< HEAD
 import 'package:get/get.dart';
 
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
@@ -16,12 +17,27 @@ class RecommendedViewAll extends StatefulWidget {
   final String track;
 
   const RecommendedViewAll({super.key, required this.track});
+=======
+import 'package:skill_swap/shared/common_ui/base_screen.dart';
+
+import '../../../../shared/bloc/get_users_cubit/users_cubit.dart';
+import '../../../../shared/bloc/get_users_cubit/users_state.dart';
+import '../../../../shared/core/theme/app_palette.dart';
+import '../widgets/recommended_card.dart';
+
+class RecommendedViewAll extends StatefulWidget {
+  const RecommendedViewAll({super.key});
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   State<RecommendedViewAll> createState() => _RecommendedViewAllState();
 }
 
 class _RecommendedViewAllState extends State<RecommendedViewAll> {
+<<<<<<< HEAD
+=======
+  int? selectedIndex = 1;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -31,6 +47,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
   }
 
   void _scrollListener() {
+<<<<<<< HEAD
     final bloc = context.read<UserFilterBloc>();
     final state = bloc.state;
 
@@ -44,6 +61,16 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
           track: state.selectedTrack,
         ),
       );
+=======
+    final cubit = context.read<UsersCubit>();
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        cubit.state is UsersLoaded) {
+      final state = cubit.state as UsersLoaded;
+      if (!state.isLoadingMore && !state.isLastPage) {
+        cubit.fetchNextPage();
+      }
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     }
   }
 
@@ -57,6 +84,7 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+<<<<<<< HEAD
     final padding = 16.0;
 
     /// 🎯 Responsive Aspect Ratio (موبايل فقط)
@@ -96,11 +124,37 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
               state.filteredList,
               state.selectedTrack,
             );
+=======
+
+    double radius = 32;
+    double padding = 16;
+
+    if (screenWidth >= 800) {
+      radius = 40;
+      padding = 24;
+    }
+
+    return BaseScreen(
+      title: "Recommend for You",
+      child: BlocBuilder<UsersCubit, UsersState>(
+        builder: (context, state) {
+          if (state is UsersLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is UsersError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is UsersLoaded) {
+            final usersList = state.users;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
             return GridView.builder(
               controller: _scrollController,
               padding: EdgeInsets.all(padding),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+<<<<<<< HEAD
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
@@ -151,6 +205,38 @@ class _RecommendedViewAllState extends State<RecommendedViewAll> {
             );
           },
         ),
+=======
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.55),
+              itemCount:
+                  state.isLastPage ? usersList.length : usersList.length + 1,
+              itemBuilder: (context, index) {
+                if (index >= usersList.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: AppPalette.primary)),
+                  );
+                }
+
+                final mentor = usersList[index];
+                return RecommendedCard(
+                  id: mentor.id,
+                  image: mentor.userImage.secureUrl,
+                  name: mentor.name,
+                  track: mentor.track.name ?? "Mobile Development",
+                  rating: mentor.rate,
+                );
+              },
+            );
+          }
+
+          return const SizedBox();
+        },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       ),
     );
   }

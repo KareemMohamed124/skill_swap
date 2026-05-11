@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/shared/data/models/accepted_booking/accepted_booking_response.dart';
 import 'package:skill_swap/shared/data/models/booking_availability/available_dates_response.dart';
 import 'package:skill_swap/shared/data/models/booking_availability/get_available_dates.dart';
@@ -6,13 +7,18 @@ import 'package:skill_swap/shared/data/models/booking_availability/get_upcoming_
 import 'package:skill_swap/shared/data/models/booking_availability/set_available_dates.dart';
 import 'package:skill_swap/shared/data/models/join_session/join_session_response.dart';
 import 'package:skill_swap/shared/data/models/submit_review/submit_review_success_response.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
 import '../models/booking/booking_error_response.dart';
 import '../models/booking/booking_request.dart';
 import '../models/booking/booking_response.dart';
 import '../models/booking/booking_success_response.dart';
+<<<<<<< HEAD
 import '../models/booking_availability/add_available_dates.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../models/booking_details/booking_details_error_response.dart';
 import '../models/booking_details/booking_details_response.dart';
 import '../models/booking_details/booking_details_success_response.dart';
@@ -98,6 +104,7 @@ class BookingRepositoryImpl extends BookingRepository {
     try {
       final response = await api.statusBookSession(id, request);
 
+<<<<<<< HEAD
       if (response['message'] != null) {
         final msg = response['message'].toString().toLowerCase();
 
@@ -108,11 +115,30 @@ class BookingRepositoryImpl extends BookingRepository {
             StatusBookingSuccessResponse.fromJson(response),
           );
         }
+=======
+      if (response['message'] == 'Booking status updated') {
+        return StatusBookingSuccess(
+          StatusBookingSuccessResponse.fromJson(response),
+        );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
       }
 
       return StatusBookingFailure(
         StatusBookingErrorResponse.fromJson(response),
       );
+<<<<<<< HEAD
+=======
+    } on DioException catch (e) {
+      if (e.response?.data != null &&
+          e.response!.data is Map<String, dynamic>) {
+        final error = StatusBookingErrorResponse.fromJson(e.response!.data);
+        return StatusBookingFailure(error);
+      }
+
+      return StatusBookingFailure(
+        StatusBookingErrorResponse(message: _getServerErrorMessage(e)),
+      );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     } catch (e) {
       return StatusBookingFailure(
         StatusBookingErrorResponse(message: e.toString()),
@@ -125,7 +151,11 @@ class BookingRepositoryImpl extends BookingRepository {
     try {
       final response = await api.cancelBookSession(id);
 
+<<<<<<< HEAD
       if (response['message'] == 'Booking canceled successfully') {
+=======
+      if (response['message'] == 'Booking cancelled') {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         return CancelBookingSuccess(
           CancelBookingSuccessResponse.fromJson(response),
         );
@@ -152,6 +182,7 @@ class BookingRepositoryImpl extends BookingRepository {
   }
 
   @override
+<<<<<<< HEAD
   Future<Map<String, dynamic>> confirmPayment(String id) async {
     try {
       final response = await api.confirmPayment(id);
@@ -169,12 +200,18 @@ class BookingRepositoryImpl extends BookingRepository {
   }
 
   @override
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Future<UpdateBookingResponse> updateBookSession(
       String id, UpdateBookingRequest request) async {
     try {
       final response = await api.updateBookSession(id, request);
 
+<<<<<<< HEAD
       if (response['message'] == 'Booking updated successfully') {
+=======
+      if (response['message'] == 'Booking updated') {
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         return UpdateBookingSuccess(
           UpdateBookingSuccessResponse.fromJson(response),
         );
@@ -310,9 +347,17 @@ class BookingRepositoryImpl extends BookingRepository {
       String id, SubmitReviewRequest request) async {
     try {
       final response = await api.submitReview(id, request);
+<<<<<<< HEAD
 
       return SubmitReviewSuccess(
           success: SubmitReviewSuccessResponse.fromJson(response));
+=======
+      if (response.message == "Booking completed and review submitted") {
+        return SubmitReviewSuccess(success: response);
+      }
+      return SubmitReviewFailure(
+          error: SubmitReviewErrorResponse(message: response.message));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     } on DioException catch (e) {
       if (e.response?.data != null &&
           e.response!.data is Map<String, dynamic>) {
@@ -321,6 +366,7 @@ class BookingRepositoryImpl extends BookingRepository {
       }
 
       return SubmitReviewFailure(
+<<<<<<< HEAD
         error: SubmitReviewErrorResponse(
           message: _getServerErrorMessage(e),
         ),
@@ -412,6 +458,9 @@ class BookingRepositoryImpl extends BookingRepository {
       return AcceptedBookingsResponse.fromJson(response);
     } on DioException catch (e) {
       throw _extractError(e);
+=======
+          error: SubmitReviewErrorResponse(message: _getServerErrorMessage(e)));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     }
   }
 }

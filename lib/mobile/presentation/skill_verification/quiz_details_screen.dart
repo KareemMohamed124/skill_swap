@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+<<<<<<< HEAD
 import '../../../shared/core/theme/app_palette.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../../../shared/data/quiz/quiz_controller.dart';
 import 'quiz_screen.dart';
 
 class QuizDetailsScreen extends StatelessWidget {
   final String skillName;
+<<<<<<< HEAD
   final bool fromAddSkill;
 
   QuizDetailsScreen(
       {super.key, required this.skillName, this.fromAddSkill = false});
+=======
+
+  QuizDetailsScreen({super.key, required this.skillName});
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   final QuizController controller = Get.put(QuizController(), permanent: true);
 
@@ -28,7 +36,11 @@ class QuizDetailsScreen extends StatelessWidget {
           icon: Icon(
             Icons.arrow_back,
             color: Theme.of(context).textTheme.bodyLarge!.color,
+<<<<<<< HEAD
             size: screenWidth * 0.06,
+=======
+            size: screenWidth * 0.06, // حجم الأيقونة نسبي
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
           onPressed: () => Get.back(),
         ),
@@ -86,7 +98,11 @@ class QuizDetailsScreen extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
+<<<<<<< HEAD
                         backgroundColor: Colors.grey,
+=======
+                        backgroundColor: const Color(0XFFF2F5F8),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                       SizedBox(width: screenWidth * 0.02),
                       Chip(
@@ -99,7 +115,11 @@ class QuizDetailsScreen extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
+<<<<<<< HEAD
                         backgroundColor: Colors.grey,
+=======
+                        backgroundColor: const Color(0XFFF2F5F8),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                       SizedBox(width: screenWidth * 0.02),
                       Chip(
@@ -112,7 +132,11 @@ class QuizDetailsScreen extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
+<<<<<<< HEAD
                         backgroundColor: Colors.grey,
+=======
+                        backgroundColor: const Color(0XFFF2F5F8),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                     ],
                   ),
@@ -197,7 +221,11 @@ class QuizDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                     backgroundColor: AppPalette.primary,
+=======
+                    backgroundColor: const Color(0XFF0D035F),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     padding:
                         EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                     shape: RoundedRectangleBorder(
@@ -208,12 +236,19 @@ class QuizDetailsScreen extends StatelessWidget {
                       ? null
                       : () async {
                           controller.loading.value = true;
+<<<<<<< HEAD
                           await controller.generateQuiz(skillName,
                               isAddSkill: fromAddSkill);
                           controller.loading.value = false;
                           if (controller.questions.isNotEmpty) {
                             Get.to(
                                 () => QuizScreen(fromAddSkill: fromAddSkill));
+=======
+                          await controller.generateQuiz(skillName);
+                          controller.loading.value = false;
+                          if (controller.questions.isNotEmpty) {
+                            Get.to(() => QuizScreen());
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                           } else {
                             Get.snackbar(
                               'Error',

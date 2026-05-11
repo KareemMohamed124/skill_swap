@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+<<<<<<< HEAD
 import 'package:permission_handler/permission_handler.dart';
+=======
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/mobile/presentation/sessions/widgets/voucher_sheet.dart';
 
 import '../../../../shared/bloc/cancel_book_bloc/cancel_book_bloc.dart';
@@ -26,6 +31,19 @@ import '../../../../shared/data/models/store/purchases.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../../../shared/helper/local_storage.dart';
 import '../../payment/payment_webview_screen.dart';
+=======
+
+import '../../../../shared/bloc/book_session/book_session_bloc.dart';
+import '../../../../shared/bloc/book_session/book_session_event.dart';
+import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../../../../shared/bloc/pay_booking_bloc/pay_booking_bloc.dart';
+import '../../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
+import '../../../../shared/data/models/status_booking/status_booking_request.dart';
+import '../../../../shared/dependency_injection/injection.dart';
+import '../../book_session/screens/book_session.dart';
+import '../../payment/payment_webview_screen.dart';
+import '../../video_call/callID.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../models/session.dart';
 
 class SessionCard extends StatefulWidget {
@@ -40,6 +58,7 @@ class SessionCard extends StatefulWidget {
 }
 
 class _SessionCardState extends State<SessionCard> {
+<<<<<<< HEAD
   Duration _timeRemaining = Duration.zero;
   Timer? _timer;
   bool _isJoining = false;
@@ -49,6 +68,10 @@ class _SessionCardState extends State<SessionCard> {
   List<Purchases> vouchers = [];
   Purchases? selectedVoucher;
   double finalPrice = 0;
+=======
+  late Duration _timeRemaining;
+  Timer? _timer;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   bool get isPending => widget.session.rawStatus == "pending";
 
@@ -62,6 +85,7 @@ class _SessionCardState extends State<SessionCard> {
 
   bool get isRejected => widget.session.rawStatus == "rejected";
 
+<<<<<<< HEAD
   bool get isPaid => widget.session.paymentStatus == "paid";
 
   bool get isUnpaid => widget.session.paymentStatus == "unpaid";
@@ -73,6 +97,8 @@ class _SessionCardState extends State<SessionCard> {
         _timeRemaining.inSeconds > 0;
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   Color get badgeColor {
     if (isPending) return Colors.orange;
     if (isAccepted) return Colors.blue;
@@ -91,6 +117,7 @@ class _SessionCardState extends State<SessionCard> {
     return "";
   }
 
+<<<<<<< HEAD
   int getRemainingCallMinutesForCall() {
     final now = DateTime.now();
     final start = widget.session.dateTime;
@@ -117,10 +144,13 @@ class _SessionCardState extends State<SessionCard> {
     }
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   @override
   void initState() {
     super.initState();
 
+<<<<<<< HEAD
     _loadUser();
     _updateTime();
 
@@ -130,6 +160,12 @@ class _SessionCardState extends State<SessionCard> {
     );
 
     finalPrice = widget.session.price.toDouble();
+=======
+    if (isAccepted && widget.session.price == 0) {
+      _updateTime();
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateTime());
+    }
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 
   void _updateTime() {
@@ -139,11 +175,14 @@ class _SessionCardState extends State<SessionCard> {
     });
   }
 
+<<<<<<< HEAD
   double calculatePrice(double price, String value) {
     final percent = double.parse(value.replaceAll("%", ""));
     return price - (price * percent / 100);
   }
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   @override
   void dispose() {
     _timer?.cancel();
@@ -183,7 +222,11 @@ class _SessionCardState extends State<SessionCard> {
   }
 
   Widget _buildUserImage(double cardWidth) {
+<<<<<<< HEAD
     final image = widget.session.userImage;
+=======
+    final image = widget.session.image;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
     if (image == null || image.isEmpty) {
       return _buildPlaceholder(cardWidth);
@@ -221,10 +264,14 @@ class _SessionCardState extends State<SessionCard> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final screenWidth = MediaQuery
         .of(context)
         .size
         .width;
+=======
+    final screenWidth = MediaQuery.of(context).size.width;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     final cardWidth = screenWidth * 0.35;
 
     final bloc = context.read<StatusBookBloc>();
@@ -238,11 +285,17 @@ class _SessionCardState extends State<SessionCard> {
             state.sessionId == widget.session.sessionId.toString()) {
           Get.snackbar("Success", state.success.data.message);
 
+<<<<<<< HEAD
           final cubit = context.read<GetBookingsCubit>();
 
           cubit.removeBooking(state.sessionId);
 
           cubit.fetchAllBookings(widget.currentStatus);
+=======
+          context
+              .read<GetBookingsCubit>()
+              .fetchAllBookings(widget.currentStatus);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         } else if (state is StatusBookFailure &&
             state.sessionId == widget.session.sessionId.toString()) {
           Get.snackbar("Error", state.error.message);
@@ -250,11 +303,29 @@ class _SessionCardState extends State<SessionCard> {
       },
       child: InkWell(
         onTap: () {
+<<<<<<< HEAD
 
+=======
+          final bookingId = widget.session.sessionId.toString();
+
+          Get.to(
+            BlocProvider(
+              create: (_) =>
+                  sl<ActiveBookingBloc>()..add(LoadBookingDetails(bookingId)),
+              child: BookSessionScreen(
+                userId: widget.session.instructorId,
+                bookingId: bookingId,
+                userName: widget.session.name,
+                price: widget.session.price,
+              ),
+            ),
+          );
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         },
         child: Container(
           padding: EdgeInsets.all(screenWidth * 0.04),
           decoration: BoxDecoration(
+<<<<<<< HEAD
             color: Theme
                 .of(context)
                 .cardColor,
@@ -262,11 +333,19 @@ class _SessionCardState extends State<SessionCard> {
             border: Border.all(color: Theme
                 .of(context)
                 .dividerColor),
+=======
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(screenWidth * 0.04),
+            border: Border.all(color: Theme.of(context).dividerColor),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               /// HEADER
               Row(
                 children: [
@@ -276,6 +355,7 @@ class _SessionCardState extends State<SessionCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+<<<<<<< HEAD
                         Text(widget.session.userName ?? "User",
                             style: Theme
                                 .of(context)
@@ -286,16 +366,26 @@ class _SessionCardState extends State<SessionCard> {
                                 .of(context)
                                 .textTheme
                                 .bodySmall),
+=======
+                        Text(widget.session.name,
+                            style: Theme.of(context).textTheme.titleMedium),
+                        Text(widget.session.role,
+                            style: Theme.of(context).textTheme.bodySmall),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ],
                     ),
                   ),
                   if (isRequested)
                     Text(
                       timeAgoFromServer(widget.session.timeAgo),
+<<<<<<< HEAD
                       style: Theme
                           .of(context)
                           .textTheme
                           .bodySmall,
+=======
+                      style: Theme.of(context).textTheme.bodySmall,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                     )
                   else
                     Container(
@@ -326,7 +416,10 @@ class _SessionCardState extends State<SessionCard> {
                 context: context,
                 icon: Icons.access_time,
                 data: formatTime12h(widget.session.dateTime),
+<<<<<<< HEAD
                 extra: "${widget.session.duration} min",
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 screenWidth: screenWidth,
               ),
               SizedBox(height: screenWidth * 0.02),
@@ -334,13 +427,18 @@ class _SessionCardState extends State<SessionCard> {
                 context: context,
                 icon: Icons.calendar_today_outlined,
                 data:
+<<<<<<< HEAD
                 "${widget.session.dateTime.day}/${widget.session.dateTime
                     .month}/${widget.session.dateTime.year}",
+=======
+                    "${widget.session.dateTime.day}/${widget.session.dateTime.month}/${widget.session.dateTime.year}",
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 screenWidth: screenWidth,
               ),
 
               SizedBox(height: screenWidth * 0.02),
 
+<<<<<<< HEAD
               Row(
                 children: [
                   Icon(Icons.attach_money, size: screenWidth * 0.045),
@@ -520,6 +618,17 @@ class _SessionCardState extends State<SessionCard> {
                   );
                 },
               ),
+=======
+              iconText(
+                context: context,
+                icon: Icons.attach_money,
+                data: widget.session.price == 0
+                    ? "Free"
+                    : '${widget.session.price}',
+                screenWidth: screenWidth,
+              ),
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               SizedBox(height: screenWidth * 0.04),
 
               /// REQUESTED
@@ -528,6 +637,7 @@ class _SessionCardState extends State<SessionCard> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
+<<<<<<< HEAD
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                         ),
@@ -547,11 +657,26 @@ class _SessionCardState extends State<SessionCard> {
                           "Accept",
                           style: TextStyle(color: Colors.white),
                         ),
+=======
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                context.read<StatusBookBloc>().add(
+                                      StatusBookSession(
+                                        id: widget.session.sessionId,
+                                        request: StatusBookingRequest(
+                                            status: "accepted"),
+                                      ),
+                                    );
+                              },
+                        child: const Text("Accept"),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                     ),
                     SizedBox(width: screenWidth * 0.03),
                     Expanded(
                       child: OutlinedButton(
+<<<<<<< HEAD
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
@@ -570,12 +695,27 @@ class _SessionCardState extends State<SessionCard> {
                           "Decline",
                           style: TextStyle(color: Colors.white),
                         ),
+=======
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                context.read<StatusBookBloc>().add(
+                                      StatusBookSession(
+                                        id: widget.session.sessionId,
+                                        request: StatusBookingRequest(
+                                            status: "rejected"),
+                                      ),
+                                    );
+                              },
+                        child: const Text("Decline"),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                       ),
                     ),
                   ],
                 )
 
               /// FREE SESSION
+<<<<<<< HEAD
               else
                 if (isAccepted && widget.session.price == 0)
                   BlocProvider(
@@ -962,6 +1102,101 @@ class _SessionCardState extends State<SessionCard> {
                           style: TextStyle(color: AppPalette.primary),
                         ),
                       ),
+=======
+              else if (isAccepted && widget.session.price == 0)
+                GestureDetector(
+                  onTap: _timeRemaining.inSeconds <= 0
+                      ? () {
+                          Get.to(() => CallPage(
+                                // callID: widget.session.bookingCode,
+                                // userID: widget.session.instructorId,
+                                // userName: widget.session.name,
+                                // userAvatarUrl: widget.session.image,
+                                // isStudent: widget.session.isStudent,
+                                session: widget.session,
+                              ));
+                        }
+                      : null,
+                  child: Container(
+                    height: screenWidth * 0.11,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: _timeRemaining.inSeconds > 0
+                          ? Theme.of(context).primaryColor
+                          : Colors.green,
+                      borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                    ),
+                    child: Text(
+                      _timeRemaining.inSeconds > 0
+                          ? "Session starts in ${_formatDuration(_timeRemaining)}"
+                          : "Live now",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+
+              /// PAID SESSION
+              else if (isAccepted && widget.session.price > 0)
+                BlocProvider(
+                  create: (_) => sl<PayBookingBloc>(),
+                  child: BlocConsumer<PayBookingBloc, PayBookingState>(
+                    listener: (context, state) {
+                      if (state is PayBookingSuccessState) {
+                        Get.to(() => PaymentWebViewScreen(
+                              checkoutUrl: state.checkoutUrl,
+                              successUrl: state.successUrl,
+                              cancelUrl: state.cancelUrl,
+                            ));
+                      } else if (state is PayBookingFailureState) {
+                        Get.snackbar("Payment Error", state.error);
+                      }
+                    },
+                    builder: (context, state) {
+                      final isPayLoading = state is PayBookingLoading;
+
+                      return GestureDetector(
+                        onTap: isPayLoading
+                            ? null
+                            : () {
+                                context.read<PayBookingBloc>().add(
+                                      PayBookingRequested(
+                                        bookingId: widget.session.sessionId,
+                                      ),
+                                    );
+                              },
+                        child: Container(
+                          height: screenWidth * 0.11,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.03),
+                          ),
+                          child: isPayLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text(
+                                  "Pay Now",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              else
+                Container(
+                  height: screenWidth * 0.11,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                  ),
+                  child: const Text("Pending approval"),
+                ),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ],
           ),
         ),
@@ -975,12 +1210,16 @@ Widget iconText({
   required IconData icon,
   required String data,
   required double screenWidth,
+<<<<<<< HEAD
   String? extra,
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }) {
   return Row(
     children: [
       Icon(icon, size: screenWidth * 0.045),
       SizedBox(width: screenWidth * 0.015),
+<<<<<<< HEAD
       Flexible(
         child: Text(
           extra != null ? "$data • $extra" : data,
@@ -989,6 +1228,9 @@ Widget iconText({
           ),
         ),
       ),
+=======
+      Flexible(child: Text(data)),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     ],
   );
 }

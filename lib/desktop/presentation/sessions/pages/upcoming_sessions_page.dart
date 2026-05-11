@@ -4,7 +4,10 @@ import 'package:skill_swap/desktop/presentation/sessions/widgets/session_card.da
 
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../../../shared/bloc/get_bookings_cubit/get_bookings_state.dart';
+<<<<<<< HEAD
 import '../../../../shared/core/theme/app_palette.dart';
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
 class UpcomingSessionsPage extends StatelessWidget {
   const UpcomingSessionsPage({super.key});
@@ -14,11 +17,15 @@ class UpcomingSessionsPage extends StatelessWidget {
     return BlocBuilder<GetBookingsCubit, GetBookingsState>(
       builder: (context, state) {
         if (state is GetBookingsLoading) {
+<<<<<<< HEAD
           return const Center(
             child: CircularProgressIndicator(
               color: AppPalette.primary,
             ),
           );
+=======
+          return const Center(child: CircularProgressIndicator());
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         }
 
         if (state is GetBookingsError) {
@@ -30,6 +37,7 @@ class UpcomingSessionsPage extends StatelessWidget {
             return const Center(child: Text("No upcoming sessions"));
           }
 
+<<<<<<< HEAD
           /// 🔥 check if there are unpaid sessions
           final unpaidSessions = state.bookings.where((session) =>
               session.paymentStatus == "unpaid" &&
@@ -93,6 +101,16 @@ class UpcomingSessionsPage extends StatelessWidget {
                 ),
               ],
             ),
+=======
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: state.bookings.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (_, index) {
+              return SessionCard(
+                  session: state.bookings[index], currentStatus: "accepted");
+            },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           );
         }
 

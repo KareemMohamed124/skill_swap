@@ -84,19 +84,28 @@ class SessionDetailsPage extends StatelessWidget {
                                 track: session.mentorTrack,
                                 rate: session.rating,
                                 bio: '',
+<<<<<<< HEAD
                                 role: '',
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                                 hoursAvailable: 0,
                                 peopleHelped: 0,
                                 hourlyRate: 0,
                                 skills: [],
+<<<<<<< HEAD
                                 reviews: [],
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               ),
                               rightPanel: BookSessionDesktop(
                                 userId: session.mentorId,
                                 userName: session.mentorName,
                                 price: 0,
+<<<<<<< HEAD
                                 role: '',
                                 availableDates: [],
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                               ));
                         },
                         icon: const Icon(Icons.person_outline),
@@ -287,19 +296,29 @@ class SessionDetailsPage extends StatelessWidget {
                 track: session.mentorTrack,
                 rate: session.rating,
                 bio: '',
+<<<<<<< HEAD
                 role: '',
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
                 hoursAvailable: 0,
                 peopleHelped: 0,
                 hourlyRate: 0,
                 skills: [],
+<<<<<<< HEAD
                 reviews: [],
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               ),
               rightPanel: BookSessionDesktop(
                 userId: session.mentorId,
                 userName: session.mentorName,
+<<<<<<< HEAD
                 role: '',
                 price: 0,
                 availableDates: [],
+=======
+                price: 0,
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               ));
         },
       ),

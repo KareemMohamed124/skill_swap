@@ -11,12 +11,16 @@ import '../pages/reviews_page.dart';
 import '../pages/skills_page.dart';
 
 class ProfileScreen extends StatefulWidget {
+<<<<<<< HEAD
   final int initialTab;
 
   const ProfileScreen({
     super.key,
     this.initialTab = 0,
   });
+=======
+  const ProfileScreen({super.key});
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -29,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
 
     _tabController = TabController(
       length: 3,
@@ -44,6 +49,9 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (oldWidget.initialTab != widget.initialTab) {
       _tabController.animateTo(widget.initialTab);
     }
+=======
+    _tabController = TabController(length: 3, vsync: this);
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   }
 
   @override
@@ -60,6 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         child: Column(
           children: [
             BlocProvider(
+<<<<<<< HEAD
               create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
               child: const ProfileHeader(),
             ),
@@ -70,6 +79,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                 'skills'.tr,
                 'reviews'.tr,
               ],
+=======
+                create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+                child: const ProfileHeader()), // const SizedBox(height: 24),
+            ProfileTabs(
+              tabController: _tabController,
+              tabs: ['overview'.tr, 'skills'.tr, 'reviews'.tr],
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             ),
             const SizedBox(height: 16),
             Expanded(

@@ -15,10 +15,16 @@ class UpcomingSessionsPage extends StatelessWidget {
       builder: (context, state) {
         if (state is GetBookingsLoading) {
           return const Center(
+<<<<<<< HEAD
             child: CircularProgressIndicator(
               color: AppPalette.primary,
             ),
           );
+=======
+              child: CircularProgressIndicator(
+            color: AppPalette.primary,
+          ));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
         }
 
         if (state is GetBookingsError) {
@@ -30,6 +36,7 @@ class UpcomingSessionsPage extends StatelessWidget {
             return const Center(child: Text("No upcoming sessions"));
           }
 
+<<<<<<< HEAD
           /// 🔥 check if there are unpaid sessions
           final unpaidSessions = state.bookings.where((session) =>
               session.paymentStatus == "unpaid" &&
@@ -93,6 +100,16 @@ class UpcomingSessionsPage extends StatelessWidget {
                 ),
               ],
             ),
+=======
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: state.bookings.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (_, index) {
+              return SessionCard(
+                  session: state.bookings[index], currentStatus: "accepted");
+            },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
           );
         }
 

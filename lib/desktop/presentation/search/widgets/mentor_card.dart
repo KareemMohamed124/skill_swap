@@ -7,9 +7,15 @@ class MentorCard extends StatelessWidget {
   final String image;
   final String name;
   final String role;
+<<<<<<< HEAD
   final num rate;
   final num hours;
   final num price;
+=======
+  final int rate;
+  final int hours;
+  final double price;
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   final String track;
   final List<Skill> skills;
   final String responseTime;
@@ -32,6 +38,7 @@ class MentorCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final width = MediaQuery.of(context).size.width;
 
+<<<<<<< HEAD
     double r(double base, double min, double max) {
       final scale = width / 1440;
       return (base * scale).clamp(min, max);
@@ -178,4 +185,122 @@ class MentorCard extends StatelessWidget {
       },
     );
   }
+=======
+    return Center(
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme.of(context).dividerColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    image,
+                    width: 64, // أقل من قبل
+                    height: 64,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: role == "Mentor"
+                                  ? Colors.green.withOpacity(.15)
+                                  : Colors.blue.withOpacity(.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              role,
+                              style: TextStyle(
+                                color: role == "Mentor"
+                                    ? Colors.green
+                                    : Colors.blue,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.star, size: 16, color: Colors.amber),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              "$rate • $hours hours • \$$price/hr",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(fontSize: 12),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8, // أصغر
+              runSpacing: 8, // أصغر
+              children: skills.map((skill) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4), // أصغر
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD6D6D6).withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    skill.skillName,
+                    style: TextStyle(
+                      fontSize: 11, // أصغر
+                      color: isDark
+                          ? AppPalette.darkTextSecondary
+                          : AppPalette.lightTextSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 }

@@ -19,6 +19,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return BaseScreen(
       title: 'Next Sessions',
       child: BlocBuilder<GetBookingsCubit, GetBookingsState>(
@@ -41,6 +42,39 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
               physics: const BouncingScrollPhysics(),
               itemCount: state.sessions.length,
               separatorBuilder: (_, __) => const SizedBox(height: 8),
+=======
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    double radius = 32;
+    double padding = 16;
+
+    if (screenWidth >= 800) {
+      radius = 40;
+      padding = 24;
+    }
+
+    return BlocBuilder<GetBookingsCubit, GetBookingsState>(
+      builder: (context, state) {
+        if (state is GetTodaySessionsLoading) {
+          return const Center(
+              child: CircularProgressIndicator(
+            color: AppPalette.primary,
+          ));
+        }
+
+        if (state is GetTodaySessionsLoaded) {
+          if (state.sessions.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return BaseScreen(
+            title: 'Next Sessions',
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: state.sessions.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
               itemBuilder: (context, index) {
                 final s = state.sessions[index];
 
@@ -48,6 +82,7 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
                   name: s.name,
                   duration: s.duration,
                   dateTime: s.dateTime,
+<<<<<<< HEAD
                   sessionTime: s.sessionTime,
                   isMentor: s.isMentor,
                 );
@@ -62,6 +97,23 @@ class _NextSessionViewAllState extends State<NextSessionViewAll> {
           return const SizedBox.shrink();
         },
       ),
+=======
+                  startsIn: s.startsIn,
+                  isMentor: s.isMentor,
+                  remainingMinutes: s.remainingMinutes,
+                );
+              },
+            ),
+          );
+        }
+
+        if (state is GetBookingsError) {
+          return const SizedBox.shrink();
+        }
+
+        return const SizedBox.shrink();
+      },
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
     );
   }
 }

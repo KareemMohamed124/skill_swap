@@ -4,16 +4,23 @@ import 'package:skill_swap/shared/bloc/change_password_bloc/change_password_bloc
 import 'package:skill_swap/shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import 'package:skill_swap/shared/bloc/get_users_cubit/users_cubit.dart';
 import 'package:skill_swap/shared/bloc/logout_bloc/logout_bloc.dart';
+<<<<<<< HEAD
 import 'package:skill_swap/shared/data/web_services/skills/skills_api_services.dart';
 import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
 
 import '../bloc/accepted_bookings/accepted_bookings_cubit.dart';
 import '../bloc/activation_bloc/activation_bloc.dart';
 import '../bloc/add_available_dates_bloc/add_available_dates_bloc.dart';
+=======
+import 'package:skill_swap/shared/domain/repositories/booking_repository.dart';
+
+import '../bloc/activation_bloc/activation_bloc.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../bloc/book_session/book_session_bloc.dart';
 import '../bloc/cancel_book_bloc/cancel_book_bloc.dart';
 import '../bloc/complete_profile_bloc/complete_profile_bloc.dart';
 import '../bloc/delete_account_bloc/delete_account_bloc.dart';
+<<<<<<< HEAD
 import '../bloc/delete_available_dates/delete_available_dates_bloc.dart';
 import '../bloc/delete_book_bloc/delete_book_bloc.dart';
 import '../bloc/get_available_dates_bloc/get_available_dates_bloc.dart';
@@ -28,16 +35,31 @@ import '../bloc/private_chats_bloc/private_chats_bloc.dart';
 import '../bloc/public_chat/message_search_cubit.dart';
 import '../bloc/public_chat/public_chat_bloc.dart';
 import '../bloc/public_chat/public_chat_messages_cubit.dart';
+=======
+import '../bloc/delete_book_bloc/delete_book_bloc.dart';
+import '../bloc/get_booking_details_bloc/get_booking_details_bloc.dart';
+import '../bloc/get_bookings_cubit/get_bookings_cubit.dart';
+import '../bloc/login_bloc/login_bloc.dart';
+import '../bloc/mentor_filter_bloc/mentor_filter_bloc.dart';
+import '../bloc/pay_booking_bloc/pay_booking_bloc.dart';
+import '../bloc/private_chat/private_chat_list_cubit.dart';
+import '../bloc/private_chat/private_chat_messages_cubit.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../bloc/register_bloc/register_bloc.dart';
 import '../bloc/report_bloc/report_bloc.dart';
 import '../bloc/reset_password_bloc/reset_password_bloc.dart';
 import '../bloc/send_code_bloc/send_code_bloc.dart';
+<<<<<<< HEAD
 import '../bloc/set_available_dates_bloc/set_available_dates_bloc.dart';
 import '../bloc/status_book_bloc/status_book_bloc.dart';
 import '../bloc/store_cubit/purchase_cubit.dart';
 import '../bloc/store_cubit/store_cubit.dart';
 import '../bloc/submit_review_bloc/submit_review_bloc.dart';
 import '../bloc/track_cubit/skills_cubit.dart';
+=======
+import '../bloc/status_book_bloc/status_book_bloc.dart';
+import '../bloc/submit_review_bloc/submit_review_bloc.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../bloc/track_cubit/track_cubit.dart';
 import '../bloc/tracks_bloc/tracks_bloc.dart';
 import '../bloc/update_book_bloc/update_book_bloc.dart';
@@ -51,13 +73,18 @@ import '../data/models/user/user_model.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../data/repositories/booking_repository_impl.dart';
 import '../data/repositories/chat_repository_impl.dart';
+<<<<<<< HEAD
 import '../data/repositories/notification_repository_impl.dart';
 import '../data/repositories/report_repository_impl.dart';
 import '../data/repositories/store_repository_impl.dart';
+=======
+import '../data/repositories/report_repository_impl.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../data/repositories/user_repository_impl.dart';
 import '../data/web_services/auth/auth_api.dart';
 import '../data/web_services/booking/booking_api.dart';
 import '../data/web_services/chat/chat_api_service.dart';
+<<<<<<< HEAD
 import '../data/web_services/notification/notification_api.dart';
 import '../data/web_services/report/report_api.dart';
 import '../data/web_services/store/store_api_service.dart';
@@ -67,6 +94,13 @@ import '../domain/repositories/chat_repository.dart';
 import '../domain/repositories/notification_repository.dart';
 import '../domain/repositories/report_repository.dart';
 import '../domain/repositories/store_repository.dart';
+=======
+import '../data/web_services/report/report_api.dart';
+import '../data/web_services/user/user_api.dart';
+import '../domain/repositories/auth_repository.dart';
+import '../domain/repositories/chat_repository.dart';
+import '../domain/repositories/report_repository.dart';
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 import '../domain/repositories/user_repository.dart';
 
 final sl = GetIt.instance;
@@ -82,6 +116,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<BookingApi>(() => BookingApi(sl<Dio>()));
   sl.registerLazySingleton<UserApi>(() => UserApi(sl<Dio>()));
   sl.registerLazySingleton<ReportApi>(() => ReportApi(sl<Dio>()));
+<<<<<<< HEAD
   sl.registerLazySingleton<SkillsApiService>(() => SkillsApiService(sl<Dio>()));
 
   sl.registerLazySingleton<StoreApiService>(() => StoreApiService(sl<Dio>()));
@@ -89,6 +124,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<NotificationApi>(
     () => NotificationApi(sl<Dio>()),
   );
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   // Chat API & Pusher
   sl.registerLazySingleton<ChatApiService>(() => ChatApiService(sl<Dio>()));
@@ -107,6 +144,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<ReportRepository>(
       () => ReportRepositoryImpl(api: sl<ReportApi>(), dio: sl<Dio>()));
 
+<<<<<<< HEAD
   sl.registerLazySingleton<NotificationRepository>(
       () => NotificationRepositoryImpl(sl<NotificationApi>()));
 
@@ -119,6 +157,12 @@ Future<void> initDependencies() async {
   // Blocs
   sl.registerFactory<SkillsCubit>(() => SkillsCubit(sl<SkillsApiService>()));
 
+=======
+  sl.registerLazySingleton<ChatRepository>(
+      () => ChatRepositoryImpl(api: sl<ChatApiService>()));
+
+  // Blocs
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   sl.registerFactory<RegisterBloc>(() => RegisterBloc(sl<AuthRepository>()));
   sl.registerFactory<LoginBloc>(() => LoginBloc(sl<AuthRepository>()));
   sl.registerFactory<SendCodeBloc>(() => SendCodeBloc(sl<AuthRepository>()));
@@ -141,10 +185,16 @@ Future<void> initDependencies() async {
   sl.registerFactory<GetBookingDetailsBloc>(
       () => GetBookingDetailsBloc(sl<BookingRepository>()));
 
+<<<<<<< HEAD
   sl.registerFactory<GetBookingsCubit>(
       () => GetBookingsCubit(sl<BookingRepository>()));
   sl.registerFactory<PublicChatBloc>(
       () => PublicChatBloc(sl<ChatRepository>(), sl<PusherService>()));
+=======
+  sl.registerLazySingleton<GetBookingsCubit>(
+      () => GetBookingsCubit(sl<BookingRepository>()));
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
   sl.registerFactory<UsersCubit>(() => UsersCubit(sl<UserRepository>()));
 
   sl.registerFactory<ChangePasswordBloc>(
@@ -168,6 +218,7 @@ Future<void> initDependencies() async {
   sl.registerFactory<MentorFilterBloc>(() => MentorFilterBloc(AppData.mentors));
   sl.registerFactory<PayBookingBloc>(
       () => PayBookingBloc(sl<BookingRepository>()));
+<<<<<<< HEAD
   sl.registerFactory<GetUpcomingSatBloc>(
       () => GetUpcomingSatBloc(sl<BookingRepository>()));
   sl.registerFactory<AddAvailableDatesBloc>(
@@ -184,11 +235,14 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<AcceptedBookingsCubit>(
       () => AcceptedBookingsCubit(sl<BookingRepository>()));
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   sl.registerFactory<TracksBloc>(
     () => TracksBloc(sl<ChatRepository>()),
   );
 
+<<<<<<< HEAD
   sl.registerFactory<StoreCubit>(
     () => StoreCubit(sl<StoreRepository>()),
   );
@@ -211,6 +265,15 @@ Future<void> initDependencies() async {
 
   sl.registerFactory<MessageSearchCubit>(
       () => MessageSearchCubit(chatRepository: sl<ChatRepository>()));
+=======
+  // Chat Cubits
+  sl.registerFactory<PrivateChatListCubit>(() => PrivateChatListCubit(
+      chatRepository: sl<ChatRepository>(),
+      pusherService: sl<PusherService>()));
+  sl.registerFactory<PrivateChatMessagesCubit>(() => PrivateChatMessagesCubit(
+      chatRepository: sl<ChatRepository>(),
+      pusherService: sl<PusherService>()));
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 
   // Load users safely
   List<UserModel> users = [];

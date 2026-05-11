@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
+<<<<<<< HEAD
 import '../../constants/not_type.dart';
 import '../../data/models/status_booking/status_booking_error_response.dart';
 import '../../data/models/status_booking/status_booking_request.dart';
@@ -11,6 +12,15 @@ import '../../domain/repositories/notification_repository.dart';
 import '../../helper/local_storage.dart';
 
 part 'status_book_event.dart';
+=======
+import '../../data/models/status_booking/status_booking_error_response.dart';
+import '../../data/models/status_booking/status_booking_request.dart';
+import '../../data/models/status_booking/status_booking_response.dart';
+import '../../domain/repositories/booking_repository.dart';
+
+part 'status_book_event.dart';
+
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
 part 'status_book_state.dart';
 
 class StatusBookBloc extends Bloc<StatusBookEvent, StatusBookState> {
@@ -35,6 +45,7 @@ class StatusBookBloc extends Bloc<StatusBookEvent, StatusBookState> {
         switch (response) {
           case StatusBookingSuccess s:
             emit(StatusBookSuccess(success: s, sessionId: id));
+<<<<<<< HEAD
 
             // 🔔 Notify the STUDENT about accept/reject
             if (event.studentId != null) {
@@ -53,6 +64,8 @@ class StatusBookBloc extends Bloc<StatusBookEvent, StatusBookState> {
                 );
               }
             }
+=======
+>>>>>>> 4bf2966f4a190da3a09f2a3e000e0b00e0a9c4d1
             break;
           case StatusBookingFailure f:
             emit(StatusBookFailure(error: f.error, sessionId: id));
