@@ -7,7 +7,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:skill_swap/desktop/presentation/sign/widgets/custom_button.dart';
 import 'package:skill_swap/desktop/presentation/skill_verification/quiz_details_screen.dart';
-
+import '../../../../shared/bloc/track_cubit/skills_cubit.dart';
+import '../../../../shared/bloc/track_cubit/skills_state.dart';
 import '../../../../shared/bloc/delete_account_bloc/delete_account_bloc.dart';
 import '../../../../shared/bloc/delete_account_bloc/delete_account_event.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
@@ -198,6 +199,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   List<dynamic> selectedSkills = [];
   List<dynamic> originalSkills = [];
   String? userTrack;
+  String? userTrackId;
   List<dynamic> selectedSkillsNew = [];
   bool hasSeenMentorDialog = false;
 
@@ -242,6 +244,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     skillsController.text = selectedSkills.join(', ');
 
     userTrack = profile.track.name;
+    userTrackId = profile.track.id;
     selectedImage = null;
     controllersFilled = true;
 
@@ -805,93 +808,195 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void showSkillsPicker({bool isMentorFlow = false}) {
-    final trackSkills = tracksWithSkillsMap[userTrack] ?? [];
+    if (userTrackId == null) return;
+
+    context.read<SkillsCubit>().fetchSkills(userTrackId!);
 
     List<String> tempSelectedSkills = List.from(selectedSkillsNew);
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
       ),
       builder: (_) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "Select Skills",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: trackSkills.map((skill) {
-                        final isAlreadyMine = selectedSkills.contains(skill);
-                        final isSelectedNew =
-                            tempSelectedSkills.contains(skill);
+        return BlocProvider.value(
+          value: context.read<SkillsCubit>(),
+          child: BlocBuilder<SkillsCubit, SkillsState>(
+            builder: (context, state) {
+              /// Loading
+              if (state is SkillsLoading) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
 
-                        return FilterChip(
-                          label: Text(skill),
-                          selectedShadowColor: AppPalette.primary,
-                          selected: isAlreadyMine || isSelectedNew,
-                          onSelected: isAlreadyMine
-                              ? null
-                              : (selected) {
-                                  setModalState(() {
-                                    if (isMentorFlow) {
-                                      tempSelectedSkills.clear();
-                                      tempSelectedSkills.add(skill);
-                                    } else {
-                                      if (selected) {
-                                        tempSelectedSkills.add(skill);
-                                      } else {
-                                        tempSelectedSkills.remove(skill);
-                                      }
+              /// Error
+              if (state is SkillsError) {
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: Text(state.error),
+                  ),
+                );
+              }
+
+              /// Success
+              if (state is SkillsLoaded) {
+                /// Split:
+                /// Dart & Flutter
+                /// => Dart , Flutter
+                final trackSkills = state.response.data
+                    .expand((e) => e.name.split('&'))
+                    .map((e) => e.trim())
+                    .where((e) => e.isNotEmpty)
+                    .toSet()
+                    .toList();
+
+                return StatefulBuilder(
+                  builder: (context, setModalState) {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 16,
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// Title
+                            const Center(
+                              child: Text(
+                                "Select Skills",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            /// Skills
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: trackSkills.map((skill) {
+                                /// already in profile
+                                final isAlreadyMine =
+                                    selectedSkills.contains(skill);
+
+                                /// selected in current session
+                                final isSelected =
+                                    tempSelectedSkills.contains(skill);
+
+                                return FilterChip(
+                                  label: Text(skill),
+                                  selected: isAlreadyMine || isSelected,
+                                  selectedColor: isAlreadyMine
+                                      ? Colors.grey
+                                      : AppPalette.primary.withOpacity(0.2),
+                                  checkmarkColor: isAlreadyMine
+                                      ? Colors.grey
+                                      : AppPalette.primary,
+                                  disabledColor: Colors.grey,
+                                  onSelected: isAlreadyMine
+                                      ? null
+                                      : (value) {
+                                          setModalState(() {
+                                            /// Mentor:
+                                            /// only one skill
+                                            if (isMentorFlow) {
+                                              tempSelectedSkills.clear();
+
+                                              if (value) {
+                                                tempSelectedSkills.add(skill);
+                                              }
+                                            } else {
+                                              if (value) {
+                                                tempSelectedSkills.add(skill);
+                                              } else {
+                                                tempSelectedSkills
+                                                    .remove(skill);
+                                              }
+                                            }
+                                          });
+                                        },
+                                );
+                              }).toList(),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            /// Button
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppPalette.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  /// Mentor Flow
+                                  if (isMentorFlow) {
+                                    if (tempSelectedSkills.isEmpty) {
+                                      return;
                                     }
+
+                                    final selectedSkill =
+                                        tempSelectedSkills.first;
+
+                                    Navigator.pop(context);
+
+                                    Get.to(
+                                      () => QuizDetailsDesktop(
+                                        skillName: selectedSkill,
+                                        fromAddSkill: true,
+                                      ),
+                                    );
+
+                                    return;
+                                  }
+
+                                  /// Normal Flow
+                                  setState(() {
+                                    selectedSkillsNew = tempSelectedSkills;
                                   });
+
+                                  Navigator.pop(context);
                                 },
-                          selectedColor: isAlreadyMine ? Colors.grey : null,
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: AppPalette.primary,
-                              foregroundColor: Colors.white),
-                          child: Text(
-                              isMentorFlow ? "Take Assessment" : "Save Skills"),
-                          onPressed: () {
-                            if (isMentorFlow) {
-                              if (tempSelectedSkills.isEmpty) return;
-                              final selectedSkill = tempSelectedSkills.first;
-                              Navigator.pop(context);
-                              Get.to(() => QuizDetailsDesktop(
-                                    skillName: selectedSkill,
-                                    fromAddSkill: true,
-                                  ));
-                            } else {
-                              setState(() {
-                                selectedSkillsNew = tempSelectedSkills;
-                              });
-                              Navigator.pop(context);
-                            }
-                          }),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
+                                child: Text(
+                                  isMentorFlow
+                                      ? "Take Assessment"
+                                      : "Save Skills",
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return const SizedBox();
+            },
+          ),
         );
       },
     );

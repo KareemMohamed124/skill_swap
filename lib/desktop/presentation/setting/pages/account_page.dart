@@ -62,82 +62,6 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Section 1: Notifications
-                Text(
-                  'notifications'.tr,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .color),
-                ),
-                const SizedBox(height: 8),
-                customSwitch(
-                  title: 'email_notifications'.tr,
-                  icon: Icons.email_outlined,
-                  value: emailNotifications,
-                  onChanged: (v) => setState(() => emailNotifications = v),
-                ),
-                customSwitch(
-                  title: 'push_notifications'.tr,
-                  icon: Icons.notifications_outlined,
-                  value: pushNotifications,
-                  onChanged: (v) => setState(() => pushNotifications = v),
-                ),
-                customSwitch(
-                  title: 'new_messages'.tr,
-                  icon: Icons.message_outlined,
-                  value: newMessages,
-                  onChanged: (v) => setState(() => newMessages = v),
-                ),
-                customSwitch(
-                  title: 'session_reminders'.tr,
-                  icon: Icons.schedule_outlined,
-                  value: sessionReminders,
-                  onChanged: (v) => setState(() => sessionReminders = v),
-                ),
-
-                const SizedBox(height: 16),
-                // Section 2: Privacy
-                Text(
-                  'privacy'.tr,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .color),
-                ),
-                const SizedBox(height: 8),
-                customSwitch(
-                  title: 'profile_visibility'.tr,
-                  icon: Icons.person_outline,
-                  subtitle: 'allow_find_profile'.tr,
-                  value: profileVisibility,
-                  onChanged: (v) => setState(() => profileVisibility = v),
-                ),
-                customSwitch(
-                  title: 'show_online_status'.tr,
-                  icon: Icons.wifi_tethering_outlined,
-                  subtitle: "let_see_online".tr,
-                  value: showOnlineStatus,
-                  onChanged: (v) => setState(() => showOnlineStatus = v),
-                ),
-                customSwitch(
-                  title: 'direct_messages'.tr,
-                  icon: Icons.chat_bubble_outline,
-                  subtitle: 'allow_direct_msg'.tr,
-                  value: directMessages,
-                  onChanged: (v) => setState(() => directMessages = v),
-                ),
-
-                const SizedBox(height: 16),
-                // Section 3: App Preferences
                 Text(
                   'app_preferences'.tr,
                   style: TextStyle(
@@ -224,12 +148,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
                 const SizedBox(height: 8),
-                customSwitch(
-                  title: 'sound_effects'.tr,
-                  icon: Icons.volume_up_outlined,
-                  value: soundEffects,
-                  onChanged: (v) => setState(() => soundEffects = v),
-                ),
               ],
             ),
           ),

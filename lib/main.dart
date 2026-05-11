@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -25,7 +26,9 @@ import 'package:skill_swap/shared/helper/local_storage.dart';
 import 'desktop/presentation/common/desktop_screen_manager.dart';
 import 'desktop/presentation/sign/screens/sign_in_screen.dart';
 import 'firebase_options.dart';
+import 'mobile/presentation/forget_password/screens/email_verification_screen.dart';
 import 'mobile/presentation/onboarding_screen/screens/onboarding.dart';
+import 'mobile/presentation/select_skills/select_track.dart';
 import 'mobile/presentation/sign/screens/sign_in_screen.dart';
 
 final GlobalKey<DesktopScreenManagerState> desktopKey =
@@ -68,12 +71,12 @@ void main() async {
 
   // ✅ CRITICAL for Flutter Desktop: initializes the native WebRTC engine.
   // Without this, the app crashes silently ~3-5 seconds after the camera stream starts.
-  if (!kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.windows ||
-          defaultTargetPlatform == TargetPlatform.macOS ||
-          defaultTargetPlatform == TargetPlatform.linux)) {
-    await WebRTC.initialize();
-  }
+  // if (!kIsWeb &&
+  //     (defaultTargetPlatform == TargetPlatform.windows ||
+  //         defaultTargetPlatform == TargetPlatform.macOS ||
+  //         defaultTargetPlatform == TargetPlatform.linux)) {
+  //   await WebRTC.initialize();
+  // }
 
   final dir = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(dir.path);
@@ -98,6 +101,9 @@ void main() async {
 
   final isOnboardingSeen = LocalStorage.isOnboardingSeen();
   final isLogged = LocalStorage.isLoggedIn();
+  final track = LocalStorage.getUserTrack();
+  final isActive = LocalStorage.getIsActive();
+  final email = LocalStorage.getEmail();
 
   Widget startScreen;
 
@@ -105,6 +111,12 @@ void main() async {
     startScreen = OnBoardingScreen();
   } else if (!isLogged) {
     startScreen = const SignInScreen();
+  } else if (isLogged &&
+      (track == null || track.isEmpty) &&
+      !Platform.isWindows) {
+    startScreen = SelectTrackScreen();
+  } else if (isLogged && isActive == null && !Platform.isWindows) {
+    startScreen = EmailVerificationScreen(email: email ?? "");
   } else {
     startScreen = LayoutBuilder(
       builder: (context, constraints) {

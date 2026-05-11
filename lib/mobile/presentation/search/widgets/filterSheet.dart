@@ -18,8 +18,8 @@ class MentorFilterSheet extends StatefulWidget {
 
   const MentorFilterSheet({
     super.key,
-    this.initialMinPrice = 20,
-    this.initialMaxPrice = 60,
+    this.initialMinPrice = 0,
+    this.initialMaxPrice = 20,
     this.initialRate,
     this.initialRole,
     this.initialTrack,
@@ -65,7 +65,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
   int get activeFiltersCount {
     int count = 0;
 
-    if (startPrice != 20 || endPrice != 60) count++;
+    if (startPrice != 0 || endPrice != 20) count++;
     if (selectedRate != null) count++;
     if (selectedRole != null) count++;
     if (selectedTrack != null) count++;
@@ -75,14 +75,19 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return FractionallySizedBox(
       heightFactor: 0.9,
       child: Container(
         padding: EdgeInsets.all(screenWidth * 0.04),
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(32),
             bottomLeft: Radius.circular(32),
@@ -93,7 +98,10 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
             children: [
               Text(
                 "filters".tr,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleMedium,
               ),
 
               SizedBox(height: screenWidth * 0.02),
@@ -103,7 +111,7 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               /// PRICE
               PriceFilterSection(
                 min: 0,
-                max: 100,
+                max: 20,
                 onChanged: (start, end) {
                   setState(() {
                     startPrice = start;
@@ -115,7 +123,10 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               SizedBox(height: screenWidth * 0.04),
 
               /// ROLE
-              Text("role".tr, style: Theme.of(context).textTheme.titleMedium),
+              Text("role".tr, style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleMedium),
 
               SizedBox(height: screenWidth * 0.02),
 
@@ -133,7 +144,10 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               SizedBox(height: screenWidth * 0.04),
 
               /// TRACK
-              Text("track".tr, style: Theme.of(context).textTheme.titleMedium),
+              Text("track".tr, style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleMedium),
 
               SizedBox(height: screenWidth * 0.02),
 
@@ -178,7 +192,10 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
               SizedBox(height: screenWidth * 0.04),
 
               /// RATING
-              Text("rating".tr, style: Theme.of(context).textTheme.titleMedium),
+              Text("rating".tr, style: Theme
+                  .of(context)
+                  .textTheme
+                  .titleMedium),
 
               SizedBox(height: screenWidth * 0.02),
 
@@ -204,14 +221,19 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).cardColor,
+                        backgroundColor: Theme
+                            .of(context)
+                            .cardColor,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: Text("cancel".tr,
-                          style: Theme.of(context).textTheme.titleMedium),
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .titleMedium),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -219,14 +241,14 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<UserFilterBloc>().add(
-                              ApplyFiltersEvent(
-                                minPrice: startPrice,
-                                maxPrice: endPrice,
-                                minRate: selectedRate?.toDouble(),
-                                role: selectedRole,
-                                track: selectedTrack?.name,
-                              ),
-                            );
+                          ApplyFiltersEvent(
+                            minPrice: startPrice,
+                            maxPrice: endPrice,
+                            minRate: selectedRate?.toDouble(),
+                            role: selectedRole,
+                            track: selectedTrack?.name,
+                          ),
+                        );
 
                         Navigator.pop(context, activeFiltersCount);
                       },
@@ -265,12 +287,16 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
     IconData? icon,
     String Function(T)? labelBuilder,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
     final activeColor = AppPalette.primary;
-    final inactiveColor = Theme.of(context).cardColor;
+    final inactiveColor = Theme
+        .of(context)
+        .cardColor;
     final textActive = Colors.white;
     final textInactive =
-        isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
+    isDark ? AppPalette.darkTextPrimary : AppPalette.lightTextPrimary;
 
     return Wrap(
       spacing: 8,
@@ -285,20 +311,20 @@ class _MentorFilterSheetState extends State<MentorFilterSheet> {
         return ChoiceChip(
           label: showIcon
               ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon != null)
-                      Icon(icon,
-                          size: 18,
-                          color: selected ? textActive : textInactive),
-                    Text("  $label",
-                        style: TextStyle(
-                            color: selected ? textActive : textInactive)),
-                  ],
-                )
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null)
+                Icon(icon,
+                    size: 18,
+                    color: selected ? textActive : textInactive),
+              Text("  $label",
+                  style: TextStyle(
+                      color: selected ? textActive : textInactive)),
+            ],
+          )
               : Text(label,
-                  style:
-                      TextStyle(color: selected ? textActive : textInactive)),
+              style:
+              TextStyle(color: selected ? textActive : textInactive)),
           selected: selected,
           backgroundColor: inactiveColor,
           selectedColor: activeColor,

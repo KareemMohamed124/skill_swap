@@ -12,7 +12,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.skill_swap"
-        minSdk = flutter.minSdkVersion
+
+        // ⚠️ مهم جدًا: Jitsi 11 يحتاج 26
+        minSdk = 26
+
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -31,10 +34,8 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
-
-            // 🔥 تفعيل التصغير (لو حصل مشاكل ارجعيه false مؤقتًا)
-            isMinifyEnabled = true
-
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -50,13 +51,13 @@ flutter {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    // 🔥 Fix R8 / SLF4J error (المشكلة اللي عندك)
+    // Fix logging / SLF4J
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("org.slf4j:slf4j-simple:2.0.13")
 
     // Java desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
-    // Pusher
+    // Pusher (لو مستخدماه)
     implementation("com.pusher:pusher-java-client:2.2.5")
 }

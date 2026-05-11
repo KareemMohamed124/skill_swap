@@ -9,6 +9,7 @@ import '../../../../shared/bloc/register_bloc/register_event.dart';
 import '../../../../shared/bloc/register_bloc/register_state.dart';
 import '../../../../shared/data/models/register/register_request.dart';
 import '../../../../shared/dependency_injection/injection.dart';
+import '../../../../shared/helper/local_storage.dart';
 import '../../forget_password/screens/email_verification_screen.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
@@ -58,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: BaseScreen(
         title: "Sign Up",
         child: BlocConsumer<RegisterBloc, RegisterState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is RegisterFailureState) {
               setState(() {
                 nameError = null;
@@ -99,7 +100,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.data.message)),
               );
-
+              await LocalStorage.saveEmail(
+                emailController.text,
+              );
               Get.to(
                 EmailVerificationScreen(
                   email: emailController.text,

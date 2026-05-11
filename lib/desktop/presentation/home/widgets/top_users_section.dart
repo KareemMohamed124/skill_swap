@@ -39,10 +39,15 @@ class _TopUsersListState extends State<_TopUsersList> {
 
   void _scrollListener() {
     final cubit = context.read<UsersCubit>();
-    if (_controller.position.pixels >=
-            _controller.position.maxScrollExtent - 150 &&
-        cubit.state is UsersLoaded) {
+
+    if (!_controller.hasClients) return;
+
+    final max = _controller.position.maxScrollExtent;
+    final current = _controller.position.pixels;
+
+    if (current >= max - 150 && cubit.state is UsersLoaded) {
       final state = cubit.state as UsersLoaded;
+
       if (!state.isLoadingMore && !state.isLastPage) {
         cubit.fetchNextPage();
       }
@@ -84,59 +89,60 @@ class _TopUsersListState extends State<_TopUsersList> {
           }
 
           if (state is UsersLoaded) {
+            final showLoader = state.isLoadingMore && !state.isLastPage;
+
+            final itemCount =
+                showLoader ? state.users.length + 1 : state.users.length;
+
             return ListView.separated(
               controller: _controller,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: state.isLastPage
-                  ? state.users.length
-                  : state.users.length + 1,
+              itemCount: itemCount,
               separatorBuilder: (_, __) => const SizedBox(width: 16),
               itemBuilder: (context, index) {
-                if (index < state.users.length) {
-                  final u = state.users[index];
-
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      desktopKey.currentState?.openSidePage(
-                        body: ProfileMentorDesktop(
-                          id: u.id,
-                          name: u.name,
-                          track: u.track.name,
-                          rate: u.rate,
-                          role: u.role,
-                          image: u.userImage.secureUrl,
-                          bio: u.profile.bio,
-                          skills: u.skills,
-                          hoursAvailable: u.freeHours,
-                          peopleHelped: u.helpTotalHours,
-                          hourlyRate: u.hourlyPrice,
-                          reviews: u.reviews,
-                        ),
-                      );
-                    },
-                    child: TopUserCard(
-                      widthCard: cardWidth,
-                      id: u.id,
-                      image: u.userImage.secureUrl,
-                      name: u.name,
-                      track: u.track.name.isEmpty
-                          ? "Mobile Development"
-                          : u.track.name,
-                      hours: u.helpTotalHours,
-                    ),
-                  );
-                } else {
-                  return SizedBox(
-                    width: cardWidth,
-                    child: const Center(
+                if (index >= state.users.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    child: Center(
                       child: CircularProgressIndicator(
                         color: AppPalette.primary,
                       ),
                     ),
                   );
                 }
+                final u = state.users[index];
+                return InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    desktopKey.currentState?.openSidePage(
+                      body: ProfileMentorDesktop(
+                        id: u.id,
+                        name: u.name,
+                        track: u.track.name,
+                        rate: u.rate,
+                        role: u.role,
+                        image: u.userImage.secureUrl,
+                        bio: u.profile.bio,
+                        skills: u.skills,
+                        hoursAvailable: u.freeHours,
+                        peopleHelped: u.helpTotalHours,
+                        hourlyRate: u.hourlyPrice,
+                        reviews: u.reviews,
+                      ),
+                    );
+                  },
+                  child: TopUserCard(
+                    widthCard: cardWidth,
+                    id: u.id,
+                    image: u.userImage.secureUrl,
+                    name: u.name,
+                    track: u.track.name.isEmpty
+                        ? "Mobile Development"
+                        : u.track.name,
+                    hours: u.helpTotalHours,
+                  ),
+                );
               },
             );
           }

@@ -19,6 +19,7 @@ import '../../../shared/bloc/public_chat/public_chat_messages_cubit.dart';
 import '../../../shared/bloc/status_book_bloc/status_book_bloc.dart';
 import '../../../shared/bloc/store_cubit/purchase_cubit.dart';
 import '../../../shared/bloc/store_cubit/store_cubit.dart';
+import '../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_bloc.dart';
 import '../../../shared/bloc/tracks_bloc/tracks_event.dart';
 import '../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
@@ -61,7 +62,7 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
 
   final List<_PageState> _history = [];
   late final PublicChatMessagesCubit _chatMessagesCubit =
-      sl<PublicChatMessagesCubit>();
+  sl<PublicChatMessagesCubit>();
 
   @override
   void initState() {
@@ -95,10 +96,13 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         return MultiBlocProvider(
           providers: [
             BlocProvider(
-                create: (_) => sl<TracksBloc>()..add(LoadTracksEvent())),
+                create: (_) =>
+                sl<TracksBloc>()
+                  ..add(LoadTracksEvent())),
             BlocProvider(
                 create: (_) =>
-                    sl<PublicChatBloc>()..add(GetPublicChatsEvent())),
+                sl<PublicChatBloc>()
+                  ..add(GetPublicChatsEvent())),
             BlocProvider(
               create: (_) => sl<PurchaseCubit>(),
             )
@@ -107,9 +111,14 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
         );
 
       case 2:
-        return BlocProvider(
-          create: (_) => sl<UserFilterBloc>(),
-          child: const SearchScreen(),
+        return MultiBlocProvider(providers: [
+          BlocProvider(
+            create: (_) => sl<UserFilterBloc>(),
+          ),
+          BlocProvider(
+            create: (_) => sl<TracksCubit>(),
+          ),
+        ], child: const SearchScreen(),
         );
 
       case 3:
@@ -117,10 +126,13 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
           providers: [
             BlocProvider(
                 create: (_) =>
-                    sl<GetBookingsCubit>()..fetchAllBookings("accepted")),
+                sl<GetBookingsCubit>()
+                  ..fetchAllBookings("accepted")),
             BlocProvider(create: (_) => sl<StatusBookBloc>()),
             BlocProvider(
-                create: (_) => sl<PurchaseCubit>()..getAvailableVouchers())
+                create: (_) =>
+                sl<PurchaseCubit>()
+                  ..getAvailableVouchers())
           ],
           child: SessionsScreen(
             initialTab: initialSessionTab,
@@ -134,7 +146,9 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
 
       case 5:
         return BlocProvider(
-          create: (_) => sl<StoreCubit>()..getStoreItems(freeOnly: false),
+          create: (_) =>
+          sl<StoreCubit>()
+            ..getStoreItems(freeOnly: false),
           child: const StoreScreen(),
         );
 
@@ -213,7 +227,9 @@ class DesktopScreenManagerState extends State<DesktopScreenManager> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => sl<MyProfileCubit>()..fetchMyProfile(),
+          create: (_) =>
+          sl<MyProfileCubit>()
+            ..fetchMyProfile(),
         ),
         BlocProvider(create: (_) => sl<UsersCubit>()),
         BlocProvider(create: (_) => sl<GetBookingsCubit>()),

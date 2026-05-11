@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../../shared/bloc/change_password_bloc/change_password_bloc.dart';
 import '../../../../shared/bloc/delete_account_bloc/delete_account_bloc.dart';
 import '../../../../shared/bloc/get_profile_cubit/my_profile_cubit.dart';
 import '../../../../shared/bloc/logout_bloc/logout_bloc.dart';
+import '../../../../shared/bloc/track_cubit/skills_cubit.dart';
 import '../../../../shared/bloc/update_profile_bloc/update_profile_bloc.dart';
 import '../../../../shared/dependency_injection/injection.dart';
 import '../../profile/widgets/profile_tabs.dart';
@@ -68,6 +70,8 @@ class _SettingScreenState extends State<SettingScreen>
                         BlocProvider(create: (_) => sl<DeleteAccountBloc>()),
                         BlocProvider(create: (_) => sl<ChangePasswordBloc>()),
                         BlocProvider(create: (_) => sl<UpdateProfileBloc>()),
+                        BlocProvider(
+                            create: (_) => GetIt.instance<SkillsCubit>()),
                       ],
                       child: const EditProfilePage(),
                     ),

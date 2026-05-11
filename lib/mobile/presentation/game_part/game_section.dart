@@ -93,13 +93,17 @@ class _GameSectionState extends State<GameSection> {
                             Future.delayed(
                               const Duration(milliseconds: 300),
                               () {
-                                showStoreDialog(_,
-                                    isFirstTime: true,
-                                    title: "Leaderboard",
-                                    subtitle: "leaderboard",
-                                    rules:
-                                        "• Only the Top 10 players are displayed on the leaderboard\n"
-                                        "• Your score is based on your performance in the Challenge Rooms.\n");
+                                showStoreDialog(
+                                  _,
+                                  isFirstTime: true,
+                                  title: "Leaderboard",
+                                  subtitle: "leaderboard",
+                                  rules:
+                                      "• Only the Top 10 players are displayed on the leaderboard\n"
+                                      "• Your score is based on your performance in the Challenge Rooms.\n"
+                                      "• The leaderboard resets at the beginning of each month, and rewards are distributed based on the final ranking before reset.\n"
+                                      "• If the user doesn’t claim their reward within 1 hour, it will be automatically collected and credited to their account.\n",
+                                );
                                 box.write("leaderBoardFirst", false);
                                 isFirst = false;
                               },

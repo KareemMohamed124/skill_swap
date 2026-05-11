@@ -11,6 +11,7 @@ import '../../../mobile/presentation/home/screens/home_screen.dart';
 import '../../../mobile/presentation/profile/screens/profile_screen.dart';
 import '../../../mobile/presentation/search/screens/search_screen.dart';
 import '../../../mobile/presentation/sessions/screens/sessions_screen.dart';
+import '../../bloc/cancel_book_bloc/cancel_book_bloc.dart';
 import '../../bloc/get_bookings_cubit/get_bookings_cubit.dart';
 import '../../bloc/private_chats_bloc/private_chats_bloc.dart';
 import '../../bloc/public_chat/public_chat_bloc.dart';
@@ -132,6 +133,7 @@ class _ScreenManagerState extends State<ScreenManager> {
             create: (_) =>
                 sl<GetBookingsCubit>()..fetchAllBookings("accepted")),
         BlocProvider(create: (_) => sl<StatusBookBloc>()),
+        BlocProvider(create: (_) => sl<CancelBookBloc>()),
         BlocProvider(create: (_) => sl<PurchaseCubit>()..getAvailableVouchers())
       ],
       child: SessionsScreen(

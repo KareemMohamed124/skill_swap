@@ -10,75 +10,13 @@ import '../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../shared/data/models/track/track_model.dart';
 import '../../../shared/data/web_services/skills/skills_api_services.dart';
 
-/// Local map: track name → list of skills (API only returns id + name)
-const Map<String, List<String>> tracksWithSkillsMap = {
-  "Mobile Development": [
-    "Dart & Flutter",
-    "Java/Kotlin & Android",
-    "Swift & iOS",
-    "Firebase & Backend Services",
-  ],
-  "Frontend Development": [
-    "HTML & CSS",
-    "JavaScript & React",
-    "JavaScript & Angular",
-    "JavaScript & Vue",
-  ],
-  "Backend Development": [
-    "JavaScript & NodeJS",
-    "PHP & Laravel",
-    "Python & Django",
-    "SQL & Database Management",
-  ],
-  "UI/UX Design": [
-    "Figma & UI Design",
-    "Adobe XD & Prototyping",
-    "User Research & UX Strategy",
-  ],
-  "Artificial Intelligence": [
-    "Python & TensorFlow",
-    "Python & PyTorch",
-    "Python & NLP",
-    "Python & Computer Vision",
-  ],
-  "Data Science": [
-    "Python & Pandas",
-    "Python & NumPy",
-    "Python & Data Visualization",
-    "R & Statistical Analysis",
-  ],
-  "Game Development": [
-    "C# & Unity",
-    "C++ & Unreal Engine",
-    "Blender & 3D Design",
-  ],
-  "CyberSecurity": [
-    "Linux & Networking",
-    "Python & Security Automation",
-    "Penetration Testing & OWASP",
-  ],
-  "Cloud Computing": [
-    "Docker & Containerization",
-    "Kubernetes & Orchestration",
-    "AWS & Cloud Services",
-    "CI/CD & DevOps",
-  ],
-  "Software Testing": [
-    "Dart & Flutter Testing",
-    "Java & Selenium",
-    "Automation & Test Frameworks",
-  ],
-};
-
 class SelectTrackScreen extends StatelessWidget {
   const SelectTrackScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-      GetIt.instance<TracksCubit>()
-        ..fetchTracks(),
+      create: (_) => GetIt.instance<TracksCubit>()..fetchTracks(),
       child: const _SelectTrackBody(),
     );
   }
@@ -96,12 +34,8 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery
-        .of(context)
-        .size;
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Padding(
@@ -182,16 +116,12 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? AppPalette.primary
-                                    : Theme
-                                    .of(context)
-                                    .cardColor,
+                                    : Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(25),
                                 border: Border.all(
                                   color: isSelected
                                       ? AppPalette.primary
-                                      : Theme
-                                      .of(context)
-                                      .dividerColor,
+                                      : Theme.of(context).dividerColor,
                                 ),
                               ),
                               child: Text(
@@ -225,21 +155,18 @@ class _SelectTrackBodyState extends State<_SelectTrackBody> {
                   onPressed: selectedTrack == null
                       ? null
                       : () {
-                    Get.to(
-                          () =>
-                          BlocProvider(
-                            create: (context) =>
-                            SkillsCubit(
-                              GetIt.instance<SkillsApiService>(),
-                            )
-                              ..fetchSkills(selectedTrack!.id),
-                            child: SelectSkillsScreen(
-                              trackId: selectedTrack!.id,
-                              trackName: selectedTrack!.name,
+                          Get.to(
+                            () => BlocProvider(
+                              create: (context) => SkillsCubit(
+                                GetIt.instance<SkillsApiService>(),
+                              )..fetchSkills(selectedTrack!.id),
+                              child: SelectSkillsScreen(
+                                trackId: selectedTrack!.id,
+                                trackName: selectedTrack!.name,
+                              ),
                             ),
-                          ),
-                    );
-                  },
+                          );
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.primary,
                     shape: RoundedRectangleBorder(

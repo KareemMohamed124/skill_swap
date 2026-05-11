@@ -12,6 +12,7 @@ import 'package:skill_swap/desktop/presentation/search/widgets/mentor_card.dart'
 import 'package:skill_swap/desktop/presentation/search/widgets/sort_button.dart';
 
 import '../../../../main.dart';
+import '../../../../shared/bloc/track_cubit/track_cubit.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_bloc.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_event.dart';
 import '../../../../shared/bloc/user_filter_bloc/user_filter_state.dart';
@@ -59,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final bloc = context.read<UserFilterBloc>();
 
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !bloc.state.isLastPage &&
         !bloc.state.isLoadingMore) {
       bloc.add(LoadMoreUsersEvent(
@@ -93,13 +94,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme
-        .of(context)
-        .brightness == Brightness.dark;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: SafeArea(
@@ -119,10 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   /// Title
                   Text(
                     'search'.tr,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .titleLarge,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
 
                   const SizedBox(height: 20),
@@ -149,7 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                               _debounce = Timer(
                                 const Duration(milliseconds: 600),
-                                    () {
+                                () {
                                   context
                                       .read<UserFilterBloc>()
                                       .add(SearchUserEvent(value));
@@ -173,24 +166,31 @@ class _SearchScreenState extends State<SearchScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border:
-                          Border.all(color: Theme
-                              .of(context)
-                              .dividerColor),
+                              Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: IconButton(
                             icon: Icon(Icons.tune_outlined,
                                 color: isDark ? Colors.white : Colors.black),
                             onPressed: () {
                               final bloc = context.read<UserFilterBloc>();
+                              final tracksCubit = context.read<TracksCubit>();
+
                               final state = bloc.state;
 
                               desktopKey.currentState?.openSidePage(
                                 body: context
                                     .findAncestorStateOfType<
-                                    DesktopScreenManagerState>()!
+                                        DesktopScreenManagerState>()!
                                     .currentBody!,
-                                rightPanel: BlocProvider.value(
-                                  value: bloc,
+                                rightPanel: MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider.value(
+                                      value: bloc,
+                                    ),
+                                    BlocProvider.value(
+                                      value: tracksCubit,
+                                    ),
+                                  ],
                                   child: MentorFilterPanel(
                                     initialMinPrice: state.minPrice,
                                     initialMaxPrice: state.maxPrice,
@@ -217,41 +217,50 @@ class _SearchScreenState extends State<SearchScreen> {
                       Expanded(
                         child: BlocBuilder<UserFilterBloc, UserFilterState>(
                             builder: (context, state) {
-                              int count = 0;
+                          int count = 0;
 
-                              final isPriceFiltered =
-                                  state.minPrice != 20 || state.maxPrice != 60;
+                          final isPriceFiltered =
+                              state.minPrice != 0 || state.maxPrice != 20;
 
-                              if (isPriceFiltered) count++;
-                              if (state.selectedRate != null) count++;
-                              if (state.selectedRole != null) count++;
-                              if (state.selectedTrack != null) count++;
+                          if (isPriceFiltered) count++;
+                          if (state.selectedRate != null) count++;
+                          if (state.selectedRole != null) count++;
+                          if (state.selectedTrack != null) count++;
 
-                              return FilterButton(
-                                activeFilters: count,
-                                onPressed: () {
-                                  final bloc = context.read<UserFilterBloc>();
-                                  final state = bloc.state;
+                          return FilterButton(
+                            activeFilters: count,
+                            onPressed: () {
+                              final bloc = context.read<UserFilterBloc>();
+                              final tracksCubit = context.read<TracksCubit>();
 
-                                  desktopKey.currentState?.openSidePage(
-                                    body: context
-                                        .findAncestorStateOfType<
+                              final state = bloc.state;
+
+                              desktopKey.currentState?.openSidePage(
+                                body: context
+                                    .findAncestorStateOfType<
                                         DesktopScreenManagerState>()!
-                                        .currentBody!,
-                                    rightPanel: BlocProvider.value(
+                                    .currentBody!,
+                                rightPanel: MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider.value(
                                       value: bloc,
-                                      child: MentorFilterPanel(
-                                        initialMinPrice: state.minPrice,
-                                        initialMaxPrice: state.maxPrice,
-                                        initialRate: state.selectedRate,
-                                        initialRole: state.selectedRole,
-                                        initialTrack: state.selectedTrack,
-                                      ),
                                     ),
-                                  );
-                                },
+                                    BlocProvider.value(
+                                      value: tracksCubit,
+                                    ),
+                                  ],
+                                  child: MentorFilterPanel(
+                                    initialMinPrice: state.minPrice,
+                                    initialMaxPrice: state.maxPrice,
+                                    initialRate: state.selectedRate,
+                                    initialRole: state.selectedRole,
+                                    initialTrack: state.selectedTrack,
+                                  ),
+                                ),
                               );
-                            }),
+                            },
+                          );
+                        }),
                       ),
                     ],
                   ),
@@ -262,23 +271,43 @@ class _SearchScreenState extends State<SearchScreen> {
                   Expanded(
                     child: BlocBuilder<UserFilterBloc, UserFilterState>(
                       builder: (context, state) {
-                        if (state.filteredList.isEmpty && !state.isLoading) {
+                        if (state.isLoading) {
                           return const Center(
-                            child: Text("No results found"),
+                            child: CircularProgressIndicator(),
                           );
                         }
 
+                        if (state.filteredList.isEmpty && !state.isLoading) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.search_off,
+                                    size: 80, color: Colors.grey),
+                                SizedBox(height: 16),
+                                Text("No results found",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
+                              ],
+                            ),
+                          );
+                        }
+
+                        final showLoader =
+                            state.isLoadingMore && !state.isLastPage;
                         return MasonryGridView.builder(
                           controller: _scrollController,
                           padding: const EdgeInsets.all(12),
                           gridDelegate:
-                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                              SliverSimpleGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: getCrossAxisCount(screenWidth),
                           ),
                           mainAxisSpacing: 16,
                           crossAxisSpacing: 16,
-                          itemCount: state.filteredList.length +
-                              (state.isLastPage ? 0 : 1),
+                          itemCount:
+                              state.filteredList.length + (showLoader ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index < state.filteredList.length) {
                               final user = state.filteredList[index];

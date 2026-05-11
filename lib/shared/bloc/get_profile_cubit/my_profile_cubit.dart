@@ -15,9 +15,11 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   num get coins {
     final state = this.state;
+
     if (state is MyProfileLoaded) {
       return state.profile.points ?? 0;
     }
+
     return 0;
   }
 
@@ -30,6 +32,22 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     try {
       final myProfile = await repository.getMyProfile();
+
+      // ================= SAVE LOCAL =================
+
+      await LocalStorage.saveUserTrack(
+        myProfile.track.name,
+      );
+
+      await LocalStorage.saveUserSkills(
+        myProfile.skills.map((e) => e.skillName).toList(),
+      );
+
+      await LocalStorage.saveIsActive(
+        myProfile.isActive,
+      );
+
+      // ==============================================
 
       emit(MyProfileLoaded(myProfile));
     } catch (e) {
@@ -69,8 +87,11 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
   Future<void> handleInvalidAccount() async {
     await repository.deleteAccount();
+
     await LocalStorage.clearAllTokens();
+
     await NotificationService.deleteToken();
+
     emit(MyProfileInitial());
   }
 
@@ -94,7 +115,7 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
       if (!isMentor) return false;
 
-      final skills = profile.skills ?? [];
+      final skills = profile.skills;
 
       final exists = skills.any(
         (skill) => skill.skillName.toLowerCase() == skillName.toLowerCase(),
@@ -113,11 +134,29 @@ class MyProfileCubit extends Cubit<MyProfileState> {
 
     try {
       final myProfile = await repository.getMyProfile();
+
+      // ================= SAVE LOCAL =================
+
+      await LocalStorage.saveUserTrack(
+        myProfile.track.name,
+      );
+
+      await LocalStorage.saveUserSkills(
+        myProfile.skills.map((e) => e.skillName).toList(),
+      );
+
+      await LocalStorage.saveIsActive(
+        myProfile.isActive,
+      );
+
+      // ==============================================
+
       if (isClosed) return;
 
       emit(MyProfileLoaded(myProfile));
     } catch (e) {
       if (isClosed) return;
+
       emit(MyProfileError(e.toString()));
     }
   }
@@ -125,15 +164,20 @@ class MyProfileCubit extends Cubit<MyProfileState> {
   Future<void> setActiveTheme(String? themeId) async {
     try {
       await repository.setActiveTheme(themeId);
+
       await refreshProfile();
     } catch (e) {}
   }
 
   void setProfile(MyProfile profile) {
-    if (!isClosed) emit(MyProfileLoaded(profile));
+    if (!isClosed) {
+      emit(MyProfileLoaded(profile));
+    }
   }
 
   void clearProfile() {
-    if (!isClosed) emit(MyProfileInitial());
+    if (!isClosed) {
+      emit(MyProfileInitial());
+    }
   }
 }

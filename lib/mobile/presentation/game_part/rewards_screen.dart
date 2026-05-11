@@ -67,9 +67,9 @@ class _RewardsScreenState extends State<RewardsScreen> {
           rank: 2,
           preview: true,
           rewards: cubit.getRewardItemsByRank(2),
-          onCollect: () {
-            cubit.collectRewards(2);
-          },
+          // onCollect: () {
+          //   cubit.collectRewards(2);
+          // },
         ),
         RewardCard(
           rank: 3,

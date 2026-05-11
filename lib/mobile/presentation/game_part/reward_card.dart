@@ -100,6 +100,4 @@ class RewardCard extends StatelessWidget {
       colors: [Colors.white, Colors.white],
     );
   }
-
-  /// 🎁 Rewards UI
 }

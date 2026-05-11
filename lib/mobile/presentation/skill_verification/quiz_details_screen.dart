@@ -86,7 +86,7 @@ class QuizDetailsScreen extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
-                        backgroundColor: const Color(0XFFF2F5F8),
+                        backgroundColor: Colors.grey,
                       ),
                       SizedBox(width: screenWidth * 0.02),
                       Chip(
@@ -99,7 +99,7 @@ class QuizDetailsScreen extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
-                        backgroundColor: const Color(0XFFF2F5F8),
+                        backgroundColor: Colors.grey,
                       ),
                       SizedBox(width: screenWidth * 0.02),
                       Chip(
@@ -112,7 +112,7 @@ class QuizDetailsScreen extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyMedium!.color,
                           ),
                         ),
-                        backgroundColor: const Color(0XFFF2F5F8),
+                        backgroundColor: Colors.grey,
                       ),
                     ],
                   ),

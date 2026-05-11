@@ -74,8 +74,8 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         filteredList: users,
         isLoading: false,
         isLastPage: isLastPage,
-        minPrice: event.minPrice ?? 20,
-        maxPrice: event.maxPrice ?? 60,
+        minPrice: event.minPrice ?? 0,
+        maxPrice: event.maxPrice ?? 20,
         selectedRate: event.minRate != null ? event.minRate!.toInt() : null,
         selectedRole: event.role,
         selectedTrack: event.track,
@@ -117,8 +117,8 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         selectedRole: null,
         selectedTrack: null,
         selectedRate: null,
-        minPrice: 20,
-        maxPrice: 60,
+        minPrice: 0,
+        maxPrice: 20,
       ));
 
       _currentPage = 1;
@@ -134,8 +134,8 @@ class UserFilterBloc extends Bloc<UserFilterEvent, UserFilterState> {
         selectedRole: null,
         selectedTrack: null,
         selectedRate: null,
-        minPrice: 20,
-        maxPrice: 60,
+        minPrice: 0,
+        maxPrice: 20,
       ));
     });
 
