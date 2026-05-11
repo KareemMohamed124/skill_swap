@@ -13,7 +13,7 @@ build/
 # ---------------------------
 # Android build / APK / AAB
 # ---------------------------
-android/app/build/
+**/android/app/build/
 *.apk
 *.aab
 *.keystore
@@ -22,20 +22,19 @@ android/app/build/
 *.gradle
 
 # Kernel / intermediate files
-android/app/build/intermediates/
-android/app/build/generated/
-android/app/build/tmp/
-android/app/build/flutter_assets/
+**/android/app/build/intermediates/
+**/android/app/build/generated/
+**/android/app/build/tmp/
+**/android/app/build/flutter_assets/
 
 # ---------------------------
 # iOS build / Xcode / CocoaPods
 # ---------------------------
-ios/Flutter/Flutter.podspec
-ios/Pods/
-ios/Runner.xcworkspace/
-ios/Runner/GeneratedPluginRegistrant.*
-ios/Flutter/Flutter.framework
-ios/Flutter/Flutter.podspec
+**/ios/Flutter/Flutter.podspec
+**/ios/Pods/
+**/ios/Runner.xcworkspace/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Flutter/Flutter.framework
 *.mode1v3
 *.mode2v3
 *.pbxuser
@@ -61,7 +60,6 @@ ios/Flutter/Flutter.podspec
 *.pyc
 *.swp
 .DS_Store
-*.lock
 *.tmp
 *.bak
 *.orig
@@ -80,3 +78,8 @@ app.*.map.json
 local.properties
 captures/
 .externalNativeBuild/
+
+# ---------------------------
+# Whitelist: Keep exe/ tracked
+# ---------------------------
+!exe/*.exe
